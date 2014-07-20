@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="D:\Files\Proyectos\Android\Zirkapp\app\build\intermediates\pre-dexed\debug\http-request-5.6-7bb4a802833bb36bf5f0f15b4c114e60e3e6902f.jar"
+        jar="C:\Users\Elder\.gradle\caches\modules-2\files-2.1\com.github.kevinsawicki\http-request\5.6\168305b7a983142b6311a005f0ad96d3b34d92d\http-request-5.6.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="0168305b7a983142b6311a005f0ad96d3b34d92d"/>
+    <item
+        dex="D:\Files\Proyectos\Android\Zirkapp\app\build\intermediates\pre-dexed\debug\support-v4-19.1.0-e311e493b238b75da4095bd5ee7b69d76d73dc42.jar"
+        jar="C:\Program Files (x86)\Android\android-studio\sdk\extras\android\m2repository\com\android\support\support-v4\19.1.0\support-v4-19.1.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
+    <item
+        dex="D:\Files\Proyectos\Android\Zirkapp\app\build\intermediates\pre-dexed\debug\support-v13-19.1.0-0225ee081b034b3a8fe6711ca79ab2a74d361711.jar"
+        jar="C:\Program Files (x86)\Android\android-studio\sdk\extras\android\m2repository\com\android\support\support-v13\19.1.0\support-v13-19.1.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="6b852a232f642c75a7fdfc7212b841b8c8f8959c"/>
+    <item
+        dex="D:\Files\Proyectos\Android\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-66c3b51fdcae392c9530e5f2c3bc6cce16501ced.jar"
+        jar="D:\Files\Proyectos\Android\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\19.1.0\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28"/>
+
+</pre-dex-items>
