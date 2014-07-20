@@ -49,6 +49,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
         adapter = new ScreenSlidePagerAdapter(getFragmentManager());
 
         mPager.setAdapter(adapter);
+
+        //Tabs
         //actionBar.setHomeButtonEnabled(false);
         //actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
