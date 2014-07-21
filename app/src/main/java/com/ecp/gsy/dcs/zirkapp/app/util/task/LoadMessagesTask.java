@@ -31,6 +31,7 @@ public class LoadMessagesTask extends AsyncTask<Void, Void, Void> {
     private ProgressDialog progressDialog;
     private Context context;
     private boolean isApiOnline;
+    private int httpStatusCode;
 
     public LoadMessagesTask(Context context, ArrayAdapter adapter, String url) {
         this.adapter = adapter;
@@ -61,6 +62,8 @@ public class LoadMessagesTask extends AsyncTask<Void, Void, Void> {
                 //Analizamos el JSON y tomamos lo deseado
                 data = new JSONToStringCollection(jsonArray).getArrayList();
             }
+            //Obtenemos el code http
+            httpStatusCode = conn.getHttpStatusCode();
         } catch (Exception e) {
             Log.e("jsonArray", e.getLocalizedMessage());
         }
@@ -69,28 +72,31 @@ public class LoadMessagesTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void result) {
-        //Log.i(TAG, result.toString());
         //Añadimos todos los links del adapter
-        //Log.v("Data", data.toString());
         if (data != null) {
             for (Object tmp : data) {
                 adapter.add(tmp);
             }
             //Indicamos al adapter que ha cambiado para que refresque el Listview
             adapter.notifyDataSetChanged();
-
             setValuesHome();
         }
         //Eliminanos el ProgressDialog
         progressDialog.dismiss();
-        if(!isApiOnline){
+        //Personalizamos el mensaje en UI
+        //TODO Se Sugiere Manejar un Dialog
+        if (!isApiOnline && httpStatusCode == 0) {
             Toast.makeText(context, R.string.out_conexion, Toast.LENGTH_LONG).show();
+        } else if (httpStatusCode != 0) {
+            String msg = new StringBuilder(context.getResources().getString(R.string.error_conexion)).append(" ").append(httpStatusCode).toString();
+            Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
         }
         super.onPostExecute(result);
     }
 
     //Envia el broadcast
     private void setValuesHome() {
+        //TODO la lista solo muestra la cantidad de Zmess que llegan en la ultima consulta (Debe mostrar lo que hay cerca, "lo que tiene la lista")
         //Actualiza cantidad de mensajes cerca
         Intent intent = new Intent("actualizarzmess");
         intent.putExtra("operacion", HomeReceiver.ZMESS_CARGADOS);

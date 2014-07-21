@@ -114,8 +114,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
     public void onPageScrollStateChanged(int state) {
 
     }
-
-
     //</editor-fold>
 
     //<editor-fold desc="METHODS CHANGE TAB LISTENER">
@@ -133,6 +131,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 
     }
+    //</editor-fold>
 
 
 }

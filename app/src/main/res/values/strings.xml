@@ -70,5 +70,6 @@
     <string name="title_activity_new_zmessage">Di lo que quieras</string>
     <string name="lblNewZmess">Comienza tu mensaje...</string>
     <string name="out_conexion">Out! parece que estas sin conexión, o algo pasa en la web!</string>
+    <string name="error_conexion">Ha ocurrido un error:</string>
 
 </resources>

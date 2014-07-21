@@ -36,6 +36,7 @@ public class ConectorHttpJSON {
 
     private String url;
     private JSONArray jsonArray;
+    private int httpStatusCode;
 
     public ConectorHttpJSON(String url) {
         this.url = url;
@@ -56,17 +57,19 @@ public class ConectorHttpJSON {
             int statusCode = response.getStatusLine().getStatusCode();
             Log.i("Response status", response.getStatusLine().toString());
             Log.i("Response code", statusCode + "");
+            //Si OK, se procede
             if (statusCode == HttpStatus.SC_OK) {
                 //Recogemos la respuesta del servidor
                 String JSONResponse = inputStreamToString(response.getEntity().getContent());
 
                 JSONArray jsonArrayTmp = new JSONArray(JSONResponse);
                 this.jsonArray = jsonArrayTmp;
-
+                this.httpStatusCode = statusCode;
                 return true;
-            } else if (statusCode == HttpStatus.SC_BAD_REQUEST) {
-
             }
+            //Se establece el estatus code para manejo de mensajes en UI
+            this.httpStatusCode = statusCode;
+
         } catch (IOException c) {
             Log.e("http Exception", c.getLocalizedMessage());
         }
@@ -99,5 +102,9 @@ public class ConectorHttpJSON {
 
     public JSONArray getJsonArray() {
         return jsonArray;
+    }
+
+    public int getHttpStatusCode() {
+        return httpStatusCode;
     }
 }
