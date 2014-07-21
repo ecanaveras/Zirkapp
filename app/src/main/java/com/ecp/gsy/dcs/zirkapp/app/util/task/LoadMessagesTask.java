@@ -87,7 +87,7 @@ public class LoadMessagesTask extends AsyncTask<Void, Void, Void> {
         //TODO Se Sugiere Manejar un Dialog
         if (!isApiOnline && httpStatusCode == 0) {
             Toast.makeText(context, R.string.out_conexion, Toast.LENGTH_LONG).show();
-        } else if (httpStatusCode != 0) {
+        } else if (httpStatusCode != 200 && httpStatusCode != 0) {
             String msg = new StringBuilder(context.getResources().getString(R.string.error_conexion)).append(" ").append(httpStatusCode).toString();
             Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
         }
