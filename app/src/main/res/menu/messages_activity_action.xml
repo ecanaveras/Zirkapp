@@ -7,14 +7,14 @@
         android:icon="@drawable/ic_action_chat"
         android:id="@+id/action_bar_new_zmess"
         android:title="@string/lblAddZmess"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:orderInCategory="20"/>
 
     <item
         android:icon="@drawable/ic_action_refresh"
         android:id="@+id/action_bar_search_zmess"
         android:title="@string/lblUpdate"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:orderInCategory="21"/>
 
 </menu>

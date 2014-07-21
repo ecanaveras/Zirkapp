@@ -17,11 +17,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.ScreenSlidePagerAdapter;
 
 public class MainActivity extends Activity implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
 
-    private Fragment FragmentHome;
-    private int indexFragment;
-
-
-    //Contiene todo el contenido
+    //Contiene los frames
     private ViewPager mPager;
     private ScreenSlidePagerAdapter adapter;
     //private ActionBar actionBar;
@@ -89,7 +85,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
         if (requestCode == inputRequestCode) {
             if (resultCode == RESULT_OK) {
                 runWelcome = false;
-                Toast.makeText(this, "Botton: "+data.getStringExtra("boton"), Toast.LENGTH_SHORT).show();
             }
             if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "Welcome Cancelado", Toast.LENGTH_SHORT).show();
@@ -138,10 +133,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 
     }
-    //</editor-fold>
 
 
-    public Fragment getFragmentHome() {
-        return FragmentHome;
-    }
 }

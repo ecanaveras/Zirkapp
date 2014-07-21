@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.HomeReceiver;
@@ -29,6 +30,7 @@ public class LoadMessagesTask extends AsyncTask<Void, Void, Void> {
     private String url;
     private ProgressDialog progressDialog;
     private Context context;
+    private boolean isApiOnline;
 
     public LoadMessagesTask(Context context, ArrayAdapter adapter, String url) {
         this.adapter = adapter;
@@ -53,11 +55,12 @@ public class LoadMessagesTask extends AsyncTask<Void, Void, Void> {
         //Creamos un objecto que conectar a la URL y analizar su contenido
         ConectorHttpJSON conn = new ConectorHttpJSON(url);
         try {
-            //Obtenemos el JSON
-            JSONArray jsonArray = conn.execute();
-
-            //Analizamos el JSON y tomamos lo deseado
-            data = new JSONToStringCollection(jsonArray).getArrayList();
+            if (isApiOnline = conn.execute()) {
+                //Obtenemos el JSON
+                JSONArray jsonArray = conn.getJsonArray();
+                //Analizamos el JSON y tomamos lo deseado
+                data = new JSONToStringCollection(jsonArray).getArrayList();
+            }
         } catch (Exception e) {
             Log.e("jsonArray", e.getLocalizedMessage());
         }
@@ -80,7 +83,9 @@ public class LoadMessagesTask extends AsyncTask<Void, Void, Void> {
         }
         //Eliminanos el ProgressDialog
         progressDialog.dismiss();
-
+        if(!isApiOnline){
+            Toast.makeText(context, R.string.out_conexion, Toast.LENGTH_LONG).show();
+        }
         super.onPostExecute(result);
     }
 
