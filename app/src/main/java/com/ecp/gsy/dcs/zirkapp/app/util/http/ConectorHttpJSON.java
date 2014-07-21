@@ -3,6 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util.http;
 import android.util.Log;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -29,34 +30,39 @@ public class ConectorHttpJSON {
         this.url = url;
     }
 
-    public JSONArray execute() throws ClientProtocolException, IOException, IllegalStateException, JSONException{
+    public JSONArray execute() throws ClientProtocolException, IOException, IllegalStateException, JSONException {
         //Creamos el objeto cliente que realiza la peticion al servidor
         HttpClient client = new DefaultHttpClient();
 
         //Se ejecuta la peticion y se almacena la respuesta
         HttpResponse response = client.execute(new HttpGet(url));
+        int statusCode = response.getStatusLine().getStatusCode();
         Log.i("Response status", response.getStatusLine().toString());
-        //if(response)
+        Log.i("Response code", statusCode+"");
+        if (statusCode == HttpStatus.SC_OK) {
+            //Recogemos la respuesta del servidor
+            String JSONResponse = inputStreamToString(response.getEntity().getContent());
 
-        //Recogemos la respuesta del servidor
-        String zmess = inputStreamToString(response.getEntity().getContent());
+            JSONArray jsonArray = new JSONArray(JSONResponse);
 
-        JSONArray jsonArray = new JSONArray(zmess);
+            return jsonArray;
+        }else if(statusCode== HttpStatus.SC_BAD_REQUEST){
 
-        return jsonArray;
+        }
+        return null;
     }
 
-    private String inputStreamToString(InputStream is) throws UnsupportedEncodingException{
+    private String inputStreamToString(InputStream is) throws UnsupportedEncodingException {
         String line = "";
         StringBuilder sb = new StringBuilder();
         //Guardamos la direccion en buffer de lectura
-        BufferedReader br = new BufferedReader(new InputStreamReader(is, "utf-8"),8);
+        BufferedReader br = new BufferedReader(new InputStreamReader(is, "utf-8"), 8);
         //Leemos toda la direccion
-        try{
-            while ((line = br.readLine())!=null){
+        try {
+            while ((line = br.readLine()) != null) {
                 sb.append(line.trim());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e("inputStreamToString", e.getLocalizedMessage());
         }
         return sb.toString();

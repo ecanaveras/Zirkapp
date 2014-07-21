@@ -69,13 +69,15 @@ public class LoadMessagesTask extends AsyncTask<Void, Void, Void> {
         //Log.i(TAG, result.toString());
         //Añadimos todos los links del adapter
         //Log.v("Data", data.toString());
-        for (Object tmp : data) {
-            adapter.add(tmp);
-        }
-        //Indicamos al adapter que ha cambiado para que refresque el Listview
-        adapter.notifyDataSetChanged();
+        if (data != null) {
+            for (Object tmp : data) {
+                adapter.add(tmp);
+            }
+            //Indicamos al adapter que ha cambiado para que refresque el Listview
+            adapter.notifyDataSetChanged();
 
-        setValuesHome();
+            setValuesHome();
+        }
         //Eliminanos el ProgressDialog
         progressDialog.dismiss();
 

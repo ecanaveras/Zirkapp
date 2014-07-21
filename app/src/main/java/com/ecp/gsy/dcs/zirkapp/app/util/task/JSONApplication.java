@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter;
  */
 public class JSONApplication extends Application {
     //Url de la API
-    private final static String URL = "http://192.168.1.147/api.zirkapp/api/v1.1/zsms";
+    private final static String URL = "http://192.168.0.0/api.zirkapp/api/v1.1/zsms";
 
     public void getData(Context context, ArrayAdapter arrayAdapter){
         //Actualizamos los datos del adpater atravez de un Asynctask
