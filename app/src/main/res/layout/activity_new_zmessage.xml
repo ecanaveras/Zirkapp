@@ -38,24 +38,23 @@
                 android:layout_gravity="bottom">
 
                 <ToggleButton
-                    android:layout_width="wrap_content"
+                    android:layout_width="60dp"
                     android:layout_height="40dp"
                     android:text="New ToggleButton"
                     android:id="@+id/toggleButton"
-                    android:layout_weight="1"
                     android:singleLine="false"
                     android:textOff="Movil"
                     android:textOn="Anclado" />
 
                 <Spinner
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:id="@+id/spinner"
-                    android:layout_weight="40" />
+                    android:layout_weight="1" />
 
                 <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
                     android:id="@+id/imageButton"
                     android:src="@drawable/ic_action_send" />
 

@@ -47,7 +47,7 @@ public class ConectorHttpJSON {
         HttpGet httpGet = new HttpGet(url);
         HttpParams httpParams = new BasicHttpParams();
         //Establecer tiempo de conexion a la url en milisegundos
-        HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
+        HttpConnectionParams.setConnectionTimeout(httpParams, 4000);
         //Establecer tiempo de respuesta para data
         HttpConnectionParams.setSoTimeout(httpParams, 10000);
         //Creamos el objeto cliente que realiza la peticion al servidor

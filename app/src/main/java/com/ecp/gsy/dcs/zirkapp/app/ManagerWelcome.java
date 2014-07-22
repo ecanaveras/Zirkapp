@@ -1,8 +1,11 @@
-package com.ecp.gsy.dcs.zirkapp.app.util;
+package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -16,6 +19,8 @@ import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.Fwelcome3;
  * Created by Elder on 30/05/2014.
  */
 public class ManagerWelcome extends Activity {
+
+    public static ManagerWelcome mWelcomeInstance;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -45,8 +50,41 @@ public class ManagerWelcome extends Activity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
+        mWelcomeInstance = this;
     }
+
+    public static ManagerWelcome getInstance(){
+        return mWelcomeInstance;
+    }
+
+    @Override
+    public void onBackPressed() {
+        showMessageExitApp();
+    }
+
+    private void showMessageExitApp(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle(R.string.msgExitApp);
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton(R.string.msgYes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        moveTaskToBack(true);
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                        System.exit(1);
+                    }
+                })
+                .setNegativeButton(R.string.msgNo, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+        AlertDialog alertDialog  = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

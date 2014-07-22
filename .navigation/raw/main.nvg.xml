@@ -6,7 +6,7 @@
     <entry>
       <key      
         class = "com.android.navigation.ActivityState"      
-        className = "com.ecp.gsy.dcs.zirkapp.app.util.ManagerWelcome">
+        className = "com.ecp.gsy.dcs.zirkapp.app.ManagerWelcome">
         <location        
           id = "point0"        
           x = "0"        

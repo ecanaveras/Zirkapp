@@ -13,6 +13,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.HomeReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.JSONToStringCollection;
 import com.ecp.gsy.dcs.zirkapp.app.util.http.ConectorHttpJSON;
 
+import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -87,7 +88,7 @@ public class LoadMessagesTask extends AsyncTask<Void, Void, Void> {
         //TODO Se Sugiere Manejar un Dialog
         if (!isApiOnline && httpStatusCode == 0) {
             Toast.makeText(context, R.string.out_conexion, Toast.LENGTH_LONG).show();
-        } else if (httpStatusCode != 200 && httpStatusCode != 0) {
+        } else if (httpStatusCode != HttpStatus.SC_OK && httpStatusCode != 0) {
             String msg = new StringBuilder(context.getResources().getString(R.string.error_conexion)).append(" ").append(httpStatusCode).toString();
             Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
         }

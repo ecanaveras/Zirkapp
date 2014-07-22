@@ -2,16 +2,15 @@ package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
-import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.util.ManagerWelcome;
 import com.ecp.gsy.dcs.zirkapp.app.util.ScreenSlidePagerAdapter;
 
 
@@ -20,8 +19,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
     //Contiene los frames
     private ViewPager mPager;
     private ScreenSlidePagerAdapter adapter;
+    private ManagerWelcome managerWelcome;
     //private ActionBar actionBar;
-    //Titulo de los views
 
 
     //Respuesta del welcome
@@ -64,7 +63,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
     protected void onStart() {
         super.onStart();
         if(runWelcome){
-            initWelcome();
+            initWelcome(true);
         }
     }
 
@@ -74,8 +73,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
         outState.putBoolean("runWelcome", runWelcome);
     }
 
-    private void initWelcome() {
+    private void initWelcome(boolean run) {
         Intent intent = new Intent(this, ManagerWelcome.class);
+        intent.putExtra("run", run);
         inputRequestCode = 10;
         startActivityForResult(intent, inputRequestCode);
     }
@@ -86,9 +86,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
             if (resultCode == RESULT_OK) {
                 runWelcome = false;
             }
-            if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(this, "Welcome Cancelado", Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
@@ -98,6 +95,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
         getMenuInflater().inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
+
 
     //<editor-fold desc="METHOS VIEW CHANGE LISTENER">
     @Override

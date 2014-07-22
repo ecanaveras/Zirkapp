@@ -14,7 +14,7 @@
         android:icon="@drawable/ic_action_refresh"
         android:id="@+id/action_bar_search_zmess"
         android:title="@string/lblUpdate"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
         android:orderInCategory="21"/>
 
 </menu>
