@@ -23,9 +23,9 @@ import java.util.ArrayList;
 /**
  * Created by Elder on 15/07/2014.
  */
-public class LoadMessagesTask extends AsyncTask<Void, Void, Void> {
+public class DownloadMessagesTask extends AsyncTask<Void, Void, Void> {
 
-    private static final String TAG = "com.ecp.gsy.dcs.zirkapp.app.util.task.LoadMessagesTask";
+    private static final String TAG = "com.ecp.gsy.dcs.zirkapp.app.util.task.DownloadMessagesTask";
     private ArrayList data;
     private ArrayAdapter adapter;
     private String url;
@@ -34,7 +34,7 @@ public class LoadMessagesTask extends AsyncTask<Void, Void, Void> {
     private boolean isApiOnline;
     private int httpStatusCode;
 
-    public LoadMessagesTask(Context context, ArrayAdapter adapter, String url) {
+    public DownloadMessagesTask(Context context, ArrayAdapter adapter, String url) {
         this.adapter = adapter;
         this.url = url;
         progressDialog = new ProgressDialog(context);

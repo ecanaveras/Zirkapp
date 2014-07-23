@@ -33,7 +33,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
         setContentView(R.layout.activity_main);
 
         try{
-            runWelcome = savedInstanceState.getBoolean("runWelcome");
+//            runWelcome = savedInstanceState.getBoolean("runWelcome");
         }catch (Exception e){
             e.printStackTrace();
         }

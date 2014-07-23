@@ -72,5 +72,8 @@
     <string name="out_conexion">Out! parece que estas sin conexión, o algo pasa en la web!</string>
     <string name="error_conexion">Ha ocurrido un error:</string>
     <string name="msgExitApp">Te vas?</string>
+    <string name="msgDisconnet">Out, que le pasa al internet?</string>
+    <string name="msgSend">Mensaje enviado exitosamente</string>
+    <string name="msgError">Ha ocurrido un error:</string>
 
 </resources>
