@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -42,7 +44,12 @@ public class ConectorHttpJSON {
         this.url = url;
     }
 
-    public boolean execute() throws JSONException {
+    /**
+     * Realiza la peticion de Zimess en la API
+     * @return true en caso de exito, false en caso de falla
+     * @throws JSONException
+     */
+    public boolean executeGet() throws JSONException {
         //Se ejecuta la peticion y se almacena la respuesta
         HttpGet httpGet = new HttpGet(url);
         HttpParams httpParams = new BasicHttpParams();
@@ -72,6 +79,50 @@ public class ConectorHttpJSON {
 
         } catch (IOException c) {
             Log.e("http Exception", c.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Realiza un accion Post en la API - Agrega un nuevo Zimess
+     * @return true en caso de exito, false en caso de falla
+     */
+    public boolean executePost(Zimess zimess){
+        //TODO Pasar por parametro la clase zmensaje
+        //InputStream inputStream = null;
+        //String result = null;
+        try {
+            //TODO Enviar parametros de timeout en la peticion http
+            //1. Crear la peticion
+            HttpClient httpClient = new DefaultHttpClient();
+            //2. Crear Post
+            HttpPost httpPost = new HttpPost(url);
+            //3.Generar Json
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.accumulate("zmessage", zimess.getZmessage());
+            jsonObject.accumulate("zuser", zimess.getZuser());
+            //4.Json to StringEntity
+            StringEntity stringEntity = new StringEntity(jsonObject.toString());
+            //5. Establecer httPost Entity
+            httpPost.setEntity(stringEntity);
+            //6. Establecer headers
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            //7. Ejecutar Post
+            HttpResponse response = httpClient.execute(httpPost);
+            //8. Recibir respuesta
+            //TODO Terminar codigo para Recibir Json
+            int responseCode = response.getStatusLine().getStatusCode();
+            if (responseCode == HttpStatus.SC_OK) {
+                //TODO Refrescar el adparter para mostrar el nuevo mensaje.
+                this.httpStatusCode = responseCode;
+                return true;
+            }
+            this.httpStatusCode = responseCode;
+        } catch (IOException e) {
+            Log.e("Error al enviar Json", e.getLocalizedMessage());
+        } catch (JSONException e) {
+            Log.e("Error al crear Json", e.getLocalizedMessage());
         }
         return false;
     }

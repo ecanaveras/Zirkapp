@@ -23,7 +23,7 @@
             android:name=".ManagerWelcome"
             android:label="@string/title_activity_manager_welcome"></activity>
         <activity
-            android:name=".NewZMessageActivity"
+            android:name=".NewZimessActivity"
             android:windowSoftInputMode="stateVisible|adjustResize"
             android:label="@string/title_activity_new_zmessage">
         </activity>

@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.ecp.gsy.dcs.zirkapp.app.NewZMessageActivity;
+import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.JSONApplication;
 
@@ -44,10 +44,10 @@ public class Fmessages extends Fragment {
         //Manejar seleccion en el menú
         switch (item.getItemId()){
             case R.id.action_bar_search_zmess :
-                loadOrUpdateZmess();
+                downloadOrUpdateZmess();
                 return true;
             case R.id.action_bar_new_zmess :
-                Intent intent = new Intent(getActivity(), NewZMessageActivity.class);
+                Intent intent = new Intent(getActivity(), NewZimessActivity.class);
                 startActivity(intent);
             default:
                 return super.onOptionsItemSelected(item);
@@ -61,10 +61,10 @@ public class Fmessages extends Fragment {
         zmAdapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, new ArrayList());
         //Asiganmos el adaprte al listView
         listZMessages.setAdapter(zmAdapter);
-        loadOrUpdateZmess();
+        downloadOrUpdateZmess();
     }
 
-    private void loadOrUpdateZmess(){
+    private void downloadOrUpdateZmess(){
         // Actualizamos los datos, pasamos el Context para poder mostrar un ProgressDialog
         ((JSONApplication) getActivity().getApplicationContext()).getData(getActivity(), zmAdapter);
     }

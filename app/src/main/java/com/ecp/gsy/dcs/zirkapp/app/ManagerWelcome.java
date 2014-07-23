@@ -20,7 +20,7 @@ import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.Fwelcome3;
  */
 public class ManagerWelcome extends Activity {
 
-    public static ManagerWelcome mWelcomeInstance;
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -50,12 +50,8 @@ public class ManagerWelcome extends Activity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mWelcomeInstance = this;
     }
 
-    public static ManagerWelcome getInstance(){
-        return mWelcomeInstance;
-    }
 
     @Override
     public void onBackPressed() {

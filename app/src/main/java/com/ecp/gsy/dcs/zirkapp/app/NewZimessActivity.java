@@ -5,32 +5,28 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.LoadZimessTask;
 
-import java.io.IOException;
+public class NewZimessActivity extends Activity implements View.OnClickListener {
 
-public class NewZMessageActivity extends Activity implements View.OnClickListener {
+    //Url de la API
+    private final static String URL = "http://zirkapp.byethost3.com/api/v1.1/zsms";
 
     private EditText message;
     private ImageButton btnSendZmess;
     private TextView txtIndicadorConn;
     private String userTemp = "zirkapp_developer"; //TODO USuario de publicaciones temporales
+    private boolean apiConected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,19 +36,41 @@ public class NewZMessageActivity extends Activity implements View.OnClickListene
 
         //Creando UI
         message = (EditText) findViewById(R.id.editText);
+
         btnSendZmess = (ImageButton) findViewById(R.id.btnSendZmess);
 
         txtIndicadorConn = (TextView) findViewById(R.id.txtIndicadorConn);
 
         //TODO Implementar metodo en segundo plano para verificar conexion
-        if (!isConected()) {
+        if (isConected()) {
+            btnSendZmess.setEnabled(true);
+            txtIndicadorConn.setText(null);
+        } else {
             txtIndicadorConn.setBackgroundColor(Color.RED);
             txtIndicadorConn.setText(R.string.msgDisconnet);
             btnSendZmess.setEnabled(false);
-        } else {
-            btnSendZmess.setEnabled(true);
-            txtIndicadorConn.setText(null);
         }
+
+        message.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (message.getText().length() >= 4 && apiConected) {
+                        btnSendZmess.setEnabled(true);
+                }else{
+                    btnSendZmess.setEnabled(false);
+                }
+            }
+        });
 
         btnSendZmess.setOnClickListener(this);
 
@@ -91,64 +109,29 @@ public class NewZMessageActivity extends Activity implements View.OnClickListene
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnSendZmess:
-                sendZmessPost("http://zirkapp.byethost3.com/api/v1.1/zsms");
+                sendZmessPost();
                 break;
             default:
                 return;
         }
     }
 
-    private void sendZmessPost(String url) {
-        //TODO Pasar por parametro la clase zmensaje
-        //InputStream inputStream = null;
-        //String result = null;
-        try {
-            //TODO Enviar parametros de timeout en la peticion http
-            //1. Crear la peticion
-            HttpClient httpClient = new DefaultHttpClient();
-            //2. Crear Post
-            HttpPost httpPost = new HttpPost(url);
-            //3.Generar Json
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.accumulate("zmessage", message.getText());
-            jsonObject.accumulate("zuser", userTemp);
-            //4.Json to StringEntity
-            StringEntity stringEntity = new StringEntity(jsonObject.toString());
-            //5. Establecer httPost Entity
-            httpPost.setEntity(stringEntity);
-            //6. Establecer headers
-            httpPost.setHeader("Accept", "application/json");
-            httpPost.setHeader("Content-type", "application/json");
-            //7. Ejecutar Post
-            HttpResponse response = httpClient.execute(httpPost);
-            //8. Recibir respuesta
-            //TODO Terminar codigo para Recibir Json
-            int responseCode = response.getStatusLine().getStatusCode();
-            if (responseCode == HttpStatus.SC_OK) {
-                Toast.makeText(this, R.string.msgSend, Toast.LENGTH_SHORT).show();
-                onBackPressed();
-                //TODO Refrescar el adparter para mostrar el nuevo mensaje.
-            } else {
-                String msg = new StringBuilder(this.getResources().getString(R.string.msgError)).append(" ").append(responseCode).toString();
-                Log.d("MSG", msg);
-                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-            }
-        } catch (IOException e) {
-            Log.e("Error al enviar Json", e.getLocalizedMessage());
-        } catch (JSONException e) {
-            Log.e("Error al crear Json", e.getLocalizedMessage());
-        }
-
-
+    private void sendZmessPost() {
+        Zimess zimess = new Zimess();
+        zimess.setZmessage(message.getText().toString());
+        zimess.setZuser(userTemp);
+        new LoadZimessTask(this, zimess, URL).execute();
+        onBackPressed();
     }
 
     //Verificar si hay conexion a Internet
     public boolean isConected() {
+        apiConected = false;
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            return true;
+            apiConected = true;
         }
-        return false;
+        return apiConected;
     }
 }

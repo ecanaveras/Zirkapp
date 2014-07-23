@@ -20,7 +20,7 @@
     <entry>
       <key      
         class = "com.android.navigation.ActivityState"      
-        className = "com.ecp.gsy.dcs.zirkapp.app.NewZMessageActivity">
+        className = "com.ecp.gsy.dcs.zirkapp.app.NewZimessActivity">
         <location        
           idref = "point0"/>
       </key>

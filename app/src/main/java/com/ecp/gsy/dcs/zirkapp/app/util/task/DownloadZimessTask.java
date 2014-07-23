@@ -23,9 +23,9 @@ import java.util.ArrayList;
 /**
  * Created by Elder on 15/07/2014.
  */
-public class DownloadMessagesTask extends AsyncTask<Void, Void, Void> {
+public class DownloadZimessTask extends AsyncTask<Void, Void, Void> {
 
-    private static final String TAG = "com.ecp.gsy.dcs.zirkapp.app.util.task.DownloadMessagesTask";
+    private static final String TAG = "com.ecp.gsy.dcs.zirkapp.app.util.task.DownloadZimessTask";
     private ArrayList data;
     private ArrayAdapter adapter;
     private String url;
@@ -34,7 +34,7 @@ public class DownloadMessagesTask extends AsyncTask<Void, Void, Void> {
     private boolean isApiOnline;
     private int httpStatusCode;
 
-    public DownloadMessagesTask(Context context, ArrayAdapter adapter, String url) {
+    public DownloadZimessTask(Context context, ArrayAdapter adapter, String url) {
         this.adapter = adapter;
         this.url = url;
         progressDialog = new ProgressDialog(context);
@@ -57,7 +57,7 @@ public class DownloadMessagesTask extends AsyncTask<Void, Void, Void> {
         //Creamos un objecto que conectar a la URL y analizar su contenido
         ConectorHttpJSON conn = new ConectorHttpJSON(url);
         try {
-            if (isApiOnline = conn.execute()) {
+            if (isApiOnline = conn.executeGet()) {
                 //Obtenemos el JSON
                 JSONArray jsonArray = conn.getJsonArray();
                 //Analizamos el JSON y tomamos lo deseado

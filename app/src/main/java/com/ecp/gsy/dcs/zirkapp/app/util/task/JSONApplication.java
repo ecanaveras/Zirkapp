@@ -5,8 +5,10 @@ import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
@@ -25,7 +27,7 @@ public class JSONApplication extends Application {
         this.context = context;
         //Actualizamos los datos del adpater atravez de un Asynctask
         if (isConected()) {
-            new DownloadMessagesTask(context, arrayAdapter, URL).execute();
+            new DownloadZimessTask(context, arrayAdapter, URL).execute();
         } else {
             //Toast.makeText(this, "Sin conexion", Toast.LENGTH_SHORT).show();
             showDiaglogConection();
@@ -50,8 +52,7 @@ public class JSONApplication extends Application {
                 .setPositiveButton(R.string.msgYes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        //Todo ir a config
-                        Log.i("go configt", "yes");
+                        context.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
                     }
                 })
                 .setNegativeButton(R.string.msgNo, new DialogInterface.OnClickListener() {
