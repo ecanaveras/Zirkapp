@@ -88,7 +88,6 @@ public class ConectorHttpJSON {
      * @return true en caso de exito, false en caso de falla
      */
     public boolean executePost(Zimess zimess){
-        //TODO Pasar por parametro la clase zmensaje
         //InputStream inputStream = null;
         //String result = null;
         try {
