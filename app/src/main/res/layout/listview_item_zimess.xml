@@ -94,8 +94,6 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginRight="8dp"
                 android:textIsSelectable="true"
-                android:singleLine="false"
-                android:elegantTextHeight="false"
                 android:autoLink="all"
                 android:layout_marginBottom="10dp" />
 

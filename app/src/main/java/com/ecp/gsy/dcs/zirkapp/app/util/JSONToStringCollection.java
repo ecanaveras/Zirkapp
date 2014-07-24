@@ -2,6 +2,8 @@ package com.ecp.gsy.dcs.zirkapp.app.util;
 
 import android.util.Log;
 
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,16 +21,19 @@ public class JSONToStringCollection {
         this.jArray = jsonArray;
     }
 
-    public ArrayList getArrayList() throws JSONException {
-        ArrayList data = new ArrayList();
+    public ArrayList<Zimess> getArrayList() throws JSONException {
+        ArrayList<Zimess> data = new ArrayList<Zimess>();
         if (!jArray.equals(new JSONArray())) {
             //Del documento JSON extraemos el array "items", que contiene una colección de publicaciones
             Log.i("jSonObject", jArray.toString());
             //JSONArray array = jArray.getJSONArray("");
             //Obetenemos el valor de message:
             for (int i = 0; i < jArray.length(); i++) {
-                JSONObject zmess = jArray.getJSONObject(i);
-                data.add(zmess.getString("zmessage"));
+                Zimess zimess = new Zimess();
+                JSONObject jObj = jArray.getJSONObject(i);
+                zimess.setZmessage(jObj.getString("zmessage"));
+                zimess.setZuser(jObj.getString("zuser"));
+                data.add(zimess);
             }
         }
         return data;

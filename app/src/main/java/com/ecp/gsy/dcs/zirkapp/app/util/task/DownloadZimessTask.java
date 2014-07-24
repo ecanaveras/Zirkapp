@@ -11,6 +11,8 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.HomeReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.JSONToStringCollection;
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterZimess;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.http.ConectorHttpJSON;
 
 import org.apache.http.HttpStatus;
@@ -26,15 +28,15 @@ import java.util.ArrayList;
 public class DownloadZimessTask extends AsyncTask<Void, Void, Void> {
 
     private static final String TAG = "com.ecp.gsy.dcs.zirkapp.app.util.task.DownloadZimessTask";
-    private ArrayList data;
-    private ArrayAdapter adapter;
+    private ArrayList<Zimess> data;
+    private AdapterZimess adapter;
     private String url;
     private ProgressDialog progressDialog;
     private Context context;
     private boolean isApiOnline;
     private int httpStatusCode;
 
-    public DownloadZimessTask(Context context, ArrayAdapter adapter, String url) {
+    public DownloadZimessTask(Context context, AdapterZimess adapter, String url) {
         this.adapter = adapter;
         this.url = url;
         progressDialog = new ProgressDialog(context);
@@ -75,7 +77,7 @@ public class DownloadZimessTask extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void result) {
         //Añadimos todos los links del adapter
         if (data != null) {
-            for (Object tmp : data) {
+            for (Zimess tmp : data) {
                 adapter.add(tmp);
             }
             //Indicamos al adapter que ha cambiado para que refresque el Listview

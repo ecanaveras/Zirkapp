@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterZimess;
 
 /**
  * Created by Elder on 15/07/2014.
@@ -23,7 +24,7 @@ public class JSONApplication extends Application {
     //Url de la API
     private final static String URL = "http://zirkapp.byethost3.com/api/v1.1/zsms";
 
-    public void getData(Context context, ArrayAdapter arrayAdapter) {
+    public void getData(Context context, AdapterZimess arrayAdapter) {
         this.context = context;
         //Actualizamos los datos del adpater atravez de un Asynctask
         if (isConected()) {
