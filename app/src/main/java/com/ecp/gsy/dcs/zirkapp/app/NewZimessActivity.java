@@ -31,7 +31,7 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_zmessage);
+        setContentView(R.layout.activity_new_zimess);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Creando UI
