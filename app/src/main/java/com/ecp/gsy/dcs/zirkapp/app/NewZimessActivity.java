@@ -38,17 +38,15 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
         message = (EditText) findViewById(R.id.editText);
 
         btnSendZmess = (ImageButton) findViewById(R.id.btnSendZmess);
-
+        btnSendZmess.setEnabled(false);
         txtIndicadorConn = (TextView) findViewById(R.id.txtIndicadorConn);
 
         //TODO Implementar metodo en segundo plano para verificar conexion
         if (isConected()) {
-            btnSendZmess.setEnabled(true);
             txtIndicadorConn.setText(null);
         } else {
             txtIndicadorConn.setBackgroundColor(Color.RED);
             txtIndicadorConn.setText(R.string.msgDisconnet);
-            btnSendZmess.setEnabled(false);
         }
 
         message.addTextChangedListener(new TextWatcher() {

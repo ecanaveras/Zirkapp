@@ -1,52 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
+    android:layout_height="fill_parent"
     android:layout_gravity="top"
-    android:padding="10dp">
-    <!--android:background="@drawable/bar_bg"-->
-    <TableRow android:layout_height="match_parent"
-        android:layout_width="match_parent">
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="5dp"
-            android:paddingBottom="5dp"
-            android:paddingLeft="3dp">
-            <ImageView
-                android:layout_height="48dp"
-                android:layout_width="48dp"
-                android:src="@drawable/ic_action_user"
-                android:id="@+id/imgUserAvatar" />
-        </LinearLayout>
-        <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="0dip" android:layout_gravity="top"
-            >
-            <TableRow>
+    android:orientation="vertical"
+    android:background="#ffdfdfdf">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        style="@style/Box">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:paddingLeft="6dp"
+                android:paddingTop="5dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="Large Text"
-                    android:id="@+id/lblUserName" />
-            </TableRow>
-            <TableRow>
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Zirkapp name"
+                    android:id="@+id/lblNombreUsuario" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="Small Text"
-                    android:id="@+id/lblUserEstado" />
-            </TableRow>
-        </TableLayout>
+                    android:text="Username"
+                    android:id="@+id/lblUserName"
+                    android:textColor="#ff7f7f7f" />
 
-        <!--android:background="@drawable/dislike1"-->
-    </TableRow>
+            </LinearLayout>
 
-</TableLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="hace 4 horas"
+                    android:id="@+id/txtTiempo"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    style="@style/MiniText" />
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/imgAvatar"
+                    android:src="@drawable/ic_launcher"
+                    android:layout_marginLeft="4dp"
+                    android:scaleType="center" />
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="28dp"
+                    android:id="@+id/imgOptions"
+                    android:src="@drawable/abc_ic_menu_moreoverflow_normal_holo_light"
+                    android:scaleType="center"
+                    android:layout_marginRight="2dp" />
+            </LinearLayout>
+        </LinearLayout>
+        <View
+            style="@style/Divider"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="Medium Text"
+                android:id="@+id/lblZimess"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="8dp"
+                android:textIsSelectable="true"
+                android:singleLine="false"
+                android:elegantTextHeight="false"
+                android:autoLink="all"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="30 min restantes"
+                android:id="@+id/lblCountDown"
+                style="@style/MiniText"
+                android:layout_marginBottom="3dp"
+                android:layout_gravity="right"
+                android:layout_marginRight="6dp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
