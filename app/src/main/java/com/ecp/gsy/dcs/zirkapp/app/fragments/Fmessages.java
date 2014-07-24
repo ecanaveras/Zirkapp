@@ -14,6 +14,7 @@ import android.widget.ListView;
 
 import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.JSONApplication;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 public class Fmessages extends Fragment {
 
     private ListView listZMessages;
-    private ArrayAdapter zmAdapter;
+    private AdapterZimess zmAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,7 +59,7 @@ public class Fmessages extends Fragment {
     private void inicializarUI(View view) {
         listZMessages = (ListView) view.findViewById(R.id.listZMessages);
         //Creamos un adpater standar
-        zmAdapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, new ArrayList());
+        zmAdapter = new AdapterZimess(getActivity(), new ArrayList());
         //Asiganmos el adaprte al listView
         listZMessages.setAdapter(zmAdapter);
         downloadOrUpdateZmess();
