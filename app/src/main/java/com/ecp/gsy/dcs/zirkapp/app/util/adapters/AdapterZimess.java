@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
@@ -22,6 +23,7 @@ public class AdapterZimess extends BaseAdapter implements View.OnClickListener {
 
     protected Activity context;
     protected ArrayList<Zimess> zimessArrayList;
+    private TextView lblMessage;
 
     public AdapterZimess(Activity context, ArrayList<Zimess> zimessArrayList) {
         this.context = context;
@@ -55,12 +57,14 @@ public class AdapterZimess extends BaseAdapter implements View.OnClickListener {
         //2. Iniciar UI de la lista
         //TODO Completar datps
         TextView lblUserName = (TextView) vista.findViewById(R.id.lblUserName);
-        TextView lblZimess = (TextView) vista.findViewById(R.id.lblZimess);
+        lblMessage = (TextView) vista.findViewById(R.id.lblZimess);
+        LinearLayout lyContainer = (LinearLayout) vista.findViewById(R.id.lyMessage);
         //3. Establecer datos
         lblUserName.setText(zimess.getZuser());
-        lblZimess.setText(zimess.getZmessage());
+        lblMessage.setText(zimess.getZmessage());
 
-        lblZimess.setOnClickListener(this);
+        //Manejo del click
+        lyContainer.setOnClickListener(this);
 
         return vista;
     }
@@ -73,8 +77,8 @@ public class AdapterZimess extends BaseAdapter implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.lblZimess:
-                String msg = ((TextView) view).getText().toString();
+            case R.id.lyMessage:
+                String msg = lblMessage.getText().toString();
                 gotoDetail(msg);
                 return;
             default:
