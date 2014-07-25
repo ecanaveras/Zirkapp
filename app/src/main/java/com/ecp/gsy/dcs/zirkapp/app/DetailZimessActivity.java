@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 
@@ -13,9 +15,13 @@ public class DetailZimessActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_zimess);
-        //getIntent().getStringExtra();
+        String msgString = getIntent().getStringExtra("mensaje");
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setTitle("Zimess");
+
+        //UI
+        TextView msg = (TextView) findViewById(R.id.textView);
+        msg.setText(msgString);
     }
 
 

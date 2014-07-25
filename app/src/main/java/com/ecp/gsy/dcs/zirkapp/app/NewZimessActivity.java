@@ -1,6 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -70,6 +71,9 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
             }
         });
 
+        //TODO Implementar en la PARENT interfaz
+        message.setOnClickListener(this);
+
         btnSendZmess.setOnClickListener(this);
 
     }
@@ -109,9 +113,19 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
             case R.id.btnSendZmess:
                 sendZmessPost();
                 break;
+            case R.id.editText:
+                //TODO enviar ID Zimess
+                String msg = ((TextView) view).getText().toString();
+                gotoDetail(msg);
             default:
                 return;
         }
+    }
+
+    private void gotoDetail(String msg) {
+        Intent intent = new Intent(this, DetailZimessActivity.class);
+        intent.putExtra("mensaje",msg);
+        startActivity(intent);
     }
 
     private void sendZmessPost() {
