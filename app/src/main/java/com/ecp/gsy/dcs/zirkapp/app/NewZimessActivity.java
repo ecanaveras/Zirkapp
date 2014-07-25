@@ -64,15 +64,12 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
             @Override
             public void afterTextChanged(Editable editable) {
                 if (message.getText().length() >= 4 && apiConected) {
-                        btnSendZmess.setEnabled(true);
-                }else{
+                    btnSendZmess.setEnabled(true);
+                } else {
                     btnSendZmess.setEnabled(false);
                 }
             }
         });
-
-        //TODO Implementar en la PARENT interfaz
-        message.setOnClickListener(this);
 
         btnSendZmess.setOnClickListener(this);
 
@@ -113,19 +110,9 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
             case R.id.btnSendZmess:
                 sendZmessPost();
                 break;
-            case R.id.editText:
-                //TODO enviar ID Zimess
-                String msg = ((TextView) view).getText().toString();
-                gotoDetail(msg);
             default:
                 return;
         }
-    }
-
-    private void gotoDetail(String msg) {
-        Intent intent = new Intent(this, DetailZimessActivity.class);
-        intent.putExtra("mensaje",msg);
-        startActivity(intent);
     }
 
     private void sendZmessPost() {
