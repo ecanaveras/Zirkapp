@@ -83,7 +83,9 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:id="@+id/lyMessage"
+            android:clickable="true">
 
             <TextView
                 android:layout_width="fill_parent"

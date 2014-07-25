@@ -1,6 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -63,8 +64,8 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
             @Override
             public void afterTextChanged(Editable editable) {
                 if (message.getText().length() >= 4 && apiConected) {
-                        btnSendZmess.setEnabled(true);
-                }else{
+                    btnSendZmess.setEnabled(true);
+                } else {
                     btnSendZmess.setEnabled(false);
                 }
             }

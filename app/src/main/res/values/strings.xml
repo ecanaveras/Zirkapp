@@ -75,5 +75,7 @@
     <string name="msgDisconnet">Out, que le pasa al internet?</string>
     <string name="msgSend">Mensaje enviado exitosamente</string>
     <string name="msgError">Ha ocurrido un error:</string>
+    <string name="title_activity_detail_zimess">DetailZimessActivity</string>
+    <string name="msgReply">Dile algo a</string>
 
 </resources>

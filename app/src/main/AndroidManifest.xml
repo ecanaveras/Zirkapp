@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ecp.gsy.dcs.zirkapp.app">
+    package="com.ecp.gsy.dcs.zirkapp.app" >
 
     <application
         android:name=".util.task.JSONApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,11 +21,16 @@
         </activity>
         <activity
             android:name=".ManagerWelcome"
-            android:label="@string/title_activity_manager_welcome"></activity>
+            android:label="@string/title_activity_manager_welcome" />
         <activity
             android:name=".NewZimessActivity"
-            android:windowSoftInputMode="stateVisible|adjustResize"
-            android:label="@string/title_activity_new_zmessage">
+            android:label="@string/title_activity_new_zmessage"
+            android:windowSoftInputMode="stateVisible|adjustResize" >
+        </activity>
+        <activity
+            android:name=".DetailZimessActivity"
+            android:label="@string/title_activity_detail_zimess"
+            android:windowSoftInputMode="stateVisible|adjustResize" >
         </activity>
     </application>
 

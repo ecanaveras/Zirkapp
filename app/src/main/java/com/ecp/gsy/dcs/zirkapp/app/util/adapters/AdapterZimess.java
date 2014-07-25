@@ -2,12 +2,15 @@ package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 
@@ -16,10 +19,11 @@ import java.util.ArrayList;
 /**
  * Created by Elder on 24/07/2014.
  */
-public class AdapterZimess extends BaseAdapter {
+public class AdapterZimess extends BaseAdapter implements View.OnClickListener {
 
     protected Activity context;
     protected ArrayList<Zimess> zimessArrayList;
+    private TextView lblMessage;
 
     public AdapterZimess(Activity context, ArrayList<Zimess> zimessArrayList) {
         this.context = context;
@@ -53,15 +57,38 @@ public class AdapterZimess extends BaseAdapter {
         //2. Iniciar UI de la lista
         //TODO Completar datps
         TextView lblUserName = (TextView) vista.findViewById(R.id.lblUserName);
-        TextView lblZimess = (TextView) vista.findViewById(R.id.lblZimess);
+        lblMessage = (TextView) vista.findViewById(R.id.lblZimess);
+        LinearLayout lyContainer = (LinearLayout) vista.findViewById(R.id.lyMessage);
         //3. Establecer datos
         lblUserName.setText(zimess.getZuser());
-        lblZimess.setText(zimess.getZmessage());
+        lblMessage.setText(zimess.getZmessage());
+
+        //Manejo del click
+        lyContainer.setOnClickListener(this);
 
         return vista;
     }
 
     public void add(Zimess zimess){
         zimessArrayList.add(zimess);
+    }
+
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.lyMessage:
+                String msg = lblMessage.getText().toString();
+                gotoDetail(msg);
+                return;
+            default:
+                return;
+        }
+    }
+
+    private void gotoDetail(String msg) {
+        Intent intent = new Intent(context, DetailZimessActivity.class);
+        intent.putExtra("mensaje",msg);
+        context.startActivity(intent);
     }
 }
