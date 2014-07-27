@@ -19,6 +19,8 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 
 /**
@@ -76,14 +78,11 @@ public class DownloadZimessTask extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void result) {
         //Añadimos todos los links del adapter
         if (data != null) {
-            //Evitar duplicados
-            HashSet hashSet = new HashSet();
-            hashSet.addAll(data);
-            data.clear();
-            data.addAll(hashSet);
             for (Zimess tmp : data) {
                 adapter.add(tmp);
             }
+            //Evitar duplicados
+            adapter.removeDuplicates();
             //Indicamos al adapter que ha cambiado para que refresque el Listview
             adapter.notifyDataSetChanged();
             setValuesHome();

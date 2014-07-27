@@ -15,6 +15,9 @@ import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Created by Elder on 24/07/2014.
@@ -71,6 +74,13 @@ public class AdapterZimess extends BaseAdapter implements View.OnClickListener {
 
     public void add(Zimess zimess){
         zimessArrayList.add(zimess);
+    }
+
+    public void removeDuplicates(){
+//        Set<Zimess> setZimess = new LinkedHashSet<Zimess>(zimessArrayList);
+        HashSet hashSet = new HashSet(zimessArrayList);
+        zimessArrayList.clear();
+        zimessArrayList.addAll(hashSet);
     }
 
 
