@@ -15,7 +15,6 @@ import java.util.ArrayList;
  */
 public class JSONToStringCollection {
     JSONArray jArray;
-    private JSONArray array;
 
     public JSONToStringCollection(JSONArray jsonArray) {
         this.jArray = jsonArray;
@@ -30,9 +29,11 @@ public class JSONToStringCollection {
             //Obetenemos el valor de message:
             for (int i = 0; i < jArray.length(); i++) {
                 Zimess zimess = new Zimess();
-                JSONObject jObj = jArray.getJSONObject(i);
-                zimess.setZmessage(jObj.getString("zmessage"));
-                zimess.setZuser(jObj.getString("zuser"));
+                //Obtieniendo Datos
+                JSONObject jsonObj = jArray.getJSONObject(i);
+                zimess.setZmessage(jsonObj.getString("zmessage"));
+                zimess.setZuser(jsonObj.getString("zuser"));
+                //Agregando datos al Array
                 data.add(zimess);
             }
         }

@@ -35,6 +35,8 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
         setContentView(R.layout.activity_new_zimess);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
+        String msgNoti = getIntent().getStringExtra("zimess_msg");
+
         //Creando UI
         message = (EditText) findViewById(R.id.editText);
 
@@ -48,6 +50,11 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
         } else {
             txtIndicadorConn.setBackgroundColor(Color.RED);
             txtIndicadorConn.setText(R.string.msgDisconnet);
+        }
+
+        if (msgNoti != null && !msgNoti.isEmpty()) {
+            message.setText(msgNoti);
+            btnSendZmess.setEnabled(true);
         }
 
         message.addTextChangedListener(new TextWatcher() {

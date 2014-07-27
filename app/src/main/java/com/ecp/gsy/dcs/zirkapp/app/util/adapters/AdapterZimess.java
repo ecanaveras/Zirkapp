@@ -22,8 +22,8 @@ import java.util.ArrayList;
 public class AdapterZimess extends BaseAdapter implements View.OnClickListener {
 
     protected Activity context;
-    protected ArrayList<Zimess> zimessArrayList;
-    private TextView lblMessage;
+   protected ArrayList<Zimess> zimessArrayList;
+
 
     public AdapterZimess(Activity context, ArrayList<Zimess> zimessArrayList) {
         this.context = context;
@@ -57,7 +57,7 @@ public class AdapterZimess extends BaseAdapter implements View.OnClickListener {
         //2. Iniciar UI de la lista
         //TODO Completar datps
         TextView lblUserName = (TextView) vista.findViewById(R.id.lblUserName);
-        lblMessage = (TextView) vista.findViewById(R.id.lblZimess);
+        TextView lblMessage = (TextView) vista.findViewById(R.id.lblZimess);
         LinearLayout lyContainer = (LinearLayout) vista.findViewById(R.id.lyMessage);
         //3. Establecer datos
         lblUserName.setText(zimess.getZuser());
@@ -78,7 +78,7 @@ public class AdapterZimess extends BaseAdapter implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.lyMessage:
-                String msg = lblMessage.getText().toString();
+                String msg = ((TextView) ((LinearLayout) view).findViewById(R.id.lblZimess)).getText().toString();
                 gotoDetail(msg);
                 return;
             default:

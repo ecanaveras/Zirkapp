@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
@@ -17,9 +16,9 @@ import com.ecp.gsy.dcs.zirkapp.app.util.http.ConectorHttpJSON;
 
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 
 /**
@@ -77,6 +76,11 @@ public class DownloadZimessTask extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void result) {
         //Añadimos todos los links del adapter
         if (data != null) {
+            //Evitar duplicados
+            HashSet hashSet = new HashSet();
+            hashSet.addAll(data);
+            data.clear();
+            data.addAll(hashSet);
             for (Zimess tmp : data) {
                 adapter.add(tmp);
             }
