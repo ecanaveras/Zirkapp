@@ -43,13 +43,6 @@
     <string name="msgGPSdisabled">GPS Apagado, ir al menú de configuración?</string>
     <string name="msgProgressDialog">Cargando contenido</string>
 
-    <string-array name="amygos">
-        <item>Walter</item>
-        <item>Yuranis</item>
-        <item>James</item>
-        <item>Karen</item>
-    </string-array>
-
     <string name="title_activity_radar">RadarActivity</string>
     <string name="title_activity_detail_anonimo">DetailAnonimoActivity</string>
     <string name="title_activity_detail_whiz">WhizDetailActivity</string>
@@ -73,9 +66,10 @@
     <string name="error_conexion">Ha ocurrido un error:</string>
     <string name="msgExitApp">Te vas?</string>
     <string name="msgDisconnet">Out, que le pasa al internet?</string>
-    <string name="msgSend">Mensaje enviado exitosamente</string>
+    <string name="msgZimessSend">Mensaje enviado exitosamente!</string>
     <string name="msgError">Ha ocurrido un error:</string>
     <string name="title_activity_detail_zimess">DetailZimessActivity</string>
     <string name="msgReply">Dile algo a</string>
+    <string name="msgZimesFailed">Tu zimess no ha sido enviado...</string>
 
 </resources>

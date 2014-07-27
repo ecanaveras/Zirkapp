@@ -66,16 +66,18 @@
                     android:layout_height="50dp"
                     android:id="@+id/imgAvatar"
                     android:src="@drawable/ic_launcher"
-                    android:layout_marginLeft="4dp"
-                    android:scaleType="center" />
+                    android:layout_marginLeft="2dp"
+                    android:scaleType="center"
+                    android:layout_marginRight="4dp" />
 
                 <ImageView
-                    android:layout_width="14dp"
+                    android:layout_width="16dp"
                     android:layout_height="28dp"
                     android:id="@+id/imgOptions"
                     android:src="@drawable/abc_ic_menu_moreoverflow_normal_holo_light"
                     android:scaleType="center"
-                    android:layout_marginRight="2dp" />
+                    android:layout_marginRight="6dp"
+                    />
             </LinearLayout>
         </LinearLayout>
         <View
@@ -108,7 +110,7 @@
                 style="@style/MiniText"
                 android:layout_marginBottom="3dp"
                 android:layout_gravity="right"
-                android:layout_marginRight="6dp" />
+                android:layout_marginRight="8dp" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
