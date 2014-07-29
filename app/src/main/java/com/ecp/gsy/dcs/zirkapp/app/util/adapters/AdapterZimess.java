@@ -61,10 +61,12 @@ public class AdapterZimess extends BaseAdapter implements View.OnClickListener {
         //TODO Completar datps
         TextView lblUserName = (TextView) vista.findViewById(R.id.lblUserName);
         TextView lblMessage = (TextView) vista.findViewById(R.id.lblZimess);
+        TextView lblTimePass = (TextView) vista.findViewById(R.id.txtTiempo);
         LinearLayout lyContainer = (LinearLayout) vista.findViewById(R.id.lyMessage);
         //3. Establecer datos
         lblUserName.setText(zimess.getZuser());
         lblMessage.setText(zimess.getZmessage());
+        lblTimePass.setText(zimess.getTimePass());
 
         //Manejo del click
         lyContainer.setOnClickListener(this);

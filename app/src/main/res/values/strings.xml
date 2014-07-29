@@ -56,7 +56,7 @@
     </string-array>
 
     <string name="title_activity_manager_welcome">Welcome Zirkapp</string>
-    <string name="lblDistanceMin">Dist. Minina</string>
+    <string name="lblDistanceMin">Dist. Mínina</string>
     <string name="lblDinstaceMax">Dist. Máxima</string>
     <string name="msgLoading">Cargando...</string>
     <string name="lblAddZmess">Nuevo Zmess</string>

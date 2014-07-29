@@ -59,6 +59,8 @@ public class Fmessages extends Fragment {
 
     private void inicializarUI(View view) {
         listZMessages = (ListView) view.findViewById(R.id.listZMessages);
+        listZMessages.setDivider(null);
+        listZMessages.setDividerHeight(0);
         //Creamos un adpater standar
         zmAdapter = new AdapterZimess(getActivity(), new ArrayList<Zimess>());
         //Asiganmos el adaprte al listView

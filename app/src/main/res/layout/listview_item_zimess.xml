@@ -5,7 +5,7 @@
     android:layout_height="fill_parent"
     android:layout_gravity="top"
     android:orientation="vertical"
-    android:background="#ffdfdfdf">
+    style="@style/BackgroundView">
 
 
     <LinearLayout
@@ -30,9 +30,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="Zirkapp name"
-                    android:id="@+id/lblNombreUsuario" />
+                    android:id="@+id/lblNombreUsuario"
+                    style="@style/MessageTextLarge"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -40,7 +40,7 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="Username"
                     android:id="@+id/lblUserName"
-                    android:textColor="#ff7f7f7f" />
+                    style="@style/MediumText" />
 
             </LinearLayout>
 
@@ -52,14 +52,56 @@
                 android:gravity="right"
                 android:paddingTop="5dp">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="hace 4 horas"
-                    android:id="@+id/txtTiempo"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    style="@style/MiniText" />
+                    android:orientation="vertical"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@android:drawable/presence_away"
+                            android:layout_gravity="center" />
+
+                        <TextView
+                            android:id="@+id/txtTiempo"
+                            style="@style/MiniText"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:layout_gravity="center"
+                            android:text="hace 4 horas" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@android:drawable/ic_menu_myplaces"
+                            android:layout_gravity="center" />
+
+                        <TextView
+                            style="@style/MiniText"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="+250m"
+                            android:layout_gravity="center" />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <ImageView
                     android:layout_width="50dp"
@@ -76,12 +118,12 @@
                     android:id="@+id/imgOptions"
                     android:src="@drawable/abc_ic_menu_moreoverflow_normal_holo_light"
                     android:scaleType="center"
-                    android:layout_marginRight="6dp"
-                    />
+                    android:layout_marginRight="6dp" />
             </LinearLayout>
         </LinearLayout>
-        <View
-            style="@style/Divider"/>
+
+        <View style="@style/Divider" />
+
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
@@ -99,9 +141,8 @@
                 android:layout_marginRight="8dp"
                 android:layout_marginBottom="10dp"
                 android:clickable="false"
-                />
-            <!--
-             -->
+                style="@style/MessageTextMedium"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

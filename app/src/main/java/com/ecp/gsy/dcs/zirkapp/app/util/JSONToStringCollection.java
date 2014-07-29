@@ -23,16 +23,16 @@ public class JSONToStringCollection {
     public ArrayList<Zimess> getArrayList() throws JSONException {
         ArrayList<Zimess> data = new ArrayList<Zimess>();
         if (!jArray.equals(new JSONArray())) {
-            //Del documento JSON extraemos el array "items", que contiene una colección de publicaciones
-            Log.i("jSonObject", jArray.toString());
-            //JSONArray array = jArray.getJSONArray("");
+            //Log.i("jSonObject", jArray.toString());
             //Obetenemos el valor de message:
             for (int i = 0; i < jArray.length(); i++) {
                 Zimess zimess = new Zimess();
                 //Obtieniendo Datos
                 JSONObject jsonObj = jArray.getJSONObject(i);
+                zimess.setZid(jsonObj.getInt("id"));
                 zimess.setZmessage(jsonObj.getString("zmessage"));
                 zimess.setZuser(jsonObj.getString("zuser"));
+                zimess.setFechaCreated(jsonObj.getString("created_at"));
                 //Agregando datos al Array
                 data.add(zimess);
             }

@@ -59,22 +59,49 @@
                     android:orientation="vertical"
                     android:layout_weight="1">
 
-                    <TextView
-                        android:id="@+id/txtTiempo"
-                        style="@style/MiniText"
-                        android:layout_width="fill_parent"
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="hace 4 horas" />
-                    <TextView
-                        style="@style/MiniText"
-                        android:layout_width="fill_parent"
+                        android:layout_gravity="center">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@android:drawable/presence_away"
+                            android:layout_gravity="center" />
+
+                        <TextView
+                            android:id="@+id/txtTiempo"
+                            style="@style/MiniText"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:layout_gravity="center"
+                            android:text="hace 4 horas" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="+250m"
-                        android:layout_weight="1"
-                        android:layout_marginTop="4dp" />
+                        android:layout_gravity="center">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@android:drawable/ic_menu_myplaces"
+                            android:layout_gravity="center" />
+
+                        <TextView
+                            style="@style/MiniText"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="+250m"
+                            android:layout_gravity="center" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <ImageView

@@ -1,5 +1,13 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.beans;
 
+import android.util.Log;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by Elder on 22/07/2014.
  */
@@ -8,11 +16,51 @@ public class Zimess {
     private int zid;
     private String zmessage;
     private String zuser;
-    private Double zlong;
-    private Double zlat;
+    private Double zlongi;
+    private Double zlati;
     private boolean isUpdate;
     private Double timeInicial;
     private Double timeFinal;
+    private String fechaCreated;
+
+    //Obtener time pass
+    public String getTimePass() {
+        String timer = "0";
+        long diff = 0,
+                seconds = 0,
+                minutes = 0,
+                hours = 0,
+                days = 0;
+        if (fechaCreated != null) {
+            try {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                simpleDateFormat.setTimeZone(TimeZone.getDefault());
+                Date fcreate = simpleDateFormat.parse(fechaCreated);
+                //TODO Obtener la hora de la base de datos
+                Date fSystem = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
+                diff = fSystem.getTime() - fcreate.getTime();
+                seconds = TimeUnit.MILLISECONDS.toSeconds(diff);
+                minutes = TimeUnit.MILLISECONDS.toMinutes(diff);
+                hours = TimeUnit.MILLISECONDS.toHours(diff);
+                days = TimeUnit.MILLISECONDS.toDays(diff);
+            } catch (ParseException e) {
+                Log.e("Date parse error:", e.getLocalizedMessage());
+            }
+        }
+        if (seconds <= 59) {
+            timer = new StringBuffer("+").append(seconds).append(" s.").toString();
+        }
+        if (minutes > 0 && minutes <= 59) {
+            timer = new StringBuffer("+").append(minutes).append(" m.").toString();
+        }
+        if (hours > 0 && hours <= 24) {
+            timer = new StringBuffer("+").append(hours).append(" h.").toString();
+        }
+        if (days > 0) {
+            timer = new StringBuffer("+").append(days).append(" d.").toString();
+        }
+        return "Hace " + timer;
+    }
 
 
     //<editor-fold desc="METHODS GETTERS">
@@ -28,12 +76,12 @@ public class Zimess {
         return zid;
     }
 
-    public Double getZlong() {
-        return zlong;
+    public Double getZlongi() {
+        return zlongi;
     }
 
-    public Double getZlat() {
-        return zlat;
+    public Double getZlati() {
+        return zlati;
     }
 
     public boolean isUpdate() {
@@ -47,6 +95,11 @@ public class Zimess {
     public Double getTimeFinal() {
         return timeFinal;
     }
+
+    public String getFechaCreated() {
+        return fechaCreated;
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="METHODS SETTERS">
@@ -62,12 +115,12 @@ public class Zimess {
         this.zid = zid;
     }
 
-    public void setZlong(Double zlong) {
-        this.zlong = zlong;
+    public void setZlongi(Double zlongi) {
+        this.zlongi = zlongi;
     }
 
-    public void setZlat(Double zlat) {
-        this.zlat = zlat;
+    public void setZlati(Double zlati) {
+        this.zlati = zlati;
     }
 
     public void setUpdate(boolean isUpdate) {
@@ -80,6 +133,10 @@ public class Zimess {
 
     public void setTimeFinal(Double timeFinal) {
         this.timeFinal = timeFinal;
+    }
+
+    public void setFechaCreated(String fechaCreated) {
+        this.fechaCreated = fechaCreated;
     }
 
     //</editor-fold>

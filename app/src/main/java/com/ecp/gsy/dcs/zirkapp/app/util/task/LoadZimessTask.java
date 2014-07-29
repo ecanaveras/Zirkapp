@@ -79,10 +79,11 @@ public class LoadZimessTask extends AsyncTask<Void, Void, Void> {
             int mId = 990; // id de la notificacion, permite actulizarla mas adelante
             notificationManager.notify(mId, nBuilder.build());
         } else {
+            removeNotification(990);
             //No ir a Zirkapp
 //            PendingIntent pendingIntent = PendingIntent.getActivity(context.getApplicationContext(), 0, new Intent(), PendingIntent.FLAG_CANCEL_CURRENT);
 //            nBuilder.setContentIntent(pendingIntent);
-            Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
         }
 
     }

@@ -3,4 +3,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="Mini.Text">10sp</dimen>
+    <dimen name="Medium.Text">12sp</dimen>
+    <dimen name="Message.Text.Large">18sp</dimen>
+    <dimen name="Message.Text.Medium">14sp</dimen>
+    <dimen name="Message.Text.Small">10sp</dimen>
 </resources>
