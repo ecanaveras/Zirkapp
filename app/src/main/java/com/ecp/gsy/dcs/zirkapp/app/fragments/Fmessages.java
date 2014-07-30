@@ -72,6 +72,4 @@ public class Fmessages extends Fragment {
         // Actualizamos los datos, pasamos el Context para poder mostrar un ProgressDialog
         ((JSONApplication) getActivity().getApplicationContext()).getData(getActivity(), zmAdapter);
     }
-
-
 }
