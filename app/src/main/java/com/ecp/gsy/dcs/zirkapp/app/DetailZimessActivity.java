@@ -16,12 +16,20 @@ public class DetailZimessActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_zimess);
         String msgString = getIntent().getStringExtra("mensaje");
+        String msgUsername = getIntent().getStringExtra("username");
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setTitle("Zimess");
 
         //UI
         TextView msg = (TextView) findViewById(R.id.textView);
         msg.setText(msgString);
+        TextView txtRespuesta = (TextView) findViewById(R.id.txtMsgRespuesta);
+        if (msgUsername != null) {
+            msgUsername = new StringBuffer(getResources().getString(R.string.msgReply)).append(" ").append(msgUsername).toString();
+            txtRespuesta.setHint(msgUsername);
+        } else {
+            txtRespuesta.setHint(null);
+        }
     }
 
     @Override

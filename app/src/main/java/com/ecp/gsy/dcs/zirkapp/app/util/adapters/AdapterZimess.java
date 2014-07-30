@@ -91,16 +91,19 @@ public class AdapterZimess extends BaseAdapter implements View.OnClickListener {
         switch (view.getId()){
             case R.id.lyMessage:
                 String msg = ((TextView) ((LinearLayout) view).findViewById(R.id.lblZimess)).getText().toString();
-                gotoDetail(msg);
+                String user = ((TextView) ((LinearLayout) view.getParent()).findViewById(R.id.lblUserName)).getText().toString();
+                gotoDetail(msg, user);
                 return;
             default:
                 return;
         }
     }
 
-    private void gotoDetail(String msg) {
+    private void gotoDetail(String msg, String username) {
         Intent intent = new Intent(context, DetailZimessActivity.class);
         intent.putExtra("mensaje",msg);
+        //TODO enviar el Zimmes completo
+        intent.putExtra("username", username);
         context.startActivity(intent);
     }
 }
