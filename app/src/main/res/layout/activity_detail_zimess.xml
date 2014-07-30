@@ -1,6 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/BackgroundView"
+    style="@style/background_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity">
@@ -11,7 +11,8 @@
         android:layout_height="fill_parent"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        style="@style/box_no_shadow">
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -32,18 +33,18 @@
 
                 <TextView
                     android:id="@+id/lblNombreUsuario"
+                    style="@style/message_text_large"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Zirkapp name"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:text="Zirkapp name" />
 
                 <TextView
                     android:id="@+id/lblUserName"
+                    style="@style/medium_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Username"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="#ff7f7f7f" />
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
             </LinearLayout>
 
             <LinearLayout
@@ -74,7 +75,7 @@
 
                         <TextView
                             android:id="@+id/txtTiempo"
-                            style="@style/MiniText"
+                            style="@style/mini_text"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -96,7 +97,7 @@
                             android:src="@android:drawable/ic_menu_myplaces" />
 
                         <TextView
-                            style="@style/MiniText"
+                            style="@style/mini_text"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -116,7 +117,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <View style="@style/Divider" />
+        <View style="@style/line_divider" />
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -130,14 +131,41 @@
 
             <TextView
                 android:id="@+id/textView"
+                style="@style/message_text_medium"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:autoLink="all"
-                android:text="Medium Text"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:text="Medium Text" />
+
+            <View style="@style/line_divider" />
+
+            <TextView
+                style="@style/mini_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/lblConversation" />
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/arrow_down_float"
+                android:layout_marginBottom="4dp"/>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ListView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+
+            </ScrollView>
+
         </LinearLayout>
 
-        <View style="@style/Divider" />
+
+        <View style="@style/line_divider" />
 
         <LinearLayout
             android:layout_width="fill_parent"

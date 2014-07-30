@@ -16,8 +16,6 @@ import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * Created by Elder on 24/07/2014.
@@ -25,7 +23,7 @@ import java.util.Set;
 public class AdapterZimess extends BaseAdapter implements View.OnClickListener {
 
     protected Activity context;
-   protected ArrayList<Zimess> zimessArrayList;
+    protected ArrayList<Zimess> zimessArrayList;
 
 
     public AdapterZimess(Activity context, ArrayList<Zimess> zimessArrayList) {
@@ -51,7 +49,7 @@ public class AdapterZimess extends BaseAdapter implements View.OnClickListener {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         View vista = view;
-        if(view == null){
+        if (view == null) {
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             vista = layoutInflater.inflate(R.layout.listview_item_zimess, viewGroup, false);
         }
@@ -74,11 +72,11 @@ public class AdapterZimess extends BaseAdapter implements View.OnClickListener {
         return vista;
     }
 
-    public void add(Zimess zimess){
+    public void add(Zimess zimess) {
         zimessArrayList.add(zimess);
     }
 
-    public void removeDuplicates(){
+    public void removeDuplicates() {
 //        Set<Zimess> setZimess = new LinkedHashSet<Zimess>(zimessArrayList);
         HashSet hashSet = new HashSet(zimessArrayList);
         zimessArrayList.clear();
@@ -88,20 +86,20 @@ public class AdapterZimess extends BaseAdapter implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.lyMessage:
                 String msg = ((TextView) ((LinearLayout) view).findViewById(R.id.lblZimess)).getText().toString();
                 String user = ((TextView) ((LinearLayout) view.getParent()).findViewById(R.id.lblUserName)).getText().toString();
                 gotoDetail(msg, user);
-                return;
+                break;
             default:
-                return;
+                break;
         }
     }
 
     private void gotoDetail(String msg, String username) {
         Intent intent = new Intent(context, DetailZimessActivity.class);
-        intent.putExtra("mensaje",msg);
+        intent.putExtra("mensaje", msg);
         //TODO enviar el Zimmes completo
         intent.putExtra("username", username);
         context.startActivity(intent);
