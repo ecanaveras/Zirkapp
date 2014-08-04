@@ -72,5 +72,7 @@
     <string name="msgReply">Dile algo a</string>
     <string name="msgZimesFailed">Tu zimess no ha sido enviado...</string>
     <string name="lblConversation">Conversación</string>
+    <string name="lblHide">Ocultar</string>
+    <string name="lblDenounce">Denunciar</string>
 
 </resources>

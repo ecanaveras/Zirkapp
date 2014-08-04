@@ -2,6 +2,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util.beans;
 
 import android.util.Log;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Elder on 22/07/2014.
  */
-public class Zimess {
+public class Zimess implements Serializable{
 
     private int zid;
     private String zmessage;

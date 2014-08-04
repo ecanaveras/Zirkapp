@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_opt_hide"
+        android:title="@string/lblHide"
+        android:icon="@android:drawable/button_onoff_indicator_off"
+        />
+
+    <item
+        android:id="@+id/menu_opt_denounce"
+        android:title="@string/lblDenounce"
+        android:icon="@android:drawable/ic_dialog_alert"
+        />
+
+</menu>

@@ -11,21 +11,22 @@ import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 
 public class DetailZimessActivity extends Activity {
 
+    private Zimess zimessDetail;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_zimess);
-        String msgString = getIntent().getStringExtra("mensaje");
-        String msgUsername = getIntent().getStringExtra("username");
+        zimessDetail= (Zimess) getIntent().getSerializableExtra("zimess");
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setTitle("Zimess");
 
         //UI
         TextView msg = (TextView) findViewById(R.id.textView);
-        msg.setText(msgString);
+        msg.setText(zimessDetail.getZmessage());
         TextView txtRespuesta = (TextView) findViewById(R.id.txtMsgRespuesta);
-        if (msgUsername != null) {
-            msgUsername = new StringBuffer(getResources().getString(R.string.msgReply)).append(" ").append(msgUsername).toString();
+        if (zimessDetail.getZuser() != null) {
+            String msgUsername = new StringBuffer(getResources().getString(R.string.msgReply)).append(" ").append(zimessDetail.getZuser()).toString();
             txtRespuesta.setHint(msgUsername);
         } else {
             txtRespuesta.setHint(null);
