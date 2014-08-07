@@ -12,6 +12,10 @@ import android.util.Log;
 import android.view.Menu;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.ScreenSlidePagerAdapter;
+import com.parse.Parse;
+import com.parse.ParseAnalytics;
+import com.parse.ParseInstallation;
+import com.parse.PushService;
 
 
 public class MainActivity extends Activity implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
@@ -31,6 +35,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Iniciar Push
+        Parse.initialize(this, "VDJEJIMbyuOiis9bwBHmrOIc7XDUqYHQ0TMhA23c",
+                "9EJKzvp4LhRdnLqfH6jkHPaWd58IVXaBKAWdeItE");
+        PushService.setDefaultPushCallback(this, MainActivity.class);
+        ParseInstallation.getCurrentInstallation().saveInBackground();
+
+        //ParseAnalytics.trackAppOpened(getIntent());
 
         try{
 //            runWelcome = savedInstanceState.getBoolean("runWelcome");
@@ -57,6 +69,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
         }*/
 
         mPager.setOnPageChangeListener(this);
+    }
+
+    private void initParse(){
+        //
     }
 
     @Override
