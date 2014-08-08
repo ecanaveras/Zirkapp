@@ -1,26 +1,33 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.HomeReceiver;
+import com.ecp.gsy.dcs.zirkapp.app.util.dialog.EditDistanceDialog;
 
 /**
  * Created by Elder on 02/06/2014.
  */
-public class Fhome extends Fragment implements View.OnClickListener, View.OnLongClickListener{
+public class Fhome extends Fragment implements View.OnClickListener, View.OnLongClickListener, EditDistanceDialog.EditDistanceDialogListener {
 
     private HomeReceiver homeReceiver;
     private ImageView imgAvatar;
@@ -58,27 +65,36 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
         txtDistMinima = (TextView) view.findViewById(R.id.txtDistMinima);
         txtDistMaxima = (TextView) view.findViewById(R.id.txtDistMaxima);
         LinearLayout layoutMessages = (LinearLayout) view.findViewById(R.id.LyMensajes);
+        LinearLayout layoutDistance = (LinearLayout) view.findViewById(R.id.LyInfoDistancia);
         layoutMessages.setOnClickListener(this);
+        layoutDistance.setOnClickListener(this);
         setHasOptionsMenu(true);
     }
 
     @Override
     public void onClick(View view) {
-        if(view.getId() == R.id.LyMensajes){
-            Toast.makeText(getActivity(), "Clicked", Toast.LENGTH_SHORT).show();
+        switch (view.getId()) {
+            case R.id.LyMensajes:
+                Toast.makeText(getActivity(), "Clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.LyInfoDistancia:
+                showEditDistance();
+                break;
+            default:
+                break;
         }
     }
 
     @Override
     public boolean onLongClick(View view) {
-        if(view.getId() == R.id.imgAvatar){
+        if (view.getId() == R.id.imgAvatar) {
             Intent intent = null;
             //Verificar plataforma Android
-            if(Build.VERSION.SDK_INT < 19){
+            if (Build.VERSION.SDK_INT < 19) {
                 //Android Jelly Bean 4.3 y Anteriores
                 intent = new Intent();
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-            }else{
+            } else {
                 //Android Kitkat 4.4
                 intent = new Intent();
                 intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
@@ -93,12 +109,33 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode== Activity.RESULT_OK && this.requestCode == requestCode){
+        if (resultCode == Activity.RESULT_OK && this.requestCode == requestCode) {
             imgAvatar.setImageURI(data.getData());
             imgAvatar.setTag(data.getData());
             Toast.makeText(getActivity(), "Avatar actualizado!", Toast.LENGTH_SHORT).show();
         }
     }
+
+    /**
+     * Show config Distance
+     */
+    private void showEditDistance() {
+        //Set Values distance
+        EditDistanceDialog editDistanceDialog = new EditDistanceDialog();
+        editDistanceDialog.show(getFragmentManager(), "edit_distance_dialog");
+    }
+
+    @Override
+    public void onDialogPositiveClick(EditDistanceDialog dialogFragment) {
+        txtDistMinima.setText(String.valueOf(dialogFragment.getDistanceMin()));
+        txtDistMaxima.setText(String.valueOf(dialogFragment.getDistanceMax()));
+    }
+
+    @Override
+    public void onDialogNegativeClick(EditDistanceDialog dialogFragment) {
+
+    }
+
 
     //<editor-fold desc="METHODS GETTER">
     public Integer getCantMensajesCerca() {

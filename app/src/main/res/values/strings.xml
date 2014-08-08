@@ -74,5 +74,8 @@
     <string name="lblConversation">Conversación</string>
     <string name="lblHide">Ocultar</string>
     <string name="lblDenounce">Denunciar</string>
+    <string name="lblSend">Enviar</string>
+    <string name="lblConfigDistance">Distancia de Zimess</string>
+    <string name="msgDistanceInMeter">*Distancia en Metros</string>
 
 </resources>

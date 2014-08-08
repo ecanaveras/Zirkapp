@@ -46,10 +46,11 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
 
         //TODO Implementar metodo en segundo plano para verificar conexion
         if (isConected()) {
-            txtIndicadorConn.setText(null);
+            txtIndicadorConn.setVisibility(View.GONE);
         } else {
             txtIndicadorConn.setBackgroundColor(Color.RED);
             txtIndicadorConn.setText(R.string.msgDisconnet);
+            txtIndicadorConn.setVisibility(View.VISIBLE);
         }
 
         if (msgNoti != null && !msgNoti.isEmpty()) {

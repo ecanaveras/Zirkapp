@@ -10,21 +10,31 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
+import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.ScreenSlidePagerAdapter;
+import com.ecp.gsy.dcs.zirkapp.app.util.dialog.EditDistanceDialog;
+import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
+import com.parse.ParseException;
 import com.parse.ParseInstallation;
+import com.parse.ParseUser;
 import com.parse.PushService;
+import com.parse.SignUpCallback;
 
 
-public class MainActivity extends Activity implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
+public class MainActivity extends Activity implements ActionBar.TabListener, ViewPager.OnPageChangeListener{
 
     //Contiene los frames
     private ViewPager mPager;
     private ScreenSlidePagerAdapter adapter;
     private ManagerWelcome managerWelcome;
     //private ActionBar actionBar;
+    private boolean signUpParse;
+    //User login parse
+    String user = "zuser1";
+    String pass = "12345";
 
 
     //Respuesta del welcome
@@ -42,11 +52,17 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
         PushService.setDefaultPushCallback(this, MainActivity.class);
         ParseInstallation.getCurrentInstallation().saveInBackground();
 
-        //ParseAnalytics.trackAppOpened(getIntent());
+        ParseAnalytics.trackAppOpened(getIntent());
 
-        try{
+        if (!loginParse()) {
+            signUpParse();
+            loginParse();
+        }
+
+
+        try {
 //            runWelcome = savedInstanceState.getBoolean("runWelcome");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -71,14 +87,40 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
         mPager.setOnPageChangeListener(this);
     }
 
-    private void initParse(){
-        //
+    private void signUpParse() {
+        ParseUser parseUser = new ParseUser();
+        parseUser.setUsername(user);
+        parseUser.setPassword(pass);
+        parseUser.signUpInBackground(new SignUpCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Toast.makeText(getApplicationContext(), "No login in parse", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private boolean loginParse() {
+        final boolean[] done = {false};
+        ParseUser.logInInBackground(user, pass, new LogInCallback() {
+            @Override
+            public void done(ParseUser parseUser, ParseException e) {
+                if (parseUser == null) {
+                    Toast.makeText(getApplicationContext(), "No login in parse", Toast.LENGTH_SHORT).show();
+                    done[0] = false;
+                } else {
+                    done[0] = true;
+                }
+            }
+        });
+        return done[0];
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if(runWelcome){
+        if (runWelcome) {
             initWelcome(true);
         }
     }
@@ -96,7 +138,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
         startActivityForResult(intent, inputRequestCode);
     }
 
-        @Override
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == inputRequestCode) {
             if (resultCode == RESULT_OK) {
@@ -111,8 +153,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
         getMenuInflater().inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
     }
-
-
 
     //<editor-fold desc="METHOS VIEW CHANGE LISTENER">
     @Override
@@ -134,7 +174,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
     //<editor-fold desc="METHODS CHANGE TAB LISTENER">
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-            mPager.setCurrentItem(tab.getPosition());
+        mPager.setCurrentItem(tab.getPosition());
     }
 
     @Override
