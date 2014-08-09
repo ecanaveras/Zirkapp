@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
@@ -23,13 +24,9 @@ public class EditDistanceDialog extends DialogFragment {
     private int distanceMin;
     private int distanceMax;
 
-    public interface EditDistanceDialogListener {
-        public void onDialogPositiveClick(EditDistanceDialog dialogFragment);
-
-        public void onDialogNegativeClick(EditDistanceDialog dialogFragment);
+    public EditDistanceDialog() {
     }
 
-    EditDistanceDialogListener listener;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -70,17 +67,6 @@ public class EditDistanceDialog extends DialogFragment {
                 });
 
         return alBuilder.create();
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            listener = (EditDistanceDialogListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " no implementa EditDistanceDialogListener");
-        }
-
     }
 
     public int getDistanceMin() {

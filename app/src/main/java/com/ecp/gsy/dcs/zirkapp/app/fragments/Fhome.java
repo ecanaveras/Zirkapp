@@ -3,14 +3,13 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,18 +21,20 @@ import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.HomeReceiver;
-import com.ecp.gsy.dcs.zirkapp.app.util.dialog.EditDistanceDialog;
+
+import org.w3c.dom.Text;
 
 /**
  * Created by Elder on 02/06/2014.
  */
-public class Fhome extends Fragment implements View.OnClickListener, View.OnLongClickListener, EditDistanceDialog.EditDistanceDialogListener {
+public class Fhome extends Fragment implements View.OnClickListener, View.OnLongClickListener {
 
     private HomeReceiver homeReceiver;
     private ImageView imgAvatar;
     private int requestCode = 1;
-    private TextView txtMsgNoLeidos, txtMsgMensajes, txtMsgCerca, txtUserCerca, txtDistMinima, txtDistMaxima;
-    private Integer cantMensajesCerca = 0, cantUsuariosCerca = 0, distMin = 0, distMax = 0, msgNoLeido = 0, msgTotales = 0;
+    private TextView lblMsgNoLeidos, lblMsgMensajes, lblMsgCerca, lblUserCerca, lblDistMinima, lblDistMaxima, lblRango;
+    private Integer cantMensajesCerca = 0, cantUsuariosCerca = 0, msgNoLeido = 0, msgTotales = 0;
+    private NumberPicker distMinPicker, distMaxPicker;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,7 +46,7 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
     @Override
     public void onResume() {
         super.onResume();
-        homeReceiver = new HomeReceiver(txtMsgCerca);
+        homeReceiver = new HomeReceiver(lblMsgCerca);
         getActivity().registerReceiver(homeReceiver, new IntentFilter("actualizarzmess"));
     }
 
@@ -58,12 +59,12 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
     private void inicializarCompUI(View view) {
         imgAvatar = (ImageView) view.findViewById(R.id.imgAvatar);
         imgAvatar.setOnLongClickListener(this);
-        txtMsgNoLeidos = (TextView) view.findViewById(R.id.txtMsgNoLeidos);
-        txtMsgMensajes = (TextView) view.findViewById(R.id.txtMsgMensajes);
-        txtMsgCerca = (TextView) view.findViewById(R.id.txtMsgCerca);
-        txtUserCerca = (TextView) view.findViewById(R.id.txtUserCerca);
-        txtDistMinima = (TextView) view.findViewById(R.id.txtDistMinima);
-        txtDistMaxima = (TextView) view.findViewById(R.id.txtDistMaxima);
+        lblMsgNoLeidos = (TextView) view.findViewById(R.id.txtMsgNoLeidos);
+        lblMsgMensajes = (TextView) view.findViewById(R.id.txtMsgMensajes);
+        lblMsgCerca = (TextView) view.findViewById(R.id.txtMsgCerca);
+        lblUserCerca = (TextView) view.findViewById(R.id.txtUserCerca);
+        lblDistMinima = (TextView) view.findViewById(R.id.txtDistMinima);
+        lblDistMaxima = (TextView) view.findViewById(R.id.txtDistMaxima);
         LinearLayout layoutMessages = (LinearLayout) view.findViewById(R.id.LyMensajes);
         LinearLayout layoutDistance = (LinearLayout) view.findViewById(R.id.LyInfoDistancia);
         layoutMessages.setOnClickListener(this);
@@ -121,21 +122,77 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
      */
     private void showEditDistance() {
         //Set Values distance
-        EditDistanceDialog editDistanceDialog = new EditDistanceDialog();
-        editDistanceDialog.show(getFragmentManager(), "edit_distance_dialog");
+
+        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+        View vConfig = (View) layoutInflater.inflate(R.layout.layout_edit_distance, null);
+        //Conf picker
+        distMinPicker = (NumberPicker) vConfig.findViewById(R.id.pickerDistMin);
+        distMaxPicker = (NumberPicker) vConfig.findViewById(R.id.pickerDistMax);
+        lblRango = (TextView) vConfig.findViewById(R.id.lblRango);
+        //Min
+        distMinPicker.setMinValue(0);
+        distMinPicker.setMaxValue(3);
+        distMinPicker.setDisplayedValues(new String[]{"10 m", "100 m", "300 m", "500 m"});
+        distMinPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        distMinPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int i, int i2) {
+                setTitleRangeChangeDistance(numberPicker.getValue(), distMaxPicker.getValue());
+            }
+        });
+        //Max
+        distMaxPicker.setMinValue(0);
+        distMaxPicker.setMaxValue(3);
+        distMaxPicker.setDisplayedValues(new String[]{"1 Km", "2 Km", "3 Km", "5 Km"});
+        distMaxPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        distMaxPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int i, int i2) {
+                setTitleRangeChangeDistance(distMinPicker.getValue(), numberPicker.getValue());
+            }
+        });
+
+        AlertDialog.Builder alBuilder = new AlertDialog.Builder(getActivity());
+        alBuilder.setView(vConfig);
+        alBuilder.setTitle(R.string.lblConfigDistance);
+        alBuilder
+                .setCancelable(false)
+                .setPositiveButton(R.string.lblOk, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (dialogInterface != null) {
+                            Dialog dialog = Dialog.class.cast(dialogInterface);
+                            distMinPicker = (NumberPicker) dialog.findViewById(R.id.pickerDistMin);
+                            distMaxPicker = (NumberPicker) dialog.findViewById(R.id.pickerDistMax);
+                            lblDistMinima.setText(String.valueOf(distMinPicker.getValue()));
+                            lblDistMaxima.setText(String.valueOf(distMaxPicker.getValue()));
+                            dialog.dismiss();
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.lblCancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+
+        AlertDialog dialog = alBuilder.create();
+        dialog.show();
     }
 
-    @Override
-    public void onDialogPositiveClick(EditDistanceDialog dialogFragment) {
-        txtDistMinima.setText(String.valueOf(dialogFragment.getDistanceMin()));
-        txtDistMaxima.setText(String.valueOf(dialogFragment.getDistanceMax()));
+    private void setTitleRangeChangeDistance(int valuemin, int valuemax){
+        String msg = "";
+        lblRango.setTextColor(Color.BLACK);
+        if(valuemin==3 && valuemax==0){
+            msg = "Rango mínimo, 'Pocos Zimess'";
+            lblRango.setTextColor(Color.RED);
+        }if(valuemin==0 && valuemax==3){
+            msg = "Rango maximo, 'Muchos Zimess'";
+            lblRango.setTextColor(Color.GREEN);
+        }
+        lblRango.setText(msg);
     }
-
-    @Override
-    public void onDialogNegativeClick(EditDistanceDialog dialogFragment) {
-
-    }
-
 
     //<editor-fold desc="METHODS GETTER">
     public Integer getCantMensajesCerca() {
@@ -144,14 +201,6 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
 
     public Integer getCantUsuariosCerca() {
         return cantUsuariosCerca;
-    }
-
-    public Integer getDistMin() {
-        return distMin;
-    }
-
-    public Integer getDistMax() {
-        return distMax;
     }
 
     public Integer getMsgNoLeido() {
@@ -166,19 +215,11 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
     //<editor-fold desc="METHODS SETTER">
     public void setCantMensajesCerca(Integer cantMensajesCerca) {
         this.cantMensajesCerca = cantMensajesCerca;
-        txtMsgCerca.setText(cantMensajesCerca);
+        lblMsgCerca.setText(cantMensajesCerca);
     }
 
     public void setCantUsuariosCerca(Integer cantUsuariosCerca) {
         this.cantUsuariosCerca = cantUsuariosCerca;
-    }
-
-    public void setDistMin(Integer distMin) {
-        this.distMin = distMin;
-    }
-
-    public void setDistMax(Integer distMax) {
-        this.distMax = distMax;
     }
 
     public void setMsgNoLeido(Integer msgNoLeido) {

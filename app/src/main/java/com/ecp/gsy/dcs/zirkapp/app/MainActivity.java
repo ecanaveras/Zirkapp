@@ -7,6 +7,7 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
@@ -24,7 +25,7 @@ import com.parse.PushService;
 import com.parse.SignUpCallback;
 
 
-public class MainActivity extends Activity implements ActionBar.TabListener, ViewPager.OnPageChangeListener{
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener, ViewPager.OnPageChangeListener{
 
     //Contiene los frames
     private ViewPager mPager;
