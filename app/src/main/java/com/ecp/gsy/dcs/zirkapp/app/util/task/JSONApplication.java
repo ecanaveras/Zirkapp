@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
@@ -24,11 +25,11 @@ public class JSONApplication extends Application {
     //Url de la API
     private final static String URL = "http://zirkapp.byethost3.com/api/v1.1/zsms";
 
-    public void getData(Context context, AdapterZimess arrayAdapter) {
+    public void getData(Context context, MenuItem item, AdapterZimess arrayAdapter) {
         this.context = context;
         //Actualizamos los datos del adpater atravez de un Asynctask
         if (isConected()) {
-            new DownloadZimessTask(context, arrayAdapter, URL).execute();
+            new DownloadZimessTask(context, item, arrayAdapter, URL).execute();
         } else {
             //Toast.makeText(this, "Sin conexion", Toast.LENGTH_SHORT).show();
             showDiaglogConection();

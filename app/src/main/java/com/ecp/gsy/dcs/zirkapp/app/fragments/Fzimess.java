@@ -1,5 +1,6 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,14 +27,16 @@ import java.util.ArrayList;
 /**
  * Created by Elder on 15/07/2014.
  */
-public class Fmessages extends Fragment {
+public class Fzimess extends Fragment {
 
     private ListView listZMessages;
     private AdapterZimess zmAdapter;
+    private ActionBar actionBar;
+    private Menu menuList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_messages, container, false);
+        View view = inflater.inflate(R.layout.fragment_zimess, container, false);
         inicializarUI(view);
         setHasOptionsMenu(true);
         return view;
@@ -42,6 +45,7 @@ public class Fmessages extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.list_zimess_activity_action, menu);
+        menuList = menu;
     }
 
     @Override
@@ -49,7 +53,7 @@ public class Fmessages extends Fragment {
         //Manejar seleccion en el menú
         switch (item.getItemId()) {
             case R.id.action_bar_search_zmess:
-                downloadOrUpdateZmess();
+                downloadOrUpdateZmess(item);
                 return true;
             case R.id.action_bar_new_zmess:
                 Intent intent = new Intent(getActivity(), NewZimessActivity.class);
@@ -68,7 +72,13 @@ public class Fmessages extends Fragment {
         zmAdapter = new AdapterZimess(getActivity(), new ArrayList<Zimess>());
         //Asiganmos el adaprte al listView
         listZMessages.setAdapter(zmAdapter);
-        downloadOrUpdateZmess();
+
+        //Action Bar
+        actionBar = getActivity().getActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
+        if(menuList!=null) {
+            downloadOrUpdateZmess(menuList.getItem(R.id.action_bar_search_zmess));
+        }
 
         listZMessages.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -90,12 +100,12 @@ public class Fmessages extends Fragment {
         intent.putExtra("zimess", (Serializable) zimess);
         getActivity().startActivity(intent);
         //Animar
-        getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+        //getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
     }
 
-    private void downloadOrUpdateZmess() {
+    private void downloadOrUpdateZmess(MenuItem item) {
         // Actualizamos los datos, pasamos el Context para poder mostrar un ProgressDialog
-        ((JSONApplication) getActivity().getApplicationContext()).getData(getActivity(), zmAdapter);
+        ((JSONApplication) getActivity().getApplicationContext()).getData(getActivity(), item, zmAdapter);
     }
 
 

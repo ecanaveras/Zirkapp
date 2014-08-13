@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
@@ -18,9 +19,6 @@ import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 
 /**
@@ -32,26 +30,25 @@ public class DownloadZimessTask extends AsyncTask<Void, Void, Void> {
     private ArrayList<Zimess> data;
     private AdapterZimess adapter;
     private String url;
-    private ProgressDialog progressDialog;
+    private MenuItem progressbarItem;
     private Context context;
     private boolean isApiOnline;
     private int httpStatusCode;
 
-    public DownloadZimessTask(Context context, AdapterZimess adapter, String url) {
+    public DownloadZimessTask(Context context, MenuItem menuItem, AdapterZimess adapter, String url) {
         this.adapter = adapter;
         this.url = url;
-        progressDialog = new ProgressDialog(context);
+        progressbarItem = menuItem;
         this.context = context;
     }
 
     @Override
     protected void onPreExecute() {
-        //Config para mostrar el ProgressDialog "Cargando contenido"
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage(context.getResources().getString(R.string.msgProgressDialog));
-        progressDialog.setTitle(context.getResources().getString(R.string.msgLoading));
-        //Mostrar el Dialog
-        progressDialog.show();
+        //Mostramos el progressbaritem en la barra
+        if (progressbarItem != null) {
+            progressbarItem.setActionView(R.layout.progressbar);
+            progressbarItem.expandActionView();
+        }
         super.onPreExecute();
     }
 
@@ -87,8 +84,11 @@ public class DownloadZimessTask extends AsyncTask<Void, Void, Void> {
             adapter.notifyDataSetChanged();
             setValuesHome();
         }
-        //Eliminanos el ProgressDialog
-        progressDialog.dismiss();
+        //Restauramos el progressbaritem en la barra
+        if (progressbarItem != null) {
+            progressbarItem.collapseActionView();
+            progressbarItem.setActionView(null);
+        }
         //Personalizamos el mensaje en UI
         //TODO Se Sugiere Manejar un Dialog
         if (!isApiOnline && httpStatusCode == 0) {

@@ -64,7 +64,7 @@
 
 
                 <LinearLayout
-                    android:id="@+id/LyMensajes"
+                    android:id="@+id/LyInfoInbox"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:clickable="true"
@@ -139,7 +139,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/LyCerca"
+                    android:id="@+id/LyInfoZimess"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:clickable="true"

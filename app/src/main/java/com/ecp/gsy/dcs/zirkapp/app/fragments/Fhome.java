@@ -1,5 +1,6 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -22,12 +23,13 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.HomeReceiver;
 
-import org.w3c.dom.Text;
-
 /**
  * Created by Elder on 02/06/2014.
  */
 public class Fhome extends Fragment implements View.OnClickListener, View.OnLongClickListener {
+
+    private final static int FRAGMENT_ACTIVITY = 1;
+    private final static int FRAGMENT_INBOX = 2;
 
     private HomeReceiver homeReceiver;
     private ImageView imgAvatar;
@@ -35,6 +37,9 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
     private TextView lblMsgNoLeidos, lblMsgMensajes, lblMsgCerca, lblUserCerca, lblDistMinima, lblDistMaxima, lblRango;
     private Integer cantMensajesCerca = 0, cantUsuariosCerca = 0, msgNoLeido = 0, msgTotales = 0;
     private NumberPicker distMinPicker, distMaxPicker;
+
+    //Tabs
+    private ActionBar actionBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,6 +62,7 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
     }
 
     private void inicializarCompUI(View view) {
+        actionBar = getActivity().getActionBar();
         imgAvatar = (ImageView) view.findViewById(R.id.imgAvatar);
         imgAvatar.setOnLongClickListener(this);
         lblMsgNoLeidos = (TextView) view.findViewById(R.id.txtMsgNoLeidos);
@@ -65,18 +71,29 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
         lblUserCerca = (TextView) view.findViewById(R.id.txtUserCerca);
         lblDistMinima = (TextView) view.findViewById(R.id.txtDistMinima);
         lblDistMaxima = (TextView) view.findViewById(R.id.txtDistMaxima);
-        LinearLayout layoutMessages = (LinearLayout) view.findViewById(R.id.LyMensajes);
+        //layouts de acceso rapido
+        LinearLayout layoutInbox = (LinearLayout) view.findViewById(R.id.LyInfoInbox);
         LinearLayout layoutDistance = (LinearLayout) view.findViewById(R.id.LyInfoDistancia);
-        layoutMessages.setOnClickListener(this);
+        LinearLayout layoutZimess = (LinearLayout) view.findViewById(R.id.LyInfoZimess);
+        layoutInbox.setOnClickListener(this);
         layoutDistance.setOnClickListener(this);
+        layoutZimess.setOnClickListener(this);
         setHasOptionsMenu(true);
     }
 
     @Override
     public void onClick(View view) {
+        ActionBar.Tab tab = tab = actionBar.getSelectedTab();
         switch (view.getId()) {
-            case R.id.LyMensajes:
-                Toast.makeText(getActivity(), "Clicked", Toast.LENGTH_SHORT).show();
+            case R.id.LyInfoInbox:
+                if (tab != null) {
+                    actionBar.selectTab(actionBar.getTabAt(this.FRAGMENT_INBOX));
+                }
+                break;
+            case R.id.LyInfoZimess:
+                if (tab != null) {
+                    actionBar.selectTab(actionBar.getTabAt(this.FRAGMENT_ACTIVITY));
+                }
                 break;
             case R.id.LyInfoDistancia:
                 showEditDistance();
@@ -181,13 +198,14 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
         dialog.show();
     }
 
-    private void setTitleRangeChangeDistance(int valuemin, int valuemax){
+    private void setTitleRangeChangeDistance(int valuemin, int valuemax) {
         String msg = "";
         lblRango.setTextColor(Color.BLACK);
-        if(valuemin==3 && valuemax==0){
+        if (valuemin == 3 && valuemax == 0) {
             msg = "Rango mínimo, 'Pocos Zimess'";
             lblRango.setTextColor(Color.RED);
-        }if(valuemin==0 && valuemax==3){
+        }
+        if (valuemin == 0 && valuemax == 3) {
             msg = "Rango maximo, 'Muchos Zimess'";
             lblRango.setTextColor(Color.GREEN);
         }
