@@ -6,7 +6,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 
 public class DetailZimessActivity extends Activity {
@@ -23,10 +22,10 @@ public class DetailZimessActivity extends Activity {
 
         //UI
         TextView msg = (TextView) findViewById(R.id.textView);
-        msg.setText(zimessDetail.getZmessage());
+        msg.setText(zimessDetail.getZimess());
         TextView txtRespuesta = (TextView) findViewById(R.id.txtMsgRespuesta);
-        if (zimessDetail.getZuser() != null) {
-            String msgUsername = new StringBuffer(getResources().getString(R.string.msgReply)).append(" ").append(zimessDetail.getZuser()).toString();
+        if (zimessDetail.getUsuario() != null) {
+            String msgUsername = new StringBuffer(getResources().getString(R.string.msgReply)).append(" ").append(zimessDetail.getUsuario()).toString();
             txtRespuesta.setHint(msgUsername);
         } else {
             txtRespuesta.setHint(null);

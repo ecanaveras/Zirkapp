@@ -95,6 +95,7 @@
                             android:layout_gravity="center" />
 
                         <TextView
+                            android:id="@+id/lblDistance"
                             style="@style/mini_text"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"

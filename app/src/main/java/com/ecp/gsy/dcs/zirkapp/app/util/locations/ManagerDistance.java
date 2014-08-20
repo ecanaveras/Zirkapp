@@ -15,23 +15,44 @@ public class ManagerDistance {
         this.ubicacionZmsg = ubicacionZmsg;
     }
 
-    public Integer getDistancia() {
+    public Double getDistancia() {
         //distancia (A, B) = R * arccos (sen (LATA) * sen (LATB) + cos (lata) * cos (LATB) * cos (LonA-LonB))
-        double vlatA, vlatB, vlongA, vlongB, dlong, dlat,a, b ,c;
+        double vlatA, vlatB, vlongA, vlongB, dlong, dlat, a, b, c;
         vlatA = Math.toRadians(ubicacionPhone.getLatitud());
         vlongA = Math.toRadians(ubicacionPhone.getLongitud());
         vlatB = Math.toRadians(ubicacionZmsg.getLatitud());
         vlongB = Math.toRadians(ubicacionZmsg.getLongitud());
         distancia = (RADIO * Math.acos(Math.sin(vlatA) * Math.sin(vlatB) + Math.cos(vlatA) * Math.cos(vlatB) * Math.cos(vlongA - vlongB)));
-        distancia *=  1000;
-        /*
-        dlong = vlongB - vlongA;
-        dlat = vlatB - vlatA;
-        a = Math.sin(Math.pow((dlat/2),2)) + Math.cos(vlatA) * Math.cos(vlatB) * Math.sin(Math.pow((dlong/2),2));
-        c = 2 * Math.asin(Math.min(1,Math.sqrt(a)));
-        distancia = RADIO * c;
-        */
-        return distancia.intValue();
+        distancia *= 1000;
+        return roundDistancia(Math.round(distancia));
+    }
+
+    public String getDistanciaToString() {
+        Double distance = getDistancia();
+        if (distance.intValue() >= 1000) {
+            //Kilometros
+            return "+ " + distance / 1000 + "Km";
+        } else {
+            // Metros
+            return "+ " + distance.intValue() + "m";
+        }
+    }
+
+    /**
+     * Redondea la distancia ej:
+     * <b>20 == 50</b>
+     * <b>67 == 100</b>
+     * <b>1230 == 1250</b>
+     *
+     * @param distance
+     * @return
+     */
+    private Double roundDistancia(Long distance) {
+        Double result = new Double((distance - 50) / 100 * 100);//Redondear las distancias a centenas
+        if (result.intValue() <= 50) {
+            result = 50.0;
+        }
+        return result;
     }
 
     //<editor-fold desc="METHODS GETTERS">

@@ -4,33 +4,39 @@
     <string name="app_name">Zirkapp</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- Welcome -->
     <string name="lblWelcome">Bienvenido</string>
-    <string name="lblWelcomeMsg">Estas apunto de ser parte del mundo Zirkapp, todo lo que quieras cerca a ti!</string>
+    <string name="lblWelcomeMsg">Estas apunto de ser parte del mundo Zirkapp, todo lo que quieras cerca de ti!</string>
     <string name="lblWelcomeMsg1">Comunicate con los que te rodean!</string>
-    <string name="lblWelcomeMsg2">Cuenta que pasa cerca a ti!</string>
+    <string name="lblWelcomeMsg2">Dile a todos lo que está pasando cerca de ti!</string>
     <string name="lblWelcomeMsg3">Encuentra amigos donde quiera que vallas!</string>
     <string name="lblWelcomeLogin">Ingresa con tu cuenta favorita</string>
 
-    <!-- Home -->
-    <string name="lblHome">Home</string>
 
     <!-- Custom label -->
+    <string name="lblHome">Home</string>
     <string name="lblLogin">Empezar</string>
     <string name="lblCreateCount">Crear Cuenta</string>
     <string name="lblRecuPass">Recuperar Contraseña</string>
     <string name="lblConfig">Configuracion</string>
     <string name="lblUpdate">Actualizar</string>
     <string name="lblCateg">Categorias</string>
-    <string name="lblFriends">Amygos</string>
     <string name="lblSearch">Buscar</string>
     <string name="lblFav1">Favoritos</string>
     <string name="lblOk">Aceptar</string>
     <string name="lblCancel">Cancelar</string>
     <string name="lblAbout">Acerca de...</string>
     <string name="lblSettingGPS">Config. GPS</string>
+    <string name="lblDistanceMin">Dist. Mínina</string>
+    <string name="lblDinstaceMax">Dist. Máxima</string>
+    <string name="lblAddZmess">Nuevo Zimess</string>
+    <string name="lblNewZmess">Comienza tu zimess...</string>
+    <string name="lblConversation">Conversación</string>
+    <string name="lblHide">Ocultar</string>
+    <string name="lblDenounce">Denunciar</string>
+    <string name="lblSend">Enviar</string>
+    <string name="lblConfigDistance">Distancia de Zimess</string>
 
     <!-- Custom Msg -->
     <string name="msgLoginError">Usuario y/o Contraseña no validos</string>
@@ -42,10 +48,24 @@
     <string name="msgSelectType">Seleccione el tipo de Publicación</string>
     <string name="msgGPSdisabled">GPS Apagado, ir al menú de configuración?</string>
     <string name="msgProgressDialog">Cargando contenido</string>
+    <string name="msgLoading">Cargando...</string>
+    <string name="msgExitApp">Te vas?</string>
+    <string name="msgDisconnet">Out, que le pasa al internet?</string>
+    <string name="msgZimessSend">Zimess enviado exitosamente!</string>
+    <string name="msgError">Ha ocurrido un error:</string>
+    <string name="msgZimesFailed">Tu zimess no ha sido enviado...</string>
+    <string name="msgDistanceInMeter">*Distancia en Metros</string>
+    <string name="msgErrorGral">Ha ocurrido un error:</string>
+    <string name="msgOutConexion">Out! parece que estas sin conexión, o algo pasa en la web!</string>
+    <string name="msgNoLoadZimess">No hay zimess nuevos! Animate, empieza tu!!!</string>
+    <string name="msgReply">Dile algo a</string>
 
+    <!-- Titles -->
     <string name="title_activity_radar">RadarActivity</string>
     <string name="title_activity_detail_anonimo">DetailAnonimoActivity</string>
     <string name="title_activity_detail_whiz">WhizDetailActivity</string>
+    <string name="title_activity_manager_welcome">Welcome Zirkapp</string>
+    <string name="title_activity_detail_zimess">DetailZimessActivity</string>
 
     <string-array name="list_whiz">
         <item>1</item>
@@ -54,28 +74,5 @@
         <item>4</item>
         <item>5</item>
     </string-array>
-
-    <string name="title_activity_manager_welcome">Welcome Zirkapp</string>
-    <string name="lblDistanceMin">Dist. Mínina</string>
-    <string name="lblDinstaceMax">Dist. Máxima</string>
-    <string name="msgLoading">Cargando...</string>
-    <string name="lblAddZmess">Nuevo Zmess</string>
-    <string name="title_activity_new_zmessage">Nuevo Mensaje</string>
-    <string name="lblNewZmess">Comienza tu mensaje...</string>
-    <string name="out_conexion">Out! parece que estas sin conexión, o algo pasa en la web!</string>
-    <string name="error_conexion">Ha ocurrido un error:</string>
-    <string name="msgExitApp">Te vas?</string>
-    <string name="msgDisconnet">Out, que le pasa al internet?</string>
-    <string name="msgZimessSend">Mensaje enviado exitosamente!</string>
-    <string name="msgError">Ha ocurrido un error:</string>
-    <string name="title_activity_detail_zimess">DetailZimessActivity</string>
-    <string name="msgReply">Dile algo a</string>
-    <string name="msgZimesFailed">Tu zimess no ha sido enviado...</string>
-    <string name="lblConversation">Conversación</string>
-    <string name="lblHide">Ocultar</string>
-    <string name="lblDenounce">Denunciar</string>
-    <string name="lblSend">Enviar</string>
-    <string name="lblConfigDistance">Distancia de Zimess</string>
-    <string name="msgDistanceInMeter">*Distancia en Metros</string>
 
 </resources>

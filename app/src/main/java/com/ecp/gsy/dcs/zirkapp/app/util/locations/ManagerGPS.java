@@ -23,22 +23,59 @@ public class ManagerGPS extends Service implements LocationListener {
     private final Context mContext;
     private boolean isEnabledGPS = false;
     private boolean isEnabledNetwork = false;
-    private boolean isEnabledLocation = false;
     private Location location;
     private Double latitud;
     private Double longitud;
 
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 metros
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minuto
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 20; // 20 metros
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 5; // 5 minutoS
 
     protected LocationManager locationManager;
 
+    /**
+     * Establece comunicacion con los servicios de Android para hallar la ubicacion
+     *
+     * @param mContext
+     */
     public ManagerGPS(Context mContext) {
         this.mContext = mContext;
-        this.getLocation();
+        this.obtenertUbicacion();
     }
 
-    private void setLocation(String provider) {
+    /**
+     * Utiliza android para localizar el dispositivo
+     *
+     * @return
+     */
+    private void obtenertUbicacion() {
+        try {
+            locationManager = (LocationManager) mContext.getSystemService(mContext.LOCATION_SERVICE);
+            isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            if (!isEnabledGPS && !isEnabledNetwork) {//Desabilitados
+                //Mostrar Dialog.
+                this.showSettingsAlert();
+            } else { //Habilitados
+                if (isEnabledNetwork) {
+                    this.establecerUbicacion(LocationManager.NETWORK_PROVIDER);
+                }
+                if (isEnabledGPS) {
+                    if (location == null) {
+                        this.establecerUbicacion(LocationManager.GPS_PROVIDER);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Establece la unbicacion
+     *
+     * @param provider
+     */
+    private void establecerUbicacion(String provider) {
         locationManager.requestLocationUpdates(provider, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
         Log.d(provider, provider);
         if (locationManager != null) {
@@ -50,39 +87,19 @@ public class ManagerGPS extends Service implements LocationListener {
         }
     }
 
-    public void stopUsingGPS(){
-        if(locationManager!=null){
+    /**
+     * Detiene la peticion del servicio para ManagerGPS
+     */
+    public void stopUsingGPS() {
+        if (locationManager != null) {
             locationManager.removeUpdates(ManagerGPS.this);
         }
     }
 
-
-    public Location getLocation() {
-        try{
-            locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
-            isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            if(!isEnabledGPS && !isEnabledNetwork){
-                //Desabilitados
-                this.showSettingsAlert();
-            }else{
-                this.isEnabledLocation = true;
-                if(isEnabledNetwork){
-                    this.setLocation(LocationManager.NETWORK_PROVIDER);
-                }
-                if(isEnabledGPS){
-                    if(location == null) {
-                        this.setLocation(LocationManager.GPS_PROVIDER);
-                    }
-                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return location;
-    }
-
-    public void showSettingsAlert(){
+    /**
+     * Muestra una alerta en caso que esten desabilitados los accesorios de ubicacion
+     */
+    private void showSettingsAlert() {
         AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
 
         alert.setTitle(R.string.lblSettingGPS);
@@ -104,9 +121,19 @@ public class ManagerGPS extends Service implements LocationListener {
         alert.show();
     }
 
+    public Double getLatitud() {
+        return latitud;
+    }
+
+    public Double getLongitud() {
+        return longitud;
+    }
 
     @Override
     public void onLocationChanged(Location location) {
+        //Nueva Ubicacion
+        this.latitud = location.getLatitude();
+        this.longitud = location.getLongitude();
     }
 
     @Override
@@ -119,6 +146,7 @@ public class ManagerGPS extends Service implements LocationListener {
 
     @Override
     public void onProviderDisabled(String s) {
+        stopUsingGPS();
     }
 
     @Override

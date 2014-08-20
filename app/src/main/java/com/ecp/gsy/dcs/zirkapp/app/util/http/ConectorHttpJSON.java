@@ -1,16 +1,12 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.http;
 
-import android.content.Context;
+import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
-import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -19,6 +15,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,8 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * Created by Elder on 15/07/2014.
@@ -39,6 +34,9 @@ public class ConectorHttpJSON {
     private String url;
     private JSONArray jsonArray;
     private int httpStatusCode;
+    //Login en la APi
+    private String auth = Base64.encodeToString(("ecanaveras:ecanave").getBytes(), Base64.NO_WRAP);
+
 
     public ConectorHttpJSON(String url) {
         this.url = url;
@@ -46,24 +44,31 @@ public class ConectorHttpJSON {
 
     /**
      * Realiza la peticion de Zimess en la API
+     *
      * @return true en caso de exito, false en caso de falla
      * @throws JSONException
      */
     public boolean executeGet() throws JSONException {
-        //Se ejecuta la peticion y se almacena la respuesta
-        HttpGet httpGet = new HttpGet(url);
-        HttpParams httpParams = new BasicHttpParams();
-        //Establecer tiempo de conexion a la url en milisegundos
-        HttpConnectionParams.setConnectionTimeout(httpParams, 4000);
-        //Establecer tiempo de respuesta para data
-        HttpConnectionParams.setSoTimeout(httpParams, 10000);
-        //Creamos el objeto cliente que realiza la peticion al servidor
-        HttpClient client = new DefaultHttpClient(httpParams);
         try {
+            //Se ejecuta la peticion y se almacena la respuesta
+            HttpGet httpGet = new HttpGet(url);
+            //Enviar Headers
+            httpGet.addHeader("Authorization", "Basic " + auth);
+            //Parametros
+            HttpParams httpParams = new BasicHttpParams();
+            //Param1. Establecer tiempo de conexion a la url en milisegundos
+            HttpConnectionParams.setConnectionTimeout(httpParams, 4000);
+            //Param2. Establecer tiempo de respuesta para data
+            HttpConnectionParams.setSoTimeout(httpParams, 10000);
+            //Creamos el objeto cliente que realiza la peticion al servidor
+            HttpClient client = new DefaultHttpClient(httpParams);
+
+            //Ejecutar API
             HttpResponse response = client.execute(httpGet);
             int statusCode = response.getStatusLine().getStatusCode();
             Log.i("Response status", response.getStatusLine().toString());
             Log.i("Response code", statusCode + "");
+            //Log.i("Response user-auth", EntityUtils.toString(response.getEntity()));
             //Si OK, se procede
             if (statusCode == HttpStatus.SC_OK) {
                 //Recogemos la respuesta del servidor
@@ -85,33 +90,40 @@ public class ConectorHttpJSON {
 
     /**
      * Realiza un accion Post en la API - Agrega un nuevo Zimess
+     *
      * @return true en caso de exito, false en caso de falla
      */
-    public boolean executePost(Zimess zimess){
-        //InputStream inputStream = null;
-        //String result = null;
+    public boolean executePost(Zimess zimess) {
         try {
             //TODO Enviar parametros de timeout en la peticion http
             //1. Crear la peticion
             HttpClient httpClient = new DefaultHttpClient();
             //2. Crear Post
             HttpPost httpPost = new HttpPost(url);
-            //3.Generar Json
+            //3.Generar Zimess Json
             JSONObject jsonObject = new JSONObject();
-            jsonObject.accumulate("zmessage", zimess.getZmessage());
-            jsonObject.accumulate("zuser", zimess.getZuser());
+            jsonObject.accumulate("usuario", 1);
+            jsonObject.accumulate("latitud", zimess.getLatitud());
+            jsonObject.accumulate("longitud", zimess.getLongitud());
+            jsonObject.accumulate("zimess", zimess.getZimess());
+            jsonObject.accumulate("duracion", zimess.getMinutosDuracion());
+            jsonObject.accumulate("actualizable", zimess.isUpdate());
             //4.Json to StringEntity
             StringEntity stringEntity = new StringEntity(jsonObject.toString());
             //5. Establecer httPost Entity
             httpPost.setEntity(stringEntity);
             //6. Establecer headers
-            httpPost.setHeader("Accept", "application/json");
-            httpPost.setHeader("Content-type", "application/json");
+            httpPost.addHeader("Accept", "application/json");
+            httpPost.addHeader("Content-type", "application/json");
+            httpPost.addHeader("Authorization", "Basic " + auth);
             //7. Ejecutar Post
             HttpResponse response = httpClient.execute(httpPost);
             //8. Recibir respuesta
             //TODO Terminar codigo para Recibir Json
             int responseCode = response.getStatusLine().getStatusCode();
+            Log.i("Response status", response.getStatusLine().toString());
+            Log.i("Response code", responseCode + "");
+            Log.i("Response user-auth", EntityUtils.toString(response.getEntity()));
             if (responseCode == HttpStatus.SC_OK) {
                 //TODO Refrescar el adparter para mostrar el nuevo mensaje.
                 this.httpStatusCode = responseCode;

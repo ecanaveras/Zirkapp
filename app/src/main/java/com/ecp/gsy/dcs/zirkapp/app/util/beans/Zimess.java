@@ -14,15 +14,17 @@ import java.util.concurrent.TimeUnit;
  */
 public class Zimess implements Serializable{
 
-    private int zid;
-    private String zmessage;
-    private String zuser;
-    private Double zlongi;
-    private Double zlati;
+    private int id;
+    private String zimess;
+    private String usuario;
+    private Double longitud;
+    private Double latitud;
     private boolean isUpdate;
-    private Double timeInicial;
-    private Double timeFinal;
-    private String fechaCreated;
+    private int minutosDuracion;
+    //private Double timeInicial;
+    //private Double timeFinal;
+    private Date fechaCreated;
+    private Date fechaUpdate;
 
     //Obtener time pass
     public String getTimePass() {
@@ -36,7 +38,7 @@ public class Zimess implements Serializable{
             try {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 simpleDateFormat.setTimeZone(TimeZone.getDefault());
-                Date fcreate = simpleDateFormat.parse(fechaCreated);
+                Date fcreate = fechaCreated;
                 //TODO Obtener la hora de la base de datos
                 Date fSystem = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
                 diff = fSystem.getTime() - fcreate.getTime();
@@ -63,82 +65,125 @@ public class Zimess implements Serializable{
         return "Hace " + timer;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Zimess)) return false;
+
+        Zimess zimess = (Zimess) o;
+
+        if (id != zimess.id) return false;
+        if (!this.zimess.equals(zimess.zimess)) return false;
+        if (!usuario.equals(zimess.usuario)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + zimess.hashCode();
+        result = 31 * result + usuario.hashCode();
+        return result;
+    }
 
     //<editor-fold desc="METHODS GETTERS">
-    public String getZmessage() {
-        return zmessage;
+
+    public int getId() {
+        return id;
     }
 
-    public String getZuser() {
-        return zuser;
+    public String getZimess() {
+        return zimess;
     }
 
-    public int getZid() {
-        return zid;
+    public String getUsuario() {
+        return usuario;
     }
 
-    public Double getZlongi() {
-        return zlongi;
+    public Double getLongitud() {
+        return longitud;
     }
 
-    public Double getZlati() {
-        return zlati;
+    public Double getLatitud() {
+        return latitud;
     }
 
     public boolean isUpdate() {
         return isUpdate;
     }
 
+    public int getMinutosDuracion() {
+        return minutosDuracion;
+    }
+
+    /*
     public Double getTimeInicial() {
         return timeInicial;
     }
 
     public Double getTimeFinal() {
         return timeFinal;
-    }
+    }*/
 
-    public String getFechaCreated() {
+    public Date getFechaCreated() {
         return fechaCreated;
     }
+
+    public Date getFechaUpdate() {
+        return fechaUpdate;
+    }
+
 
     //</editor-fold>
 
     //<editor-fold desc="METHODS SETTERS">
-    public void setZmessage(String zmessage) {
-        this.zmessage = zmessage;
+
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setZuser(String zuser) {
-        this.zuser = zuser;
+    public void setZimess(String zimess) {
+        this.zimess = zimess;
     }
 
-    public void setZid(int zid) {
-        this.zid = zid;
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
     }
 
-    public void setZlongi(Double zlongi) {
-        this.zlongi = zlongi;
+    public void setLongitud(Double longitud) {
+        this.longitud = longitud;
     }
 
-    public void setZlati(Double zlati) {
-        this.zlati = zlati;
+    public void setLatitud(Double latitud) {
+        this.latitud = latitud;
     }
 
     public void setUpdate(boolean isUpdate) {
         this.isUpdate = isUpdate;
     }
 
-    public void setTimeInicial(Double timeInicial) {
-        this.timeInicial = timeInicial;
+    public void setMinutosDuracion(int minutosDuracion) {
+        this.minutosDuracion = minutosDuracion;
     }
 
-    public void setTimeFinal(Double timeFinal) {
-        this.timeFinal = timeFinal;
-    }
+    /*
+        public void setTimeInicial(Double timeInicial) {
+            this.timeInicial = timeInicial;
+        }
 
-    public void setFechaCreated(String fechaCreated) {
+        public void setTimeFinal(Double timeFinal) {
+            this.timeFinal = timeFinal;
+        }
+        */
+    public void setFechaCreated(Date fechaCreated) {
         this.fechaCreated = fechaCreated;
     }
+
+    public void setFechaUpdate(Date fechaUpdate) {
+        this.fechaUpdate = fechaUpdate;
+    }
+
 
     //</editor-fold>
 }

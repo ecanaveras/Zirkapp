@@ -1,7 +1,6 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -14,20 +13,21 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.JSONApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.LoadZimessTask;
 
 public class NewZimessActivity extends Activity implements View.OnClickListener {
 
-    //Url de la API
-    private final static String URL = "http://zirkapp.byethost3.com/api/v1.1/zsms";
-
     private EditText message;
     private ImageButton btnSendZmess;
     private TextView txtIndicadorConn;
-    private String userTemp = "zirkapp_developer"; //TODO USuario de publicaciones temporales
-    private boolean apiConected;
+    private String usuario = "1"; //TODO Manipular USuario que hace la publicacion
+    private boolean isInternetConected;
+    private ToggleButton isUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +35,6 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
         setContentView(R.layout.activity_new_zimess);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        String msgNoti = getIntent().getStringExtra("zimess_msg");
 
         //Creando UI
         message = (EditText) findViewById(R.id.editText);
@@ -43,6 +42,7 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
         btnSendZmess = (ImageButton) findViewById(R.id.btnSendZmess);
         btnSendZmess.setEnabled(false);
         txtIndicadorConn = (TextView) findViewById(R.id.txtIndicadorConn);
+        isUpdate = (ToggleButton) findViewById(R.id.chkZimessUpdate);
 
         //TODO Implementar metodo en segundo plano para verificar conexion
         if (isConected()) {
@@ -53,9 +53,13 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
             txtIndicadorConn.setVisibility(View.VISIBLE);
         }
 
-        if (msgNoti != null && !msgNoti.isEmpty()) {
-            message.setText(msgNoti);
+        //Recuper el zimess no enviado.
+       Zimess zimessNoti = (Zimess) getIntent().getSerializableExtra("zimess_noti");
+        //Restablece el mensaje que no se pude enviar
+        if (zimessNoti != null) {
+            message.setText(zimessNoti.getZimess());
             btnSendZmess.setEnabled(true);
+            isUpdate.setChecked(zimessNoti.isUpdate());
         }
 
         message.addTextChangedListener(new TextWatcher() {
@@ -71,7 +75,7 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (message.getText().length() >= 4 && apiConected) {
+                if (message.getText().length() >= 4 && isInternetConected) {
                     btnSendZmess.setEnabled(true);
                 } else {
                     btnSendZmess.setEnabled(false);
@@ -86,16 +90,11 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.list_zimess_activity_action, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_settings:
                 return true;
@@ -123,22 +122,34 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
         }
     }
 
+    /**
+     * Enviar el Zimess via POST
+     */
     private void sendZmessPost() {
         Zimess zimess = new Zimess();
-        zimess.setZmessage(message.getText().toString());
-        zimess.setZuser(userTemp);
-        new LoadZimessTask(this, zimess, URL).execute();
+        zimess.setZimess(message.getText().toString());
+        zimess.setUsuario(usuario);
+        zimess.setUpdate(isUpdate.isChecked());
+        zimess.setMinutosDuracion(0);
+        //Tomar ubicacion
+        ManagerGPS managerGPS = new ManagerGPS(getApplicationContext());
+        zimess.setLatitud(managerGPS.getLatitud());
+        zimess.setLongitud(managerGPS.getLongitud());
+        //Cargarlo a la API
+        new LoadZimessTask(this, zimess, JSONApplication.URL_API_PYTHON).execute();
         onBackPressed();
     }
 
-    //Verificar si hay conexion a Internet
+    /**
+     * Verificar si hay conexion a Internet
+     */
     public boolean isConected() {
-        apiConected = false;
+        isInternetConected = false;
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            apiConected = true;
+            isInternetConected = true;
         }
-        return apiConected;
+        return isInternetConected;
     }
 }

@@ -54,7 +54,7 @@
                     android:layout_width="60dp"
                     android:layout_height="40dp"
                     android:text="New ToggleButton"
-                    android:id="@+id/toggleButton"
+                    android:id="@+id/chkZimessUpdate"
                     android:singleLine="false"
                     android:textOff="Movil"
                     android:textOn="Anclado" />

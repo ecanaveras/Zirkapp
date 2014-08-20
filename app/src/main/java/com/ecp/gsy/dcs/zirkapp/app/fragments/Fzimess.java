@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,10 +14,12 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.PullDownListView;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.JSONApplication;
@@ -27,9 +30,10 @@ import java.util.ArrayList;
 /**
  * Created by Elder on 15/07/2014.
  */
-public class Fzimess extends Fragment {
+public class Fzimess extends Fragment implements PullDownListView.ListViewTouchEventListener {
 
-    private ListView listZMessages;
+    private PullDownListView listZMessages;
+    //private TextView lblMessageLoading;
     private AdapterZimess zmAdapter;
     private ActionBar actionBar;
     private Menu menuList;
@@ -64,22 +68,17 @@ public class Fzimess extends Fragment {
     }
 
     private void inicializarUI(View view) {
-        listZMessages = (ListView) view.findViewById(R.id.listZMessages);
+        listZMessages = new PullDownListView(getActivity());
+        listZMessages = (PullDownListView) view.findViewById(R.id.listZMessages);
         listZMessages.setDivider(null);
         listZMessages.setDividerHeight(0);
+        //mensaje de carga
+        //lblMessageLoading = (TextView) view.findViewById(R.id.lblMessageLoading);
 
         //Creamos un adpater standar
         zmAdapter = new AdapterZimess(getActivity(), new ArrayList<Zimess>());
         //Asiganmos el adaprte al listView
         listZMessages.setAdapter(zmAdapter);
-
-        //Action Bar
-        actionBar = getActivity().getActionBar();
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
-        if(menuList!=null) {
-            downloadOrUpdateZmess(menuList.getItem(R.id.action_bar_search_zmess));
-        }
-
         listZMessages.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -88,6 +87,36 @@ public class Fzimess extends Fragment {
                 gotoDetail(zimess);
             }
         });
+
+        listZMessages.setListViewTouchEventListener(this);
+
+        //Action Bar
+        actionBar = getActivity().getActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
+
+        //Cargar Zimess
+        downloadOrUpdateZmess(getMenuItem(R.id.action_bar_search_zmess));
+
+    }
+
+    @Override
+    public void onListViewPulledDown() {
+        //Log.i("PullDownListViewActivity", "ListView pulled down");
+        //lblMessageLoading.setVisibility(View.VISIBLE);
+        downloadOrUpdateZmess(getMenuItem(R.id.action_bar_search_zmess));
+    }
+
+    private MenuItem getMenuItem(int id) {
+        if (menuList != null) {
+            MenuItem itemf = null;
+            for (int i = 0; i < menuList.size(); i++) {
+                itemf = menuList.getItem(i);
+                if (itemf.getItemId() == id) {
+                    return itemf;
+                }
+            }
+        }
+        return null;
     }
 
     /**

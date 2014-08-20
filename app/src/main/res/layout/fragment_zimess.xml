@@ -3,10 +3,34 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <ListView
+    <!--<ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/listZMessages"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+        -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+    <!--<TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lblMessageLoading"
+        android:text="@string/msgLoading"
+        android:gravity="center"
+        android:visibility="invisible"/>
+        -->
+
+    <view
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        class="com.ecp.gsy.dcs.zirkapp.app.util.PullDownListView"
+        android:id="@+id/listZMessages"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_weight="1"
+        />
+    </LinearLayout>
 </RelativeLayout>
