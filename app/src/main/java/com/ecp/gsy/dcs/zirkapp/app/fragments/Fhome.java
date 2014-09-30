@@ -20,6 +20,7 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.HomeReceiver;
 
@@ -28,7 +29,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.HomeReceiver;
  */
 public class Fhome extends Fragment implements View.OnClickListener, View.OnLongClickListener {
 
-    private final static int FRAGMENT_ACTIVITY = 1;
+    private final static int FRAGMENT_ZIMESS = 1;
     private final static int FRAGMENT_INBOX = 2;
 
     private HomeReceiver homeReceiver;
@@ -37,9 +38,6 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
     private TextView lblMsgNoLeidos, lblMsgMensajes, lblMsgCerca, lblUserCerca, lblDistMinima, lblDistMaxima, lblRango;
     private Integer cantMensajesCerca = 0, cantUsuariosCerca = 0, msgNoLeido = 0, msgTotales = 0;
     private NumberPicker distMinPicker, distMaxPicker;
-
-    //Tabs
-    private ActionBar actionBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,7 +60,6 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
     }
 
     private void inicializarCompUI(View view) {
-        actionBar = getActivity().getActionBar();
         imgAvatar = (ImageView) view.findViewById(R.id.imgAvatar);
         imgAvatar.setOnLongClickListener(this);
         lblMsgNoLeidos = (TextView) view.findViewById(R.id.txtMsgNoLeidos);
@@ -83,23 +80,22 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
 
     @Override
     public void onClick(View view) {
-        ActionBar.Tab tab = tab = actionBar.getSelectedTab();
-        switch (view.getId()) {
-            case R.id.LyInfoInbox:
-                if (tab != null) {
-                    actionBar.selectTab(actionBar.getTabAt(this.FRAGMENT_INBOX));
-                }
-                break;
-            case R.id.LyInfoZimess:
-                if (tab != null) {
-                    actionBar.selectTab(actionBar.getTabAt(this.FRAGMENT_ACTIVITY));
-                }
-                break;
-            case R.id.LyInfoDistancia:
-                showEditDistance();
-                break;
-            default:
-                break;
+        //Navegar y Conf desde los layout de home
+        if (view instanceof LinearLayout) {
+            MainActivity m = (MainActivity) getActivity();
+            switch (view.getId()) {
+                case R.id.LyInfoInbox:
+                    m.selectItemDrawer(FRAGMENT_INBOX);
+                    break;
+                case R.id.LyInfoZimess:
+                    m.selectItemDrawer(FRAGMENT_ZIMESS);
+                    break;
+                case R.id.LyInfoDistancia:
+                    showEditDistance();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -204,7 +200,8 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
         if (valuemin == 3 && valuemax == 0) {
             msg = "Rango mínimo, 'Pocos Zimess'";
             lblRango.setTextColor(Color.RED);
-        } else  if (valuemin == 0 && valuemax == 3) {
+        }
+        if (valuemin == 0 && valuemax == 3) {
             msg = "Rango maximo, 'Muchos Zimess'";
             lblRango.setTextColor(Color.GREEN);
         }

@@ -67,6 +67,17 @@
     <string name="title_activity_manager_welcome">Welcome Zirkapp</string>
     <string name="title_activity_detail_zimess">DetailZimessActivity</string>
 
+    <string-array name="options_drawer">
+        <item>Home</item>
+        <item>Zimess</item>
+        <item>Inbox</item>
+    </string-array>
+
+    <array name="navigations_icons">
+        <item>@drawable/ic_radar</item>
+        <item>@drawable/ic_location</item>
+    </array>
+
     <string-array name="list_whiz">
         <item>1</item>
         <item>2</item>
@@ -74,5 +85,4 @@
         <item>4</item>
         <item>5</item>
     </string-array>
-
 </resources>

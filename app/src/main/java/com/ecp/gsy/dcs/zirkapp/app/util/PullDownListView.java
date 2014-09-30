@@ -53,7 +53,7 @@ public class PullDownListView extends ListView implements AbsListView.OnScrollLi
                         }
                     }
                 }
-            }, 400);
+            }, 500);
             lastY = newY;
         } else if (ev.getAction() == MotionEvent.ACTION_UP) {
             lastY = 0;

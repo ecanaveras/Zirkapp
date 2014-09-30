@@ -2,6 +2,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.util.SparseArray;
 import android.view.ViewGroup;
@@ -15,7 +16,7 @@ import com.ecp.gsy.dcs.zirkapp.app.fragments.Fzimess;
  */
 public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
 
-    SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
+    private Fzimess fzimess;
 
     public ScreenSlidePagerAdapter(FragmentManager fm) {
         super(fm);
@@ -28,7 +29,10 @@ public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return new Fhome();
             case 1:
-                return new Fzimess();
+                if(fzimess == null) {
+                    fzimess = new Fzimess();
+                }
+                return fzimess;
             case 2:
                 return new Finbox();
         }

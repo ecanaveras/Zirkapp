@@ -35,7 +35,6 @@ public class Fzimess extends Fragment implements PullDownListView.ListViewTouchE
     private PullDownListView listZMessages;
     //private TextView lblMessageLoading;
     private AdapterZimess zmAdapter;
-    private ActionBar actionBar;
     private Menu menuList;
 
     @Override
@@ -89,11 +88,6 @@ public class Fzimess extends Fragment implements PullDownListView.ListViewTouchE
         });
 
         listZMessages.setListViewTouchEventListener(this);
-
-        //Action Bar
-        actionBar = getActivity().getActionBar();
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
-
         //Cargar Zimess
         downloadOrUpdateZmess(getMenuItem(R.id.action_bar_search_zmess));
 
@@ -101,7 +95,7 @@ public class Fzimess extends Fragment implements PullDownListView.ListViewTouchE
 
     @Override
     public void onListViewPulledDown() {
-        //Log.i("PullDownListViewActivity", "ListView pulled down");
+        Log.i("PullDownListViewActivity", "ListView pulled down");
         //lblMessageLoading.setVisibility(View.VISIBLE);
         downloadOrUpdateZmess(getMenuItem(R.id.action_bar_search_zmess));
     }

@@ -38,7 +38,8 @@
                         android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/ic_launcher" />
+                        android:src="@drawable/ic_user_male"
+                        android:layout_marginBottom="8dp"/>
 
                     <TextView
                         android:id="@+id/txtAliasUsuario"
@@ -66,18 +67,20 @@
                 <LinearLayout
                     android:id="@+id/LyInfoInbox"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="70dp"
                     android:clickable="true"
                     android:orientation="horizontal"
                     style="@style/box_shadow">
 
                     <ImageView
                         android:layout_width="80dp"
-                        android:layout_height="70dp"
+                        android:layout_height="60dp"
                         android:layout_marginLeft="5dp"
                         android:adjustViewBounds="false"
                         android:baselineAlignBottom="false"
-                        android:src="@drawable/ic_action_mail" />
+                        android:src="@drawable/ic_chat"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="center_vertical" />
 
                     <LinearLayout
                         android:layout_width="fill_parent"
@@ -104,11 +107,11 @@
                             style="@style/message_text_large" />
                     </LinearLayout>
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:src="@drawable/abc_list_divider_holo_light" />
+                    <View
+                        android:layout_gravity="center_vertical"
+                        android:layout_height="45dp"
+                        android:layout_width="1dp"
+                        android:background="?android:attr/listDivider"/>
 
                     <LinearLayout
                         android:layout_width="fill_parent"
@@ -141,7 +144,7 @@
                 <LinearLayout
                     android:id="@+id/LyInfoZimess"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="70dp"
                     android:clickable="true"
                     android:orientation="horizontal"
                     android:animateLayoutChanges="true"
@@ -150,11 +153,13 @@
                     <ImageView
                         android:id="@+id/imageView"
                         android:layout_width="80dp"
-                        android:layout_height="70dp"
+                        android:layout_height="60dp"
                         android:layout_marginLeft="5dp"
                         android:adjustViewBounds="false"
                         android:baselineAlignBottom="false"
-                        android:src="@drawable/ic_action_locate" />
+                        android:src="@drawable/ic_radar"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="center_vertical" />
 
                     <LinearLayout
                         android:layout_width="fill_parent"
@@ -181,11 +186,11 @@
                             android:textAppearance="?android:attr/textAppearanceLarge" />
                     </LinearLayout>
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:src="@drawable/abc_list_divider_holo_light" />
+                    <View
+                        android:layout_gravity="center_vertical"
+                        android:layout_height="45dp"
+                        android:layout_width="1dp"
+                        android:background="?android:attr/listDivider"/>
 
                     <LinearLayout
                         android:layout_width="fill_parent"
@@ -217,7 +222,7 @@
                 <LinearLayout
                     android:id="@+id/LyInfoDistancia"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="70dp"
                     android:clickable="true"
                     android:orientation="horizontal"
                     style="@style/box_shadow">
@@ -225,11 +230,13 @@
                     <ImageView
                         android:id="@+id/imageView2"
                         android:layout_width="80dp"
-                        android:layout_height="70dp"
+                        android:layout_height="60dp"
                         android:layout_marginLeft="5dp"
                         android:adjustViewBounds="false"
                         android:baselineAlignBottom="false"
-                        android:src="@drawable/ic_action_user" />
+                        android:src="@drawable/ic_location"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="center_vertical" />
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -261,6 +268,12 @@
                             android:text="0m"
                             android:textAppearance="?android:attr/textAppearanceLarge" />
                     </LinearLayout>
+
+                    <View
+                        android:layout_gravity="center_vertical"
+                        android:layout_height="45dp"
+                        android:layout_width="1dp"
+                        android:background="?android:attr/listDivider"/>
 
                     <LinearLayout
                         android:layout_width="fill_parent"

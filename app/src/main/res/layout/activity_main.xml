@@ -1,19 +1,45 @@
-<android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ecp.gsy.dcs.zirkapp.app.MainActivity" >
+    android:id="@+id/drawer_layout">
 
-    <!--<android.support.v4.view.PagerTitleStrip
-        android:id="@+id/p_t_s"
+    <!-- Contenido Principal -->
+    <FrameLayout
+        android:id="@+id/content_frame"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:background="#3E3E40"
-        android:paddingBottom="1dp"
-        android:paddingTop="1dp"
-        android:textColor="#E1E1E5" />-->
+        android:layout_height="match_parent"/>
 
-
-</android.support.v4.view.ViewPager>
+    <!--Fragments en la app-->
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/fhome"
+        android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.Fhome"
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/fzimess"
+        android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.Fzimess"
+        tools:layout="@layout/fragment_zimess" />
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/finbox"
+        android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.Finbox"
+        tools:layout="@layout/fragment_inbox" />
+    <!-- Lista de Navegacion -->
+    <ListView
+        android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="fill_parent"
+        android:layout_gravity="start"
+        android:background="@android:color/white"
+        android:choiceMode="singleChoice"
+        android:dividerHeight="2dp"
+        />
+    <!--android:divider="@android:color/transparent">-->
+</android.support.v4.widget.DrawerLayout>
