@@ -57,7 +57,7 @@
     <string name="msgDistanceInMeter">*Distancia en Metros</string>
     <string name="msgErrorGral">Ha ocurrido un error:</string>
     <string name="msgOutConexion">Out! parece que estas sin conexión, o algo pasa en la web!</string>
-    <string name="msgNoLoadZimess">No hay zimess nuevos! Animate, empieza tu!!!</string>
+    <string name="msgNoLoadZimess">No hay zimess cerca a tu posición! Animate, empieza tu!</string>
     <string name="msgReply">Dile algo a</string>
 
     <!-- Titles -->

@@ -13,6 +13,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.JSONToStringCollection;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.http.ConectorHttpJSON;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
 
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
@@ -34,6 +35,7 @@ public class DownloadZimessTask extends AsyncTask<Void, Void, Void> {
     private boolean isApiOnline;
     private int httpStatusCode;
     private int CantNewZimess = 0;
+    private ManagerGPS managerGPS;
 
     public DownloadZimessTask(Context context, MenuItem menuItem, AdapterZimess adapter, String url) {
         this.context = context;
@@ -49,13 +51,21 @@ public class DownloadZimessTask extends AsyncTask<Void, Void, Void> {
             progressBarItemMenu.setActionView(R.layout.progressbar);
             progressBarItemMenu.expandActionView();
         }
+        managerGPS = new ManagerGPS(context.getApplicationContext());
         super.onPreExecute();
     }
 
     @Override
     protected Void doInBackground(Void... params) {
+        //Obtener preferencias de Distancia en Metros
+        //TODO PEndiente obtener preferencias de Distancia
+        int distMin = 0;
+        int distMax = 5000;
+        //Obtener Ubicacion
+
+        String paramsForUrl = managerGPS.getLatitud() + ";" + managerGPS.getLongitud() + ";" + distMin + ";" + distMax;
         //Creamos un objecto que conectar a la URL y analizar su contenido
-        ConectorHttpJSON conn = new ConectorHttpJSON(url);
+        ConectorHttpJSON conn = new ConectorHttpJSON(url + paramsForUrl);
         try {
             if (isApiOnline = conn.executeGet()) {
                 //Obtenemos el JSON
