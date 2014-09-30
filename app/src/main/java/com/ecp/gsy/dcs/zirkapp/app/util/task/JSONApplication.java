@@ -23,7 +23,7 @@ public class JSONApplication extends Application {
     private boolean useApiPython;
     //Url de la API
     //private final static String URL_API_PHP = "http://zirkapp.byethost3.com/api/v1.1/zsms";
-    public final static String URL_API_PYTHON = "http://192.168.1.151:8000/zimess/?format=json";
+    public final static String URL_API_PYTHON = "http://zirkapp.herokuapp.com/api/zimess/?format=json";
 
     public void getData(Context context, MenuItem item, AdapterZimess arrayAdapter) {
         this.context = context;

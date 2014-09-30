@@ -204,8 +204,7 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
         if (valuemin == 3 && valuemax == 0) {
             msg = "Rango mínimo, 'Pocos Zimess'";
             lblRango.setTextColor(Color.RED);
-        }
-        if (valuemin == 0 && valuemax == 3) {
+        } else  if (valuemin == 0 && valuemax == 3) {
             msg = "Rango maximo, 'Muchos Zimess'";
             lblRango.setTextColor(Color.GREEN);
         }
