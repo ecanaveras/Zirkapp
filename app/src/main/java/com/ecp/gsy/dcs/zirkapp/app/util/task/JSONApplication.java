@@ -25,7 +25,7 @@ public class JSONApplication extends Application {
     //private final static String URL_API_PHP = "http://zirkapp.byethost3.com/api/v1.1/zsms";
 
     //public final static String URL_API_PYTHON = "http://192.168.0.12:8000/zimess/?format=json";
-    private final static String DOMAIN = "http://192.168.56.1:8000"; // "http://zirkapp.herokuapp.com";
+    private final static String DOMAIN =  "http://zirkapp.herokuapp.com"; //"http://192.168.56.1:8000";
     public final static String URL_API_PYTHON = DOMAIN + "/api/zimess/?format=json";
     public final static String URL_API_PYTHON_GET_RADAR = DOMAIN + "/api/zimess/radar/";
 

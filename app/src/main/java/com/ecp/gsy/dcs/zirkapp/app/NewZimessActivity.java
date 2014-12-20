@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -23,8 +24,9 @@ import com.ecp.gsy.dcs.zirkapp.app.util.task.LoadZimessTask;
 public class NewZimessActivity extends Activity implements View.OnClickListener {
 
     private EditText message;
-    private ImageButton btnSendZmess;
+    private ImageButton btnSendZimess;
     private TextView txtIndicadorConn;
+    private SeekBar seekBarDuraZimess;
     private String usuario = "1"; //TODO Manipular USuario que hace la publicacion
     private boolean isInternetConected;
     private ToggleButton isUpdate;
@@ -38,9 +40,9 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
 
         //Creando UI
         message = (EditText) findViewById(R.id.editText);
-
-        btnSendZmess = (ImageButton) findViewById(R.id.btnSendZmess);
-        btnSendZmess.setEnabled(false);
+        seekBarDuraZimess = (SeekBar) findViewById(R.id.seekBarTimeOut);
+        btnSendZimess = (ImageButton) findViewById(R.id.btnSendZmess);
+        btnSendZimess.setEnabled(false);
         txtIndicadorConn = (TextView) findViewById(R.id.txtIndicadorConn);
         isUpdate = (ToggleButton) findViewById(R.id.chkZimessUpdate);
 
@@ -58,7 +60,7 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
         //Restablece el mensaje que no se pude enviar
         if (zimessNoti != null) {
             message.setText(zimessNoti.getZimess());
-            btnSendZmess.setEnabled(true);
+            btnSendZimess.setEnabled(true);
             isUpdate.setChecked(zimessNoti.isUpdate());
         }
 
@@ -76,14 +78,14 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
             @Override
             public void afterTextChanged(Editable editable) {
                 if (message.getText().length() >= 4 && isInternetConected) {
-                    btnSendZmess.setEnabled(true);
+                    btnSendZimess.setEnabled(true);
                 } else {
-                    btnSendZmess.setEnabled(false);
+                    btnSendZimess.setEnabled(false);
                 }
             }
         });
 
-        btnSendZmess.setOnClickListener(this);
+        btnSendZimess.setOnClickListener(this);
 
     }
 
@@ -130,7 +132,7 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
         zimess.setZimess(message.getText().toString());
         zimess.setUsuario(usuario);
         zimess.setUpdate(isUpdate.isChecked());
-        zimess.setMinutosDuracion(0);
+        zimess.setMinutosDuracion(seekBarDuraZimess.getProgress());
         //Tomar ubicacion
         ManagerGPS managerGPS = new ManagerGPS(getApplicationContext());
         zimess.setLatitud(managerGPS.getLatitud());

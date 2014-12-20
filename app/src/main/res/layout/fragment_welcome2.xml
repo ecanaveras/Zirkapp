@@ -61,7 +61,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imgAvatar"
+            android:id="@+id/imgAvatarW2"
             android:src="@drawable/ic_launcher" />
 
     </LinearLayout>

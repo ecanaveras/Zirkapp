@@ -3,12 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 
 /**
  * Created by Elder on 16/07/2014.

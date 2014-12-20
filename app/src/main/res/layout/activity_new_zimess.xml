@@ -5,8 +5,6 @@
     tools:context="com.ecp.gsy.dcs.zirkapp.app.NewZimessActivity"
     >
 
-
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
@@ -48,22 +46,27 @@
                 android:layout_width="fill_parent"
                 android:layout_height="42dp"
                 android:layout_gravity="bottom"
-                >
+                android:gravity="center_vertical">
 
                 <ToggleButton
-                    android:layout_width="60dp"
-                    android:layout_height="40dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="New ToggleButton"
                     android:id="@+id/chkZimessUpdate"
                     android:singleLine="false"
-                    android:textOff="Movil"
-                    android:textOn="Anclado" />
+                    style="@style/toggle_style"/>
 
-                <Spinner
+                <SeekBar
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:id="@+id/spinner"
-                    android:layout_weight="1" />
+                    android:layout_height="wrap_content"
+                    android:id="@+id/seekBarTimeOut"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:progress="72"
+                    android:max="72"
+                    android:indeterminate="false" />
+
 
                 <ImageButton
                     android:layout_width="60dp"

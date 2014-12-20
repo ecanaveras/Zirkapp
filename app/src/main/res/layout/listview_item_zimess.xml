@@ -13,7 +13,8 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        style="@style/box_shadow">
+        style="@style/box_shadow"
+        >
 
         <LinearLayout
             android:orientation="horizontal"
@@ -108,7 +109,7 @@
                 <ImageView
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:id="@+id/imgAvatar"
+                    android:id="@+id/imgAvatarItem"
                     android:src="@drawable/ic_launcher"
                     android:layout_marginLeft="2dp"
                     android:scaleType="center"
@@ -118,7 +119,7 @@
                 <ImageView
                     android:layout_width="16dp"
                     android:layout_height="28dp"
-                    android:id="@+id/imgOptions"
+                    android:id="@+id/imgOptionsItem"
                     android:src="@drawable/abc_ic_menu_moreoverflow_normal_holo_light"
                     android:scaleType="center"
                     android:layout_marginRight="6dp" />

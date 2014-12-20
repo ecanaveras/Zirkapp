@@ -32,7 +32,7 @@
                     android:layout_height="235dp">
 
                     <ImageView
-                        android:id="@+id/imgAvatar"
+                        android:id="@+id/imgAvatarH"
                         android:layout_width="180dp"
                         android:layout_height="180dp"
                         android:layout_centerHorizontal="true"
@@ -45,7 +45,7 @@
                         android:id="@+id/txtAliasUsuario"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/imgAvatar"
+                        android:layout_below="@+id/imgAvatarH"
                         android:layout_centerHorizontal="true"
                         android:text="Danna"
                         android:textAppearance="?android:attr/textAppearanceMedium" />

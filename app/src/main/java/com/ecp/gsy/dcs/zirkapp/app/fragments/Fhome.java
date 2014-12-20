@@ -1,6 +1,5 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -60,7 +59,7 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
     }
 
     private void inicializarCompUI(View view) {
-        imgAvatar = (ImageView) view.findViewById(R.id.imgAvatar);
+        imgAvatar = (ImageView) view.findViewById(R.id.imgAvatarH);
         imgAvatar.setOnLongClickListener(this);
         lblMsgNoLeidos = (TextView) view.findViewById(R.id.txtMsgNoLeidos);
         lblMsgMensajes = (TextView) view.findViewById(R.id.txtMsgMensajes);
@@ -75,7 +74,7 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
         layoutInbox.setOnClickListener(this);
         layoutDistance.setOnClickListener(this);
         layoutZimess.setOnClickListener(this);
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(false);
     }
 
     @Override
@@ -101,7 +100,7 @@ public class Fhome extends Fragment implements View.OnClickListener, View.OnLong
 
     @Override
     public boolean onLongClick(View view) {
-        if (view.getId() == R.id.imgAvatar) {
+        if (view.getId() == R.id.imgAvatarH) {
             Intent intent = null;
             //Verificar plataforma Android
             if (Build.VERSION.SDK_INT < 19) {

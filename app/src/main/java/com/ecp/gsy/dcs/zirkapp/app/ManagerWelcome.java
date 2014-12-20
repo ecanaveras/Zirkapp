@@ -5,12 +5,10 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
-import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.Fwelcome1;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.Fwelcome2;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.Fwelcome3;

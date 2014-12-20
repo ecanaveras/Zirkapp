@@ -1,6 +1,5 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,8 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivity;

@@ -32,10 +32,14 @@ public class ManagerDistance {
         if (distance.intValue() >= 1000) {
             //Kilometros
             return "+ " + distance / 1000 + "Km";
+        } else if (distance.intValue() < 100) {
+            // Metros
+            return "- 99m";
         } else {
             // Metros
             return "+ " + distance.intValue() + "m";
         }
+
     }
 
     /**
@@ -49,9 +53,6 @@ public class ManagerDistance {
      */
     private Double roundDistancia(Long distance) {
         Double result = new Double((distance - 50) / 100 * 100);//Redondear las distancias a centenas
-        if (result.intValue() <= 50) {
-            result = 50.0;
-        }
         return result;
     }
 

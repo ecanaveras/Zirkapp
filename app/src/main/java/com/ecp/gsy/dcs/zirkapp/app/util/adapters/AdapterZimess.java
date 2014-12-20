@@ -20,7 +20,6 @@ import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * Created by Elder on 24/07/2014.
@@ -66,8 +65,8 @@ public class AdapterZimess extends BaseAdapter {
         TextView lblUserName = (TextView) vista.findViewById(R.id.lblUserName);
         TextView lblMessage = (TextView) vista.findViewById(R.id.lblZimess);
         TextView lblTimePass = (TextView) vista.findViewById(R.id.txtTiempo);
-        ImageView imgAvatar = (ImageView) vista.findViewById(R.id.imgAvatar);
-        ImageView imgOptions = (ImageView) vista.findViewById(R.id.imgOptions);
+        ImageView imgAvatar = (ImageView) vista.findViewById(R.id.imgAvatarItem);
+        ImageView imgOptions = (ImageView) vista.findViewById(R.id.imgOptionsItem);
         TextView lblDistance = (TextView) vista.findViewById(R.id.lblDistance);
         //LinearLayout lyContainer = (LinearLayout) vista.findViewById(R.id.lyMessage);
         //Action Avatar
@@ -92,7 +91,6 @@ public class AdapterZimess extends BaseAdapter {
         lblTimePass.setText(zimess.getTimePass());
         //Calcular distancia del Zimess remoto
         Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
-        //new ManagerGPS(context).getLocation();
         Location zimessLocation = new Location(zimess.getLatitud(), zimess.getLongitud());
         ManagerDistance mDistance = new ManagerDistance(currentLocation, zimessLocation);
         lblDistance.setText(mDistance.getDistanciaToString());
