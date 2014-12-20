@@ -1,0 +1,19 @@
+#
+# generated on 2014/12/20 02:39:16
+#
+# --table-start--
+dataClass=com.ecp.gsy.dcs.zirkapp.app.util.Welcomedb
+tableName=welcome
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=runWelcome
+canBeNull=false
+indexName=welcome_runWelcome_idx
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################

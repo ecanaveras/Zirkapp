@@ -23,6 +23,20 @@
         <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\support-v4-19.1.0-ca0657311e22d5b2a88ee20732df9364b599ba20.jar" />
     </item>
     <item
+        jar="C:\Users\Elder\.gradle\caches\modules-2\files-2.1\com.github.kevinsawicki\http-request\5.6\168305b7a983142b6311a005f0ad96d3b34d92d\http-request-5.6.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="0168305b7a983142b6311a005f0ad96d3b34d92d">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\http-request-5.6-7bb4a802833bb36bf5f0f15b4c114e60e3e6902f.jar" />
+    </item>
+    <item
+        jar="C:\AndroidStudioProjects\Zirkapp\app\libs\ormlite-android-4.48.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="9e45246f4a068cad94e03f34bf8f24358279a7f7">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\ormlite-android-4.48-d43419f2d5ade9971adf2e731dd260d811516cb5.jar" />
+    </item>
+    <item
         jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\19.1.0\classes.jar"
         jumboMode="false"
         revision="19.1.0"
@@ -30,11 +44,11 @@
         <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-1c3c44ef486d699a6687f9e9b59f9667fd557bfc.jar" />
     </item>
     <item
-        jar="C:\Users\Elder\.gradle\caches\modules-2\files-2.1\com.github.kevinsawicki\http-request\5.6\168305b7a983142b6311a005f0ad96d3b34d92d\http-request-5.6.jar"
+        jar="C:\AndroidStudioProjects\Zirkapp\app\libs\ormlite-core-4.48.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="0168305b7a983142b6311a005f0ad96d3b34d92d">
-        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\http-request-5.6-7bb4a802833bb36bf5f0f15b4c114e60e3e6902f.jar" />
+        sha1="00b3081e1074bf380cc1d09d6ef4f8e5415311f2">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\ormlite-core-4.48-b3ab987d4373195d4be8c3bc8138bb42c9ca2ccc.jar" />
     </item>
 
 </items>
