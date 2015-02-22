@@ -1,9 +1,10 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
+
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,7 +20,7 @@ import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.PullDownListView;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.JSONApplication;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,11 +28,12 @@ import java.util.ArrayList;
 /**
  * Created by Elder on 15/07/2014.
  */
-public class Fzimess extends Fragment implements PullDownListView.ListViewTouchEventListener {
+public class Fzimess extends Fragment {
 
     private PullDownListView listZMessages;
     //private TextView lblMessageLoading;
     private AdapterZimess zmAdapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private Menu menuList;
 
     @Override
@@ -52,9 +54,6 @@ public class Fzimess extends Fragment implements PullDownListView.ListViewTouchE
     public boolean onOptionsItemSelected(MenuItem item) {
         //Manejar seleccion en el menú
         switch (item.getItemId()) {
-            case R.id.action_bar_search_zmess:
-                downloadOrUpdateZmess(item);
-                return true;
             case R.id.action_bar_new_zmess:
                 Intent intent = new Intent(getActivity(), NewZimessActivity.class);
                 startActivity(intent);
@@ -68,6 +67,15 @@ public class Fzimess extends Fragment implements PullDownListView.ListViewTouchE
         listZMessages = (PullDownListView) view.findViewById(R.id.listZMessages);
         listZMessages.setDivider(null);
         listZMessages.setDividerHeight(0);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.zimess_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                downloadOrUpdateZmess(swipeRefreshLayout);
+            }
+        });
+
         //mensaje de carga
         //lblMessageLoading = (TextView) view.findViewById(R.id.lblMessageLoading);
 
@@ -83,19 +91,17 @@ public class Fzimess extends Fragment implements PullDownListView.ListViewTouchE
                 gotoDetail(zimess);
             }
         });
-
-        listZMessages.setListViewTouchEventListener(this);
         //Cargar Zimess
-        downloadOrUpdateZmess(getMenuItem(R.id.action_bar_search_zmess));
+        downloadOrUpdateZmess(swipeRefreshLayout);
 
     }
 
-    @Override
-    public void onListViewPulledDown() {
-        Log.i("PullDownListViewActivity", "ListView pulled down");
-        //lblMessageLoading.setVisibility(View.VISIBLE);
-        downloadOrUpdateZmess(getMenuItem(R.id.action_bar_search_zmess));
-    }
+//    @Override
+//    public void onListViewPulledDown() {
+//        Log.i("PullDownListViewActivity", "ListView pulled down");
+//        //lblMessageLoading.setVisibility(View.VISIBLE);
+//        downloadOrUpdateZmess(getMenuItem(R.id.action_bar_search_zmess));
+//    }
 
     private MenuItem getMenuItem(int id) {
         if (menuList != null) {
@@ -123,9 +129,9 @@ public class Fzimess extends Fragment implements PullDownListView.ListViewTouchE
         //getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
     }
 
-    private void downloadOrUpdateZmess(MenuItem item) {
+    private void downloadOrUpdateZmess(SwipeRefreshLayout swipe) {
         // Actualizamos los datos, pasamos el Context para poder mostrar un ProgressDialog
-        ((JSONApplication) getActivity().getApplicationContext()).getData(getActivity(), item, zmAdapter);
+        ((GlobalApplication) getActivity().getApplicationContext()).getData(getActivity(), swipe, zmAdapter);
     }
 
 

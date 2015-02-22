@@ -2,6 +2,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.UserProfileActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
@@ -74,7 +76,9 @@ public class AdapterZimess extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.anim_image_click));
-                Toast.makeText(context, "Ir a perfil de usuario", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, UserProfileActivity.class);
+                context.startActivity(intent);
+                //Toast.makeText(context, "Ir a perfil de usuario", Toast.LENGTH_SHORT).show();
             }
         });
         //Action Options Zimess

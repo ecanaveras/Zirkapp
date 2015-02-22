@@ -9,15 +9,22 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.MenuItem;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterZimess;
+import com.parse.Parse;
+import com.parse.ParseInstallation;
+import com.parse.ParseUser;
 
 /**
  * Created by Elder on 15/07/2014.
  */
-public class JSONApplication extends Application {
+public class GlobalApplication extends Application {
+
+    //Parse
+    private ParseUser currentUser;
 
     private Context context;
     private boolean useApiPython;
@@ -29,11 +36,23 @@ public class JSONApplication extends Application {
     public final static String URL_API_PYTHON = DOMAIN + "/api/zimess/?format=json";
     public final static String URL_API_PYTHON_GET_RADAR = DOMAIN + "/api/zimess/radar/";
 
-    public void getData(Context context, MenuItem item, AdapterZimess arrayAdapter) {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        //Iniciar Parse
+        // Enable Local Datastore.
+        Parse.enableLocalDatastore(this);
+
+        Parse.initialize(this, "VDJEJIMbyuOiis9bwBHmrOIc7XDUqYHQ0TMhA23c", "9EJKzvp4LhRdnLqfH6jkHPaWd58IVXaBKAWdeItE");
+        ParseInstallation.getCurrentInstallation().saveInBackground();
+    }
+
+    public void getData(Context context, SwipeRefreshLayout swipe, AdapterZimess arrayAdapter) {
         this.context = context;
         //Actualizamos los datos del adpater atravez de un Asynctask
         if (isConected()) {
-            new DownloadZimessTask(context, item, arrayAdapter, URL_API_PYTHON_GET_RADAR).execute();
+            new DownloadZimessTask(context, swipe, arrayAdapter, URL_API_PYTHON_GET_RADAR).execute();
         } else {
             //Toast.makeText(this, "Sin conexion", Toast.LENGTH_SHORT).show();
             showDiaglogConection();
@@ -91,5 +110,13 @@ public class JSONApplication extends Application {
                 });
         AlertDialog alertDialog = alBuilder.create();
         alertDialog.show();
+    }
+
+    public ParseUser getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(ParseUser currentUser) {
+        this.currentUser = currentUser;
     }
 }

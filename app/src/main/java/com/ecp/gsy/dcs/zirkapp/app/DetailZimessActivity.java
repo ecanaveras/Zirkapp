@@ -1,9 +1,13 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
@@ -11,11 +15,16 @@ import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 public class DetailZimessActivity extends Activity {
 
     private Zimess zimessDetail;
+    private Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_zimess);
+
+        activity = this;
+
+        //Tomar Zimess enviado.
         zimessDetail = (Zimess) getIntent().getSerializableExtra("zimess");
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setTitle("Zimess");
@@ -30,6 +39,16 @@ public class DetailZimessActivity extends Activity {
         } else {
             txtRespuesta.setHint(null);
         }
+        //Avatar
+        ImageView avatar = (ImageView) findViewById(R.id.imgAvatarDZ);
+        avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view.startAnimation(AnimationUtils.loadAnimation(view.getContext(), R.anim.anim_image_click));
+                Intent intent = new Intent(view.getContext(), UserProfileActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

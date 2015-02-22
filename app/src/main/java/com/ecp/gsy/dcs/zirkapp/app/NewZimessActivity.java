@@ -18,7 +18,7 @@ import android.widget.ToggleButton;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.JSONApplication;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.LoadZimessTask;
 
 public class NewZimessActivity extends Activity implements View.OnClickListener {
@@ -138,7 +138,7 @@ public class NewZimessActivity extends Activity implements View.OnClickListener 
         zimess.setLatitud(managerGPS.getLatitud());
         zimess.setLongitud(managerGPS.getLongitud());
         //Cargarlo a la API
-        new LoadZimessTask(this, zimess, JSONApplication.URL_API_PYTHON).execute();
+        new LoadZimessTask(this, zimess, GlobalApplication.URL_API_PYTHON).execute();
         onBackPressed();
     }
 

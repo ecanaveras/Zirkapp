@@ -3,6 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentActivity;
 
 import com.ecp.gsy.dcs.zirkapp.app.fragments.Fhome;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.Finbox;

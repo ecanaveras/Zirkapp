@@ -87,7 +87,6 @@
             android:layout_height="fill_parent"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/lblWelcomeMsg3"
-            android:id="@+id/txtUserName"
             android:singleLine="false"
             android:textStyle="italic"
             android:typeface="sans"

@@ -10,11 +10,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.DatabaseHelper;
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
 /**
  * Created by Elder on 02/06/2014.
  */
-public class Fwelcome2 extends Fragment implements View.OnClickListener{
+public class Fwelcome2 extends Fragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -26,11 +28,19 @@ public class Fwelcome2 extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View view) {
-        if(view.getId()==R.id.btnWelcome2){
+        if (view.getId() == R.id.btnWelcome2) {
             Intent intent = new Intent();
-            intent.putExtra("boton", "btnWelcome2");
+            intent.putExtra("goLogin", true);
             this.getActivity().setResult(Activity.RESULT_OK, intent);
             this.getActivity().finish();
         }
+    }
+
+    private OrmLiteBaseActivity<DatabaseHelper> getOrmLiteBaseActivity() {
+        Activity activity = getActivity();
+        if (activity instanceof OrmLiteBaseActivity) {
+            return (OrmLiteBaseActivity<DatabaseHelper>) activity;
+        }
+        return null;
     }
 }

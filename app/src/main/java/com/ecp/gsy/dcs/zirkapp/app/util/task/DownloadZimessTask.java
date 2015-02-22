@@ -3,6 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util.task;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -30,27 +31,22 @@ public class DownloadZimessTask extends AsyncTask<Void, Void, Void> {
     private ArrayList<Zimess> data;
     private AdapterZimess adapter;
     private String url;
-    private MenuItem progressBarItemMenu;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private Context context;
     private boolean isApiOnline;
     private int httpStatusCode;
     private int CantNewZimess = 0;
     private ManagerGPS managerGPS;
 
-    public DownloadZimessTask(Context context, MenuItem menuItem, AdapterZimess adapter, String url) {
+    public DownloadZimessTask(Context context, SwipeRefreshLayout swipeRefreshLayout, AdapterZimess adapter, String url) {
         this.context = context;
         this.adapter = adapter;
         this.url = url;
-        progressBarItemMenu = menuItem;
+        this.swipeRefreshLayout = swipeRefreshLayout;
     }
 
     @Override
     protected void onPreExecute() {
-        //Mostramos el progressbaritem en la barra
-        if (progressBarItemMenu != null) {
-            progressBarItemMenu.setActionView(R.layout.progressbar);
-            progressBarItemMenu.expandActionView();
-        }
         managerGPS = new ManagerGPS(context.getApplicationContext());
         super.onPreExecute();
     }
@@ -96,10 +92,7 @@ public class DownloadZimessTask extends AsyncTask<Void, Void, Void> {
         }
 
         //Restauramos el progressbaritem en la barra
-        if (progressBarItemMenu != null) {
-            progressBarItemMenu.collapseActionView();
-            progressBarItemMenu.setActionView(null);
-        }
+        swipeRefreshLayout.setRefreshing(false);
         //Personalizamos el mensaje en UI
         //TODO Se Sugiere Manejar un Dialog
         if (!isApiOnline && httpStatusCode == 0) {//Sin conexion

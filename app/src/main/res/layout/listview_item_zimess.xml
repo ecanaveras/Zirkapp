@@ -126,7 +126,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <View style="@style/line_divider" />
+        <View style="@style/line_divider_h" />
 
         <LinearLayout
             android:orientation="vertical"

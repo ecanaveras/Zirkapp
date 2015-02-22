@@ -11,14 +11,30 @@
     <string name="lblWelcomeMsg1">Comunicate con los que te rodean!</string>
     <string name="lblWelcomeMsg2">Dile a todos lo que está pasando cerca de ti!</string>
     <string name="lblWelcomeMsg3">Encuentra amigos donde quiera que vallas!</string>
-    <string name="lblWelcomeLogin">Ingresa con tu cuenta favorita</string>
 
+    <!-- Login Y SingUp -->
+    <string name="lblWelcomeLogin">Ingresa con tu cuenta favorita</string>
+    <string name="lblLogin">Login</string>
+    <string name="lblSingUp">SingUp</string>
+    <string name="lblCreateCount">Crear Cuenta</string>
+    <string name="lblRecuPass">Recuperar Contraseña</string>
+    <string name="lblPassword">Contraseña</string>
+    <string name="lblPasswordConfirm">Confirmar contraseña</string>
+    <string name="lblLoginZirkapp">Cuenta de Zirkapp</string>
+    <string name="lblUser">Usuario</string>
+    <string name="lblEmail">Correo electrónico</string>
+    <string name="msgLoginError">Usuario y/o Contraseña no validos</string>
+    <string name="msgLoginEmpty">Usuario y/o Contraseña necesarios</string>
+    <string name="msgSignUpEmailEmpty">El correo es necesario</string>
+    <string name="msgSignUpUserEmpty">El usuario es necesario</string>
+    <string name="msgSignUpPassEmpty">La contraseña es necesaria</string>
+    <string name="msgSignUpErrorEmpty">Por favor diligencia todos los datos</string>
+    <string name="msgSignUpPassDif">Tus contraseñas no coinciden, verifica tus datos!</string>
+    <string name="msgLoginPassInvalid">Tu contraseña debe tener mínimo de 6 caracteres!</string>
+    <string name="msgMailFailed">Cuenta de correo invalida</string>
 
     <!-- Custom label -->
     <string name="lblHome">Home</string>
-    <string name="lblLogin">Empezar</string>
-    <string name="lblCreateCount">Crear Cuenta</string>
-    <string name="lblRecuPass">Recuperar Contraseña</string>
     <string name="lblConfig">Configuracion</string>
     <string name="lblUpdate">Actualizar</string>
     <string name="lblCateg">Categorias</string>
@@ -37,11 +53,9 @@
     <string name="lblDenounce">Denunciar</string>
     <string name="lblSend">Enviar</string>
     <string name="lblConfigDistance">Distancia de Zimess</string>
+    <string name="lblVisitas">Visitas</string>
 
     <!-- Custom Msg -->
-    <string name="msgLoginError">Usuario y/o Contraseña no validos</string>
-    <string name="msgMailFailed">Cuenta de correo valida</string>
-    <string name="msgUserIgnorado">Usuario Ignorado</string>
     <string name="msgNoAmygos">No tienes amygos</string>
     <string name="msgYes">SI</string>
     <string name="msgNo">NO</string>
@@ -59,6 +73,7 @@
     <string name="msgOutConexion">Out! parece que estas sin conexión, o algo pasa en la web!</string>
     <string name="msgNoLoadZimess">No hay zimess cerca a tu posición! Animate, empieza tu!</string>
     <string name="msgReply">Dile algo a</string>
+    <string name="msgUserIgnorado">Usuario Ignorado</string>
 
     <!-- Titles -->
     <string name="title_activity_radar">RadarActivity</string>
@@ -85,4 +100,11 @@
         <item>4</item>
         <item>5</item>
     </string-array>
+
+    <string name="title_activity_login_signup">LoginSignupActivity</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="lblUsersOnline">Usuarios Online</string>
+
 </resources>

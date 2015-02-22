@@ -1,6 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -9,27 +10,33 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.util.DatabaseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.ScreenSlidePagerAdapter;
+import com.ecp.gsy.dcs.zirkapp.app.util.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterNavigation;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
-import com.parse.LogInCallback;
-import com.parse.ParseException;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.parse.Parse;
+import com.parse.ParseInstallation;
 import com.parse.ParseUser;
-import com.parse.SignUpCallback;
 
 import java.util.ArrayList;
+import java.util.List;
 
-
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
     //KEY FRAGMENT
     private static final int HOME = 0;
@@ -48,30 +55,54 @@ public class MainActivity extends FragmentActivity {
     private TypedArray navIcons;
     private ArrayList<ItemListDrawer> navItems;
     private AdapterNavigation navAdapter;
+    private View headerDrawer;
     //Fragments
     private FragmentManager fragmentManager;
     private ScreenSlidePagerAdapter fragmentAdapter;
     private int indexBackOrDefaultFragment;
 
-
     private ActionBar actionBar;
 
     private ManagerWelcome managerWelcome;
 
-    //User login parse
-    private boolean signUpParse;
-    String user = "zuser1";
-    String pass = "12345";
-
+    //Usuario de Parse
+    private ParseUser userZirkapp = null;
 
     //Respuesta del welcome
-    int inputRequestCode;
-    boolean runWelcome = true;
+    private int inputWelcomeRequestCode = 10;
+    private boolean runWelcome = true;
+
+    //Respuesta del Login
+    private int inputLoginRequestCode = 100;
+
+    private OrmLiteBaseActivity<DatabaseHelper> getOrlOrmLiteBaseActivity() {
+        Activity activity = this;
+        if (activity instanceof OrmLiteBaseActivity) {
+            return (OrmLiteBaseActivity<DatabaseHelper>) activity;
+        }
+        return null;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Generar HashKey
+//        try {
+//            PackageInfo info = getPackageManager().getPackageInfo("com.ecp.gsy.dcs.zirkapp", PackageManager.GET_SIGNATURES);
+//            for (Signature signature : info.signatures) {
+//                MessageDigest md = MessageDigest.getInstance("SHA");
+//                md.update(signature.toByteArray());
+//                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+//            }
+//        } catch (PackageManager.NameNotFoundException e) {
+//            Log.e("KeyHash NameNotFoundException",e.getMessage());
+//        } catch (NoSuchAlgorithmException e) {
+//            Log.e("KeyHash NoSuchAlgorithmException",e.getMessage());
+//        }
+
+
         //Manipulando Fragments
         FragmentManager fm = getFragmentManager();
         fragments[HOME] = fm.findFragmentById(R.id.fhome);
@@ -87,26 +118,29 @@ public class MainActivity extends FragmentActivity {
         //Fragment a Mostrar en caso de un CALL a la Activity
         indexBackOrDefaultFragment = getIntent().getIntExtra("posicion", 1);
 
-//        //Iniciar Push
-//        Parse.initialize(this, "VDJEJIMbyuOiis9bwBHmrOIc7XDUqYHQ0TMhA23c",
-//                "9EJKzvp4LhRdnLqfH6jkHPaWd58IVXaBKAWdeItE");
-//        PushService.setDefaultPushCallback(this, MainActivity.class);
-//        ParseInstallation.getCurrentInstallation().saveInBackground();
-//
-//        ParseAnalytics.trackAppOpened(getIntent());
-//
-//        if (!loginParse()) {
-//            signUpParse();
-//            loginParse();
-//        }
+        //Crea el menú Lateral
+        createDrawer();
 
-
-        try {
-//            runWelcome = savedInstanceState.getBoolean("runWelcome");
-        } catch (Exception e) {
-            e.printStackTrace();
+        //Fragment por Default
+        if (savedInstanceState == null) {
+            selectItemDrawer(0);
+        } else {
+            selectItemDrawer(indexBackOrDefaultFragment);
         }
 
+        //User Parse
+        userZirkapp = ParseUser.getCurrentUser();
+        if (userZirkapp == null) {
+            Intent login = new Intent(this, ManagerLogin.class);
+            startActivityForResult(login, inputLoginRequestCode);
+        }else{
+            this.setUserZirkapp(userZirkapp);
+            initSinchService();
+            refreshDatosDrawer();
+        }
+    }
+
+    private void createDrawer() {
         //UI
         //Obtener los titulos para el Drawer
         navTitles = getResources().getStringArray(R.array.options_drawer);
@@ -115,17 +149,22 @@ public class MainActivity extends FragmentActivity {
         //Listado de titulos e iconos  para el Drawer
         navItems = new ArrayList<ItemListDrawer>();
         //Zimess
-        navItems.add(new ItemListDrawer(navTitles[1], navIcons.getResourceId(2, -1))); //TODO Corregir imagenes Drawer
+        navItems.add(new ItemListDrawer(navTitles[1], R.drawable.ic_launcher)); //TODO Corregir imagenes Drawer
         //Inbox
-        navItems.add(new ItemListDrawer(navTitles[2], navIcons.getResourceId(2, -1)));
+        navItems.add(new ItemListDrawer(navTitles[2], R.drawable.ic_launcher));
         //Lista de Navegacion
         navListView = (ListView) findViewById(R.id.left_drawer);
         //Adapter
         navAdapter = new AdapterNavigation(this, navItems);
-        //Layout Header para la lista en Drawer
-        View header = getLayoutInflater().inflate(R.layout.header_drawer_menu, null);
+
+        //Layout Header Y Footer para la lista en Drawer
+        headerDrawer = getLayoutInflater().inflate(R.layout.header_drawer_menu, null);
+
+        //View footer = getLayoutInflater().inflate(R.layout.footer_drawer_menu, null);
         //Establecemos el header
-        navListView.addHeaderView(header);
+        navListView.addHeaderView(headerDrawer);
+        //Establecemos el Footer
+        //navListView.addFooterView(footer);
         //navListView.setAdapter(new ArrayAdapter<String>(this, (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? android.R.layout.simple_list_item_activated_1 : android.R.layout.simple_list_item_checked), navTitles));
         //Establecemos el adapter a la lista
         navListView.setAdapter(navAdapter);
@@ -153,12 +192,19 @@ public class MainActivity extends FragmentActivity {
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        //Fragment por Default
-        if (savedInstanceState == null) {
-            selectItemDrawer(0);
-        } else {
-            selectItemDrawer(indexBackOrDefaultFragment);
-        }
+    }
+
+    private void initSinchService(){
+        final Intent serviceIntent = new Intent(getApplicationContext(), MessageService.class);
+        startService(serviceIntent);
+    }
+
+    private void refreshDatosDrawer(){
+        //Personalizar el header.
+        TextView lblUsername = (TextView) headerDrawer.findViewById(R.id.lblUserName);
+        TextView lblUsermail = (TextView) headerDrawer.findViewById(R.id.lblUserEmail);
+        lblUsername.setText(userZirkapp.getUsername());
+        lblUsermail.setText(userZirkapp.getEmail());
     }
 
     /**
@@ -169,7 +215,7 @@ public class MainActivity extends FragmentActivity {
     public void selectItemDrawer(int position) {
         //Reemplazar el content_frame
         //fragmentManager.beginTransaction().replace(R.id.content_frame, fragmentAdapter.getItem(position)).commit();
-        switch (position){
+        switch (position) {
             case 0:
                 showFragment(HOME, false);
                 break;
@@ -186,20 +232,20 @@ public class MainActivity extends FragmentActivity {
         drawerNavigation.closeDrawer(navListView);
     }
 
-    private void showFragment(int indexFragment, boolean addToBackStack){
+    private void showFragment(int indexFragment, boolean addToBackStack) {
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         for (int i = 0; i < fragments.length; i++) {
-            if(i == indexFragment){
+            if (i == indexFragment) {
                 ft.show(fragments[i]);
 //                if(Session.getActiveSession().isClosed()){
 //                    drawerNavigation.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 //                }
-            }else {
+            } else {
                 ft.hide(fragments[i]);
             }
         }
-        if(addToBackStack){
+        if (addToBackStack) {
             ft.addToBackStack(null);
         }
         ft.commit();
@@ -213,8 +259,7 @@ public class MainActivity extends FragmentActivity {
     private void initWelcome(boolean run) {
         Intent intent = new Intent(this, ManagerWelcome.class);
         intent.putExtra("run", run);
-        inputRequestCode = 10;
-        startActivityForResult(intent, inputRequestCode);
+        startActivityForResult(intent, inputWelcomeRequestCode);
     }
 
     @Override
@@ -230,15 +275,8 @@ public class MainActivity extends FragmentActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         boolean drawerOpen = drawerNavigation.isDrawerOpen(navListView);
-        menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -253,64 +291,64 @@ public class MainActivity extends FragmentActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        //TODO Consultar base de datos para indicar si se iniciar el welcome
+        List<Welcomedb> listWdb = new ArrayList<Welcomedb>();
+        if (getOrlOrmLiteBaseActivity() != null) {
+            DatabaseHelper helper = getOrlOrmLiteBaseActivity().getHelper();
+            RuntimeExceptionDao<Welcomedb, Integer> dao = helper.getWelcomedbRuntimeDao();
+            listWdb = dao.queryForAll();
+        }
+        //Si existe un registro de welcolme, no se mostrará la pantalla de bienvenida
+        for (Welcomedb w : listWdb) {
+            runWelcome = false;
+            Log.i(MainActivity.class.getSimpleName(), "onStart() " + w.getRunWelcome());
+        }
         if (runWelcome) {
-            //initWelcome(true);
+            initWelcome(true);
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == inputRequestCode) {
-            if (resultCode == RESULT_OK) {
-                //TODO Guardar en base de datos
+        //Respuesta del Welcome
+        if (requestCode == inputWelcomeRequestCode) { //Welcome
+            boolean goLogin = data.getBooleanExtra("goLogin", false);
+            if (resultCode == RESULT_OK && goLogin) {
+                Welcomedb wdb = new Welcomedb("SI");
+                if (getOrlOrmLiteBaseActivity() != null) {
+                    DatabaseHelper helper = getOrlOrmLiteBaseActivity().getHelper();
+                    RuntimeExceptionDao<Welcomedb, Integer> dao = helper.getWelcomedbRuntimeDao();
+                    dao.create(wdb);
+                }
                 runWelcome = false;
             }
         }
+        //Respuesta del Login
+        if (requestCode == inputLoginRequestCode) {
+            boolean loginOk = data.getBooleanExtra("loginOk", false);
+            if (resultCode == RESULT_OK && loginOk) {
+                userZirkapp = ParseUser.getCurrentUser();
+                this.setUserZirkapp(userZirkapp);
+                initSinchService();
+                refreshDatosDrawer();
+            } else {
+                Toast.makeText(getApplicationContext(),
+                        "No ha sido posible loguearse",
+                        Toast.LENGTH_LONG).show();
+            }
+
+        }
     }
 
-
-    /**
-     * PARSE
-     */
-    private void signUpParse() {
-        ParseUser parseUser = new ParseUser();
-        parseUser.setUsername(user);
-        parseUser.setPassword(pass);
-        parseUser.signUpInBackground(new SignUpCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Toast.makeText(getApplicationContext(), "No login in parse", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
-    /**
-     * PARSE
-     *
-     * @return
-     */
-    private boolean loginParse() {
-        final boolean[] done = {false};
-        ParseUser.logInInBackground(user, pass, new LogInCallback() {
-            @Override
-            public void done(ParseUser parseUser, ParseException e) {
-                if (parseUser == null) {
-                    Toast.makeText(getApplicationContext(), "No login in parse", Toast.LENGTH_SHORT).show();
-                    done[0] = false;
-                } else {
-                    done[0] = true;
-                }
-            }
-        });
-        return done[0];
+    @Override
+    protected void onDestroy() {
+        stopService(new Intent(this, MessageService.class));
+        super.onDestroy();
     }
 
     /**
@@ -321,5 +359,10 @@ public class MainActivity extends FragmentActivity {
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
             selectItemDrawer(position);
         }
+    }
+
+    public void setUserZirkapp(ParseUser user) {
+        final GlobalApplication globalApplication = (GlobalApplication) getApplicationContext();
+        globalApplication.setCurrentUser(user);
     }
 }
