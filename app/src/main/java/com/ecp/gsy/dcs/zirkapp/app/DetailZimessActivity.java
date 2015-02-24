@@ -49,6 +49,8 @@ public class DetailZimessActivity extends Activity {
 
         //Tomar Zimess enviado.
         zimessDetail = globalApplication.getTempZimess(); // (ZimessNew) getIntent().getSerializableExtra("zimess");
+        userNameParse = getIntent().getStringExtra("usernameZimess");
+
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setTitle("Zimess");
 
@@ -74,7 +76,7 @@ public class DetailZimessActivity extends Activity {
     @Override
     protected void onStart() {
         //Buscar username del Zimess
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        /*ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.getInBackground(zimessDetail.getUserId(), new GetCallback<ParseUser>() {
             @Override
             public void done(ParseUser parseUser, ParseException e) {
@@ -85,14 +87,9 @@ public class DetailZimessActivity extends Activity {
                     Log.e("Parse.findUser", "Error la buscar el usuario");
                 }
             }
-        });
+        });*/
 
-        if (userNameParse != null) {
-            String msgUsername = new StringBuffer(getResources().getString(R.string.msgReply)).append(" ").append(userNameParse).toString();
-            txtComment.setHint(msgUsername);
-        } else {
-            txtComment.setHint(null);
-        }
+
         super.onStart();
     }
 
@@ -101,6 +98,14 @@ public class DetailZimessActivity extends Activity {
         TextView lblZimessText = (TextView) findViewById(R.id.lblZimessText);
         lblZimessText.setText(zimessDetail.getZimessText());
         txtComment = (EditText) findViewById(R.id.txtZimessComment);
+
+        //Set custom hint
+        if (userNameParse != null) {
+            String msgUsername = new StringBuffer(getResources().getString(R.string.msgReply)).append(" ").append(userNameParse).toString();
+            txtComment.setHint(msgUsername);
+        } else {
+            txtComment.setHint(null);
+        }
 
         //Avatar
         ImageView avatar = (ImageView) findViewById(R.id.imgAvatarDZ);

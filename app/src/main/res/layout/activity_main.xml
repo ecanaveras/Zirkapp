@@ -22,12 +22,6 @@
     <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/fzimess"
-        android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.Fzimess"
-        tools:layout="@layout/fragment_zimess" />
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/finbox"
         android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.Finbox"
         tools:layout="@layout/fragment_inbox" />

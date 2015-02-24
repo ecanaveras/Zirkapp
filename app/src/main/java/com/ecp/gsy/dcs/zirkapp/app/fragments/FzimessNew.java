@@ -3,7 +3,6 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,15 +12,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
-import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivityParse;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterZimessNew;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
@@ -30,8 +26,8 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,7 +124,10 @@ public class FzimessNew extends Fragment {
     private void gotoDetail(ZimessNew zimess) {
         final GlobalApplication globalApplication = (GlobalApplication) getActivity().getApplication();
         globalApplication.setTempZimess(zimess);
+        ParseUser parseUser = globalApplication.getCustomParseUser(zimess.getUserId());
+        String userNameZimess = parseUser != null ? parseUser.getUsername() : null;
         Intent intent = new Intent(getActivity(), DetailZimessActivity.class);
+        intent.putExtra("usernameZimess", userNameZimess);
         getActivity().startActivity(intent);
         //Animar
         //getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);

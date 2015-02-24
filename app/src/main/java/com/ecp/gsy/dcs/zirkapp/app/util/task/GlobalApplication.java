@@ -9,22 +9,16 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.view.MenuItem;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
-import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import java.util.List;
 
 /**
  * Created by Elder on 15/07/2014.
@@ -98,17 +92,6 @@ public class GlobalApplication extends Application {
      */
     public ParseUser getCurrentUser() {
         return ParseUser.getCurrentUser();
-    }
-
-    public void getData(Context context, SwipeRefreshLayout swipe, AdapterZimess arrayAdapter) {
-        this.context = context;
-        //Actualizamos los datos del adpater atravez de un Asynctask
-        if (isConected()) {
-            new DownloadZimessTask(context, swipe, arrayAdapter, URL_API_PYTHON_GET_RADAR).execute();
-        } else {
-            //Toast.makeText(this, "Sin conexion", Toast.LENGTH_SHORT).show();
-            showDiaglogConection();
-        }
     }
 
     public ZimessNew getTempZimess() {

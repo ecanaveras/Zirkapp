@@ -54,6 +54,7 @@
     <string name="lblSend">Enviar</string>
     <string name="lblConfigDistance">Distancia de Zimess</string>
     <string name="lblVisitas">Visitas</string>
+    <string name="lblUsersOnline">Usuarios Online</string>
 
     <!-- Custom Msg -->
     <string name="msgNoAmygos">No tienes amygos</string>
@@ -76,7 +77,6 @@
     <string name="msgUserIgnorado">Usuario Ignorado</string>
 
     <!-- Titles -->
-    <string name="title_activity_radar">RadarActivity</string>
     <string name="title_activity_detail_anonimo">DetailAnonimoActivity</string>
     <string name="title_activity_detail_whiz">WhizDetailActivity</string>
     <string name="title_activity_manager_welcome">Welcome Zirkapp</string>
@@ -85,8 +85,8 @@
     <string-array name="options_drawer">
         <item>Home</item>
         <item>Zimess</item>
-        <item>Inbox</item>
-        <item>Zimess New</item>
+        <item>Chat</item>
+        <item>Notificaciones</item>
     </string-array>
 
     <array name="navigations_icons">
@@ -94,18 +94,6 @@
         <item>@drawable/ic_location</item>
     </array>
 
-    <string-array name="list_whiz">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-    </string-array>
 
-    <string name="title_activity_login_signup">LoginSignupActivity</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
-    <string name="lblUsersOnline">Usuarios Online</string>
 
 </resources>

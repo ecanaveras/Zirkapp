@@ -34,7 +34,7 @@ public class MessageService extends Service implements SinchClientListener{
         currentUserId = ParseUser.getCurrentUser().getObjectId();
         if(currentUserId != null && !isSinchClientStarted()){
             //TODO MENSAJERIA DISABLED
-            startSinchClient(currentUserId);
+            //startSinchClient(currentUserId);
         }
 
         //broadcaster = LocalBroadcastManager.getInstance(this);

@@ -43,9 +43,8 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     private static final int HOME = 0;
     private static final int ZIMESS = 1;
     private static final int INBOX = 2;
-    private static final int ZIMESS_NEW = 3;
     //TOTAL FRAGMENTS
-    private static final int FRAGMENT_COUNT = 4;
+    private static final int FRAGMENT_COUNT = 3;
     //ARRAY FRAGMENTS
     private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
 
@@ -108,9 +107,8 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         //Manipulando Fragments
         FragmentManager fm = getFragmentManager();
         fragments[HOME] = fm.findFragmentById(R.id.fhome);
-        fragments[ZIMESS] = fm.findFragmentById(R.id.fzimess);
+        fragments[ZIMESS] = fm.findFragmentById(R.id.fzimessNew);
         fragments[INBOX] = fm.findFragmentById(R.id.finbox);
-        fragments[ZIMESS_NEW] = fm.findFragmentById(R.id.fzimessNew);
 
         FragmentTransaction ft = fm.beginTransaction();
         for (int i = 0; i < fragments.length; i++) {
@@ -147,7 +145,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
                     }
                 }
             });
-            initSinchService(); //TODO MENSAJERIA DISABLED
+            //initSinchService(); //TODO MENSAJERIA DISABLED
             refreshDatosDrawer();
         }
     }
@@ -238,9 +236,6 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
                 break;
             case 2:
                 showFragment(INBOX, false);
-                break;
-            case 3:
-                showFragment(ZIMESS_NEW, false);
                 break;
         }
         //Establece la posicion
