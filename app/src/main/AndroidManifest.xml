@@ -15,6 +15,11 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <permission android:name="com.ecp.gsy.dcs.zirkapp.app.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.ecp.gsy.dcs.zirkapp.app.permission.C2D_MESSAGE" />
 
     <application
         android:name=".util.task.GlobalApplication"
@@ -43,6 +48,16 @@
             />
         <activity
             android:name=".NewZimessActivity"
+            android:label="@string/lblAddZmess"
+            android:windowSoftInputMode="stateVisible|adjustResize">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".NewZimessActivityParse"
             android:label="@string/lblAddZmess"
             android:windowSoftInputMode="stateVisible|adjustResize">
 
@@ -101,6 +116,10 @@
                 <action android:name="com.parse.push.intent.OPEN" />
             </intent-filter>
         </receiver>
+
+        <!-- replace @drawable/push_icon with your push icon identifier -->
+        <meta-data android:name="com.parse.push.notification_icon" android:resource="@android:drawable/ic_dialog_alert"/>
+
         <!--FIN PARSE-->
     </application>
 

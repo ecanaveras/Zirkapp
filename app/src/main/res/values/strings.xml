@@ -86,6 +86,7 @@
         <item>Home</item>
         <item>Zimess</item>
         <item>Inbox</item>
+        <item>Zimess New</item>
     </string-array>
 
     <array name="navigations_icons">

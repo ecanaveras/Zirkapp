@@ -31,6 +31,12 @@
         android:id="@+id/finbox"
         android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.Finbox"
         tools:layout="@layout/fragment_inbox" />
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/fzimessNew"
+        android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.FzimessNew"
+        tools:layout="@layout/fragment_zimess_new" />
     <!-- Lista de Navegacion -->
     <ListView
         android:id="@+id/left_drawer"

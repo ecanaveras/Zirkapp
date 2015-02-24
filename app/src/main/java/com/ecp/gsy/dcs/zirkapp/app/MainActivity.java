@@ -29,9 +29,10 @@ import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
-import com.parse.Parse;
-import com.parse.ParseInstallation;
+import com.parse.ParseException;
+import com.parse.ParsePush;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +43,9 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     private static final int HOME = 0;
     private static final int ZIMESS = 1;
     private static final int INBOX = 2;
+    private static final int ZIMESS_NEW = 3;
     //TOTAL FRAGMENTS
-    private static final int FRAGMENT_COUNT = 3;
+    private static final int FRAGMENT_COUNT = 4;
     //ARRAY FRAGMENTS
     private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
 
@@ -108,6 +110,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         fragments[HOME] = fm.findFragmentById(R.id.fhome);
         fragments[ZIMESS] = fm.findFragmentById(R.id.fzimess);
         fragments[INBOX] = fm.findFragmentById(R.id.finbox);
+        fragments[ZIMESS_NEW] = fm.findFragmentById(R.id.fzimessNew);
 
         FragmentTransaction ft = fm.beginTransaction();
         for (int i = 0; i < fragments.length; i++) {
@@ -134,8 +137,18 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
             Intent login = new Intent(this, ManagerLogin.class);
             startActivityForResult(login, inputLoginRequestCode);
         }else{
+            ParsePush.subscribeInBackground("", new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+                    } else {
+                        Log.e("com.parse.push", "failed to subscribe for push", e);
+                    }
+                }
+            });
             this.setUserZirkapp(userZirkapp);
-            initSinchService();
+            //initSinchService(); //TODO MENSAJERIA DISABLED
             refreshDatosDrawer();
         }
     }
@@ -152,6 +165,8 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         navItems.add(new ItemListDrawer(navTitles[1], R.drawable.ic_launcher)); //TODO Corregir imagenes Drawer
         //Inbox
         navItems.add(new ItemListDrawer(navTitles[2], R.drawable.ic_launcher));
+        //Zimess_new
+        navItems.add(new ItemListDrawer(navTitles[3], R.drawable.ic_launcher)); //TODO Corregir imagenes Drawer
         //Lista de Navegacion
         navListView = (ListView) findViewById(R.id.left_drawer);
         //Adapter
@@ -224,6 +239,9 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
                 break;
             case 2:
                 showFragment(INBOX, false);
+                break;
+            case 3:
+                showFragment(ZIMESS_NEW, false);
                 break;
         }
         //Establece la posicion
