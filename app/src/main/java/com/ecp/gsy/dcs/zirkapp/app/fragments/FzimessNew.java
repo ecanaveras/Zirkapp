@@ -3,6 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,9 +12,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivityParse;
 import com.ecp.gsy.dcs.zirkapp.app.R;
@@ -28,6 +31,7 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +70,13 @@ public class FzimessNew extends Fragment {
 
     private void inicializarCompUI(View view) {
         listViewZimess = (ListView) view.findViewById(R.id.listZMessages);
+        listViewZimess.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ZimessNew zimess = (ZimessNew) adapterView.getAdapter().getItem(i);
+                gotoDetail(zimess);
+            }
+        });
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.zimess_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -101,12 +112,26 @@ public class FzimessNew extends Fragment {
                     adapterZimessNew = new AdapterZimessNew(getActivity(), zimessNewArrayList);
                     listViewZimess.setAdapter(adapterZimessNew);
                 } else {
-                    Log.e("Zimmes", "Zimess Not Found");
+                    Log.e("Parse.Zimess", "Zimess Not Found");
                 }
             }
         });
 
         swipeRefreshLayout.setRefreshing(false);
+    }
+
+    /**
+     * Vamos al detalle del Zimess
+     *
+     * @param zimess
+     */
+    private void gotoDetail(ZimessNew zimess) {
+        final GlobalApplication globalApplication = (GlobalApplication) getActivity().getApplication();
+        globalApplication.setTempZimess(zimess);
+        Intent intent = new Intent(getActivity(), DetailZimessActivity.class);
+        getActivity().startActivity(intent);
+        //Animar
+        //getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
     }
 
     @Override

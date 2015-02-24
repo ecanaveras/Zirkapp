@@ -147,8 +147,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
                     }
                 }
             });
-            this.setUserZirkapp(userZirkapp);
-            //initSinchService(); //TODO MENSAJERIA DISABLED
+            initSinchService(); //TODO MENSAJERIA DISABLED
             refreshDatosDrawer();
         }
     }
@@ -351,7 +350,6 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
             boolean loginOk = data.getBooleanExtra("loginOk", false);
             if (resultCode == RESULT_OK && loginOk) {
                 userZirkapp = ParseUser.getCurrentUser();
-                this.setUserZirkapp(userZirkapp);
                 initSinchService();
                 refreshDatosDrawer();
             } else {
@@ -377,10 +375,5 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
             selectItemDrawer(position);
         }
-    }
-
-    public void setUserZirkapp(ParseUser user) {
-        final GlobalApplication globalApplication = (GlobalApplication) getApplicationContext();
-        globalApplication.setCurrentUser(user);
     }
 }

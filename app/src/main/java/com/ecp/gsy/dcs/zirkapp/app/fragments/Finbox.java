@@ -45,6 +45,9 @@ public class Finbox extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_inbox, container, false);
+
+        //showSpinner();
+
         inicializarCompUI(view);
         return view;
     }

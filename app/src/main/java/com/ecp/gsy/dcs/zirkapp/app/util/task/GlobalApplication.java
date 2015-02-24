@@ -10,13 +10,21 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterZimess;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.Parse;
+import com.parse.ParseException;
 import com.parse.ParseInstallation;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.util.List;
 
 /**
  * Created by Elder on 15/07/2014.
@@ -25,6 +33,8 @@ public class GlobalApplication extends Application {
 
     //Parse
     private ParseUser currentUser;
+    private ParseUser customParseUser;
+    private ZimessNew tempZimess;
 
     private Context context;
     private boolean useApiPython;
@@ -32,7 +42,7 @@ public class GlobalApplication extends Application {
     //private final static String URL_API_PHP = "http://zirkapp.byethost3.com/api/v1.1/zsms";
 
     //public final static String URL_API_PYTHON = "http://192.168.0.12:8000/zimess/?format=json";
-    private final static String DOMAIN =  "http://zirkapp.herokuapp.com"; //"http://192.168.56.1:8000";
+    private final static String DOMAIN = "http://zirkapp.herokuapp.com"; //"http://192.168.56.1:8000";
     public final static String URL_API_PYTHON = DOMAIN + "/api/zimess/?format=json";
     public final static String URL_API_PYTHON_GET_RADAR = DOMAIN + "/api/zimess/radar/";
 
@@ -48,6 +58,48 @@ public class GlobalApplication extends Application {
         ParseInstallation.getCurrentInstallation().saveInBackground();
     }
 
+
+    /**
+     * Retorna el ParseUser buscando por ObjectId
+     * @param userId
+     * @return
+     */
+    public ParseUser getCustomParseUser(String userId) {
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.getInBackground(userId, new GetCallback<ParseUser>() {
+            @Override
+            public void done(ParseUser parseUser, ParseException e) {
+                if (e == null) {
+                    customParseUser = parseUser;
+                } else {
+                    Log.e("Parse.findUser", "Error la buscar el usuario");
+                }
+            }
+        });
+        /*
+        query.whereEqualTo("objectId", userId);
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> parseUsers, ParseException e) {
+                if (e == null) {
+                    customParseUser = parseUsers.get(0);
+                } else {
+                    Log.e("Parse.findUser", "Error la buscar el usuario");
+                }
+            }
+        });
+        */
+        return customParseUser;
+    }
+
+    /**
+     * Retorna el current ParseUser
+     * @return
+     */
+    public ParseUser getCurrentUser() {
+        return ParseUser.getCurrentUser();
+    }
+
     public void getData(Context context, SwipeRefreshLayout swipe, AdapterZimess arrayAdapter) {
         this.context = context;
         //Actualizamos los datos del adpater atravez de un Asynctask
@@ -57,6 +109,14 @@ public class GlobalApplication extends Application {
             //Toast.makeText(this, "Sin conexion", Toast.LENGTH_SHORT).show();
             showDiaglogConection();
         }
+    }
+
+    public ZimessNew getTempZimess() {
+        return tempZimess;
+    }
+
+    public void setTempZimess(ZimessNew tempZimess) {
+        this.tempZimess = tempZimess;
     }
 
     //Verificar si hay conexion a Internet
@@ -110,13 +170,5 @@ public class GlobalApplication extends Application {
                 });
         AlertDialog alertDialog = alBuilder.create();
         alertDialog.show();
-    }
-
-    public ParseUser getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(ParseUser currentUser) {
-        this.currentUser = currentUser;
     }
 }

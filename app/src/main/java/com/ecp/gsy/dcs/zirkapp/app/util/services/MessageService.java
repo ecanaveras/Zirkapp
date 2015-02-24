@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.parse.ParseUser;
 import com.sinch.android.rtc.ClientRegistration;
@@ -24,6 +25,8 @@ public class MessageService extends Service implements SinchClientListener{
     private SinchClient sinchClient = null;
     private MessageClient messageClient = null;
     private String currentUserId = null;
+    private LocalBroadcastManager broadcaster;
+    private Intent broadcastIntent = new Intent("com.ecp.gsy.dcs.zirkapp.MainActivity");
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -31,8 +34,10 @@ public class MessageService extends Service implements SinchClientListener{
         currentUserId = ParseUser.getCurrentUser().getObjectId();
         if(currentUserId != null && !isSinchClientStarted()){
             //TODO MENSAJERIA DISABLED
-            //startSinchClient(currentUserId);
+            startSinchClient(currentUserId);
         }
+
+        //broadcaster = LocalBroadcastManager.getInstance(this);
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -70,6 +75,9 @@ public class MessageService extends Service implements SinchClientListener{
 
     @Override
     public void onClientStarted(SinchClient sinchClient) {
+//        broadcastIntent.putExtra("success", true);
+//        broadcaster.sendBroadcast(broadcastIntent);
+
         sinchClient.startListeningOnActiveConnection();
         messageClient = sinchClient.getMessageClient();
     }
@@ -81,6 +89,8 @@ public class MessageService extends Service implements SinchClientListener{
 
     @Override
     public void onClientFailed(SinchClient sinchClient, SinchError sinchError) {
+//        broadcastIntent.putExtra("success", false);
+//        broadcaster.sendBroadcast(broadcastIntent);
         sinchClient = null;
     }
 
