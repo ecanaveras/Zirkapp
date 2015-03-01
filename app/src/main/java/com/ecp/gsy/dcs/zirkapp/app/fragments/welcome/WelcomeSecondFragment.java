@@ -10,17 +10,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.DatabaseHelper;
+import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
 /**
  * Created by Elder on 02/06/2014.
  */
-public class Fwelcome2 extends Fragment implements View.OnClickListener {
+public class WelcomeSecondFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_welcome2, container, false);
+        View view = inflater.inflate(R.layout.fragment_welcome_second, container, false);
         Button btn = (Button) view.findViewById(R.id.btnWelcome2);
         btn.setOnClickListener(this);
         return view;

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.Flogin">
+    tools:context="com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.LoginFragment">
 
     <LinearLayout
         android:orientation="horizontal"

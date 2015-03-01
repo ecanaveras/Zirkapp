@@ -47,16 +47,6 @@
             android:name=".util.messages.MessagingActivity"
             />
         <activity
-            android:name=".NewZimessActivity"
-            android:label="@string/lblAddZmess"
-            android:windowSoftInputMode="stateVisible|adjustResize">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity
             android:name=".NewZimessActivityParse"
             android:label="@string/lblAddZmess"
             android:windowSoftInputMode="stateVisible|adjustResize">
@@ -69,7 +59,7 @@
         <activity
             android:name=".DetailZimessActivity"
             android:label="@string/title_activity_detail_zimess"
-            android:windowSoftInputMode="stateVisible|adjustResize">
+            android:windowSoftInputMode="stateHidden|adjustResize">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -86,6 +76,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+
+        <activity
+            android:name=".EditProfileActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"/>
 
         <service android:name=".util.services.MessageService" />
 

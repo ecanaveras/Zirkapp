@@ -1,31 +1,32 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterComments;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessComment;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DetailZimessActivity extends Activity {
@@ -35,7 +36,11 @@ public class DetailZimessActivity extends Activity {
     private String currentUserId;
     private String userNameParse;
     private EditText txtComment;
-    private boolean userFound = false;
+    private ListView listComment;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private AdapterComments adapterComment;
+    private ArrayList<ZimessComment> arrayListComment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +94,7 @@ public class DetailZimessActivity extends Activity {
             }
         });*/
 
+        findZimessComment();
 
         super.onStart();
     }
@@ -98,6 +104,14 @@ public class DetailZimessActivity extends Activity {
         TextView lblZimessText = (TextView) findViewById(R.id.lblZimessText);
         lblZimessText.setText(zimessDetail.getZimessText());
         txtComment = (EditText) findViewById(R.id.txtZimessComment);
+        listComment = (ListView) findViewById(R.id.listZComments);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshComment);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                findZimessComment();
+            }
+        });
 
         //Set custom hint
         if (userNameParse != null) {
@@ -144,7 +158,52 @@ public class DetailZimessActivity extends Activity {
         commentObject.put("user", ParseUser.getCurrentUser());
         commentObject.put("zimessId", ParseObject.createWithoutData("ParseZimess", zimessDetail.getZimessId()));
         commentObject.put("commentText", commentText);
-        commentObject.saveInBackground();
+        commentObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    txtComment.setText(null);
+                    findZimessComment();
+                } else {
+                    Toast.makeText(getApplicationContext(),
+                            "Error al enviar tu comentario, reintentalo!",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+    }
+
+    private void findZimessComment() {
+        arrayListComment = new ArrayList<ZimessComment>();
+        //Buscar Zimess
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZComment");
+        query.whereEqualTo("zimessId", ParseObject.createWithoutData("ParseZimess", zimessDetail.getZimessId()));
+        query.include("user");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    for (ParseObject comment : parseObjects) {
+//                        System.out.println("COMMENT "+comment.get("commentText").toString());
+//                        System.out.println("USER_COMMENT " +comment.getParseUser("user"));
+                        ZimessComment zcomment = new ZimessComment();
+                        zcomment.setCommentText(comment.get("commentText").toString());
+                        zcomment.setUserComment(comment.getParseUser("user"));
+                        arrayListComment.add(zcomment);
+                    }
+                    adapterComment = new AdapterComments(activity, arrayListComment);
+                    listComment.setAdapter(adapterComment);
+                    swipeRefreshLayout.setRefreshing(false);
+                } else {
+                    Toast.makeText(activity,
+                            "Error buscando comentarios",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
     }
 
     @Override

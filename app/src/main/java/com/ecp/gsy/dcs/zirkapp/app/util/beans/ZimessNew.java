@@ -3,6 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util.beans;
 import com.parse.ParseGeoPoint;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Created by Elder on 23/02/2015.
@@ -15,7 +16,7 @@ public class ZimessNew implements Serializable{
     private String userId;
     private String zimessText;
     private ParseGeoPoint location;
-
+    private Date createAt;
 
     public String getZimessId() {
         return zimessId;
@@ -49,7 +50,13 @@ public class ZimessNew implements Serializable{
         this.location = location;
     }
 
+    public Date getCreateAt() {
+        return createAt;
+    }
 
+    public void setCreateAt(Date createAt) {
+        this.createAt = createAt;
+    }
 
     /*
     /**

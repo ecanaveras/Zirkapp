@@ -19,7 +19,7 @@ import com.parse.ParseUser;
 /**
  * Created by Elder on 18/02/2015.
  */
-public class Flogin extends Fragment {
+public class LoginFragment extends Fragment {
 
     private Button btnLogin;
     private EditText txtUser;

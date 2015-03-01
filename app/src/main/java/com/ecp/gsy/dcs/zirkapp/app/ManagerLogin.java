@@ -8,9 +8,8 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
 
-import com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.Flogin;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.Fsignup;
-
+import com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.LoginFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.SignupFragment;
 
 
 public class ManagerLogin extends Activity {
@@ -50,9 +49,9 @@ public class ManagerLogin extends Activity {
         public Fragment getItem(int position) {
             switch (position+1){
                 case 1:
-                    return new Flogin();
+                    return new LoginFragment();
                 case 2:
-                    return new Fsignup();
+                    return new SignupFragment();
             }
             return null;
         }

@@ -1,14 +1,15 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/background_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity">
+    tools:context="com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity"
+    android:orientation="vertical">
 
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:orientation="vertical"
@@ -120,7 +121,7 @@
         <View style="@style/line_divider_h" />
 
         <LinearLayout
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="6dp"
             android:layout_marginLeft="8dp"
@@ -146,47 +147,60 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/lblConversation" />
+
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/arrow_down_float"
-                android:layout_marginBottom="4dp"/>
+                android:src="@android:drawable/arrow_down_float"/>
 
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ListView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" />
-
-            </ScrollView>
-
-        </LinearLayout>
-
-
-        <View style="@style/line_divider_h" />
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/txtZimessComment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_weight="1"
-                android:hint="@string/msgReply" />
-
-            <ImageButton
-                android:id="@+id/btnSendZimessComment"
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:layout_gravity="bottom"
-                android:src="@drawable/ic_action_send" />
         </LinearLayout>
     </LinearLayout>
 
-</RelativeLayout>
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        >
+
+        <!-- <android.support.v4.widget.SwipeRefreshLayout
+             android:id="@+id/swipeRefreshComment"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">  android:fillViewport="true" -->
+
+        <ListView
+            android:id="@+id/listZComments"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+
+    <View style="@style/line_divider_h" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom">
+
+        <EditText
+            android:id="@+id/txtZimessComment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:hint="@string/msgReply" />
+
+        <ImageButton
+            android:id="@+id/btnSendZimessComment"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_gravity="bottom"
+            android:src="@drawable/ic_action_send" />
+    </LinearLayout>
+
+</LinearLayout>

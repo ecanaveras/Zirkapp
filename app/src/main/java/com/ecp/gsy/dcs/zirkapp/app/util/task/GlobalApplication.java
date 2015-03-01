@@ -6,6 +6,8 @@ import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
@@ -13,12 +15,21 @@ import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
 import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Created by Elder on 15/07/2014.
@@ -31,14 +42,14 @@ public class GlobalApplication extends Application {
     private ZimessNew tempZimess;
 
     private Context context;
-    private boolean useApiPython;
+//    private boolean useApiPython;
     //Url de la API
     //private final static String URL_API_PHP = "http://zirkapp.byethost3.com/api/v1.1/zsms";
 
     //public final static String URL_API_PYTHON = "http://192.168.0.12:8000/zimess/?format=json";
-    private final static String DOMAIN = "http://zirkapp.herokuapp.com"; //"http://192.168.56.1:8000";
-    public final static String URL_API_PYTHON = DOMAIN + "/api/zimess/?format=json";
-    public final static String URL_API_PYTHON_GET_RADAR = DOMAIN + "/api/zimess/radar/";
+//    private final static String DOMAIN = "http://zirkapp.herokuapp.com"; //"http://192.168.56.1:8000";
+//    public final static String URL_API_PYTHON = DOMAIN + "/api/zimess/?format=json";
+//    public final static String URL_API_PYTHON_GET_RADAR = DOMAIN + "/api/zimess/radar/";
 
     @Override
     public void onCreate() {
@@ -55,6 +66,7 @@ public class GlobalApplication extends Application {
 
     /**
      * Retorna el ParseUser buscando por ObjectId
+     *
      * @param userId
      * @return
      */
@@ -88,10 +100,12 @@ public class GlobalApplication extends Application {
 
     /**
      * Retorna el current ParseUser
+     *
      * @return
      */
     public ParseUser getCurrentUser() {
-        return ParseUser.getCurrentUser();
+        this.currentUser = ParseUser.getCurrentUser();
+        return this.currentUser;
     }
 
     public ZimessNew getTempZimess() {
@@ -100,6 +114,95 @@ public class GlobalApplication extends Application {
 
     public void setTempZimess(ZimessNew tempZimess) {
         this.tempZimess = tempZimess;
+    }
+
+    /**
+     * Describe una fecha o retorna una.
+     *
+     * @param createAt
+     * @return
+     */
+    public String getDescFechaPublicacion(Date createAt) {
+        String descFec = null;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getDefault());
+        calendar.setTime(createAt);
+        Date dateZimess = calendar.getTime();
+
+        SimpleDateFormat sDateFormat = new SimpleDateFormat("MMM-dd-yyyy");
+        if (sDateFormat.format(dateZimess).equals(sDateFormat.format(new Date()))) { //Mismo día
+            descFec = "hoy";
+        } else {
+            calendar.setTime(new Date());
+            int diaMes = calendar.get(Calendar.DAY_OF_MONTH);
+            calendar.set(Calendar.DAY_OF_MONTH, diaMes - 1);
+            if (sDateFormat.format(dateZimess).equals(sDateFormat.format(calendar.getTime()))) {//Mismo dia
+                descFec = "ayer";
+            } else {
+                descFec = new SimpleDateFormat("MMM-dd-yyyy hh:mm a").format(dateZimess);
+            }
+        }
+        return descFec;
+    }
+
+    /**
+     * Retorna una descripcion del tiempo transcurrido
+     *
+     * @param createAt
+     * @return
+     */
+    public String getTimepass(Date createAt) {
+        long MILLSECS_PER_MINUTES = 60 * 1000; //Minutos
+        long MILLSECS_PER_HOUR = 60 * 60 * 1000; //Horas
+        long MILLSECS_PER_DAY = 24 * 60 * 60 * 1000; //Milisegundos al dia
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(createAt);
+        calendar.set(Calendar.HOUR, 0);
+        Date currentDate = new Date();
+        Long time = (currentDate.getTime() - createAt.getTime()); //Tiempo real
+        Long timeDay = (currentDate.getTime() - calendar.getTime().getTime()); //Tiempo con hora 0
+        String result = "";
+        if ((timeDay / MILLSECS_PER_DAY) >= 1.0) {
+            result = new Double(timeDay / MILLSECS_PER_DAY).intValue() + " días";
+        } else if ((time / MILLSECS_PER_HOUR) < 24.0 && (time / MILLSECS_PER_HOUR) > 1.0) {
+            result = new Double(time / MILLSECS_PER_HOUR).intValue() + " horas";
+        } else if ((time / MILLSECS_PER_MINUTES) <= 60.0 && (time / MILLSECS_PER_MINUTES) >= 1.0) {
+            result = new Double(time / MILLSECS_PER_MINUTES).intValue() + " minutos";
+        } else if ((time / 1000) <= 60.0) {
+            result = " pocos segundos";
+        }
+        return "Hace ± " + result;
+    }
+
+    /**
+     * Retorna el nombre de la direccion donde estamos ubicado
+     *
+     * @return
+     */
+    public String getNameLocation() {
+        Geocoder geoCoder = new Geocoder(this, Locale.getDefault());
+        ManagerGPS managerGPS = new ManagerGPS(this);
+        StringBuilder builder = new StringBuilder();
+        try {
+            List<Address> address = geoCoder.getFromLocation(managerGPS.getLatitud(), managerGPS.getLongitud(), 1);
+            if (address.size() > 0) {
+                int maxLines = address.get(0).getMaxAddressLineIndex();
+                for (int i = 0; i < maxLines; i++) {
+                    if ((maxLines -1)  == i) {
+                        String addressStr = address.get(0).getAddressLine(i);
+                        builder.append(addressStr);
+                        builder.append(" ");
+                        //System.out.println("Dir " + i + " " + addressStr);
+                    }
+                }
+            } else {
+                builder.append(getResources().getString(R.string.msgLocationUnknown));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return builder.toString();
     }
 
     //Verificar si hay conexion a Internet
@@ -141,13 +244,13 @@ public class GlobalApplication extends Application {
                 .setPositiveButton(R.string.msgYes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        useApiPython = true;
+//                        useApiPython = true;
                     }
                 })
                 .setNegativeButton(R.string.msgNo, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        useApiPython = false;
+//                        useApiPython = false;
                         dialogInterface.cancel();
                     }
                 });

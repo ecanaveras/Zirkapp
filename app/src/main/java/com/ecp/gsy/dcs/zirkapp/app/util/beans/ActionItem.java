@@ -1,4 +1,4 @@
-package com.ecp.gsy.dcs.zirkapp.app.util;
+package com.ecp.gsy.dcs.zirkapp.app.util.beans;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;

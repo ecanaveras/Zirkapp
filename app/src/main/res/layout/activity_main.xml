@@ -17,29 +17,30 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/fhome"
-        android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.Fhome"
+        android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.HomeFragment"
         tools:layout="@layout/fragment_home" />
     <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/finbox"
-        android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.Finbox"
-        tools:layout="@layout/fragment_inbox" />
+        android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment"
+        tools:layout="@layout/fragment_users_online" />
     <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/fzimessNew"
-        android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.FzimessNew"
-        tools:layout="@layout/fragment_zimess_new" />
+        android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment"
+        tools:layout="@layout/fragment_zimess" />
+
     <!-- Lista de Navegacion -->
     <ListView
         android:id="@+id/left_drawer"
-        android:layout_width="240dp"
-        android:layout_height="fill_parent"
+        android:layout_width="260dp"
+        android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@android:color/white"
+        android:background="@color/text_primary_color"
         android:choiceMode="singleChoice"
-        android:dividerHeight="2dp"
+        android:dividerHeight="1dp"
         />
     <!--android:divider="@android:color/transparent">-->
 </android.support.v4.widget.DrawerLayout>

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ecp.gsy.dcs.zirkapp.app.fragments.Fhome"
+    tools:context="com.ecp.gsy.dcs.zirkapp.app.fragments.HomeFragment"
     style="@style/background_view">
 
 

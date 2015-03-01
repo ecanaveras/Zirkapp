@@ -1,19 +1,19 @@
-package com.ecp.gsy.dcs.zirkapp.app.util;
+package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v13.app.FragmentPagerAdapter;
 
-import com.ecp.gsy.dcs.zirkapp.app.fragments.Fhome;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.Finbox;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.FzimessNew;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.HomeFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 
 /**
  * Created by Elder on 16/07/2014.
  */
 public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
 
-    private FzimessNew fzimess;
+    private ZimessFragment fzimess;
 
     public ScreenSlidePagerAdapter(FragmentManager fm) {
         super(fm);
@@ -24,14 +24,14 @@ public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
         //Bundle agrs = new Bundle();
         switch (position) {
             case 0:
-                return new Fhome();
+                return new HomeFragment();
             case 1:
                 if(fzimess == null) {
-                    fzimess = new FzimessNew();
+                    fzimess = new ZimessFragment();
                 }
                 return fzimess;
             case 2:
-                return new Finbox();
+                return new UsersOnlineFragment();
         }
         return null;
     }

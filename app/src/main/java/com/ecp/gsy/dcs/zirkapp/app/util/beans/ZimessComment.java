@@ -1,5 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.beans;
 
+import com.parse.ParseUser;
+
 /**
  * Created by Elder on 23/02/2015.
  */
@@ -7,7 +9,7 @@ public class ZimessComment {
 
     private String commentId;
     private String zimessId;
-    private String userId;
+    private ParseUser userComment;
     private String commentText;
 
     public String getCommentId() {
@@ -26,12 +28,12 @@ public class ZimessComment {
         this.zimessId = zimessId;
     }
 
-    public String getUserId() {
-        return userId;
+    public ParseUser getUserComment() {
+        return userComment;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserComment(ParseUser userComment) {
+        this.userComment = userComment;
     }
 
     public String getCommentText() {

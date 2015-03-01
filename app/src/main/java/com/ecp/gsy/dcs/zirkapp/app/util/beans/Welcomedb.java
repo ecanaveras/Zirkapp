@@ -1,4 +1,4 @@
-package com.ecp.gsy.dcs.zirkapp.app.util;
+package com.ecp.gsy.dcs.zirkapp.app.util.beans;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;

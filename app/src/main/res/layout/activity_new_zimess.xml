@@ -2,8 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    tools:context="com.ecp.gsy.dcs.zirkapp.app.NewZimessActivity"
-    >
+    tools:context="com.ecp.gsy.dcs.zirkapp.app.NewZimessActivity">
 
     <LinearLayout
         android:orientation="vertical"
@@ -18,63 +17,61 @@
             android:minHeight="40dp"
             android:gravity="center"
             android:visibility="gone"
-            android:textColor="#ffffffff"
-            />
+            android:textColor="#ffffffff" />
 
         <LinearLayout
             android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginRight="5dp"
             android:layout_marginLeft="5dp">
 
             <EditText
+                android:id="@+id/editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/editText"
-                android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine|textCapWords"
+                android:inputType="textShortMessage|textAutoCorrect|textMultiLine|textCapWords"
                 android:imeOptions="actionSend|flagNoEnterAction"
                 android:imeActionLabel="@string/lblSend"
                 android:maxLength="300"
                 android:hint="@string/lblNewZmess"
+                android:layout_weight="1"
                 android:gravity="top" />
 
+
             <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="42dp"
-                android:layout_gravity="bottom"
-                android:gravity="center_vertical">
+                android:gravity="bottom">
 
-                <ToggleButton
+                <ImageView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="New ToggleButton"
-                    android:id="@+id/chkZimessUpdate"
-                    android:singleLine="false"
-                    style="@style/toggle_style"/>
+                    android:layout_height="40dp"
+                    android:src="@android:drawable/ic_menu_mylocation"
+                    android:scaleType="fitCenter" />
 
-                <SeekBar
+                <TextView
+                    android:id="@+id/lblCurrentLocation"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/seekBarTimeOut"
+                    android:layout_height="40dp"
                     android:layout_weight="1"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:progress="72"
-                    android:max="72"
-                    android:indeterminate="false" />
-
+                    android:text="--"
+                    android:textColor="@color/accent_color"
+                    android:singleLine="true"
+                    android:gravity="center_vertical" />
 
                 <ImageButton
                     android:layout_width="60dp"
                     android:layout_height="40dp"
                     android:id="@+id/btnSendZmess"
-                    android:src="@drawable/ic_action_send" />
+                    android:src="@drawable/ic_action_send"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="center_vertical" />
 
             </LinearLayout>
+
 
         </LinearLayout>
     </LinearLayout>

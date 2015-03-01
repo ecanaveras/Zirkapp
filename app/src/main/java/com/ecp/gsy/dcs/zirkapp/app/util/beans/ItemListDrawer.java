@@ -7,10 +7,12 @@ public class ItemListDrawer {
 
     private int Icono;
     private String Titulo;
+    private Integer cantNotificaciones;
 
-    public ItemListDrawer(String titulo, int icono) {
-        Icono = icono;
-        Titulo = titulo;
+    public ItemListDrawer(String titulo, int icono, Integer cantNotificaciones) {
+        this.Icono = icono;
+        this.Titulo = titulo;
+        this.cantNotificaciones = cantNotificaciones;
     }
 
     //<editor-fold desc="GETTERS">
@@ -20,6 +22,10 @@ public class ItemListDrawer {
 
     public String getTitulo() {
         return Titulo;
+    }
+
+    public Integer getCantNotificaciones() {
+        return cantNotificaciones;
     }
     //</editor-fold>
 
@@ -31,5 +37,10 @@ public class ItemListDrawer {
     public void setTitulo(String titulo) {
         Titulo = titulo;
     }
+
+    public void setCantNotificaciones(Integer cantNotificaciones) {
+        this.cantNotificaciones = cantNotificaciones;
+    }
+
     //</editor-fold>
 }

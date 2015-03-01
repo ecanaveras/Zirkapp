@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -20,13 +21,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.util.DatabaseHelper;
-import com.ecp.gsy.dcs.zirkapp.app.util.ScreenSlidePagerAdapter;
-import com.ecp.gsy.dcs.zirkapp.app.util.Welcomedb;
+import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.UpdateDrawerReceiver;
+import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ScreenSlidePagerAdapter;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterNavigation;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.parse.ParseException;
@@ -57,6 +58,9 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     private ArrayList<ItemListDrawer> navItems;
     private AdapterNavigation navAdapter;
     private View headerDrawer;
+
+    private UpdateDrawerReceiver receiver;
+
     //Fragments
     private FragmentManager fragmentManager;
     private ScreenSlidePagerAdapter fragmentAdapter;
@@ -76,6 +80,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     //Respuesta del Login
     private int inputLoginRequestCode = 100;
 
+    //Manejo de la DB
     private OrmLiteBaseActivity<DatabaseHelper> getOrlOrmLiteBaseActivity() {
         Activity activity = this;
         if (activity instanceof OrmLiteBaseActivity) {
@@ -120,7 +125,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         indexBackOrDefaultFragment = getIntent().getIntExtra("posicion", 1);
 
         //Crea el menú Lateral
-        createDrawer();
+        createOrUpdateDrawer();
 
         //Fragment por Default
         if (savedInstanceState == null) {
@@ -150,42 +155,39 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         }
     }
 
-    private void createDrawer() {
-        //UI
-        //Obtener los titulos para el Drawer
-        navTitles = getResources().getStringArray(R.array.options_drawer);
-        //Obetner las url de las imagenes para el Drawer
-        navIcons = getResources().obtainTypedArray(R.array.navigations_icons);
-        //Listado de titulos e iconos  para el Drawer
-        navItems = new ArrayList<ItemListDrawer>();
-        //Zimess
-        navItems.add(new ItemListDrawer(navTitles[1], R.drawable.ic_launcher)); //TODO Corregir imagenes Drawer
-        //Inbox
-        navItems.add(new ItemListDrawer(navTitles[2], R.drawable.ic_launcher));
-        //Zimess_new
-        navItems.add(new ItemListDrawer(navTitles[3], R.drawable.ic_launcher)); //TODO Corregir imagenes Drawer
-        //Lista de Navegacion
-        navListView = (ListView) findViewById(R.id.left_drawer);
-        //Adapter
-        navAdapter = new AdapterNavigation(this, navItems);
+    private void createOrUpdateDrawer() {
 
         //Layout Header Y Footer para la lista en Drawer
         headerDrawer = getLayoutInflater().inflate(R.layout.header_drawer_menu, null);
+        //Config Edid Profile
+        headerDrawer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), EditProfileActivity.class);
+                startActivity(intent);
+            }
+        });
 
-        //View footer = getLayoutInflater().inflate(R.layout.footer_drawer_menu, null);
+        //Lista de Navegacion
+        navListView = (ListView) findViewById(R.id.left_drawer);
         //Establecemos el header
         navListView.addHeaderView(headerDrawer);
         //Establecemos el Footer
         //navListView.addFooterView(footer);
         //navListView.setAdapter(new ArrayAdapter<String>(this, (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? android.R.layout.simple_list_item_activated_1 : android.R.layout.simple_list_item_checked), navTitles));
         //Establecemos el adapter a la lista
-        navListView.setAdapter(navAdapter);
+        //Crea un nuevo Navigation Adapter
+        refreshDrawerAdapter();
+
         navListView.setOnItemClickListener(new DrawerItemClickListener());
         drawerNavigation = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerToggle = new ActionBarDrawerToggle(this, drawerNavigation, R.drawable.ic_drawer, R.string.app_name, R.string.lblCancel) {
             @Override
             public void onDrawerOpened(View drawerView) {
                 actionBar.setTitle(R.string.app_name);
+                //navAdapter.UpdateNotificacion("zimess", receiver.getCantRows());
+                refreshDatosDrawer();
+                refreshDrawerAdapter();
                 invalidateOptionsMenu();
                 super.onDrawerOpened(drawerView);
             }
@@ -203,12 +205,33 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         actionBar = getActionBar();
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-
     }
 
     private void initSinchService(){
         final Intent serviceIntent = new Intent(getApplicationContext(), MessageService.class);
         startService(serviceIntent);
+    }
+
+    private void refreshDrawerAdapter(){
+//        navListView.setAdapter(null);
+//        navAdapter = null;
+        //UI
+        //Obtener los titulos para el Drawer
+        navTitles = getResources().getStringArray(R.array.options_drawer);
+        //Obetner las url de las imagenes para el Drawer
+        navIcons = getResources().obtainTypedArray(R.array.navigations_icons);
+        //Listado de titulos e iconos  para el Drawer
+        navItems = new ArrayList<ItemListDrawer>();
+        //Zimess
+        navItems.add(new ItemListDrawer(navTitles[1], navIcons.getResourceId(0, -1), receiver != null ? receiver.getCantRows() : null)); //TODO Corregir imagenes Drawer
+        //Inbox
+        navItems.add(new ItemListDrawer(navTitles[2], navIcons.getResourceId(1, -1), null));
+        //Zimess_new
+        navItems.add(new ItemListDrawer(navTitles[3], navIcons.getResourceId(2, -1), null)); //TODO Corregir imagenes Drawer
+        //Adapter
+        navAdapter = new AdapterNavigation(this, navItems);
+
+        navListView.setAdapter(navAdapter);
     }
 
     private void refreshDatosDrawer(){
@@ -218,6 +241,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         lblUsername.setText(userZirkapp.getUsername());
         lblUsermail.setText(userZirkapp.getEmail());
     }
+
 
     /**
      * Reemplaza el contenido principal del Drawer
@@ -275,15 +299,29 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     }
 
     @Override
+    protected void onResume() {
+        receiver = new UpdateDrawerReceiver();
+        registerReceiver(receiver, new IntentFilter("actualizarcantnotifi"));
+        super.onResume();
+
+    }
+
+    @Override
+    protected void onPause() {
+        unregisterReceiver(receiver);
+        super.onPause();
+    }
+
+    @Override
     protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
         drawerToggle.syncState();
+        super.onPostCreate(savedInstanceState);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
         drawerToggle.onConfigurationChanged(newConfig);
+        super.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -308,7 +346,6 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
     @Override
     protected void onStart() {
-        super.onStart();
         List<Welcomedb> listWdb = new ArrayList<Welcomedb>();
         if (getOrlOrmLiteBaseActivity() != null) {
             DatabaseHelper helper = getOrlOrmLiteBaseActivity().getHelper();
@@ -323,6 +360,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         if (runWelcome) {
             initWelcome(true);
         }
+        super.onStart();
     }
 
     @Override

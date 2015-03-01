@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.messages.MessagingActivity;
@@ -32,7 +31,7 @@ import java.util.List;
 /**
  * Created by elcapi05 on 13/08/2014.
  */
-public class Finbox extends Fragment {
+public class UsersOnlineFragment extends Fragment {
 
     private String currenUserId;
     private ArrayList<String> usersOnline;
@@ -44,7 +43,7 @@ public class Finbox extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_inbox, container, false);
+        View view = inflater.inflate(R.layout.fragment_users_online, container, false);
 
         //showSpinner();
 

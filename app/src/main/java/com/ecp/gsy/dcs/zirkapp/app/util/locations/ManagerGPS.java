@@ -77,7 +77,7 @@ public class ManagerGPS extends Service implements LocationListener {
      */
     private void establecerUbicacion(String provider) {
         locationManager.requestLocationUpdates(provider, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-        Log.d(provider, provider);
+        //Log.d(provider, provider);
         if (locationManager != null) {
             location = locationManager.getLastKnownLocation(provider);
             if (location != null) {

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,7 @@ import java.util.List;
 /**
  * Created by Elder on 18/02/2015.
  */
-public class Fsignup extends Fragment {
+public class SignupFragment extends Fragment {
 
     private Activity activity;
 
@@ -61,6 +62,9 @@ public class Fsignup extends Fragment {
 
                 if(correo.isEmpty()){
                     txtCorreo.setError(getResources().getString(R.string.msgSignUpEmailEmpty));
+                    error++;
+                }else if(!Patterns.EMAIL_ADDRESS.matcher(correo).matches()){
+                    txtCorreo.setError(getResources().getString(R.string.msgEmailInvalid));
                     error++;
                 }
                 if(username.isEmpty()){

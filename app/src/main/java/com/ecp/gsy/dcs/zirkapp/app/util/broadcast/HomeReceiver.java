@@ -1,4 +1,4 @@
-package com.ecp.gsy.dcs.zirkapp.app.util;
+package com.ecp.gsy.dcs.zirkapp.app.util.broadcast;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

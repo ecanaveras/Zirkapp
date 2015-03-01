@@ -23,7 +23,7 @@
     <string name="lblLoginZirkapp">Cuenta de Zirkapp</string>
     <string name="lblUser">Usuario</string>
     <string name="lblEmail">Correo electrónico</string>
-    <string name="msgLoginError">Usuario y/o Contraseña no validos</string>
+    <string name="msgLoginError">Usuario y/o Contraseña no válidos</string>
     <string name="msgLoginEmpty">Usuario y/o Contraseña necesarios</string>
     <string name="msgSignUpEmailEmpty">El correo es necesario</string>
     <string name="msgSignUpUserEmpty">El usuario es necesario</string>
@@ -31,7 +31,7 @@
     <string name="msgSignUpErrorEmpty">Por favor diligencia todos los datos</string>
     <string name="msgSignUpPassDif">Tus contraseñas no coinciden, verifica tus datos!</string>
     <string name="msgLoginPassInvalid">Tu contraseña debe tener mínimo de 6 caracteres!</string>
-    <string name="msgMailFailed">Cuenta de correo invalida</string>
+    <string name="msgMailFailed">Cuenta de correo inválida</string>
 
     <!-- Custom label -->
     <string name="lblHome">Home</string>
@@ -63,7 +63,6 @@
     <string name="msgSelectType">Seleccione el tipo de Publicación</string>
     <string name="msgGPSdisabled">GPS Apagado, ir al menú de configuración?</string>
     <string name="msgProgressDialog">Cargando contenido</string>
-    <string name="msgLoading">Cargando...</string>
     <string name="msgExitApp">Te vas?</string>
     <string name="msgDisconnet">Out, que le pasa al internet?</string>
     <string name="msgZimessSend">Zimess enviado exitosamente!</string>
@@ -81,6 +80,17 @@
     <string name="title_activity_detail_whiz">WhizDetailActivity</string>
     <string name="title_activity_manager_welcome">Welcome Zirkapp</string>
     <string name="title_activity_detail_zimess">DetailZimessActivity</string>
+    <string name="msgLocationUnknown">Ubicación no disponible...</string>
+    <string name="lblEstado">Tu estado</string>
+    <string name="msgHelpAvatar">Mantén presionada la imagen para cambiarla!</string>
+    <string name="lblName">Nombres</string>
+    <string name="lblCity">Ciudad</string>
+    <string name="msgSaving">Guardando, por favor espere...</string>
+    <string name="msgLoading">Cargando, por favor espere...</string>
+    <string name="msgProfiNameEmty">Tu nombre es necesario...</string>
+    <string name="msgEmailInvalid">Escribe una dirección de correo válida</string>
+    <string name="msgProfileUpdate">Tus datos han sido actualizados!</string>
+    <string name="msgProfileUpdateError">Hay problemas al guardar tus datos, intenta luego!</string>
 
     <string-array name="options_drawer">
         <item>Home</item>
@@ -90,8 +100,9 @@
     </string-array>
 
     <array name="navigations_icons">
-        <item>@drawable/ic_radar</item>
-        <item>@drawable/ic_location</item>
+        <item>@drawable/ic_icon_circle</item>
+        <item>@drawable/ic_icon_triangle</item>
+        <item>@drawable/ic_icon_square</item>
     </array>
 
 

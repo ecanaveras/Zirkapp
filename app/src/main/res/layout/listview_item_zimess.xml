@@ -13,8 +13,7 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        style="@style/box_shadow"
-        >
+        style="@style/box_shadow">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -34,7 +33,7 @@
                     android:layout_height="wrap_content"
                     android:text="Zirkapp name"
                     android:id="@+id/lblNombreUsuario"
-                    style="@style/message_text_large"/>
+                    style="@style/message_text_large" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -60,28 +59,6 @@
                     android:orientation="vertical"
                     android:layout_weight="1">
 
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center">
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@android:drawable/presence_away"
-                            android:layout_gravity="center" />
-
-                        <TextView
-                            android:id="@+id/txtTiempo"
-                            style="@style/mini_text"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:layout_gravity="center"
-                            android:text="hace 4 horas" />
-                    </LinearLayout>
 
                     <LinearLayout
                         android:orientation="horizontal"
@@ -143,19 +120,43 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginBottom="10dp"
-                style="@style/message_text_medium"/>
+                style="@style/message_text_medium" />
             <!--android:autoLink="all"-->
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginBottom="3dp">
+
+            <!--<ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/presence_away"
+                android:layout_gravity="center"
+                android:layout_marginRight="3dp"/>-->
 
             <TextView
+                android:id="@+id/txtTiempo"
+                style="@style/mini_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:text="hace 4 horas" />
+
+            <TextView
+                android:id="@+id/lblZimessCreatetAt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="30 min restantes"
-                android:id="@+id/lblCountDown"
                 style="@style/mini_text"
-                android:layout_marginBottom="3dp"
-                android:layout_gravity="right"
-                android:layout_marginRight="8dp" />
-
+                android:gravity="right"
+                android:layout_weight="1"/>
         </LinearLayout>
     </LinearLayout>
+
 </LinearLayout>

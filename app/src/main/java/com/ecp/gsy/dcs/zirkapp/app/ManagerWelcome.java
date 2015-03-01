@@ -8,9 +8,9 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
-import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.Fwelcome1;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.Fwelcome2;
-import com.ecp.gsy.dcs.zirkapp.app.util.DatabaseHelper;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeFirstFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeSecondFragment;
+import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
 /**
@@ -79,9 +79,9 @@ public class ManagerWelcome extends OrmLiteBaseActivity<DatabaseHelper> {
         public Fragment getItem(int position) {
             switch (position+1){
                 case 1:
-                    return new Fwelcome1();
+                    return new WelcomeFirstFragment();
                 case 2:
-                    return new Fwelcome2();
+                    return new WelcomeSecondFragment();
             }
             return null;
         }

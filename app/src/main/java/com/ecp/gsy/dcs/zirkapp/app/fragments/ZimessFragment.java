@@ -17,7 +17,7 @@ import android.widget.ListView;
 import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivityParse;
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterZimessNew;
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
@@ -34,12 +34,12 @@ import java.util.List;
 /**
  * Created by Elder on 23/02/2015.
  */
-public class FzimessNew extends Fragment {
+public class ZimessFragment extends Fragment {
 
     private String currenUserId;
 
     private ArrayList<ZimessNew> zimessNewArrayList;
-    private AdapterZimessNew adapterZimessNew;
+    private AdapterZimess adapterZimessNew;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView listViewZimess;
     private Menu menuList;
@@ -47,7 +47,7 @@ public class FzimessNew extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_zimess_new, container, false);
+        View view = inflater.inflate(R.layout.fragment_zimess, container, false);
         inicializarCompUI(view);
         setHasOptionsMenu(true);
         return view;
@@ -103,10 +103,16 @@ public class FzimessNew extends Fragment {
                         zimessNew.setUserId(zimess.get("userId").toString());
                         zimessNew.setZimessText(zimess.get("zimessText").toString());
                         zimessNew.setLocation(zimess.getParseGeoPoint("location"));
+                        zimessNew.setCreateAt(zimess.getCreatedAt());
                         zimessNewArrayList.add(zimessNew);
                     }
-                    adapterZimessNew = new AdapterZimessNew(getActivity(), zimessNewArrayList);
+                    adapterZimessNew = new AdapterZimess(getActivity(), zimessNewArrayList);
                     listViewZimess.setAdapter(adapterZimessNew);
+
+                    //Update Cant Zimess cerca
+                    Intent intent = new Intent("actualizarcantnotifi");
+                    intent.putExtra("datos", adapterZimessNew.getCount());
+                    getActivity().sendBroadcast(intent);
                 } else {
                     Log.e("Parse.Zimess", "Zimess Not Found");
                 }

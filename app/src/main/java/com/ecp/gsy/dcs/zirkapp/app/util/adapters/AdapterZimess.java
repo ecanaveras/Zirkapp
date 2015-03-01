@@ -20,20 +20,23 @@ import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 
 import java.util.ArrayList;
 
 /**
  * Created by Elder on 23/02/2015.
  */
-public class AdapterZimessNew extends BaseAdapter {
+public class AdapterZimess extends BaseAdapter {
 
     private ArrayList<ZimessNew> zimessArrayList;
     private Activity context;
+    GlobalApplication globalApplication;
 
-    public AdapterZimessNew(Activity context, ArrayList<ZimessNew> zimessArrayList) {
+    public AdapterZimess(Activity context, ArrayList<ZimessNew> zimessArrayList) {
         this.zimessArrayList = zimessArrayList;
         this.context = context;
+        globalApplication = (GlobalApplication) context.getApplicationContext();
     }
 
     @Override
@@ -53,8 +56,8 @@ public class AdapterZimessNew extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        View vista  = view;
-        if(vista == null){
+        View vista = view;
+        if (vista == null) {
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             vista = layoutInflater.inflate(R.layout.listview_item_zimess, viewGroup, false);
         }
@@ -65,6 +68,8 @@ public class AdapterZimessNew extends BaseAdapter {
         TextView lblDistance = (TextView) vista.findViewById(R.id.lblDistance);
         ImageView imgAvatar = (ImageView) vista.findViewById(R.id.imgAvatarItem);
         ImageView imgOptions = (ImageView) vista.findViewById(R.id.imgOptionsItem);
+        TextView lblTimePass = (TextView) vista.findViewById(R.id.txtTiempo);
+        TextView lblCreatedAt = (TextView) vista.findViewById(R.id.lblZimessCreatetAt);
 
         //Action Options Zimess
         imgOptions.setOnClickListener(new View.OnClickListener() {
@@ -85,7 +90,14 @@ public class AdapterZimessNew extends BaseAdapter {
                 //Toast.makeText(context, "Ir a perfil de usuario", Toast.LENGTH_SHORT).show();
             }
         });
+
         //3. Establecer datos
+
+        //Manejando tiempos transcurridos
+        String tiempoTranscurrido = globalApplication.getTimepass(zimess.getCreateAt());
+        lblTimePass.setText(tiempoTranscurrido);
+
+        lblCreatedAt.setText(globalApplication.getDescFechaPublicacion(zimess.getCreateAt()));
 
         //Calcular distancia del Zimess remoto
         ManagerGPS managerGPS = new ManagerGPS(context);
@@ -97,6 +109,11 @@ public class AdapterZimessNew extends BaseAdapter {
         lblMessage.setText(zimess.getZimessText());
 
         return vista;
+    }
+
+    private Double roundHoras(Long minutos) {
+        Double result = new Double((minutos - 5) / 60 * 100);//Redondear los minutos
+        return result;
     }
 
     private void showPopup(View view, int menu) {

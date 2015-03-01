@@ -1,6 +1,6 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 
-import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +17,12 @@ import java.util.ArrayList;
  * Created by elcapi05 on 27/08/2014.
  */
 public class AdapterNavigation extends BaseAdapter {
-    private Activity context;
+
+
+    private final Context context;
     ArrayList<ItemListDrawer> navItems;
 
-    public AdapterNavigation(Activity context, ArrayList<ItemListDrawer> navItems) {
+    public AdapterNavigation(Context context, ArrayList<ItemListDrawer> navItems) {
         this.context = context;
         this.navItems = navItems;
     }
@@ -41,28 +43,69 @@ public class AdapterNavigation extends BaseAdapter {
     }
 
     @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
     public View getView(int posicion, View view, ViewGroup viewGroup) {
-        Fila row;
-        LayoutInflater layoutInflater = context.getLayoutInflater();
-        if(view == null){
-            row = new Fila();
-            ItemListDrawer item = navItems.get(posicion);
-            view = layoutInflater.inflate(R.layout.listview_item_drawer, null);
+        ViewHolder holder = null;
+        ItemListDrawer item = navItems.get(posicion);
+        if (view == null) {
+            holder = new ViewHolder();
+            view = LayoutInflater.from(context).inflate(R.layout.listview_item_drawer, viewGroup, false);
             //Titulo
-            row.tituloItem = (TextView) view.findViewById(R.id.title_item);
-            row.tituloItem.setText(item.getTitulo());
+            holder.tituloItem = (TextView) view.findViewById(R.id.title_item);
             //Icono
-            row.icono = (ImageView) view.findViewById(R.id.icon_item);
-            row.icono.setImageResource(item.getIcono());
-            view.setTag(row);
-        }else {
-            row = (Fila) view.getTag();
+            holder.icono = (ImageView) view.findViewById(R.id.icon_item);
+            //Cant Notificaciones
+            holder.cantNotificacion = (TextView) view.findViewById(R.id.lblCantNoti);
+
+            //System.out.println("Zimes.... " + item.getCantNotificaciones());
+            view.setTag(holder);
         }
+
+        holder = (ViewHolder) view.getTag();
+
+        if (holder == null && view != null) {
+            Object tag = view.getTag();
+            if (tag instanceof ViewHolder) {
+                holder = (ViewHolder) tag;
+            }
+        }
+
+        if (item != null && holder != null) {
+
+            if (holder.tituloItem != null)
+                holder.tituloItem.setText(item.getTitulo());
+
+            //Counter
+            if (holder.cantNotificacion != null) {
+                if (item.getCantNotificaciones() != null && item.getCantNotificaciones() > 0) {
+                    holder.cantNotificacion.setVisibility(View.VISIBLE);
+                    holder.cantNotificacion.setText("" + item.getCantNotificaciones());
+                } else {
+                    //Hide counter if == 0
+                    holder.cantNotificacion.setVisibility(View.GONE);
+                }
+            }
+
+            if (holder.icono != null) {
+                if (item.getIcono() > 0) {
+                    holder.icono.setVisibility(View.VISIBLE);
+                    holder.icono.setImageResource(item.getIcono());
+                } else {
+                    holder.icono.setVisibility(View.GONE);
+                }
+            }
+        }
+
         return view;
     }
 
-    private static class Fila{
-        TextView tituloItem;
-        ImageView icono;
+    class ViewHolder {
+        public TextView tituloItem;
+        public ImageView icono;
+        public TextView cantNotificacion;
     }
 }

@@ -2,7 +2,7 @@
 # generated on 2014/12/20 02:39:16
 #
 # --table-start--
-dataClass=com.ecp.gsy.dcs.zirkapp.app.util.Welcomedb
+dataClass=com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb
 tableName=welcome
 # --table-fields-start--
 # --field-start--

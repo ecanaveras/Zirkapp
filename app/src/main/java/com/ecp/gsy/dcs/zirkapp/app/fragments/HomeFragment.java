@@ -22,12 +22,12 @@ import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.HomeReceiver;
+import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.HomeReceiver;
 
 /**
  * Created by Elder on 02/06/2014.
  */
-public class Fhome extends Fragment implements View.OnClickListener, View.OnLongClickListener {
+public class HomeFragment extends Fragment implements View.OnClickListener, View.OnLongClickListener {
 
     private final static int FRAGMENT_ZIMESS = 1;
     private final static int FRAGMENT_INBOX = 2;
