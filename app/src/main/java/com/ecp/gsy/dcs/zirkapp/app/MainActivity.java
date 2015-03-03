@@ -9,6 +9,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -27,16 +30,22 @@ import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ScreenSlidePagerAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterNavigation;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
+import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParsePush;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import bolts.Task;
 
 public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
@@ -58,6 +67,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     private ArrayList<ItemListDrawer> navItems;
     private AdapterNavigation navAdapter;
     private View headerDrawer;
+    private RoundedImageView avatar;
 
     private UpdateDrawerReceiver receiver;
 
@@ -76,6 +86,9 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     //Respuesta del welcome
     private int inputWelcomeRequestCode = 10;
     private boolean runWelcome = true;
+
+    //Respuesta del edit profile
+    private int inputEditProfileRequestCode = 20;
 
     //Respuesta del Login
     private int inputLoginRequestCode = 100;
@@ -139,7 +152,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         if (userZirkapp == null) {
             Intent login = new Intent(this, ManagerLogin.class);
             startActivityForResult(login, inputLoginRequestCode);
-        }else{
+        } else {
             ParsePush.subscribeInBackground("", new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
@@ -164,7 +177,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), EditProfileActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, inputEditProfileRequestCode);
             }
         });
 
@@ -186,7 +199,6 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
             public void onDrawerOpened(View drawerView) {
                 actionBar.setTitle(R.string.app_name);
                 //navAdapter.UpdateNotificacion("zimess", receiver.getCantRows());
-                refreshDatosDrawer();
                 refreshDrawerAdapter();
                 invalidateOptionsMenu();
                 super.onDrawerOpened(drawerView);
@@ -205,14 +217,15 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         actionBar = getActionBar();
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
+
     }
 
-    private void initSinchService(){
+    private void initSinchService() {
         final Intent serviceIntent = new Intent(getApplicationContext(), MessageService.class);
         startService(serviceIntent);
     }
 
-    private void refreshDrawerAdapter(){
+    private void refreshDrawerAdapter() {
 //        navListView.setAdapter(null);
 //        navAdapter = null;
         //UI
@@ -234,12 +247,15 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         navListView.setAdapter(navAdapter);
     }
 
-    private void refreshDatosDrawer(){
+    private void refreshDatosDrawer() {
         //Personalizar el header.
+        avatar = (RoundedImageView) headerDrawer.findViewById(R.id.imgAvatar);
         TextView lblUsername = (TextView) headerDrawer.findViewById(R.id.lblUserName);
         TextView lblUsermail = (TextView) headerDrawer.findViewById(R.id.lblUserEmail);
         lblUsername.setText(userZirkapp.getUsername());
         lblUsermail.setText(userZirkapp.getEmail());
+
+        new RefreshDataProfileTask(avatar).execute(userZirkapp);
     }
 
 
@@ -390,7 +406,16 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
                         "No ha sido posible loguearse",
                         Toast.LENGTH_LONG).show();
             }
+        }
 
+        if (requestCode == inputEditProfileRequestCode) {
+            drawerNavigation.closeDrawers();
+            if (resultCode == RESULT_OK) {
+                Boolean update = data.getBooleanExtra("editprofileOk", false);
+                if (update) {
+                    refreshDatosDrawer();
+                }
+            }
         }
     }
 

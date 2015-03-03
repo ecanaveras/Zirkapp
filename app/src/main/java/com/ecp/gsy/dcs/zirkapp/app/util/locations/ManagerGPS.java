@@ -39,7 +39,6 @@ public class ManagerGPS extends Service implements LocationListener {
      */
     public ManagerGPS(Context mContext) {
         this.mContext = mContext;
-        this.obtenertUbicacion();
     }
 
     /**
@@ -47,7 +46,7 @@ public class ManagerGPS extends Service implements LocationListener {
      *
      * @return
      */
-    private void obtenertUbicacion() {
+    public void obtenertUbicacion() {
         try {
             locationManager = (LocationManager) mContext.getSystemService(mContext.LOCATION_SERVICE);
             isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);

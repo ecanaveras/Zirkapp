@@ -146,7 +146,6 @@ public class UsersOnlineFragment extends Fragment {
         };
 
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver, new IntentFilter("com.ecp.gsy.dcs.zirkapp.MainActivity"));
-
     }
 
 

@@ -1,6 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.beans;
 
 import com.parse.ParseGeoPoint;
+import com.parse.ParseUser;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,7 +14,7 @@ public class ZimessNew implements Serializable{
 //    private int mData;
 
     private String zimessId;
-    private String userId;
+    private ParseUser user;
     private String zimessText;
     private ParseGeoPoint location;
     private Date createAt;
@@ -26,12 +27,12 @@ public class ZimessNew implements Serializable{
         this.zimessId = zimessId;
     }
 
-    public String getUserId() {
-        return userId;
+    public ParseUser getUser() {
+        return user;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUser(ParseUser user) {
+        this.user = user;
     }
 
     public String getZimessText() {

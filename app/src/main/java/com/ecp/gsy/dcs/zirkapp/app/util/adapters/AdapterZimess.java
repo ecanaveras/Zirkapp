@@ -31,12 +31,15 @@ public class AdapterZimess extends BaseAdapter {
 
     private ArrayList<ZimessNew> zimessArrayList;
     private Activity context;
-    GlobalApplication globalApplication;
+    private GlobalApplication globalApplication;
+    private ManagerGPS managerGPS;
 
     public AdapterZimess(Activity context, ArrayList<ZimessNew> zimessArrayList) {
         this.zimessArrayList = zimessArrayList;
         this.context = context;
         globalApplication = (GlobalApplication) context.getApplicationContext();
+        managerGPS = new ManagerGPS(context);
+        managerGPS.obtenertUbicacion();
     }
 
     @Override
@@ -100,7 +103,6 @@ public class AdapterZimess extends BaseAdapter {
         lblCreatedAt.setText(globalApplication.getDescFechaPublicacion(zimess.getCreateAt()));
 
         //Calcular distancia del Zimess remoto
-        ManagerGPS managerGPS = new ManagerGPS(context);
         Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
 
         Location zimessLocation = new Location(zimess.getLocation().getLatitude(), zimess.getLocation().getLongitude());

@@ -10,11 +10,11 @@
         android:showAsAction="always"
         android:orderInCategory="10"/>
 
-    <!--<item-->
-        <!--android:icon="@drawable/ic_action_refresh"-->
-        <!--android:id="@+id/action_bar_search_zmess"-->
-        <!--android:title="@string/lblUpdate"-->
-        <!--android:showAsAction="ifRoom"-->
-        <!--android:orderInCategory="21"/>-->
+   <!-- <item
+        android:icon="@drawable/ic_action_refresh"
+        android:id="@+id/action_bar_search_zmess"
+        android:title="@string/lblUpdate"
+        android:showAsAction="ifRoom"
+        android:orderInCategory="21"/>-->
 
 </menu>

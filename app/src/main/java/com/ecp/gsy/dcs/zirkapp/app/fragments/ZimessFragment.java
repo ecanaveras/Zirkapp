@@ -43,6 +43,7 @@ public class ZimessFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView listViewZimess;
     private Menu menuList;
+    private ManagerGPS managerGPS;
 
 
     @Override
@@ -50,6 +51,9 @@ public class ZimessFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_zimess, container, false);
         inicializarCompUI(view);
         setHasOptionsMenu(true);
+
+        managerGPS = new ManagerGPS(getActivity().getApplicationContext());
+
         return view;
     }
 
@@ -86,7 +90,7 @@ public class ZimessFragment extends Fragment {
     private void findZimessAround() {
         zimessNewArrayList = new ArrayList<ZimessNew>();
         //Tomar ubicacion
-        ManagerGPS managerGPS = new ManagerGPS(getActivity().getApplicationContext());
+        managerGPS.obtenertUbicacion();
         //Buscar Zimess
         ParseGeoPoint parseGeoPoint = new ParseGeoPoint(managerGPS.getLatitud(), managerGPS.getLongitud());
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZimess");
@@ -100,7 +104,7 @@ public class ZimessFragment extends Fragment {
                         //Log.d("zimessText", zimess.get("zimessText").toString());
                         ZimessNew zimessNew = new ZimessNew();
                         zimessNew.setZimessId(zimess.getObjectId());
-                        zimessNew.setUserId(zimess.get("userId").toString());
+                        zimessNew.setUser(zimess.getParseUser("user"));
                         zimessNew.setZimessText(zimess.get("zimessText").toString());
                         zimessNew.setLocation(zimess.getParseGeoPoint("location"));
                         zimessNew.setCreateAt(zimess.getCreatedAt());
@@ -130,7 +134,7 @@ public class ZimessFragment extends Fragment {
     private void gotoDetail(ZimessNew zimess) {
         final GlobalApplication globalApplication = (GlobalApplication) getActivity().getApplication();
         globalApplication.setTempZimess(zimess);
-        ParseUser parseUser = globalApplication.getCustomParseUser(zimess.getUserId());
+        ParseUser parseUser = globalApplication.getCustomParseUser(zimess.getUser().getUsername());
         String userNameZimess = parseUser != null ? parseUser.getUsername() : null;
         Intent intent = new Intent(getActivity(), DetailZimessActivity.class);
         intent.putExtra("usernameZimess", userNameZimess);

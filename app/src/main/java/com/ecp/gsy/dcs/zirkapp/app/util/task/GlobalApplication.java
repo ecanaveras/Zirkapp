@@ -10,6 +10,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -174,36 +175,6 @@ public class GlobalApplication extends Application {
         return "Hace ± " + result;
     }
 
-    /**
-     * Retorna el nombre de la direccion donde estamos ubicado
-     *
-     * @return
-     */
-    public String getNameLocation() {
-        Geocoder geoCoder = new Geocoder(this, Locale.getDefault());
-        ManagerGPS managerGPS = new ManagerGPS(this);
-        StringBuilder builder = new StringBuilder();
-        try {
-            List<Address> address = geoCoder.getFromLocation(managerGPS.getLatitud(), managerGPS.getLongitud(), 1);
-            if (address.size() > 0) {
-                int maxLines = address.get(0).getMaxAddressLineIndex();
-                for (int i = 0; i < maxLines; i++) {
-                    if ((maxLines -1)  == i) {
-                        String addressStr = address.get(0).getAddressLine(i);
-                        builder.append(addressStr);
-                        builder.append(" ");
-                        //System.out.println("Dir " + i + " " + addressStr);
-                    }
-                }
-            } else {
-                builder.append(getResources().getString(R.string.msgLocationUnknown));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return builder.toString();
-    }
 
     //Verificar si hay conexion a Internet
     public boolean isConected() {

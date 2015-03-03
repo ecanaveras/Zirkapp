@@ -24,7 +24,7 @@
                 android:gravity="center"
                 android:minHeight="260dp">
 
-                <ImageView
+                <com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView
                     android:id="@+id/imgUserAvatar"
                     android:layout_width="180dp"
                     android:layout_height="180dp"

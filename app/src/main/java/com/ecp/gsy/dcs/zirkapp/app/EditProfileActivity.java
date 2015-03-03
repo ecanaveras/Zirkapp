@@ -2,13 +2,14 @@ package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.Menu;
@@ -19,7 +20,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.NameLocationTask;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -29,10 +33,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
@@ -49,7 +50,7 @@ public class EditProfileActivity extends Activity {
     private String rutaImagen;
 
     //UI
-    private ImageView imgAvatar;
+    private RoundedImageView imgAvatar;
     private EditText txtUsername;
     private EditText txtEstado;
     private EditText txtEmail;
@@ -60,10 +61,15 @@ public class EditProfileActivity extends Activity {
     private GlobalApplication globalApplication;
     private byte[] byteImage;
 
+    private Activity activity;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        activity = this;
+
         setContentView(R.layout.activity_edit_profile);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -72,17 +78,24 @@ public class EditProfileActivity extends Activity {
         setTitle(currentUser.getUsername());
 
         inicializarCompUI();
-        loadDatos();
+
+        //get Name Ubicacion
+        ManagerGPS managerGPS = new ManagerGPS(getApplicationContext());
+        managerGPS.obtenertUbicacion();
+        new NameLocationTask(getApplicationContext(), managerGPS, txtCiudad).execute();
+
+//        loadDatos();
+        new EditProfileTask(this, getResources().getString(R.string.msgLoading)).execute(currentUser);
     }
 
     private void inicializarCompUI() {
-        imgAvatar = (ImageView) findViewById(R.id.imgUserAvatar);
+        imgAvatar = (RoundedImageView) findViewById(R.id.imgUserAvatar);
         txtUsername = (EditText) findViewById(R.id.txtUsername);
         txtEstado = (EditText) findViewById(R.id.txtUserEstado);
         txtNombres = (EditText) findViewById(R.id.txtUserNombres);
         txtEmail = (EditText) findViewById(R.id.txtUserEmail);
         txtCiudad = (EditText) findViewById(R.id.txtUserCity);
-        txtCiudad.setText(!globalApplication.getNameLocation().contains("no disponible") ? globalApplication.getNameLocation() : null);//Sugerir ubicación
+        //txtCiudad.setText(!globalApplication.getNameLocation().contains("no disponible") ? globalApplication.getNameLocation() : null);//Sugerir ubicación
 
         //LongClick
         imgAvatar.setOnLongClickListener(new View.OnLongClickListener() {
@@ -125,10 +138,6 @@ public class EditProfileActivity extends Activity {
         }
 
         if (currentUser != null) {
-            progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage(getResources().getString(R.string.msgSaving));
-            progressDialog.show();
-
             //Imagen
             parseFile = null;
             if (imgAvatar.getTag() != null) {
@@ -175,6 +184,9 @@ public class EditProfileActivity extends Activity {
      * @param inParseObject
      */
     private void createOrUpdateProfile(ParseFile parseFile, ParseObject inParseObject) {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage(getString(R.string.msgSaving));
+        progressDialog.show();
         //Datos del Perfil
         ParseObject parseObject = inParseObject;
         if (parseObject == null) {
@@ -192,58 +204,17 @@ public class EditProfileActivity extends Activity {
                     //Actualizar email
                     currentUser.setEmail(txtEmail.getText().toString());
                     currentUser.saveInBackground();
+                    progressDialog.dismiss();
+                    Intent intent = new Intent();
+                    intent.putExtra("editprofileOk", true);
+                    activity.setResult(Activity.RESULT_OK, intent);
+                    activity.finish();
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.msgProfileUpdate), Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.msgProfileUpdateError), Toast.LENGTH_LONG).show();
                 }
-                progressDialog.dismiss();
-                onBackPressed();
             }
         });
-    }
-
-    private void loadDatos() {
-        if (currentUser != null) {
-            progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage(getResources().getString(R.string.msgSaving));
-            progressDialog.show();
-
-            txtUsername.setText(currentUser.getUsername());
-            //Buscar si existe
-            final ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZProfile");
-            query.whereEqualTo("user", currentUser);
-            query.include("user");
-            List<ParseObject> parseObjects = null;
-            try {
-                parseObjects = query.find();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            if (parseObjects.size() > 0) {
-                txtEmail.setText(parseObjects.get(0).getParseUser("user").getEmail().toString());
-                txtNombres.setText(parseObjects.get(0).get("name").toString());
-                txtEstado.setText(parseObjects.get(0).get("wall").toString());
-                txtCiudad.setText(parseObjects.get(0).get("city").toString());
-
-                txtEstado.setSelection(txtEstado.getText().length());
-
-                //Setter Imagen
-                byteImage = new byte[0];
-                try {
-                    byteImage = parseObjects.get(0).getParseFile("avatar").getData();
-                    Bitmap bmp = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
-                    imgAvatar.setImageBitmap(bmp);
-                } catch (ParseException e1) {
-                    e1.printStackTrace();
-                }
-            } else {
-                if (byteImage == null) {
-                    imgAvatar.setImageResource(R.drawable.ic_user_male);
-                }
-            }
-            progressDialog.dismiss();
-        }
-
     }
 
     private byte[] getByteAvatar(Uri filePath) {
@@ -287,7 +258,6 @@ public class EditProfileActivity extends Activity {
         if (resultCode == Activity.RESULT_OK && this.avatarRequestCode == requestCode) {
             imgAvatar.setImageURI(data.getData());
             imgAvatar.setTag(data.getData());
-            //Toast.makeText(getApplicationContext(), "Avatar actualizado!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -311,5 +281,73 @@ public class EditProfileActivity extends Activity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    private class EditProfileTask extends AsyncTask<ParseUser, Void, String> {
+
+        private Context context;
+        private String messageDialog;
+        private List<ParseObject> parseObjects;
+
+        private EditProfileTask(Context context, String messageDialog) {
+            this.context = context;
+            this.messageDialog = messageDialog;
+        }
+
+        @Override
+        protected String doInBackground(ParseUser... parseUsers) {
+            //Buscamos datos en Parse
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZProfile");
+            query.whereEqualTo("user", parseUsers[0]);
+            query.include("user");
+            parseObjects = null;
+            try {
+                parseObjects = query.find();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            return "finish";
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setMessage(messageDialog);
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if (parseObjects.size() > 0) {
+                txtEmail.setText(parseObjects.get(0).getParseUser("user").getEmail().toString());
+                txtNombres.setText(parseObjects.get(0).get("name").toString());
+                txtEstado.setText(parseObjects.get(0).get("wall").toString());
+                txtCiudad.setText(parseObjects.get(0).get("city").toString());
+
+                txtEstado.setSelection(txtEstado.getText().length());
+
+                //Setter Imagen
+                byteImage = new byte[0];
+                try {
+                    byteImage = parseObjects.get(0).getParseFile("avatar").getData();
+                    Bitmap bmp = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
+                    imgAvatar.setImageBitmap(bmp);
+                } catch (ParseException e1) {
+                    e1.printStackTrace();
+                }
+            } else {
+                if (byteImage == null) {
+                    imgAvatar.setImageResource(R.drawable.ic_user_male);
+                }
+            }
+            progressDialog.dismiss();
+        }
+
+        @Override
+        protected void onCancelled() {
+            if (byteImage == null) {
+                imgAvatar.setImageResource(R.drawable.ic_user_male);
+            }
+        }
     }
 }

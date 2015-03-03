@@ -13,22 +13,20 @@
         android:orientation="vertical"
         android:gravity="center"
         android:layout_weight="1"
-        android:minHeight="300dp">
+        android:minHeight="270dp">
 
-        <ImageView
-            android:id="@+id/imgAvatarH"
+        <com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView
+            android:id="@+id/imgAvatar"
             android:layout_width="280dp"
             android:layout_height="280dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="10dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_user_male"
-            />
+            android:scaleType="fitCenter" />
 
-        <!--<TextView
-            android:id="@+id/txtAliasUsuario"
+        <TextView
+            android:id="@+id/txtUserNombres"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/imgAvatarH"
@@ -37,7 +35,7 @@
             android:text="Danna"
             android:fontFamily="sans-serif-medium"
             android:textSize="16sp" />
-        -->
+
 
     </LinearLayout>
 
@@ -52,14 +50,14 @@
         android:minHeight="40dp">
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/txtWall"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:fontFamily="sans-serif-medium"
             android:textSize="18sp"
             android:text="Estado en Zirkapp"
-            android:textColor="@color/accent_color"/>
+            android:textColor="@color/accent_color" />
     </LinearLayout>
 
     <View style="@style/line_divider_h" />
@@ -84,23 +82,38 @@
                 android:text="Zimess"
                 android:textColor="@color/secondary_text_color"
                 android:fontFamily="sans-serif"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginBottom="20dp"
+                android:id="@+id/txtCountZimess"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="1025"
+                android:layout_marginBottom="20dp"
+                android:text="0"
                 android:textSize="30sp"
                 android:textColor="@color/accent_color"
                 android:textStyle="bold"
-                android:fontFamily="sans-serif"/>
+                android:fontFamily="sans-serif" />
 
         </LinearLayout>
 
-        <View style="@style/line_divider_v" />
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="110dp">
+
+            <View
+                android:id="@+id/viewCenter"
+                style="@style/line_divider_v"
+                android:layout_gravity="center" />
+
+            <ProgressBar
+                android:id="@+id/progressLoad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -116,21 +129,22 @@
                 android:text="@string/lblVisitas"
                 android:textColor="@color/secondary_text_color"
                 android:fontFamily="sans-serif"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginBottom="20dp"
+                android:id="@+id/txtCountVisit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="5429"
+                android:layout_marginBottom="20dp"
+                android:text="0"
                 android:textSize="30sp"
                 android:textColor="@color/accent_color"
                 android:textStyle="bold"
-                android:fontFamily="sans-serif"/>
+                android:fontFamily="sans-serif" />
 
         </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

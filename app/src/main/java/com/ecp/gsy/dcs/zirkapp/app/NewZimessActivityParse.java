@@ -20,12 +20,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.NameLocationTask;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -49,6 +51,8 @@ public class NewZimessActivityParse extends Activity {
     private TextView lblCurrentLocation;
 
     private GlobalApplication globalApplication;
+    private ManagerGPS managerGPS;
+    private ProgressBar progressBar;
 
 
     @Override
@@ -60,7 +64,13 @@ public class NewZimessActivityParse extends Activity {
         globalApplication = (GlobalApplication) getApplicationContext();
 
         inicializarCompUI();
+
         currentUser = globalApplication.getCurrentUser();
+
+        //Name Location
+        managerGPS = new ManagerGPS(getApplicationContext());
+        managerGPS.obtenertUbicacion();
+        new NameLocationTask(getApplicationContext(), managerGPS, lblCurrentLocation, progressBar).execute();
     }
 
 
@@ -101,7 +111,8 @@ public class NewZimessActivityParse extends Activity {
 
         //Informar Ubicación
         lblCurrentLocation = (TextView) findViewById(R.id.lblCurrentLocation);
-        lblCurrentLocation.setText(globalApplication.getNameLocation());
+        //lblCurrentLocation.setText(globalApplication.getNameLocation());
+        progressBar = (ProgressBar) findViewById(R.id.progressLoad);
 
         //Recuper el zimess no enviado.
         ZimessNew zimessNoti = (ZimessNew) getIntent().getSerializableExtra("zimess_noti");
@@ -123,7 +134,7 @@ public class NewZimessActivityParse extends Activity {
         }
 
         //Tomar ubicacion
-        ManagerGPS managerGPS = new ManagerGPS(context);
+        managerGPS.obtenertUbicacion();
         ParseGeoPoint parseGeoPoint = new ParseGeoPoint(managerGPS.getLatitud(), managerGPS.getLongitud());
         ParseObject parseObject = new ParseObject("ParseZimess");
         parseObject.put("user", currentUser);
@@ -193,11 +204,6 @@ public class NewZimessActivityParse extends Activity {
         manager.cancel(idNoti);
     }
 
-    @Override
-    protected void onResume() {
-        lblCurrentLocation.setText(globalApplication.getNameLocation());
-        super.onResume();
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
