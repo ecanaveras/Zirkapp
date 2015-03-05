@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.view.View;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
@@ -32,6 +33,11 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, String> {
 
     public RefreshDataProfileTask(RoundedImageView avatar) {
         this.avatar = avatar;
+    }
+
+    public RefreshDataProfileTask(RoundedImageView avatar, TextView txtNombres) {
+        this.avatar = avatar;
+        this.txtNombres = txtNombres;
     }
 
     public RefreshDataProfileTask(RoundedImageView avatar, TextView txtWall, TextView txtNombres, String messageDialog, Context context) {
@@ -74,6 +80,7 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, String> {
             }
             if(txtNombres != null){
                 txtNombres.setText(parseObjectList.get(0).get("name").toString());
+                txtNombres.setVisibility(View.VISIBLE);
             }
             //Setter Imagen
             byteImage = new byte[0];

@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Created by Elder on 21/02/2015.
  */
-public class AdapterMessage extends BaseAdapter {
+public class MessageAdapter extends BaseAdapter {
 
     public static final int DIRECTION_INCOMING = 0;
     public static final int DIRECTION_OUTGOING = 1;
@@ -28,7 +28,7 @@ public class AdapterMessage extends BaseAdapter {
     private List<Pair<WritableMessage, Integer>> messages;
     private LayoutInflater layoutInflater;
 
-    public AdapterMessage(Activity activity) {
+    public MessageAdapter(Activity activity) {
         layoutInflater = activity.getLayoutInflater();
         messages = new ArrayList<Pair<WritableMessage, Integer>>();
     }

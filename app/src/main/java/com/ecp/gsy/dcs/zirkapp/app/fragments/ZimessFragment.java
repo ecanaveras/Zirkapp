@@ -17,7 +17,7 @@ import android.widget.ListView;
 import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivityParse;
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterZimess;
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
@@ -39,7 +39,7 @@ public class ZimessFragment extends Fragment {
     private String currenUserId;
 
     private ArrayList<ZimessNew> zimessNewArrayList;
-    private AdapterZimess adapterZimessNew;
+    private ZimessAdapter zimessAdapterNew;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView listViewZimess;
     private Menu menuList;
@@ -110,12 +110,12 @@ public class ZimessFragment extends Fragment {
                         zimessNew.setCreateAt(zimess.getCreatedAt());
                         zimessNewArrayList.add(zimessNew);
                     }
-                    adapterZimessNew = new AdapterZimess(getActivity(), zimessNewArrayList);
-                    listViewZimess.setAdapter(adapterZimessNew);
+                    zimessAdapterNew = new ZimessAdapter(getActivity(), zimessNewArrayList);
+                    listViewZimess.setAdapter(zimessAdapterNew);
 
                     //Update Cant Zimess cerca
                     Intent intent = new Intent("actualizarcantnotifi");
-                    intent.putExtra("datos", adapterZimessNew.getCount());
+                    intent.putExtra("datos", zimessAdapterNew.getCount());
                     getActivity().sendBroadcast(intent);
                 } else {
                     Log.e("Parse.Zimess", "Zimess Not Found");
@@ -132,10 +132,9 @@ public class ZimessFragment extends Fragment {
      * @param zimess
      */
     private void gotoDetail(ZimessNew zimess) {
-        final GlobalApplication globalApplication = (GlobalApplication) getActivity().getApplication();
+        final GlobalApplication globalApplication = (GlobalApplication) getActivity().getApplicationContext();
         globalApplication.setTempZimess(zimess);
-        ParseUser parseUser = globalApplication.getCustomParseUser(zimess.getUser().getUsername());
-        String userNameZimess = parseUser != null ? parseUser.getUsername() : null;
+        String userNameZimess = zimess.getUser().getUsername();
         Intent intent = new Intent(getActivity(), DetailZimessActivity.class);
         intent.putExtra("usernameZimess", userNameZimess);
         getActivity().startActivity(intent);

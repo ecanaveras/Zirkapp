@@ -9,9 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -24,11 +21,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.UpdateDrawerReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ScreenSlidePagerAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
-import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterNavigation;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
 import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
@@ -36,16 +33,12 @@ import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParsePush;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import bolts.Task;
 
 public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
@@ -65,7 +58,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     private String[] navTitles;
     private TypedArray navIcons;
     private ArrayList<ItemListDrawer> navItems;
-    private AdapterNavigation navAdapter;
+    private NavigationAdapter navAdapter;
     private View headerDrawer;
     private RoundedImageView avatar;
 
@@ -233,16 +226,24 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         navTitles = getResources().getStringArray(R.array.options_drawer);
         //Obetner las url de las imagenes para el Drawer
         navIcons = getResources().obtainTypedArray(R.array.navigations_icons);
+
         //Listado de titulos e iconos  para el Drawer
         navItems = new ArrayList<ItemListDrawer>();
         //Zimess
-        navItems.add(new ItemListDrawer(navTitles[1], navIcons.getResourceId(0, -1), receiver != null ? receiver.getCantRows() : null)); //TODO Corregir imagenes Drawer
+        navItems.add(new ItemListDrawer(navTitles[0], navIcons.getResourceId(0, -1), receiver != null ? receiver.getCantRows() : null));
         //Inbox
-        navItems.add(new ItemListDrawer(navTitles[2], navIcons.getResourceId(1, -1), null));
-        //Zimess_new
-        navItems.add(new ItemListDrawer(navTitles[3], navIcons.getResourceId(2, -1), null)); //TODO Corregir imagenes Drawer
+        navItems.add(new ItemListDrawer(navTitles[1], navIcons.getResourceId(1, -1)));
+        //Notificaciones
+        navItems.add(new ItemListDrawer(navTitles[2], navIcons.getResourceId(2, -1)));
+        //Configurar
+        navItems.add(new ItemListDrawer(navTitles[3], navIcons.getResourceId(3, -1), "Opciones".toUpperCase()));
+        //Compartir Zirkapp
+        navItems.add(new ItemListDrawer(navTitles[4], navIcons.getResourceId(4, -1), "Apoyanos".toUpperCase()));
+        //Calificar Zirkapp
+        navItems.add(new ItemListDrawer(navTitles[5], navIcons.getResourceId(5, -1)));
+
         //Adapter
-        navAdapter = new AdapterNavigation(this, navItems);
+        navAdapter = new NavigationAdapter(this, navItems);
 
         navListView.setAdapter(navAdapter);
     }
@@ -251,11 +252,12 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         //Personalizar el header.
         avatar = (RoundedImageView) headerDrawer.findViewById(R.id.imgAvatar);
         TextView lblUsername = (TextView) headerDrawer.findViewById(R.id.lblUserName);
+        TextView lblNombreUsuario = (TextView) headerDrawer.findViewById(R.id.lblNombreUsuario);
         TextView lblUsermail = (TextView) headerDrawer.findViewById(R.id.lblUserEmail);
         lblUsername.setText(userZirkapp.getUsername());
         lblUsermail.setText(userZirkapp.getEmail());
 
-        new RefreshDataProfileTask(avatar).execute(userZirkapp);
+        new RefreshDataProfileTask(avatar, lblNombreUsuario).execute(userZirkapp);
     }
 
 
@@ -280,7 +282,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         }
         //Establece la posicion
         navListView.setItemChecked(position, true);
-        actionBar.setTitle(navTitles[position]);
+        actionBar.setTitle(position > 0 ? navTitles[position - 1] : navTitles[0]);
         drawerNavigation.closeDrawer(navListView);
     }
 

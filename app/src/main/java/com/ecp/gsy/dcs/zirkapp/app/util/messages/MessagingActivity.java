@@ -12,7 +12,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterMessage;
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.parse.FindCallback;
@@ -43,7 +43,7 @@ public class MessagingActivity extends Activity {
     private ParseUser currentUserId;
     private ServiceConnection serviceConnection = new MyServiceConnection();
     private MyMessageClientListener messageClientListener = new MyMessageClientListener();
-    private AdapterMessage adapterMessage;
+    private MessageAdapter adapterMessage;
     private ListView listMessage;
 
     @Override
@@ -60,7 +60,7 @@ public class MessagingActivity extends Activity {
 
         //Lista
         listMessage = (ListView) findViewById(R.id.listMessages);
-        adapterMessage = new AdapterMessage(this);
+        adapterMessage = new MessageAdapter(this);
         listMessage.setAdapter(adapterMessage);
 
         //Usuario actual
@@ -106,9 +106,9 @@ public class MessagingActivity extends Activity {
                     for (ParseObject parseObj : parseObjects) {
                         WritableMessage message = new WritableMessage(parseObj.get("recipientId").toString(), parseObj.get("messageText").toString());
                         if (parseObj.get("senderId").toString().equals(currentUserId.getObjectId())) {
-                            adapterMessage.addMessage(message, AdapterMessage.DIRECTION_OUTGOING, currentUserId.getUsername());
+                            adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING, currentUserId.getUsername());
                         } else {
-                            adapterMessage.addMessage(message, AdapterMessage.DIRECTION_INCOMING, receptorUsername);
+                            adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING, receptorUsername);
                         }
                     }
                 }
@@ -141,7 +141,7 @@ public class MessagingActivity extends Activity {
         public void onIncomingMessage(MessageClient messageClient, Message message) {
             if (message.getSenderId().equals(receptorId)) {
                 WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
-                adapterMessage.addMessage(writableMessage, AdapterMessage.DIRECTION_INCOMING, receptorId);
+                adapterMessage.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING, receptorId);
             }
         }
 
@@ -164,7 +164,7 @@ public class MessagingActivity extends Activity {
                             parseMessage.put("sinchId", writableMessage.getMessageId());
                             parseMessage.saveInBackground();
 
-                            adapterMessage.addMessage(writableMessage, AdapterMessage.DIRECTION_OUTGOING, currentUserId.getUsername());
+                            adapterMessage.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING, currentUserId.getUsername());
                         }
                     }
                 }

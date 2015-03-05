@@ -16,13 +16,12 @@ import java.util.ArrayList;
 /**
  * Created by elcapi05 on 27/08/2014.
  */
-public class AdapterNavigation extends BaseAdapter {
-
+public class NavigationAdapter extends BaseAdapter {
 
     private final Context context;
-    ArrayList<ItemListDrawer> navItems;
+    private ArrayList<ItemListDrawer> navItems;
 
-    public AdapterNavigation(Context context, ArrayList<ItemListDrawer> navItems) {
+    public NavigationAdapter(Context context, ArrayList<ItemListDrawer> navItems) {
         this.context = context;
         this.navItems = navItems;
     }
@@ -60,8 +59,9 @@ public class AdapterNavigation extends BaseAdapter {
             holder.icono = (ImageView) view.findViewById(R.id.icon_item);
             //Cant Notificaciones
             holder.cantNotificacion = (TextView) view.findViewById(R.id.lblCantNoti);
+            //Separador
+            holder.separator = (TextView) view.findViewById(R.id.drawer_separator);
 
-            //System.out.println("Zimes.... " + item.getCantNotificaciones());
             view.setTag(holder);
         }
 
@@ -98,6 +98,15 @@ public class AdapterNavigation extends BaseAdapter {
                     holder.icono.setVisibility(View.GONE);
                 }
             }
+
+            if (holder.separator != null) {
+                if (item.isShowSeparator()) {
+                    holder.separator.setVisibility(View.VISIBLE);
+                    holder.separator.setText(item.getTextSeparador());
+                } else {
+                    holder.separator.setVisibility(View.GONE);
+                }
+            }
         }
 
         return view;
@@ -107,5 +116,6 @@ public class AdapterNavigation extends BaseAdapter {
         public TextView tituloItem;
         public ImageView icono;
         public TextView cantNotificacion;
+        public TextView separator;
     }
 }

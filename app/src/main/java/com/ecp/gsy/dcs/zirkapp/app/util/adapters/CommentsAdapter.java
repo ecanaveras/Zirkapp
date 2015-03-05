@@ -17,12 +17,12 @@ import java.util.ArrayList;
 /**
  * Created by Elder on 24/02/2015.
  */
-public class AdapterComments extends BaseAdapter {
+public class CommentsAdapter extends BaseAdapter {
 
     private ArrayList<ZimessComment> zimessCommentArrayL;
     private Activity context;
 
-    public AdapterComments(Activity context, ArrayList<ZimessComment> zimessCommentArrayList) {
+    public CommentsAdapter(Activity context, ArrayList<ZimessComment> zimessCommentArrayList) {
         this.context = context;
         this.zimessCommentArrayL = zimessCommentArrayList;
     }

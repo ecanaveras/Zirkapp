@@ -2,9 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp">
+    android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -17,30 +15,43 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif"
+                android:text="FOTO Y ESTADO"
+                android:textColor="@color/text_primary_color"
+                android:background="@color/accent_color"
+                android:gravity="center_vertical"/>
+
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="260dp">
+                android:minHeight="280dp">
 
                 <com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView
                     android:id="@+id/imgUserAvatar"
                     android:layout_width="180dp"
                     android:layout_height="180dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginBottom="4dp"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
-                    android:scaleType="fitCenter"
-                    />
+                    android:scaleType="fitCenter" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/msgHelpAvatar"
                     android:gravity="center_horizontal"
-                    android:textColor="@color/secondary_text_color" />
+                    android:textColor="@color/divider_color" />
 
                 <EditText
                     android:id="@+id/txtUserEstado"
@@ -59,34 +70,36 @@
             <!--<View style="@style/line_divider_h" />-->
 
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif"
+                android:text="OTROS DATOS"
+                android:textColor="@color/text_primary_color"
+                android:background="@color/accent_color"
+                android:gravity="center_vertical"/>
+
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:minHeight="80dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="1">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Mas datos"
-                    android:gravity="center_horizontal"
-                    android:textColor="@color/accent_color"
-                    android:layout_gravity="start" />
-
+                android:layout_margin="8dp">
 
                 <EditText
                     android:id="@+id/txtUsername"
                     android:layout_width="fill_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
                     android:textSize="18sp"
                     android:hint="@string/lblUser"
                     android:textColor="@color/accent_color"
                     android:enabled="false"
-                    android:visibility="invisible"/>
+                    android:visibility="gone" />
 
                 <EditText
                     android:id="@+id/txtUserNombres"
@@ -118,28 +131,30 @@
                     android:hint="@string/lblCity"
                     android:textColor="@color/accent_color"
                     android:inputType="textAutoComplete" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="*Descuida, Tu correo nadie lo ve!"
-                    android:gravity="center_horizontal"
-                    android:textColor="@color/secondary_text_color"
-                    android:layout_gravity="start" />
             </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="*Descuida, Tu correo nadie lo ve!"
+                android:gravity="center_horizontal"
+                android:textColor="@color/divider_color" />
 
             <View style="@style/line_divider_h" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom">
+                android:layout_weight="1"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp">
 
                 <Button
                     android:id="@+id/btnUpdateProfile"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:text="@string/lblSend" />
+                    android:text="@string/lblOk"
+                    android:layout_gravity="bottom" />
 
             </LinearLayout>
         </LinearLayout>

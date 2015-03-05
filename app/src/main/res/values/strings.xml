@@ -93,16 +93,21 @@
     <string name="msgProfileUpdateError">Hay problemas al guardar tus datos, intenta luego!</string>
 
     <string-array name="options_drawer">
-        <item>Home</item>
         <item>Zimess</item>
         <item>Chat</item>
         <item>Notificaciones</item>
+        <item>Configuración</item>
+        <item>Calificar</item>
+        <item>Compartir</item>
     </string-array>
 
     <array name="navigations_icons">
-        <item>@drawable/ic_icon_circle</item>
+        <item>@drawable/ic_icon_radar</item>
         <item>@drawable/ic_icon_triangle</item>
         <item>@drawable/ic_icon_square</item>
+        <item>@drawable/ic_icon_config_gral</item>
+        <item>@drawable/ic_icon_star</item>
+        <item>@drawable/ic_icon_share</item>
     </array>
 
 

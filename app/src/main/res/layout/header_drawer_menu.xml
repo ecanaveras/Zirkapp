@@ -19,7 +19,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:src="@drawable/ic_user_male"
-            android:scaleType="fitCenter"/>
+            android:scaleType="fitCenter" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,17 +27,36 @@
             android:orientation="vertical"
             android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/lblUserName"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:text="User Name"
-                android:gravity="center_vertical"
-                android:textColor="@color/text_primary_color"
-                android:fontFamily="sans-serif-medium"
-                android:textSize="14sp"/>
+                android:layout_marginRight="16dp">
+
+                <TextView
+                    android:id="@+id/lblNombreUsuario"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="4dp"
+                    android:text="Name"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/text_primary_color"
+                    android:fontFamily="sans-serif-medium"
+                    android:textSize="14sp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/lblUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User"
+                    android:gravity="center_vertical"
+                    android:fontFamily="sans-serif-medium"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
 
             <TextView
                 android:id="@+id/lblUserEmail"
@@ -49,7 +68,7 @@
                 android:text="usuario@gmail.com"
                 android:textColor="@color/text_primary_color"
                 android:fontFamily="sans-serif"
-                android:textSize="14sp"/>
+                android:textSize="14sp" />
 
 
         </LinearLayout>

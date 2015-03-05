@@ -27,14 +27,14 @@ import java.util.ArrayList;
 /**
  * Created by Elder on 23/02/2015.
  */
-public class AdapterZimess extends BaseAdapter {
+public class ZimessAdapter extends BaseAdapter {
 
     private ArrayList<ZimessNew> zimessArrayList;
     private Activity context;
     private GlobalApplication globalApplication;
     private ManagerGPS managerGPS;
 
-    public AdapterZimess(Activity context, ArrayList<ZimessNew> zimessArrayList) {
+    public ZimessAdapter(Activity context, ArrayList<ZimessNew> zimessArrayList) {
         this.zimessArrayList = zimessArrayList;
         this.context = context;
         globalApplication = (GlobalApplication) context.getApplicationContext();
@@ -65,7 +65,7 @@ public class AdapterZimess extends BaseAdapter {
             vista = layoutInflater.inflate(R.layout.listview_item_zimess, viewGroup, false);
         }
         //1. Crear Zimess
-        ZimessNew zimess = zimessArrayList.get(i);
+        final ZimessNew zimess = zimessArrayList.get(i);
         //2. Iniciar UI de la lista
         TextView lblMessage = (TextView) vista.findViewById(R.id.lblZimess);
         TextView lblDistance = (TextView) vista.findViewById(R.id.lblDistance);
@@ -89,6 +89,7 @@ public class AdapterZimess extends BaseAdapter {
             public void onClick(View view) {
                 view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.anim_image_click));
                 Intent intent = new Intent(context, UserProfileActivity.class);
+                globalApplication.setTempZimess(zimess);
                 context.startActivity(intent);
                 //Toast.makeText(context, "Ir a perfil de usuario", Toast.LENGTH_SHORT).show();
             }

@@ -15,7 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.util.adapters.AdapterComments;
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.CommentsAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessComment;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
@@ -38,7 +38,7 @@ public class DetailZimessActivity extends Activity {
     private EditText txtComment;
     private ListView listComment;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private AdapterComments adapterComment;
+    private CommentsAdapter adapterComment;
     private ArrayList<ZimessComment> arrayListComment;
 
 
@@ -193,7 +193,7 @@ public class DetailZimessActivity extends Activity {
                         zcomment.setUserComment(comment.getParseUser("user"));
                         arrayListComment.add(zcomment);
                     }
-                    adapterComment = new AdapterComments(activity, arrayListComment);
+                    adapterComment = new CommentsAdapter(activity, arrayListComment);
                     listComment.setAdapter(adapterComment);
                     swipeRefreshLayout.setRefreshing(false);
                 } else {

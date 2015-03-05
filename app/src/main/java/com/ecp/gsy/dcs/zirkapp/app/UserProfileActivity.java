@@ -11,7 +11,9 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
 import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -34,6 +36,8 @@ public class UserProfileActivity extends Activity {
     private String objectId;
     private TextView txtCantVisitas, txtWall, txtCantZimess, txtUserNombres;
     private ProgressBar progressBarLoad;
+    private GlobalApplication globalApplication;
+    private ParseUser zimessUser;
 
 
     @Override
@@ -42,6 +46,10 @@ public class UserProfileActivity extends Activity {
         setContentView(R.layout.activity_user_profile);
 
         currentUser = ParseUser.getCurrentUser();
+
+        globalApplication = (GlobalApplication) getApplicationContext();
+        //Tomar el user del Zimess
+        zimessUser = globalApplication.getTempZimess().getUser();
 
         inicializarCompUI();
 
@@ -56,7 +64,7 @@ public class UserProfileActivity extends Activity {
         saveInfoVisit();
 
         //Cargar info de visistas y Zimess
-        new UserProfileTask().execute(currentUser);
+        new UserProfileTask().execute(zimessUser);
 
     }
 
@@ -70,12 +78,12 @@ public class UserProfileActivity extends Activity {
     }
 
     private void saveInfoVisit() {
-        if (currentUser.equals(currentUser)) {
+        if (currentUser.equals(zimessUser)) { //Solo usuarios de otro perfil aumentan visitas
             return;
         }
         //Buscar si existe
         final ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZVisit");
-        query.whereEqualTo("user", currentUser); //Todo Guardar usuario que se visita
+        query.whereEqualTo("user", zimessUser);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
@@ -104,13 +112,13 @@ public class UserProfileActivity extends Activity {
         if (parseObject == null) {
             parseObject = new ParseObject("ParseZVisit");
         }
-        parseObject.put("user", currentUser);
+        parseObject.put("user", zimessUser);
         parseObject.increment("count_visit");
         parseObject.saveInBackground();
     }
 
     private void loadInfoProfile() {
-        new RefreshDataProfileTask(avatar, txtWall, txtUserNombres, getString(R.string.msgLoading), this).execute(ParseUser.getCurrentUser());
+        new RefreshDataProfileTask(avatar, txtWall, txtUserNombres, getString(R.string.msgLoading), this).execute(zimessUser);
     }
 
     @Override
