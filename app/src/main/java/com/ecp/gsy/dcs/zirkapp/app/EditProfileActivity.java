@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.NameLocationTask;
@@ -82,7 +83,8 @@ public class EditProfileActivity extends Activity {
         //get Name Ubicacion
         ManagerGPS managerGPS = new ManagerGPS(getApplicationContext());
         managerGPS.obtenertUbicacion();
-        new NameLocationTask(getApplicationContext(), managerGPS, txtCiudad).execute();
+        Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
+        new NameLocationTask(getApplicationContext(), currentLocation, txtCiudad).execute();
 
 //        loadDatos();
         new EditProfileTask(this, getResources().getString(R.string.msgLoading)).execute(currentUser);

@@ -31,13 +31,13 @@ public class ManagerDistance {
         Double distance = getDistancia();
         if (distance.intValue() >= 1000) {
             //Kilometros
-            return "+ " + distance / 1000 + "Km";
+            return "+" + distance / 1000 + "Km";
         } else if (distance.intValue() < 100) {
             // Metros
-            return "- 99m";
+            return "-99m";
         } else {
             // Metros
-            return "+ " + distance.intValue() + "m";
+            return "+" + distance.intValue() + "m";
         }
 
     }

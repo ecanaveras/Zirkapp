@@ -22,11 +22,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ScreenSlidePagerAdapter;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.UpdateDrawerReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
-import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ScreenSlidePagerAdapter;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
 import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;

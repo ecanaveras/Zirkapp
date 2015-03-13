@@ -10,13 +10,25 @@ import android.widget.TextView;
  */
 public class UpdateDrawerReceiver extends BroadcastReceiver {
 
+    private TextView textView;
+
     private Integer cantRows;
+
+    public UpdateDrawerReceiver() {
+    }
+
+    public UpdateDrawerReceiver(TextView textView) {
+        this.textView = textView;
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Integer datos = (Integer) intent.getSerializableExtra("datos");
         if (datos != null) {
             this.cantRows = datos;
+            if(textView != null) {
+                textView.setText(Integer.toString(datos));
+            }
         }
     }
 

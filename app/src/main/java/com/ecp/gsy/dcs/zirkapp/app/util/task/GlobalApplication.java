@@ -6,17 +6,13 @@ import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.provider.Settings;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
-import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -24,12 +20,9 @@ import com.parse.ParseInstallation;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -40,7 +33,7 @@ public class GlobalApplication extends Application {
     //Parse
     private ParseUser currentUser;
     private ParseUser customParseUser;
-    private ZimessNew tempZimess;
+    private Zimess tempZimess;
 
     private Context context;
 //    private boolean useApiPython;
@@ -109,11 +102,11 @@ public class GlobalApplication extends Application {
         return this.currentUser;
     }
 
-    public ZimessNew getTempZimess() {
+    public Zimess getTempZimess() {
         return tempZimess;
     }
 
-    public void setTempZimess(ZimessNew tempZimess) {
+    public void setTempZimess(Zimess tempZimess) {
         this.tempZimess = tempZimess;
     }
 
@@ -164,15 +157,15 @@ public class GlobalApplication extends Application {
         Long timeDay = (currentDate.getTime() - calendar.getTime().getTime()); //Tiempo con hora 0
         String result = "";
         if ((timeDay / MILLSECS_PER_DAY) >= 1.0) {
-            result = new Double(timeDay / MILLSECS_PER_DAY).intValue() + " días";
+            result = new Double(timeDay / MILLSECS_PER_DAY).intValue() + "d";
         } else if ((time / MILLSECS_PER_HOUR) < 24.0 && (time / MILLSECS_PER_HOUR) > 1.0) {
-            result = new Double(time / MILLSECS_PER_HOUR).intValue() + " horas";
+            result = new Double(time / MILLSECS_PER_HOUR).intValue() + "h";
         } else if ((time / MILLSECS_PER_MINUTES) <= 60.0 && (time / MILLSECS_PER_MINUTES) >= 1.0) {
-            result = new Double(time / MILLSECS_PER_MINUTES).intValue() + " minutos";
+            result = new Double(time / MILLSECS_PER_MINUTES).intValue() + "m";
         } else if ((time / 1000) <= 60.0) {
-            result = " pocos segundos";
+            result = ((time / 1000)) +"s";
         }
-        return "Hace ± " + result;
+        return result;
     }
 
 

@@ -1,5 +1,6 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.beans;
 
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 /**
@@ -10,6 +11,7 @@ public class ZimessComment {
     private String commentId;
     private String zimessId;
     private ParseUser userComment;
+    private ParseObject profile;
     private String commentText;
 
     public String getCommentId() {
@@ -42,5 +44,13 @@ public class ZimessComment {
 
     public void setCommentText(String commentText) {
         this.commentText = commentText;
+    }
+
+    public ParseObject getProfile() {
+        return profile;
+    }
+
+    public void setProfile(ParseObject profile) {
+        this.profile = profile;
     }
 }

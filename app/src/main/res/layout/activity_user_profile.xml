@@ -23,7 +23,9 @@
             android:layout_marginBottom="10dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:scaleType="fitCenter" />
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_user_male"/>
 
         <TextView
             android:id="@+id/txtUserNombres"
@@ -32,9 +34,10 @@
             android:layout_below="@+id/imgAvatarH"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="8dp"
-            android:text="Danna"
-            android:fontFamily="sans-serif-medium"
-            android:textSize="16sp" />
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="@color/primary_text_color"
+            />
 
 
     </LinearLayout>
@@ -56,7 +59,6 @@
             android:gravity="center_horizontal"
             android:fontFamily="sans-serif-medium"
             android:textSize="18sp"
-            android:text="Estado en Zirkapp"
             android:textColor="@color/accent_color" />
     </LinearLayout>
 

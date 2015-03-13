@@ -10,20 +10,17 @@ import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.FindParseObject;
 import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import java.util.List;
 
 /**
  * Created by Elder on 02/03/2015.
  */
-public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, String> {
+public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseObject> {
 
     private RoundedImageView avatar;
-    private List<ParseObject> parseObjectList;
     private byte[] byteImage;
     private ProgressDialog progressDialog;
     private Context context;
@@ -58,34 +55,26 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, String> {
     }
 
     @Override
-    protected String doInBackground(ParseUser... parseUsers) {
-        //Buscamos datos en Parse
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZProfile");
-        query.whereEqualTo("user", parseUsers[0]);
-        parseObjectList = null;
-        try {
-            parseObjectList = query.find();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return "finish";
+    protected ParseObject doInBackground(ParseUser... parseUsers) {
+        //Buscar perfil
+        return FindParseObject.findProfile(parseUsers[0]);
     }
 
     @Override
-    protected void onPostExecute(String s) {
-        if (parseObjectList.size() > 0) {
+    protected void onPostExecute(ParseObject objectProfile) {
+        if (objectProfile != null) {
             //Podemos obtener todos los datos del profile
-            if(txtWall != null){
-                txtWall.setText(parseObjectList.get(0).get("wall").toString());
+            if (txtWall != null) {
+                txtWall.setText(objectProfile.get("wall").toString());
             }
-            if(txtNombres != null){
-                txtNombres.setText(parseObjectList.get(0).get("name").toString());
+            if (txtNombres != null) {
+                txtNombres.setText(objectProfile.get("name").toString());
                 txtNombres.setVisibility(View.VISIBLE);
             }
             //Setter Imagen
             byteImage = new byte[0];
             try {
-                byteImage = parseObjectList.get(0).getParseFile("avatar").getData();
+                byteImage = objectProfile.getParseFile("avatar").getData();
                 Bitmap bmp = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
                 avatar.setImageBitmap(bmp);
             } catch (ParseException e1) {
@@ -96,6 +85,7 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, String> {
                 avatar.setImageResource(R.drawable.ic_user_male);
             }
         }
+
         if (context != null) {
             progressDialog.dismiss();
         }

@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,24 +11,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivityParse;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessAdapter;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Elder on 23/02/2015.
@@ -38,12 +33,15 @@ public class ZimessFragment extends Fragment {
 
     private String currenUserId;
 
-    private ArrayList<ZimessNew> zimessNewArrayList;
+    private ArrayList<Zimess> zimessArrayList;
     private ZimessAdapter zimessAdapterNew;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView listViewZimess;
     private Menu menuList;
     private ManagerGPS managerGPS;
+    private LinearLayout layoudZimessNoFound;
+    private GlobalApplication globalApplication;
+    private LinearLayout layoudZimessFinder;
 
 
     @Override
@@ -53,6 +51,7 @@ public class ZimessFragment extends Fragment {
         setHasOptionsMenu(true);
 
         managerGPS = new ManagerGPS(getActivity().getApplicationContext());
+        globalApplication = (GlobalApplication) getActivity().getApplicationContext();
 
         return view;
     }
@@ -60,7 +59,6 @@ public class ZimessFragment extends Fragment {
     @Override
     public void onResume() {
         //Usuario actual
-        final GlobalApplication globalApplication = (GlobalApplication) getActivity().getApplicationContext();
         if (globalApplication.getCurrentUser() != null) {
             currenUserId = globalApplication.getCurrentUser().getObjectId();
             findZimessAround();
@@ -69,16 +67,23 @@ public class ZimessFragment extends Fragment {
     }
 
     private void inicializarCompUI(View view) {
+        layoudZimessNoFound = (LinearLayout) view.findViewById(R.id.layoudZimessNoFound);
+        layoudZimessFinder = (LinearLayout) view.findViewById(R.id.layoudZimessFinder);
         listViewZimess = (ListView) view.findViewById(R.id.listZMessages);
         listViewZimess.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ZimessNew zimess = (ZimessNew) adapterView.getAdapter().getItem(i);
+                Zimess zimess = (Zimess) adapterView.getAdapter().getItem(i);
                 gotoDetail(zimess);
             }
         });
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.zimess_refresh_layout);
+        swipeRefreshLayout.setColorScheme(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -88,42 +93,9 @@ public class ZimessFragment extends Fragment {
     }
 
     private void findZimessAround() {
-        zimessNewArrayList = new ArrayList<ZimessNew>();
-        //Tomar ubicacion
         managerGPS.obtenertUbicacion();
-        //Buscar Zimess
-        ParseGeoPoint parseGeoPoint = new ParseGeoPoint(managerGPS.getLatitud(), managerGPS.getLongitud());
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZimess");
-        query.whereWithinKilometers("location", parseGeoPoint, 5); //Todo parametrizar la cantidad de Km.
-        query.orderByDescending("createdAt");
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
-                    for (ParseObject zimess : parseObjects) {
-                        //Log.d("zimessText", zimess.get("zimessText").toString());
-                        ZimessNew zimessNew = new ZimessNew();
-                        zimessNew.setZimessId(zimess.getObjectId());
-                        zimessNew.setUser(zimess.getParseUser("user"));
-                        zimessNew.setZimessText(zimess.get("zimessText").toString());
-                        zimessNew.setLocation(zimess.getParseGeoPoint("location"));
-                        zimessNew.setCreateAt(zimess.getCreatedAt());
-                        zimessNewArrayList.add(zimessNew);
-                    }
-                    zimessAdapterNew = new ZimessAdapter(getActivity(), zimessNewArrayList);
-                    listViewZimess.setAdapter(zimessAdapterNew);
-
-                    //Update Cant Zimess cerca
-                    Intent intent = new Intent("actualizarcantnotifi");
-                    intent.putExtra("datos", zimessAdapterNew.getCount());
-                    getActivity().sendBroadcast(intent);
-                } else {
-                    Log.e("Parse.Zimess", "Zimess Not Found");
-                }
-            }
-        });
-
-        swipeRefreshLayout.setRefreshing(false);
+        Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
+        new RefreshDataZimessTask(this.getActivity(), currentLocation, listViewZimess, layoudZimessNoFound, layoudZimessFinder, swipeRefreshLayout).execute(5); //Todo parametrizar KMs
     }
 
     /**
@@ -131,8 +103,7 @@ public class ZimessFragment extends Fragment {
      *
      * @param zimess
      */
-    private void gotoDetail(ZimessNew zimess) {
-        final GlobalApplication globalApplication = (GlobalApplication) getActivity().getApplicationContext();
+    private void gotoDetail(Zimess zimess) {
         globalApplication.setTempZimess(zimess);
         String userNameZimess = zimess.getUser().getUsername();
         Intent intent = new Intent(getActivity(), DetailZimessActivity.class);

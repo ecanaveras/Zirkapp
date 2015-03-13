@@ -6,25 +6,76 @@
     android:layout_marginLeft="8dp"
     android:layout_marginRight="8dp"
     android:layout_marginTop="3dp"
+    android:background="@color/divider_color_2"
     >
 
-    <TextView
-        android:id="@+id/lblCommentUser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="User"
-        android:textColor="@color/secondary_text_color"
-        android:textSize="18sp"/>
-
-    <TextView
-        android:id="@+id/lblCommentText"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Comment"
-        android:gravity="center_vertical"
-        android:layout_marginRight="4dp"
-        android:layout_marginLeft="4dp"
-        android:textColor="@color/accent_color"
-        />
+        android:layout_height="match_parent">
+
+        <com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView
+            android:id="@+id/imgCommentAvatarItem"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_user_male"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:scaleType="centerCrop"
+            android:layout_gravity="top"
+            android:layout_marginRight="6dp"
+            android:layout_marginLeft="6dp"
+            android:adjustViewBounds="true"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="18dp">
+
+                <TextView
+                    android:id="@+id/lblCommentNombreUsuario"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="4dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/secondary_text_color"/>
+
+                <TextView
+                    android:id="@+id/lblCommentUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@id/lblCommentNombreUsuario"
+                    android:layout_toEndOf="@id/lblCommentNombreUsuario"
+                    android:textColor="@color/divider_color"
+                    android:textSize="11dp"
+                    android:gravity="center_vertical"
+                    />
+
+                <TextView
+                    android:id="@+id/txtCommentTiempo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    style="@style/mini_text" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/lblCommentText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/accent_color"/>
+
+        </LinearLayout>
+
+        </LinearLayout>
+
 
 </LinearLayout>

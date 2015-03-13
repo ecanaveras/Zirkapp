@@ -12,6 +12,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.ecp.gsy.dcs.zirkapp.app.R;
 
 /**
  * Created by Elder on 02/03/2015.
@@ -42,7 +45,14 @@ public class RoundedImageView extends ImageView {
         }
 
         Bitmap bitmap1 = ((BitmapDrawable) drawable).getBitmap();
-        Bitmap bitmap2 = bitmap1.copy(Bitmap.Config.ARGB_8888, true);
+        Bitmap bitmap2;
+        try {
+            bitmap2 = bitmap1.copy(Bitmap.Config.ARGB_8888, true);
+        } catch (OutOfMemoryError e) {
+            this.setImageResource(R.drawable.ic_user_male);
+            Toast.makeText(getContext(), "Hay problemas con tu Imagen, intenta con otra!", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         int w = getWidth();
         int h = getHeight();

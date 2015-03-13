@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="60dp"
+    android:background="@color/text_primary_color"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="6dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp">
+
+        <!--Avatar y Distancia-->
+        <LinearLayout
+            android:layout_width="42dp"
+            android:layout_height="55dp"
+            android:orientation="vertical"
+            android:layout_marginRight="6dp"
+            android:layout_marginLeft="6dp">
+
+            <com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView
+                android:id="@+id/imgAvatarItem"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:src="@drawable/ic_user_male"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true" />
+
+            <!--<TextView
+                android:id="@+id/lblDistance"
+                android:layout_width="42dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:gravity="center"
+                style="@style/mini_text" />-->
+
+        </LinearLayout>
+
+        <!--Datos del perfil, y Zimess-->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="18dp">
+
+                <TextView
+                    android:id="@+id/lblNombreUsuario"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="4dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/accent_color"
+                    android:gravity="bottom" />
+
+                <TextView
+                    android:id="@+id/lblUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/divider_color"
+                    android:textSize="11dp"
+                    android:gravity="bottom"
+                    android:layout_marginBottom="1px" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/lblZimess"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="6dp"
+                android:fontFamily="sans-serif"
+                android:text="body"
+                android:textColor="@color/secondary_text_color" />
+
+
+            <!--Otros datos-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="16dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_icon_location"
+                    android:gravity="center_vertical" />
+
+                <TextView
+                    android:id="@+id/lblDistance"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:text="0m"
+                    android:layout_marginLeft="1dp"
+                    android:gravity="center_vertical"
+                    style="@style/mini_text" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_icon_response"
+                    android:gravity="center_vertical" />
+
+                <TextView
+                    android:id="@+id/lblCantComments"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:text="0"
+                    android:layout_marginLeft="1dp"
+                    android:gravity="center_vertical"
+                    style="@style/mini_text" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_icon_time"
+                    android:gravity="center_vertical" />
+
+                <TextView
+                    android:id="@+id/txtTiempo"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:text="1h"
+                    android:layout_marginLeft="1dp"
+                    android:gravity="center_vertical"
+                    style="@style/mini_text" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>
+

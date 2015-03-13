@@ -6,8 +6,6 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,7 +22,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.NameLocationTask;
@@ -33,10 +32,6 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by Elder on 23/02/2015.
@@ -70,7 +65,8 @@ public class NewZimessActivityParse extends Activity {
         //Name Location
         managerGPS = new ManagerGPS(getApplicationContext());
         managerGPS.obtenertUbicacion();
-        new NameLocationTask(getApplicationContext(), managerGPS, lblCurrentLocation, progressBar).execute();
+        Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
+        new NameLocationTask(getApplicationContext(), currentLocation, lblCurrentLocation, progressBar).execute();
     }
 
 
@@ -115,7 +111,7 @@ public class NewZimessActivityParse extends Activity {
         progressBar = (ProgressBar) findViewById(R.id.progressLoad);
 
         //Recuper el zimess no enviado.
-        ZimessNew zimessNoti = (ZimessNew) getIntent().getSerializableExtra("zimess_noti");
+        Zimess zimessNoti = (Zimess) getIntent().getSerializableExtra("zimess_noti");
         //Restablece el mensaje que no se pude enviar
         if (zimessNoti != null) {
             message.setText(zimessNoti.getZimessText());
@@ -132,6 +128,8 @@ public class NewZimessActivityParse extends Activity {
                     Toast.LENGTH_LONG).show();
             return;
         }
+
+        btnSendZimess.setEnabled(false);
 
         //Tomar ubicacion
         managerGPS.obtenertUbicacion();

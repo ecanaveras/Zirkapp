@@ -31,7 +31,7 @@
                 android:id="@+id/editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textShortMessage|textAutoCorrect|textMultiLine|textCapWords"
+                android:inputType="textShortMessage|textAutoCorrect|textMultiLine|textAutoComplete"
                 android:imeOptions="actionSend|flagNoEnterAction"
                 android:imeActionLabel="@string/lblSend"
                 android:maxLength="300"

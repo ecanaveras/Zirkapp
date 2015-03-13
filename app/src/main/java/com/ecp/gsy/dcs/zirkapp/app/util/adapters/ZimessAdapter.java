@@ -3,6 +3,8 @@ package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,30 +18,29 @@ import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.UserProfileActivity;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
-import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
+import com.parse.ParseException;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Elder on 23/02/2015.
  */
 public class ZimessAdapter extends BaseAdapter {
 
-    private ArrayList<ZimessNew> zimessArrayList;
+    private List<Zimess> zimessArrayList;
     private Activity context;
     private GlobalApplication globalApplication;
-    private ManagerGPS managerGPS;
+    private Location currentLocation;
 
-    public ZimessAdapter(Activity context, ArrayList<ZimessNew> zimessArrayList) {
+    public ZimessAdapter(Activity context, List<Zimess> zimessArrayList, Location currentLocation) {
         this.zimessArrayList = zimessArrayList;
         this.context = context;
+        this.currentLocation = currentLocation;
         globalApplication = (GlobalApplication) context.getApplicationContext();
-        managerGPS = new ManagerGPS(context);
-        managerGPS.obtenertUbicacion();
     }
 
     @Override
@@ -62,26 +63,29 @@ public class ZimessAdapter extends BaseAdapter {
         View vista = view;
         if (vista == null) {
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            vista = layoutInflater.inflate(R.layout.listview_item_zimess, viewGroup, false);
+            vista = layoutInflater.inflate(R.layout.list_item_zimess_new, viewGroup, false);
         }
         //1. Crear Zimess
-        final ZimessNew zimess = zimessArrayList.get(i);
+        final Zimess zimess = zimessArrayList.get(i);
         //2. Iniciar UI de la lista
+        TextView lblAliasUsuario = (TextView) vista.findViewById(R.id.lblNombreUsuario);
+        TextView lblUsername = (TextView) vista.findViewById(R.id.lblUserName);
         TextView lblMessage = (TextView) vista.findViewById(R.id.lblZimess);
         TextView lblDistance = (TextView) vista.findViewById(R.id.lblDistance);
         ImageView imgAvatar = (ImageView) vista.findViewById(R.id.imgAvatarItem);
-        ImageView imgOptions = (ImageView) vista.findViewById(R.id.imgOptionsItem);
+        //ImageView imgOptions = (ImageView) vista.findViewById(R.id.imgOptionsItem);
         TextView lblTimePass = (TextView) vista.findViewById(R.id.txtTiempo);
-        TextView lblCreatedAt = (TextView) vista.findViewById(R.id.lblZimessCreatetAt);
+        TextView lblCantComments = (TextView) vista.findViewById(R.id.lblCantComments);
+        //TextView lblCreatedAt = (TextView) vista.findViewById(R.id.lblZimessCreatetAt);
 
-        //Action Options Zimess
-        imgOptions.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.anim_image_click));
-                showPopup(view, R.menu.option_zimess);
-            }
-        });
+//        //Action Options Zimess
+//        imgOptions.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.anim_image_click));
+//                showPopup(view, R.menu.option_zimess);
+//            }
+//        });
 
         //Action Avatar
         imgAvatar.setOnClickListener(new View.OnClickListener() {
@@ -97,15 +101,29 @@ public class ZimessAdapter extends BaseAdapter {
 
         //3. Establecer datos
 
+        if (zimess.getProfile() != null) {
+            lblAliasUsuario.setText(zimess.getProfile().getString("name"));
+            //Estableciendo Imagen;
+            byte[] byteImage = new byte[0];
+            try {
+                byteImage = zimess.getProfile().getParseFile("avatar").getData();
+                Bitmap bmp = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
+                imgAvatar.setImageBitmap(bmp);
+            } catch (ParseException e1) {
+                e1.printStackTrace();
+            }
+        }
+        lblUsername.setText(zimess.getUser().getUsername());
+        lblCantComments.setText(Integer.toString(zimess.getCantComment()));
+
+
         //Manejando tiempos transcurridos
         String tiempoTranscurrido = globalApplication.getTimepass(zimess.getCreateAt());
         lblTimePass.setText(tiempoTranscurrido);
 
-        lblCreatedAt.setText(globalApplication.getDescFechaPublicacion(zimess.getCreateAt()));
+        //lblCreatedAt.setText(globalApplication.getDescFechaPublicacion(zimess.getCreateAt()));
 
         //Calcular distancia del Zimess remoto
-        Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
-
         Location zimessLocation = new Location(zimess.getLocation().getLatitude(), zimess.getLocation().getLongitude());
         ManagerDistance mDistance = new ManagerDistance(currentLocation, zimessLocation);
         lblDistance.setText(mDistance.getDistanciaToString());

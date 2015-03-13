@@ -1,16 +1,18 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 
-import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessComment;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
+import com.parse.ParseException;
 
 import java.util.ArrayList;
 
@@ -20,9 +22,9 @@ import java.util.ArrayList;
 public class CommentsAdapter extends BaseAdapter {
 
     private ArrayList<ZimessComment> zimessCommentArrayL;
-    private Activity context;
+    private Context context;
 
-    public CommentsAdapter(Activity context, ArrayList<ZimessComment> zimessCommentArrayList) {
+    public CommentsAdapter(Context context, ArrayList<ZimessComment> zimessCommentArrayList) {
         this.context = context;
         this.zimessCommentArrayL = zimessCommentArrayList;
     }
@@ -52,11 +54,26 @@ public class CommentsAdapter extends BaseAdapter {
         //1. Crear ZimessComment
         ZimessComment comment = zimessCommentArrayL.get(i);
         //2. Iniciar UI de la lista
-        TextView lblCommentUser = (TextView) vista.findViewById(R.id.lblCommentUser);
+        ImageView imgAvatar = (ImageView) vista.findViewById(R.id.imgCommentAvatarItem);
+        TextView lblCommentUser = (TextView) vista.findViewById(R.id.lblCommentUserName);
         TextView lblCommentText = (TextView) vista.findViewById(R.id.lblCommentText);
+        TextView lblCommentName = (TextView) vista.findViewById(R.id.lblCommentNombreUsuario);
+
         //3. Asignar valores
         lblCommentUser.setText(comment.getUserComment().getUsername().toString());
         lblCommentText.setText(comment.getCommentText().toString());
+        if(comment.getProfile() != null) {
+            lblCommentName.setText(comment.getProfile().getString("name"));
+            //Estableciendo Imagen;
+            byte[] byteImage = new byte[0];
+            try {
+                byteImage = comment.getProfile().getParseFile("avatar").getData();
+                Bitmap bmp = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
+                imgAvatar.setImageBitmap(bmp);
+            } catch (ParseException e1) {
+                e1.printStackTrace();
+            }
+        }
 
         return vista;
     }

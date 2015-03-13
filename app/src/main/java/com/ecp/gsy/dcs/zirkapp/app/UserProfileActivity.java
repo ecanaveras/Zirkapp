@@ -2,7 +2,6 @@ package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,8 +10,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
 import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.FindParseObject;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
 import com.parse.FindCallback;
@@ -81,9 +80,10 @@ public class UserProfileActivity extends Activity {
         if (currentUser.equals(zimessUser)) { //Solo usuarios de otro perfil aumentan visitas
             return;
         }
+        final ParseObject zimessObject = ParseObject.createWithoutData("ParseZimess", zimessUser.getObjectId());
         //Buscar si existe
         final ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZVisit");
-        query.whereEqualTo("user", zimessUser);
+        query.whereEqualTo("user", zimessObject);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
@@ -95,24 +95,24 @@ public class UserProfileActivity extends Activity {
                         @Override
                         public void done(ParseObject parseObject, ParseException e) {
                             if (e == null) {
-                                createOrUpdateVisit(parseObject); //Actualiza
+                                createOrUpdateVisit(parseObject, zimessObject); //Actualiza
                             }
                         }
                     });
                 } else {
-                    createOrUpdateVisit(null);
+                    createOrUpdateVisit(null, zimessObject);
                 }
             }
         });
 
     }
 
-    private void createOrUpdateVisit(ParseObject inParseObject) {
+    private void createOrUpdateVisit(ParseObject inParseObject, ParseObject zimessObject) {
         ParseObject parseObject = inParseObject;
         if (parseObject == null) {
             parseObject = new ParseObject("ParseZVisit");
         }
-        parseObject.put("user", zimessUser);
+        parseObject.put("user", zimessObject);
         parseObject.increment("count_visit");
         parseObject.saveInBackground();
     }
@@ -137,10 +137,9 @@ public class UserProfileActivity extends Activity {
         }
     }
 
-    private class UserProfileTask extends AsyncTask<ParseUser, Void, String> {
+    private class UserProfileTask extends AsyncTask<ParseUser, Void, ParseObject> {
 
-        private List<ParseObject> parseObjectVisit;
-        private List<ParseObject> parseObjectZimess;
+        private Integer cantZimess;
 
 
         @Override
@@ -150,42 +149,23 @@ public class UserProfileActivity extends Activity {
         }
 
         @Override
-        protected String doInBackground(ParseUser... parseUsers) {
+        protected ParseObject doInBackground(ParseUser... parseUsers) {
+            //Buscamos Cant de Zimess en Parse
+            cantZimess = FindParseObject.findCountZimess(parseUsers[0]);
             //Buscamos Visitas en Parse
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZVisit");
-            query.whereEqualTo("user", parseUsers[0]);
-            parseObjectVisit = null;
-            try {
-                parseObjectVisit = query.find();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            //Buscamos Zimess en Parse
-            ParseQuery<ParseObject> queryZimess = ParseQuery.getQuery("ParseZimess");
-            queryZimess.whereEqualTo("user", parseUsers[0]);
-            parseObjectZimess = null;
-            try {
-                parseObjectZimess = queryZimess.find();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return "finish";
+            return FindParseObject.findDataVisit(parseUsers[0]);
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            if (parseObjectVisit.size() > 0) {
-                txtCantVisitas.setText(parseObjectVisit.get(0).get("count_visit").toString());
+        protected void onPostExecute(ParseObject parseObject) {
+            if (parseObject != null) {
+                txtCantVisitas.setText(parseObject.get("count_visit").toString());
             } else {
                 txtCantVisitas.setText("0");
             }
             //Cant de Zimess
-            if (parseObjectZimess.size() > 0) {
-                txtCantZimess.setText(Integer.toString(parseObjectZimess.size()));
-            } else {
-                txtCantZimess.setText("0");
-            }
+            txtCantZimess.setText(Integer.toString(cantZimess));
+
             progressBarLoad.setVisibility(View.INVISIBLE);
 
         }

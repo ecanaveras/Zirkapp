@@ -30,7 +30,7 @@
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:scaleType="center"
-            android:src="@drawable/ic_icon_square_color"/>
+            android:src="@drawable/ic_icon_noti"/>
 
         <TextView
             android:id="@+id/title_item"

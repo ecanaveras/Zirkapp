@@ -2,8 +2,11 @@ package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,34 +15,46 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.util.adapters.CommentsAdapter;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessComment;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessNew;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataCommentsTask;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DetailZimessActivity extends Activity {
 
-    private ZimessNew zimessDetail;
+    private Zimess zimessDetail;
     private Activity activity;
-    private String currentUserId;
-    private String userNameParse;
+    private ParseUser currentUser;
+    private String userNameProfile;
     private EditText txtComment;
     private ListView listComment;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private CommentsAdapter adapterComment;
-    private ArrayList<ZimessComment> arrayListComment;
+    private ManagerGPS managerGPS;
+    private ImageView imgAvatar;
+    private GlobalApplication globalApplication;
+    private TextView lblTimePass,
+            lblDistance,
+            lblMessage,
+            lblUsername,
+            lblAliasUsuario;
+    private ProgressBar progressBar;
+    private String zimessId;
+    private TextView lblCantComments;
 
 
     @Override
@@ -48,13 +63,16 @@ public class DetailZimessActivity extends Activity {
         setContentView(R.layout.activity_detail_zimess);
 
         activity = this;
+        managerGPS = new ManagerGPS(getApplicationContext());
+        managerGPS.obtenertUbicacion();
 
-        final GlobalApplication globalApplication = (GlobalApplication) getApplicationContext();
-        currentUserId = globalApplication.getCurrentUser().getObjectId();
+        globalApplication = (GlobalApplication) getApplicationContext();
+        currentUser = globalApplication.getCurrentUser();
 
         //Tomar Zimess enviado.
         zimessDetail = globalApplication.getTempZimess(); // (ZimessNew) getIntent().getSerializableExtra("zimess");
-        userNameParse = getIntent().getStringExtra("usernameZimess");
+        if (zimessDetail != null && zimessDetail.getProfile() != null)
+            userNameProfile = zimessDetail.getProfile().getString("name");
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setTitle("Zimess");
@@ -69,7 +87,7 @@ public class DetailZimessActivity extends Activity {
         progressDialog.setMessage("Espera...");
         progressDialog.show();
         while(!userFound) {
-            if(userNameParse != null){
+            if(userNameProfile != null){
                 userFound = true;
                 progressDialog.dismiss();
             }
@@ -86,7 +104,7 @@ public class DetailZimessActivity extends Activity {
             @Override
             public void done(ParseUser parseUser, ParseException e) {
                 if (e == null) {
-                    userNameParse = parseUser.getUsername();
+                    userNameProfile = parseUser.getUsername();
                     //Log.d("Parse.user", "Usuario encontrado "+parseUser.getUsername());
                 } else {
                     Log.e("Parse.findUser", "Error la buscar el usuario");
@@ -101,10 +119,22 @@ public class DetailZimessActivity extends Activity {
 
     private void inicializarCompUI() {
         //UI
-        TextView lblZimessText = (TextView) findViewById(R.id.lblZimessText);
-        lblZimessText.setText(zimessDetail.getZimessText());
+        lblAliasUsuario = (TextView) findViewById(R.id.lblNombreUsuario);
+        lblUsername = (TextView) findViewById(R.id.lblUserName);
+        lblMessage = (TextView) findViewById(R.id.lblZimess);
+        lblDistance = (TextView) findViewById(R.id.lblDistance);
+        imgAvatar = (ImageView) findViewById(R.id.imgAvatarItem);
+        //ImageView imgOptions = (ImageView) vista.findViewById(R.id.imgOptionsItem);
+        lblTimePass = (TextView) findViewById(R.id.txtTiempo);
+        lblCantComments = (TextView) findViewById(R.id.lblCantComments);
+
         txtComment = (EditText) findViewById(R.id.txtZimessComment);
         listComment = (ListView) findViewById(R.id.listZComments);
+
+        progressBar = (ProgressBar) findViewById(R.id.progressLoad);
+
+        refreshDataZimess(zimessDetail);
+
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshComment);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -114,20 +144,20 @@ public class DetailZimessActivity extends Activity {
         });
 
         //Set custom hint
-        if (userNameParse != null) {
-            String msgUsername = new StringBuffer(getResources().getString(R.string.msgReply)).append(" ").append(userNameParse).toString();
+        if (userNameProfile != null) {
+            String msgUsername = new StringBuffer(getResources().getString(R.string.msgReply)).append(" ").append(userNameProfile).toString();
             txtComment.setHint(msgUsername);
         } else {
             txtComment.setHint(null);
         }
 
         //Avatar
-        ImageView avatar = (ImageView) findViewById(R.id.imgAvatarDZ);
-        avatar.setOnClickListener(new View.OnClickListener() {
+        imgAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 view.startAnimation(AnimationUtils.loadAnimation(view.getContext(), R.anim.anim_image_click));
                 Intent intent = new Intent(view.getContext(), UserProfileActivity.class);
+                globalApplication.setTempZimess(zimessDetail);
                 startActivity(intent);
             }
         });
@@ -148,62 +178,79 @@ public class DetailZimessActivity extends Activity {
         });
     }
 
+    private void refreshDataZimess(Zimess zimess) {
+        if (zimess.getProfile() != null) {
+            lblAliasUsuario.setText(zimess.getProfile().getString("name"));
+            //Estableciendo Imagen;
+            byte[] byteImage = new byte[0];
+            try {
+                byteImage = zimess.getProfile().getParseFile("avatar").getData();
+                Bitmap bmp = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
+                imgAvatar.setImageBitmap(bmp);
+            } catch (ParseException e1) {
+                e1.printStackTrace();
+            }
+        }
+        lblUsername.setText(zimess.getUser().getUsername());
+        lblCantComments.setText(zimess.getUser().getUsername());
+
+
+        //Manejando tiempos transcurridos
+        String tiempoTranscurrido = globalApplication.getTimepass(zimess.getCreateAt());
+        lblTimePass.setText(tiempoTranscurrido);
+
+        //lblCreatedAt.setText(globalApplication.getDescFechaPublicacion(zimess.getCreateAt()));
+
+        //Calcular distancia del Zimess remoto
+        Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
+
+        Location zimessLocation = new Location(zimess.getLocation().getLatitude(), zimess.getLocation().getLongitude());
+        ManagerDistance mDistance = new ManagerDistance(currentLocation, zimessLocation);
+        lblDistance.setText(mDistance.getDistanciaToString());
+        lblMessage.setText(zimess.getZimessText());
+
+    }
+
     /**
      * Publica un comentario
      *
      * @param commentText
      */
     private void sendZimessComment(String commentText) {
+        final ParseObject zimessObject = ParseObject.createWithoutData("ParseZimess", zimessDetail.getZimessId());
         ParseObject commentObject = new ParseObject("ParseZComment");
-        commentObject.put("user", ParseUser.getCurrentUser());
-        commentObject.put("zimessId", ParseObject.createWithoutData("ParseZimess", zimessDetail.getZimessId()));
+        commentObject.put("user", currentUser);
+        commentObject.put("zimessId", zimessObject);
         commentObject.put("commentText", commentText);
         commentObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
                     txtComment.setText(null);
-                    findZimessComment();
+                    updateCantComments(zimessObject);
                 } else {
                     Toast.makeText(getApplicationContext(),
                             "Error al enviar tu comentario, reintentalo!",
                             Toast.LENGTH_SHORT).show();
+                    Log.e("Parse.sendZimessComment", e.getMessage());
                 }
             }
         });
+        findZimessComment();
+    }
 
+    private void updateCantComments(ParseObject zimessObject) {
+        if (zimessObject != null) {
+            zimessObject.increment("cant_comment");
+            zimessObject.saveInBackground();
+        }
 
     }
 
-    private void findZimessComment() {
-        arrayListComment = new ArrayList<ZimessComment>();
-        //Buscar Zimess
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZComment");
-        query.whereEqualTo("zimessId", ParseObject.createWithoutData("ParseZimess", zimessDetail.getZimessId()));
-        query.include("user");
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
-                    for (ParseObject comment : parseObjects) {
-//                        System.out.println("COMMENT "+comment.get("commentText").toString());
-//                        System.out.println("USER_COMMENT " +comment.getParseUser("user"));
-                        ZimessComment zcomment = new ZimessComment();
-                        zcomment.setCommentText(comment.get("commentText").toString());
-                        zcomment.setUserComment(comment.getParseUser("user"));
-                        arrayListComment.add(zcomment);
-                    }
-                    adapterComment = new CommentsAdapter(activity, arrayListComment);
-                    listComment.setAdapter(adapterComment);
-                    swipeRefreshLayout.setRefreshing(false);
-                } else {
-                    Toast.makeText(activity,
-                            "Error buscando comentarios",
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-        });
 
+    private void findZimessComment() {
+        //Actualizar Lista de Comentarios
+        new RefreshDataCommentsTask(this, progressBar, listComment, swipeRefreshLayout).execute(zimessDetail.getZimessId());
     }
 
     @Override

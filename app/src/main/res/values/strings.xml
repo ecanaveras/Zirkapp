@@ -91,6 +91,10 @@
     <string name="msgEmailInvalid">Escribe una dirección de correo válida</string>
     <string name="msgProfileUpdate">Tus datos han sido actualizados!</string>
     <string name="msgProfileUpdateError">Hay problemas al guardar tus datos, intenta luego!</string>
+    <string name="lblComments">Comentarios</string>
+    <string name="lblSave">Guardar</string>
+    <string name="lblResponse">Respuestas</string>
+    <string name="lblSearching">Buscando Zimess...</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>
@@ -102,9 +106,9 @@
     </string-array>
 
     <array name="navigations_icons">
-        <item>@drawable/ic_icon_radar</item>
-        <item>@drawable/ic_icon_triangle</item>
-        <item>@drawable/ic_icon_square</item>
+        <item>@drawable/ic_icon_radar_new</item>
+        <item>@drawable/ic_icon_chat</item>
+        <item>@drawable/ic_icon_noti</item>
         <item>@drawable/ic_icon_config_gral</item>
         <item>@drawable/ic_icon_star</item>
         <item>@drawable/ic_icon_share</item>
