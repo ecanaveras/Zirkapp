@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
-import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
 
 import java.io.IOException;
 import java.util.List;

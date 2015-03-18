@@ -23,10 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
-import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
-import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.NameLocationTask;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -48,6 +47,7 @@ public class NewZimessActivityParse extends Activity {
     private GlobalApplication globalApplication;
     private ManagerGPS managerGPS;
     private ProgressBar progressBar;
+    private Activity activity;
 
 
     @Override
@@ -58,15 +58,19 @@ public class NewZimessActivityParse extends Activity {
 
         globalApplication = (GlobalApplication) getApplicationContext();
 
+        activity = this;
+
         inicializarCompUI();
 
         currentUser = globalApplication.getCurrentUser();
 
         //Name Location
-        managerGPS = new ManagerGPS(getApplicationContext());
-        managerGPS.obtenertUbicacion();
-        Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
-        new NameLocationTask(getApplicationContext(), currentLocation, lblCurrentLocation, progressBar).execute();
+        managerGPS = new ManagerGPS(this);
+        if (managerGPS.isEnableGetLocation()) {
+            new RefreshDataAddressTask(managerGPS, lblCurrentLocation, progressBar).execute();
+        } else {
+            managerGPS.gpsShowSettingsAlert();
+        }
     }
 
 
@@ -142,10 +146,13 @@ public class NewZimessActivityParse extends Activity {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    onBackPressed();
+                    Intent intent = new Intent();
+                    intent.putExtra("newZimessOk", true);
+                    activity.setResult(Activity.RESULT_OK, intent);
+                    activity.finish();
                 } else {
                     showNotificacion(true, 0, null, context.getResources().getString(R.string.msgZimesFailed), zimessText);
-                    Log.e("ZimessError:", "No es posible publicar el Zimess en parse");
+                    Log.e("ZimessError:", "No es posible publicar el Zimess");
                     onBackPressed();
                 }
             }
@@ -202,11 +209,14 @@ public class NewZimessActivityParse extends Activity {
         manager.cancel(idNoti);
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                Intent intent = new Intent();
+                intent.putExtra("newZimessOk", false);
+                activity.setResult(Activity.RESULT_CANCELED, intent);
+                activity.finish();
                 onBackPressed();
                 return true;
             default:

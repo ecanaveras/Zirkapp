@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -50,7 +51,11 @@ public class RoundedImageView extends ImageView {
             bitmap2 = bitmap1.copy(Bitmap.Config.ARGB_8888, true);
         } catch (OutOfMemoryError e) {
             this.setImageResource(R.drawable.ic_user_male);
-            Toast.makeText(getContext(), "Hay problemas con tu Imagen, intenta con otra!", Toast.LENGTH_LONG).show();
+            Log.e("RoudedImage.error", e.toString());
+            //Toast.makeText(getContext(), "Hay problemas con tu Imagen, intenta con otra!", Toast.LENGTH_LONG).show();
+            return;
+        }catch (NullPointerException e){
+            Log.e("RoudedImage.null", e.toString());
             return;
         }
 

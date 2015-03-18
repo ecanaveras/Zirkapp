@@ -44,6 +44,7 @@
     <string name="lblCancel">Cancelar</string>
     <string name="lblAbout">Acerca de...</string>
     <string name="lblSettingGPS">Config. GPS</string>
+    <string name="lblSettingNetwork">Conectarse...</string>
     <string name="lblDistanceMin">Dist. Mínina</string>
     <string name="lblDinstaceMax">Dist. Máxima</string>
     <string name="lblAddZmess">Nuevo Zimess</string>
@@ -62,6 +63,7 @@
     <string name="msgNo">NO</string>
     <string name="msgSelectType">Seleccione el tipo de Publicación</string>
     <string name="msgGPSdisabled">GPS Apagado, ir al menú de configuración?</string>
+    <string name="msgNetworkDisabled">No hay Internet, ir al menú de configuración?</string>
     <string name="msgProgressDialog">Cargando contenido</string>
     <string name="msgExitApp">Te vas?</string>
     <string name="msgDisconnet">Out, que le pasa al internet?</string>

@@ -17,16 +17,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
-import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
-import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.NameLocationTask;
-import com.parse.FindCallback;
-import com.parse.GetCallback;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -82,12 +78,14 @@ public class EditProfileActivity extends Activity {
 
         //get Name Ubicacion
         ManagerGPS managerGPS = new ManagerGPS(getApplicationContext());
-        managerGPS.obtenertUbicacion();
-        Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
-        new NameLocationTask(getApplicationContext(), currentLocation, txtCiudad).execute();
+        if (managerGPS.isEnableGetLocation()) {
+            new RefreshDataAddressTask(managerGPS, txtCiudad).execute();
+        } else {
+            managerGPS.gpsShowSettingsAlert();
+        }
 
-//        loadDatos();
-        new EditProfileTask(this, getResources().getString(R.string.msgLoading)).execute(currentUser);
+        loadDatos();
+        //new EditProfileTask(this, getResources().getString(R.string.msgLoading)).execute(currentUser);
     }
 
     private void inicializarCompUI() {
@@ -117,6 +115,20 @@ public class EditProfileActivity extends Activity {
         });
     }
 
+    private void loadDatos() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage(getString(R.string.msgLoading));
+        progressDialog.show();
+        if (currentUser != null) {
+            imgAvatar.setImageBitmap(this.getAvatar());
+            txtNombres.setText(currentUser.getString("name"));
+            txtEstado.setText(currentUser.getString("wall"));
+            txtCiudad.setText(currentUser.getString("city"));
+            txtEmail.setText(currentUser.getEmail().toString());
+        }
+        progressDialog.dismiss();
+    }
+
     /**
      * Guarda los datos del perfil
      */
@@ -139,84 +151,45 @@ public class EditProfileActivity extends Activity {
             return;
         }
 
-        if (currentUser != null) {
-            //Imagen
-            parseFile = null;
-            if (imgAvatar.getTag() != null) {
-                byteImage = getByteAvatar((Uri) imgAvatar.getTag());
-            } else if (byteImage == null) {
-                byteImage = new byte[0];
-            }
-
-            parseFile = new ParseFile("ParseZAvatar", byteImage);
-            parseFile.saveInBackground();
-
-            //Buscar si existe
-            final ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZProfile");
-            query.whereEqualTo("user", currentUser);
-            query.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> parseObjects, ParseException e) {
-                    if (e == null) {
-                        if (parseObjects.size() > 0) {
-                            objectId = parseObjects.get(0).getObjectId();
-                        }
-                    }
-                    if (objectId != null) {//Existe [ACTUALIZAR]
-                        query.getInBackground(objectId, new GetCallback<ParseObject>() {
-                            @Override
-                            public void done(ParseObject parseObject, ParseException e) {
-                                if (e == null) {
-                                    createOrUpdateProfile(parseFile, parseObject); //Actualiza
-                                }
-                            }
-                        });
-                    } else { //No Existe [CREAR]
-                        createOrUpdateProfile(parseFile, null); //Crea
-                    }
-                }
-            });
-        }
-    }
-
-    /**
-     * Crea o actualiza los datos del perfil
-     *
-     * @param parseFile
-     * @param inParseObject
-     */
-    private void createOrUpdateProfile(ParseFile parseFile, ParseObject inParseObject) {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(getString(R.string.msgSaving));
         progressDialog.show();
-        //Datos del Perfil
-        ParseObject parseObject = inParseObject;
-        if (parseObject == null) {
-            parseObject = new ParseObject("ParseZProfile");
-        }
-        parseObject.put("user", currentUser);
-        parseObject.put("name", txtNombres.getText().toString());
-        parseObject.put("wall", txtEstado.getText().toString());
-        parseObject.put("city", txtCiudad.getText().toString());
-        parseObject.put("avatar", parseFile);
-        parseObject.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    //Actualizar email
-                    currentUser.setEmail(txtEmail.getText().toString());
-                    currentUser.saveInBackground();
-                    progressDialog.dismiss();
-                    Intent intent = new Intent();
-                    intent.putExtra("editprofileOk", true);
-                    activity.setResult(Activity.RESULT_OK, intent);
-                    activity.finish();
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.msgProfileUpdate), Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.msgProfileUpdateError), Toast.LENGTH_LONG).show();
-                }
+
+        if (currentUser != null) {
+            //Imagen cambiada desde la activity
+            if (imgAvatar.getTag() != null) {
+                byteImage = getByteAvatar((Uri) imgAvatar.getTag());
             }
-        });
+
+            parseFile = new ParseFile("ParseZAvatar", byteImage != null ? byteImage : new byte[0]);
+            parseFile.saveInBackground();
+
+            ParseUser parseUser = currentUser;
+            if (byteImage != null) {
+                parseUser.put("avatar", parseFile);
+            }
+            parseUser.put("name", txtNombres.getText().toString());
+            parseUser.put("wall", txtEstado.getText().toString());
+            parseUser.put("city", txtCiudad.getText().toString());
+            parseUser.setEmail(txtEmail.getText().toString());
+
+            parseUser.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        progressDialog.dismiss();
+                        Intent intent = new Intent();
+                        intent.putExtra("editprofileOk", true);
+                        activity.setResult(Activity.RESULT_OK, intent);
+                        activity.finish();
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.msgProfileUpdate), Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.msgProfileUpdateError), Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+
+        }
     }
 
     private byte[] getByteAvatar(Uri filePath) {
@@ -231,7 +204,7 @@ public class EditProfileActivity extends Activity {
 
         Bitmap bitmap = BitmapFactory.decodeStream(fileInputStream);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 40, stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
         return stream.toByteArray();
     }
 
@@ -253,6 +226,28 @@ public class EditProfileActivity extends Activity {
             intent.setType("image/*");
             startActivityForResult(intent, avatarRequestCode);
         }
+    }
+
+    /**
+     * Retorna la imagen del usuario
+     *
+     * @return
+     */
+    public Bitmap getAvatar() {
+        if (currentUser != null && currentUser.getParseFile("avatar") != null) {
+            byte[] byteImage;
+            try {
+                byteImage = currentUser.getParseFile("avatar").getData();
+                if (byteImage != null) {
+                    return BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
+                }
+            } catch (ParseException e) {
+                Log.e("Parse.avatar.exception", e.getMessage());
+            } catch (OutOfMemoryError e) {
+                Log.e("Parse.avatar.outmemory", e.toString());
+            }
+        }
+        return null;
     }
 
     @Override

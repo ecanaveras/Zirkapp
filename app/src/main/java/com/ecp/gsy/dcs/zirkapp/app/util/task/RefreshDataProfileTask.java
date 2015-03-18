@@ -5,12 +5,14 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.FindParseObject;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -18,7 +20,7 @@ import com.parse.ParseUser;
 /**
  * Created by Elder on 02/03/2015.
  */
-public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseObject> {
+public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser> {
 
     private RoundedImageView avatar;
     private byte[] byteImage;
@@ -55,40 +57,54 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseObje
     }
 
     @Override
-    protected ParseObject doInBackground(ParseUser... parseUsers) {
+    protected ParseUser doInBackground(ParseUser... parseUsers) {
         //Buscar perfil
-        return FindParseObject.findProfile(parseUsers[0]);
+        return parseUsers[0];
     }
 
     @Override
-    protected void onPostExecute(ParseObject objectProfile) {
-        if (objectProfile != null) {
+    protected void onPostExecute(ParseUser user) {
+        if (user != null) {
             //Podemos obtener todos los datos del profile
             if (txtWall != null) {
-                txtWall.setText(objectProfile.get("wall").toString());
+                txtWall.setText(user.get("wall").toString());
             }
             if (txtNombres != null) {
-                txtNombres.setText(objectProfile.get("name").toString());
+                txtNombres.setText(user.get("name").toString());
                 txtNombres.setVisibility(View.VISIBLE);
             }
-            //Setter Imagen
-            byteImage = new byte[0];
-            try {
-                byteImage = objectProfile.getParseFile("avatar").getData();
-                Bitmap bmp = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
-                avatar.setImageBitmap(bmp);
-            } catch (ParseException e1) {
-                e1.printStackTrace();
-            }
-        } else {
-            if (byteImage == null) {
+            if (getAvatar(user) != null) {
+                avatar.setImageBitmap(getAvatar(user));
+            } else {
                 avatar.setImageResource(R.drawable.ic_user_male);
             }
-        }
 
-        if (context != null) {
-            progressDialog.dismiss();
         }
+        if (context != null)
+            progressDialog.dismiss();
+
+    }
+
+    /**
+     * Retorna la imagen del usuario
+     *
+     * @return
+     */
+    public Bitmap getAvatar(ParseUser currentUser) {
+        if (currentUser != null && currentUser.getParseFile("avatar") != null) {
+            byte[] byteImage;
+            try {
+                byteImage = currentUser.getParseFile("avatar").getData();
+                if (byteImage != null) {
+                    return BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
+                }
+            } catch (ParseException e) {
+                Log.e("Parse.avatar.exception", e.getMessage());
+            } catch (OutOfMemoryError e) {
+                Log.e("Parse.avatar.outmemory", e.toString());
+            }
+        }
+        return null;
     }
 
 }

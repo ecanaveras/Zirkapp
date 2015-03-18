@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -21,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ScreenSlidePagerAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
@@ -29,6 +32,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.UpdateDrawerReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
@@ -86,6 +90,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     //Respuesta del Login
     private int inputLoginRequestCode = 100;
 
+
     //Manejo de la DB
     private OrmLiteBaseActivity<DatabaseHelper> getOrlOrmLiteBaseActivity() {
         Activity activity = this;
@@ -99,6 +104,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         //Generar HashKey
 //        try {
@@ -256,8 +262,33 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         TextView lblUsermail = (TextView) headerDrawer.findViewById(R.id.lblUserEmail);
         lblUsername.setText(userZirkapp.getUsername());
         lblUsermail.setText(userZirkapp.getEmail());
+        lblNombreUsuario.setText(userZirkapp.getString("name"));
+        avatar.setImageBitmap(getAvatar(userZirkapp));
+        //Buscar en segundo plano
+        new RefreshDataProfileTask(avatar, lblNombreUsuario).execute(userZirkapp); //TODO psoiblemente no necesario
+    }
 
-        new RefreshDataProfileTask(avatar, lblNombreUsuario).execute(userZirkapp);
+
+    /**
+     * Retorna la imagen del usuario
+     *
+     * @return
+     */
+    public Bitmap getAvatar(ParseUser currentUser) {
+        if (currentUser != null && currentUser.getParseFile("avatar") != null) {
+            byte[] byteImage;
+            try {
+                byteImage = currentUser.getParseFile("avatar").getData();
+                if (byteImage != null) {
+                    return BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
+                }
+            } catch (ParseException e) {
+                Log.e("Parse.avatar.exception", e.getMessage());
+            } catch (OutOfMemoryError e) {
+                Log.e("Parse.avatar.outmemory", e.toString());
+            }
+        }
+        return null;
     }
 
 
@@ -275,6 +306,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
                 break;
             case 1:
                 showFragment(ZIMESS, false);
+
                 break;
             case 2:
                 showFragment(INBOX, false);
@@ -292,9 +324,11 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         for (int i = 0; i < fragments.length; i++) {
             if (i == indexFragment) {
                 ft.show(fragments[i]);
-//                if(Session.getActiveSession().isClosed()){
-//                    drawerNavigation.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-//                }
+                //Todo comprobar funcionamiento adecuado
+                if(indexFragment==1){ //Actualizar listado de Zimess
+                    ZimessFragment zimessFragment = (ZimessFragment) fragments[i];
+                    zimessFragment.findZimessAround();
+                }
             } else {
                 ft.hide(fragments[i]);
             }

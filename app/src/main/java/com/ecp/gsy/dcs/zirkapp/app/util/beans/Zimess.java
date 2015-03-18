@@ -1,5 +1,10 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.beans;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+
+import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -19,8 +24,29 @@ public class Zimess implements Serializable {
     private String zimessText;
     private ParseGeoPoint location;
     private Date createAt;
-    private ParseObject profile;
     private Integer cantComment;
+
+    /**
+     * Retorna la imagen del usuario
+     * @return
+     */
+    public Bitmap getAvatar() {
+        if (this.user != null && this.user.getParseFile("avatar") != null) {
+            byte[] byteImage;
+            try {
+                byteImage = this.user.getParseFile("avatar").getData();
+                if (byteImage != null) {
+                    return BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
+                }
+            } catch (ParseException e) {
+                Log.e("Parse.avatar.exception", e.getMessage());
+            } catch (OutOfMemoryError e) {
+                Log.e("Parse.avatar.outmemory", e.toString());
+            }
+        }
+        return null;
+    }
+
 
     public String getZimessId() {
         return zimessId;
@@ -60,14 +86,6 @@ public class Zimess implements Serializable {
 
     public void setCreateAt(Date createAt) {
         this.createAt = createAt;
-    }
-
-    public ParseObject getProfile() {
-        return profile;
-    }
-
-    public void setProfile(ParseObject profile) {
-        this.profile = profile;
     }
 
     public Integer getCantComment() {

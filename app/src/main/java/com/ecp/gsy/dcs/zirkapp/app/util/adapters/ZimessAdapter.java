@@ -76,6 +76,7 @@ public class ZimessAdapter extends BaseAdapter {
         //ImageView imgOptions = (ImageView) vista.findViewById(R.id.imgOptionsItem);
         TextView lblTimePass = (TextView) vista.findViewById(R.id.txtTiempo);
         TextView lblCantComments = (TextView) vista.findViewById(R.id.lblCantComments);
+        ImageView imgComment = (ImageView) vista.findViewById(R.id.imgComment);
         //TextView lblCreatedAt = (TextView) vista.findViewById(R.id.lblZimessCreatetAt);
 
 //        //Action Options Zimess
@@ -101,20 +102,19 @@ public class ZimessAdapter extends BaseAdapter {
 
         //3. Establecer datos
 
-        if (zimess.getProfile() != null) {
-            lblAliasUsuario.setText(zimess.getProfile().getString("name"));
-            //Estableciendo Imagen;
-            byte[] byteImage = new byte[0];
-            try {
-                byteImage = zimess.getProfile().getParseFile("avatar").getData();
-                Bitmap bmp = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
-                imgAvatar.setImageBitmap(bmp);
-            } catch (ParseException e1) {
-                e1.printStackTrace();
-            }
-        }
+
+        lblAliasUsuario.setText(zimess.getUser().getString("name"));
+        //Estableciendo Imagen;
+        imgAvatar.setImageBitmap(zimess.getAvatar());
+
         lblUsername.setText(zimess.getUser().getUsername());
         lblCantComments.setText(Integer.toString(zimess.getCantComment()));
+
+        //cambiar icono cuando hay comentarios
+        if (zimess.getCantComment() != 0)
+            imgComment.setImageResource(R.drawable.ic_icon_response_color);
+        else
+            imgComment.setImageResource(R.drawable.ic_icon_response);
 
 
         //Manejando tiempos transcurridos

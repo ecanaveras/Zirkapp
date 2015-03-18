@@ -1,7 +1,14 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.beans;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
+
+import java.util.Date;
 
 /**
  * Created by Elder on 23/02/2015.
@@ -11,8 +18,33 @@ public class ZimessComment {
     private String commentId;
     private String zimessId;
     private ParseUser userComment;
-    private ParseObject profile;
     private String commentText;
+    private Date createAt;
+    private Bitmap avatar;
+
+    /**
+     * Retorna la imagen del usuario
+     * @return
+     */
+    public Bitmap getAvatar() {
+        if(avatar != null){
+            return avatar;
+        }
+        if (this.getUserComment() != null && this.userComment.getParseFile("avatar") != null) {
+            byte[] byteImage;
+            try {
+                byteImage = this.userComment.getParseFile("avatar").getData();
+                if (byteImage != null) {
+                    this.avatar = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
+                }
+            } catch (ParseException e) {
+                Log.e("Parse.avatar.exception", e.getMessage());
+            } catch (OutOfMemoryError e) {
+                Log.e("Parse.avatar.outmemory", e.toString());
+            }
+        }
+        return avatar;
+    }
 
     public String getCommentId() {
         return commentId;
@@ -46,11 +78,11 @@ public class ZimessComment {
         this.commentText = commentText;
     }
 
-    public ParseObject getProfile() {
-        return profile;
+    public Date getCreateAt() {
+        return createAt;
     }
 
-    public void setProfile(ParseObject profile) {
-        this.profile = profile;
+    public void setCreateAt(Date createAt) {
+        this.createAt = createAt;
     }
 }

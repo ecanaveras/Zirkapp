@@ -3,6 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessComment;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.parse.ParseException;
 
 import java.util.ArrayList;
@@ -23,10 +25,12 @@ public class CommentsAdapter extends BaseAdapter {
 
     private ArrayList<ZimessComment> zimessCommentArrayL;
     private Context context;
+    private GlobalApplication globalApplication;
 
     public CommentsAdapter(Context context, ArrayList<ZimessComment> zimessCommentArrayList) {
         this.context = context;
         this.zimessCommentArrayL = zimessCommentArrayList;
+        globalApplication = (GlobalApplication) context.getApplicationContext();
     }
 
     @Override
@@ -47,7 +51,7 @@ public class CommentsAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         View vista = view;
-        if(vista == null){
+        if (vista == null) {
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             vista = layoutInflater.inflate(R.layout.listview_item_comments, viewGroup, false);
         }
@@ -58,22 +62,21 @@ public class CommentsAdapter extends BaseAdapter {
         TextView lblCommentUser = (TextView) vista.findViewById(R.id.lblCommentUserName);
         TextView lblCommentText = (TextView) vista.findViewById(R.id.lblCommentText);
         TextView lblCommentName = (TextView) vista.findViewById(R.id.lblCommentNombreUsuario);
+        TextView lblTimePass = (TextView) vista.findViewById(R.id.txtCommentTiempo);
+        TextView lblNumComment = (TextView) vista.findViewById(R.id.lblNumComment);
 
         //3. Asignar valores
         lblCommentUser.setText(comment.getUserComment().getUsername().toString());
         lblCommentText.setText(comment.getCommentText().toString());
-        if(comment.getProfile() != null) {
-            lblCommentName.setText(comment.getProfile().getString("name"));
-            //Estableciendo Imagen;
-            byte[] byteImage = new byte[0];
-            try {
-                byteImage = comment.getProfile().getParseFile("avatar").getData();
-                Bitmap bmp = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
-                imgAvatar.setImageBitmap(bmp);
-            } catch (ParseException e1) {
-                e1.printStackTrace();
-            }
-        }
+        lblNumComment.setText(Integer.toString(i + 1));
+
+        lblCommentName.setText(comment.getUserComment().getString("name"));
+        //Estableciendo Imagen;
+        imgAvatar.setImageBitmap(comment.getAvatar());
+
+        //Manejando tiempos transcurridos
+        String tiempoTranscurrido = globalApplication.getTimepass(comment.getCreateAt());
+        lblTimePass.setText(tiempoTranscurrido);
 
         return vista;
     }

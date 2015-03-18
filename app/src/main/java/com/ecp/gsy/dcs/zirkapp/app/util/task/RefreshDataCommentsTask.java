@@ -60,8 +60,7 @@ public class RefreshDataCommentsTask extends AsyncTask<String, Void, ArrayList<Z
             ZimessComment zcomment = new ZimessComment();
             zcomment.setCommentText(comment.get("commentText").toString());
             zcomment.setUserComment(comment.getParseUser("user"));
-            //Buscar perfil del comentario
-            zcomment.setProfile(FindParseObject.findProfile(comment.getParseUser("user")));
+            zcomment.setCreateAt(comment.getCreatedAt());
 
             arrayListComment.add(zcomment);
         }

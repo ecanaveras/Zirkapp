@@ -1,5 +1,6 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -20,7 +22,7 @@ import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
-import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
 
@@ -42,6 +44,7 @@ public class ZimessFragment extends Fragment {
     private LinearLayout layoudZimessNoFound;
     private GlobalApplication globalApplication;
     private LinearLayout layoudZimessFinder;
+    private int requestCodeNewZimess = 100;
 
 
     @Override
@@ -50,8 +53,11 @@ public class ZimessFragment extends Fragment {
         inicializarCompUI(view);
         setHasOptionsMenu(true);
 
-        managerGPS = new ManagerGPS(getActivity().getApplicationContext());
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
+
+        managerGPS = new ManagerGPS(getActivity());
+
+        findZimessAround();
 
         return view;
     }
@@ -59,10 +65,10 @@ public class ZimessFragment extends Fragment {
     @Override
     public void onResume() {
         //Usuario actual
-        if (globalApplication.getCurrentUser() != null) {
+        /*if (globalApplication.getCurrentUser() != null) {
             currenUserId = globalApplication.getCurrentUser().getObjectId();
             findZimessAround();
-        }
+        }*/
         super.onResume();
     }
 
@@ -78,6 +84,8 @@ public class ZimessFragment extends Fragment {
             }
         });
 
+        layoudZimessFinder.setVisibility(View.GONE);
+
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.zimess_refresh_layout);
         swipeRefreshLayout.setColorScheme(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
@@ -90,12 +98,32 @@ public class ZimessFragment extends Fragment {
                 findZimessAround();
             }
         });
+
+        listViewZimess.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                int topRowVerticalPosition = (listViewZimess == null || listViewZimess.getChildCount() == 0) ? 0 : listViewZimess.getChildAt(0).getTop();
+                swipeRefreshLayout.setEnabled(firstVisibleItem == 0 && topRowVerticalPosition >= 0);
+            }
+        });
     }
 
-    private void findZimessAround() {
-        managerGPS.obtenertUbicacion();
-        Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
-        new RefreshDataZimessTask(this.getActivity(), currentLocation, listViewZimess, layoudZimessNoFound, layoudZimessFinder, swipeRefreshLayout).execute(5); //Todo parametrizar KMs
+    public void findZimessAround() {
+        if (!managerGPS.isOnline()) {//Si no hay internet
+            managerGPS.networkShowSettingsAlert();
+        } else {
+            if (managerGPS.isEnableGetLocation()) {
+                Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
+                new RefreshDataZimessTask(this.getActivity(), currentLocation, listViewZimess, layoudZimessNoFound, layoudZimessFinder, swipeRefreshLayout).execute(5); //Todo parametrizar KMs
+            } else {
+                managerGPS.gpsShowSettingsAlert();
+            }
+        }
     }
 
     /**
@@ -125,7 +153,7 @@ public class ZimessFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_bar_new_zmess:
                 Intent intent = new Intent(getActivity(), NewZimessActivityParse.class);
-                startActivity(intent);
+                startActivityForResult(intent, requestCodeNewZimess);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -142,5 +170,14 @@ public class ZimessFragment extends Fragment {
             }
         }
         return null;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == requestCodeNewZimess) {
+            boolean newZimessOk = data.getBooleanExtra("newZimessOk", false);
+            if (resultCode == Activity.RESULT_OK && newZimessOk)
+                findZimessAround();
+        }
     }
 }

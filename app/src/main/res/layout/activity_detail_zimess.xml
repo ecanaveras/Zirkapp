@@ -5,12 +5,12 @@
     android:minHeight="60dp"
     android:orientation="vertical">
 
+    <!--Zimess-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="6dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp">
+        android:layout_marginBottom="4dp"
+        android:background="#F1F9F1">
 
         <LinearLayout
             android:layout_width="42dp"
@@ -73,7 +73,7 @@
                 android:fontFamily="sans-serif"
                 android:textColor="@color/secondary_text_color" />
 
-            <!--Otros datos-->
+            <!--Iconos y datos-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="16dp">
@@ -94,6 +94,7 @@
                     style="@style/mini_text" />
 
                 <ImageView
+                    android:id="@+id/imgComment"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:src="@drawable/ic_icon_response"
@@ -129,8 +130,6 @@
 
     </LinearLayout>
 
-    <View style="@style/line_divider_h" />
-
     <TextView
         style="@style/mini_text"
         android:layout_width="match_parent"
@@ -139,8 +138,9 @@
         android:text="@string/lblResponse" />
 
     <ImageView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:scaleType="fitCenter"
         android:src="@android:drawable/arrow_down_float" />
 
 
@@ -161,7 +161,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:stackFromBottom="true"
-                android:transcriptMode="alwaysScroll"/>
+                android:transcriptMode="alwaysScroll"
+                />
 
             <ProgressBar
                 android:id="@+id/progressLoad"
@@ -173,9 +174,6 @@
 
 
     </android.support.v4.widget.SwipeRefreshLayout>
-
-
-    <View style="@style/line_divider_h" />
 
     <LinearLayout
         android:layout_width="fill_parent"

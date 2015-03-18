@@ -2,8 +2,7 @@ package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -11,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -22,18 +22,18 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
-import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerGPS;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataCommentsTask;
-import com.parse.FindCallback;
-import com.parse.GetCallback;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import java.util.List;
+import java.util.HashMap;
 
 public class DetailZimessActivity extends Activity {
 
@@ -55,6 +55,7 @@ public class DetailZimessActivity extends Activity {
     private ProgressBar progressBar;
     private String zimessId;
     private TextView lblCantComments;
+    private ImageView imgComment;
 
 
     @Override
@@ -63,35 +64,17 @@ public class DetailZimessActivity extends Activity {
         setContentView(R.layout.activity_detail_zimess);
 
         activity = this;
-        managerGPS = new ManagerGPS(getApplicationContext());
-        managerGPS.obtenertUbicacion();
-
         globalApplication = (GlobalApplication) getApplicationContext();
         currentUser = globalApplication.getCurrentUser();
 
+        managerGPS = new ManagerGPS(activity);
+
         //Tomar Zimess enviado.
         zimessDetail = globalApplication.getTempZimess(); // (ZimessNew) getIntent().getSerializableExtra("zimess");
-        if (zimessDetail != null && zimessDetail.getProfile() != null)
-            userNameProfile = zimessDetail.getProfile().getString("name");
+        userNameProfile = zimessDetail.getUser().getString("name");
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setTitle("Zimess");
-
-        //Vaciar Zimess variable global
-        globalApplication.setTempZimess(null);
-
-
-
-       /* ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setTitle("Cargando");
-        progressDialog.setMessage("Espera...");
-        progressDialog.show();
-        while(!userFound) {
-            if(userNameProfile != null){
-                userFound = true;
-                progressDialog.dismiss();
-            }
-        }*/
 
         inicializarCompUI();
     }
@@ -127,13 +110,10 @@ public class DetailZimessActivity extends Activity {
         //ImageView imgOptions = (ImageView) vista.findViewById(R.id.imgOptionsItem);
         lblTimePass = (TextView) findViewById(R.id.txtTiempo);
         lblCantComments = (TextView) findViewById(R.id.lblCantComments);
+        imgComment = (ImageView) findViewById(R.id.imgComment);
 
         txtComment = (EditText) findViewById(R.id.txtZimessComment);
         listComment = (ListView) findViewById(R.id.listZComments);
-
-        progressBar = (ProgressBar) findViewById(R.id.progressLoad);
-
-        refreshDataZimess(zimessDetail);
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshComment);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -142,6 +122,23 @@ public class DetailZimessActivity extends Activity {
                 findZimessComment();
             }
         });
+
+        listComment.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                int topRowVerticalPosition = (listComment == null || listComment.getChildCount() == 0) ? 0 : listComment.getChildAt(0).getTop();
+                swipeRefreshLayout.setEnabled(firstVisibleItem == 0 && topRowVerticalPosition >= 0);
+            }
+        });
+
+        progressBar = (ProgressBar) findViewById(R.id.progressLoad);
+
+        refreshDataZimess(zimessDetail);
 
         //Set custom hint
         if (userNameProfile != null) {
@@ -178,23 +175,19 @@ public class DetailZimessActivity extends Activity {
         });
     }
 
-    private void refreshDataZimess(Zimess zimess) {
-        if (zimess.getProfile() != null) {
-            lblAliasUsuario.setText(zimess.getProfile().getString("name"));
-            //Estableciendo Imagen;
-            byte[] byteImage = new byte[0];
-            try {
-                byteImage = zimess.getProfile().getParseFile("avatar").getData();
-                Bitmap bmp = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
-                imgAvatar.setImageBitmap(bmp);
-            } catch (ParseException e1) {
-                e1.printStackTrace();
-            }
-        }
+    public void refreshDataZimess(Zimess zimess) {
+        //Estableciendo Imagen;
+        imgAvatar.setImageBitmap(zimess.getAvatar());
+
+        lblAliasUsuario.setText(zimess.getUser().getString("name"));
         lblUsername.setText(zimess.getUser().getUsername());
-        lblCantComments.setText(zimess.getUser().getUsername());
+        lblCantComments.setText(Integer.toString(zimess.getCantComment()));
 
-
+        //cambiar icono cuando hay comentarios
+        if (zimess.getCantComment() > 0)
+            imgComment.setImageResource(R.drawable.ic_icon_response_color);
+        else
+            imgComment.setImageResource(R.drawable.ic_icon_response);
         //Manejando tiempos transcurridos
         String tiempoTranscurrido = globalApplication.getTimepass(zimess.getCreateAt());
         lblTimePass.setText(tiempoTranscurrido);
@@ -202,12 +195,16 @@ public class DetailZimessActivity extends Activity {
         //lblCreatedAt.setText(globalApplication.getDescFechaPublicacion(zimess.getCreateAt()));
 
         //Calcular distancia del Zimess remoto
-        Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
+        if (managerGPS.isEnableGetLocation()) {
+            Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
 
-        Location zimessLocation = new Location(zimess.getLocation().getLatitude(), zimess.getLocation().getLongitude());
-        ManagerDistance mDistance = new ManagerDistance(currentLocation, zimessLocation);
-        lblDistance.setText(mDistance.getDistanciaToString());
-        lblMessage.setText(zimess.getZimessText());
+            Location zimessLocation = new Location(zimess.getLocation().getLatitude(), zimess.getLocation().getLongitude());
+            ManagerDistance mDistance = new ManagerDistance(currentLocation, zimessLocation);
+            lblDistance.setText(mDistance.getDistanciaToString());
+            lblMessage.setText(zimess.getZimessText());
+        } else {
+            managerGPS.gpsShowSettingsAlert();
+        }
 
     }
 
@@ -227,7 +224,7 @@ public class DetailZimessActivity extends Activity {
             public void done(ParseException e) {
                 if (e == null) {
                     txtComment.setText(null);
-                    updateCantComments(zimessObject);
+                    updateCantComments();
                 } else {
                     Toast.makeText(getApplicationContext(),
                             "Error al enviar tu comentario, reintentalo!",
@@ -236,21 +233,34 @@ public class DetailZimessActivity extends Activity {
                 }
             }
         });
-        findZimessComment();
+        //findZimessComment();
     }
 
-    private void updateCantComments(ParseObject zimessObject) {
-        if (zimessObject != null) {
-            zimessObject.increment("cant_comment");
-            zimessObject.saveInBackground();
-        }
+    private void updateCantComments() {
+        //Usando ParseCloud
+        ParseCloud.callFunctionInBackground("ParseZComment", new HashMap<String, Object>(), new FunctionCallback<String>() {
+            public void done(String result, ParseException e) {
+                if (e == null) {
+                    System.out.println(result);
+                } else {
+                    Log.e("Parze.Cloud.ZComment", e.getMessage());
+                }
+            }
+        });
 
+        findZimessComment();
+        findZimessUpdated();
     }
 
 
     private void findZimessComment() {
         //Actualizar Lista de Comentarios
         new RefreshDataCommentsTask(this, progressBar, listComment, swipeRefreshLayout).execute(zimessDetail.getZimessId());
+    }
+
+    private void findZimessUpdated() {
+        //Actualizar el Zimess recien comentado
+        new RefreshDataZimessTask(this, zimessDetail).execute();
     }
 
     @Override
@@ -278,6 +288,16 @@ public class DetailZimessActivity extends Activity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+        } else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+
         }
     }
 }

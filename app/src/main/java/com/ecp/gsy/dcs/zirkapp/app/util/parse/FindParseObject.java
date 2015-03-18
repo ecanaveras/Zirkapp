@@ -50,6 +50,7 @@ public class FindParseObject {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZComment");
         query.whereEqualTo("zimessId", ParseObject.createWithoutData("ParseZimess", zimessId));
         query.include("user");
+        query.orderByAscending("createdAt");
         try {
             listParseComments = query.find();
         } catch (ParseException e) {
@@ -60,33 +61,13 @@ public class FindParseObject {
     }
 
     /**
-     * Devuelve la cantidad de comentarios de un Zimess
-     *
-     * @param zimessId
-     * @return
-     */
-    public static Integer findCountComments(String zimessId) {
-        List<ParseObject> cantComments = new ArrayList<ParseObject>();
-        //Buscar por Zimess
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZCountComment");
-        query.whereEqualTo("zimessId", ParseObject.createWithoutData("ParseZimess", zimessId));
-        try {
-            cantComments = query.find();
-        } catch (ParseException e) {
-            Log.e("Parse.Count.Comments", e.getMessage());
-        }
-
-        return cantComments.size() > 0 ? new Integer(cantComments.get(0).get("count_comment").toString()) : 0;
-    }
-
-    /**
      * Busca Zimess de acuerdo a la posicion
      *
      * @param currentLocation
      * @param cantKmAround
      * @return
      */
-    public static List<ParseObject> findZimess(Location currentLocation, int cantKmAround) {
+    public static List<ParseObject> findZimessLocation(Location currentLocation, int cantKmAround) {
         List<ParseObject> listZimess = new ArrayList<ParseObject>();
         //Buscar Zimess
         ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
@@ -101,6 +82,26 @@ public class FindParseObject {
         }
 
         return listZimess;
+    }
+
+    /**
+     * Busca Zimess de acuerdo al zimessId
+     *
+     * @param zimessId
+     * @return
+     */
+    public static ParseObject findZimess(String zimessId) {
+        List<ParseObject> listZimess = new ArrayList<ParseObject>();
+        //Buscar Zimess
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZimess");
+        query.whereEqualTo("objectId", zimessId);
+        try {
+            listZimess = query.find();
+        } catch (ParseException e) {
+            Log.e("Parse.Zimess", e.getMessage());
+        }
+
+        return listZimess.size() > 0 ? listZimess.get(0) : null;
     }
 
     /**
