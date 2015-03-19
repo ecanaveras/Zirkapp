@@ -94,7 +94,7 @@ public class ZimessAdapter extends BaseAdapter {
             public void onClick(View view) {
                 view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.anim_image_click));
                 Intent intent = new Intent(context, UserProfileActivity.class);
-                globalApplication.setTempZimess(zimess);
+                globalApplication.setCustomParseUser(zimess.getUser());
                 context.startActivity(intent);
                 //Toast.makeText(context, "Ir a perfil de usuario", Toast.LENGTH_SHORT).show();
             }

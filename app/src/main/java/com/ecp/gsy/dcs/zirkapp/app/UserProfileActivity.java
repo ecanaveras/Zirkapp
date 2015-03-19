@@ -48,9 +48,11 @@ public class UserProfileActivity extends Activity {
 
         globalApplication = (GlobalApplication) getApplicationContext();
         //Tomar el user del Zimess
-        zimessUser = globalApplication.getTempZimess().getUser();
+        zimessUser = globalApplication.getCustomParseUser();
 
         inicializarCompUI();
+
+        setTitle("Info. del Usuario");
 
         loadInfoProfile();
 

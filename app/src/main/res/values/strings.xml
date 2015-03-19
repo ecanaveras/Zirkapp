@@ -97,6 +97,7 @@
     <string name="lblSave">Guardar</string>
     <string name="lblResponse">Respuestas</string>
     <string name="lblSearching">Buscando Zimess...</string>
+    <string name="lblSearchingUsers">Buscando usuarios online...</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

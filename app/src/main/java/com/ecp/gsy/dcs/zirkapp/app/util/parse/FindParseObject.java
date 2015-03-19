@@ -37,6 +37,31 @@ public class FindParseObject {
         return listProfile.size() > 0 ? listProfile.get(0) : null;
     }
 
+    /**
+     * Busca Zimess de acuerdo a la posicion
+     *
+     * @param currentLocation
+     * @param cantKmAround
+     * @return
+     */
+    public static List<ParseUser> findUsersLocation(ParseUser currentUser, Location currentLocation, int cantKmAround) {
+        List<ParseUser> listUsers = new ArrayList<ParseUser>();
+        //Buscar Zimess
+        ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.whereNotEqualTo("objectId", currentUser.getObjectId());
+        query.whereWithinKilometers("location", parseGeoPoint, cantKmAround);
+        query.whereEqualTo("online", true);
+        query.orderByAscending("name");
+        try {
+            listUsers = query.find();
+        } catch (ParseException e) {
+            Log.e("Parse.Users", e.getMessage());
+        }
+
+        return listUsers;
+    }
+
 
     /**
      * Busca los comentarios de un Zimess

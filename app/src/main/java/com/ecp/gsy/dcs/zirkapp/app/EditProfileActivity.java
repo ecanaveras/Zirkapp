@@ -120,7 +120,7 @@ public class EditProfileActivity extends Activity {
         progressDialog.setMessage(getString(R.string.msgLoading));
         progressDialog.show();
         if (currentUser != null) {
-            imgAvatar.setImageBitmap(this.getAvatar());
+            imgAvatar.setImageBitmap(GlobalApplication.getAvatar(currentUser));
             txtNombres.setText(currentUser.getString("name"));
             txtEstado.setText(currentUser.getString("wall"));
             txtCiudad.setText(currentUser.getString("city"));
@@ -226,28 +226,6 @@ public class EditProfileActivity extends Activity {
             intent.setType("image/*");
             startActivityForResult(intent, avatarRequestCode);
         }
-    }
-
-    /**
-     * Retorna la imagen del usuario
-     *
-     * @return
-     */
-    public Bitmap getAvatar() {
-        if (currentUser != null && currentUser.getParseFile("avatar") != null) {
-            byte[] byteImage;
-            try {
-                byteImage = currentUser.getParseFile("avatar").getData();
-                if (byteImage != null) {
-                    return BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
-                }
-            } catch (ParseException e) {
-                Log.e("Parse.avatar.exception", e.getMessage());
-            } catch (OutOfMemoryError e) {
-                Log.e("Parse.avatar.outmemory", e.toString());
-            }
-        }
-        return null;
     }
 
     @Override

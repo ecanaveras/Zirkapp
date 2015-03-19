@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,23 +40,22 @@ public class DetailZimessActivity extends Activity {
 
     private Zimess zimessDetail;
     private Activity activity;
-    private ParseUser currentUser;
-    private String userNameProfile;
+    private ParseUser currentUser, zimessUser;
     private EditText txtComment;
     private ListView listComment;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ManagerGPS managerGPS;
-    private ImageView imgAvatar;
+    private ImageView imgAvatar, imgComment;
     private GlobalApplication globalApplication;
     private TextView lblTimePass,
             lblDistance,
             lblMessage,
             lblUsername,
-            lblAliasUsuario;
+            lblAliasUsuario, lblCantComments;
     private ProgressBar progressBar;
     private String zimessId;
-    private TextView lblCantComments;
-    private ImageView imgComment;
+    private ImageButton btnSendComment;
+    private boolean isAddedComment = false;
 
 
     @Override
@@ -67,37 +67,16 @@ public class DetailZimessActivity extends Activity {
         globalApplication = (GlobalApplication) getApplicationContext();
         currentUser = globalApplication.getCurrentUser();
 
-        managerGPS = new ManagerGPS(activity);
-
         //Tomar Zimess enviado.
-        zimessDetail = globalApplication.getTempZimess(); // (ZimessNew) getIntent().getSerializableExtra("zimess");
-        userNameProfile = zimessDetail.getUser().getString("name");
+        zimessDetail = globalApplication.getTempZimess();
+        //Tomar nombre del usuario del Zimess
+        zimessUser = zimessDetail.getUser();
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setTitle("Zimess");
 
         inicializarCompUI();
-    }
-
-    @Override
-    protected void onStart() {
-        //Buscar username del Zimess
-        /*ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.getInBackground(zimessDetail.getUserId(), new GetCallback<ParseUser>() {
-            @Override
-            public void done(ParseUser parseUser, ParseException e) {
-                if (e == null) {
-                    userNameProfile = parseUser.getUsername();
-                    //Log.d("Parse.user", "Usuario encontrado "+parseUser.getUsername());
-                } else {
-                    Log.e("Parse.findUser", "Error la buscar el usuario");
-                }
-            }
-        });*/
-
         findZimessComment();
-
-        super.onStart();
     }
 
     private void inicializarCompUI() {
@@ -141,8 +120,9 @@ public class DetailZimessActivity extends Activity {
         refreshDataZimess(zimessDetail);
 
         //Set custom hint
-        if (userNameProfile != null) {
-            String msgUsername = new StringBuffer(getResources().getString(R.string.msgReply)).append(" ").append(userNameProfile).toString();
+        if (zimessUser != null) {
+            String name = zimessUser.getString("name");
+            String msgUsername = new StringBuffer(getResources().getString(R.string.msgReply)).append(" ").append(!name.isEmpty() ? name : zimessUser.getUsername()).toString();
             txtComment.setHint(msgUsername);
         } else {
             txtComment.setHint(null);
@@ -159,12 +139,13 @@ public class DetailZimessActivity extends Activity {
             }
         });
 
-        ImageButton btnSendComment = (ImageButton) findViewById(R.id.btnSendZimessComment);
+        btnSendComment = (ImageButton) findViewById(R.id.btnSendZimessComment);
         btnSendComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String comment = txtComment.getText().toString();
                 if (!comment.isEmpty()) {
+                    btnSendComment.setEnabled(false);
                     sendZimessComment(txtComment.getText().toString());
                 } else {
                     Toast.makeText(getApplicationContext(),
@@ -195,6 +176,7 @@ public class DetailZimessActivity extends Activity {
         //lblCreatedAt.setText(globalApplication.getDescFechaPublicacion(zimess.getCreateAt()));
 
         //Calcular distancia del Zimess remoto
+        managerGPS = new ManagerGPS(this);
         if (managerGPS.isEnableGetLocation()) {
             Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
 
@@ -223,6 +205,7 @@ public class DetailZimessActivity extends Activity {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
+                    isAddedComment = true;
                     txtComment.setText(null);
                     updateCantComments();
                 } else {
@@ -231,6 +214,7 @@ public class DetailZimessActivity extends Activity {
                             Toast.LENGTH_SHORT).show();
                     Log.e("Parse.sendZimessComment", e.getMessage());
                 }
+                btnSendComment.setEnabled(true);
             }
         });
         //findZimessComment();
@@ -265,6 +249,9 @@ public class DetailZimessActivity extends Activity {
 
     @Override
     public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("updateZimessOk", isAddedComment);
+        setResult(Activity.RESULT_OK, intent);
         super.onBackPressed();
     }
 

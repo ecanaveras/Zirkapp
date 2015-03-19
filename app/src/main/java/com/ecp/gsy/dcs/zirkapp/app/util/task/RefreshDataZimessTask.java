@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
@@ -31,6 +32,7 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
     private Location currentLocation;
     private boolean findOneZimess = false;
     private Zimess zimessDetail;
+    private GlobalApplication globalApplication;
 
     public RefreshDataZimessTask(Activity activity, Location currentLocation, ListView listViewZimess, LinearLayout layoudZimessNoFound, LinearLayout layoudZimessFinder, SwipeRefreshLayout swipeRefreshLayout) {
         this.currentLocation = currentLocation;
@@ -63,7 +65,8 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
             for (ParseObject parseZimess : FindParseObject.findZimessLocation(currentLocation, integers[0])) {
                 zimessArrayList.add(getZimess(parseZimess));
             }
-
+            //Cant de Zimess en el Drawer
+            GlobalApplication.setCantZimess(zimessArrayList.size());
         }
 
         if (findOneZimess) {
@@ -80,8 +83,8 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
     protected void onPostExecute(List<Zimess> zimessArrayList) {
         if (!findOneZimess) {
             ZimessAdapter zimessAdapterNew = new ZimessAdapter(activity, zimessArrayList, currentLocation);
-
-            listViewZimess.setAdapter(zimessAdapterNew);
+            if (listViewZimess != null)
+                listViewZimess.setAdapter(zimessAdapterNew);
             zimessAdapterNew.notifyDataSetChanged();
 
             //Update Cant Zimess cerca
@@ -110,6 +113,11 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
             swipeRefreshLayout.setRefreshing(false);
     }
 
+    /**
+     * Crea un Zimess
+     * @param zimess
+     * @return
+     */
     private Zimess getZimess(ParseObject zimess) {
         if (zimess != null) {
             Zimess zimessNew = new Zimess();

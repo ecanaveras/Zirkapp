@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ScreenSlidePagerAdapter;
@@ -184,10 +185,6 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         navListView = (ListView) findViewById(R.id.left_drawer);
         //Establecemos el header
         navListView.addHeaderView(headerDrawer);
-        //Establecemos el Footer
-        //navListView.addFooterView(footer);
-        //navListView.setAdapter(new ArrayAdapter<String>(this, (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? android.R.layout.simple_list_item_activated_1 : android.R.layout.simple_list_item_checked), navTitles));
-        //Establecemos el adapter a la lista
         //Crea un nuevo Navigation Adapter
         refreshDrawerAdapter();
 
@@ -225,8 +222,6 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     }
 
     private void refreshDrawerAdapter() {
-//        navListView.setAdapter(null);
-//        navAdapter = null;
         //UI
         //Obtener los titulos para el Drawer
         navTitles = getResources().getStringArray(R.array.options_drawer);
@@ -236,9 +231,9 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         //Listado de titulos e iconos  para el Drawer
         navItems = new ArrayList<ItemListDrawer>();
         //Zimess
-        navItems.add(new ItemListDrawer(navTitles[0], navIcons.getResourceId(0, -1), receiver != null ? receiver.getCantRows() : null));
-        //Inbox
-        navItems.add(new ItemListDrawer(navTitles[1], navIcons.getResourceId(1, -1)));
+        navItems.add(new ItemListDrawer(navTitles[0], navIcons.getResourceId(0, -1), GlobalApplication.getCantZimess()));
+        //Chat
+        navItems.add(new ItemListDrawer(navTitles[1], navIcons.getResourceId(1, -1), GlobalApplication.getCantUsersOnline()));
         //Notificaciones
         navItems.add(new ItemListDrawer(navTitles[2], navIcons.getResourceId(2, -1)));
         //Configurar
@@ -263,32 +258,9 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         lblUsername.setText(userZirkapp.getUsername());
         lblUsermail.setText(userZirkapp.getEmail());
         lblNombreUsuario.setText(userZirkapp.getString("name"));
-        avatar.setImageBitmap(getAvatar(userZirkapp));
+        avatar.setImageBitmap(GlobalApplication.getAvatar(userZirkapp));
         //Buscar en segundo plano
         new RefreshDataProfileTask(avatar, lblNombreUsuario).execute(userZirkapp); //TODO psoiblemente no necesario
-    }
-
-
-    /**
-     * Retorna la imagen del usuario
-     *
-     * @return
-     */
-    public Bitmap getAvatar(ParseUser currentUser) {
-        if (currentUser != null && currentUser.getParseFile("avatar") != null) {
-            byte[] byteImage;
-            try {
-                byteImage = currentUser.getParseFile("avatar").getData();
-                if (byteImage != null) {
-                    return BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
-                }
-            } catch (ParseException e) {
-                Log.e("Parse.avatar.exception", e.getMessage());
-            } catch (OutOfMemoryError e) {
-                Log.e("Parse.avatar.outmemory", e.toString());
-            }
-        }
-        return null;
     }
 
 
@@ -328,6 +300,10 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
                 if(indexFragment==1){ //Actualizar listado de Zimess
                     ZimessFragment zimessFragment = (ZimessFragment) fragments[i];
                     zimessFragment.findZimessAround();
+                }
+                if(indexFragment==2){ //Actualizar listado de usuarios en el chat
+                    UsersOnlineFragment usersOnlineFragment = (UsersOnlineFragment) fragments[i];
+                    usersOnlineFragment.buscarUsuariosOnline();
                 }
             } else {
                 ft.hide(fragments[i]);

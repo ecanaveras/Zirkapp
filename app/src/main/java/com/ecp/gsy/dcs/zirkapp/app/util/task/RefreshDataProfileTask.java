@@ -73,8 +73,9 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser
                 txtNombres.setText(user.get("name").toString());
                 txtNombres.setVisibility(View.VISIBLE);
             }
-            if (getAvatar(user) != null) {
-                avatar.setImageBitmap(getAvatar(user));
+            Bitmap bitmapAvatar = GlobalApplication.getAvatar(user);
+            if (bitmapAvatar != null) {
+                avatar.setImageBitmap(bitmapAvatar);
             } else {
                 avatar.setImageResource(R.drawable.ic_user_male);
             }
@@ -83,28 +84,6 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser
         if (context != null)
             progressDialog.dismiss();
 
-    }
-
-    /**
-     * Retorna la imagen del usuario
-     *
-     * @return
-     */
-    public Bitmap getAvatar(ParseUser currentUser) {
-        if (currentUser != null && currentUser.getParseFile("avatar") != null) {
-            byte[] byteImage;
-            try {
-                byteImage = currentUser.getParseFile("avatar").getData();
-                if (byteImage != null) {
-                    return BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
-                }
-            } catch (ParseException e) {
-                Log.e("Parse.avatar.exception", e.getMessage());
-            } catch (OutOfMemoryError e) {
-                Log.e("Parse.avatar.outmemory", e.toString());
-            }
-        }
-        return null;
     }
 
 }

@@ -6,6 +6,8 @@ import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
@@ -35,15 +37,13 @@ public class GlobalApplication extends Application {
     private ParseUser customParseUser;
     private Zimess tempZimess;
 
-    private Context context;
-//    private boolean useApiPython;
-    //Url de la API
-    //private final static String URL_API_PHP = "http://zirkapp.byethost3.com/api/v1.1/zsms";
+    //Cantidades para el drawer
+    private static Integer cantZimess;
+    private static Integer cantUsersOnline;
+    private static Integer cantNotifications;
 
-    //public final static String URL_API_PYTHON = "http://192.168.0.12:8000/zimess/?format=json";
-//    private final static String DOMAIN = "http://zirkapp.herokuapp.com"; //"http://192.168.56.1:8000";
-//    public final static String URL_API_PYTHON = DOMAIN + "/api/zimess/?format=json";
-//    public final static String URL_API_PYTHON_GET_RADAR = DOMAIN + "/api/zimess/radar/";
+
+    private Context context;
 
     @Override
     public void onCreate() {
@@ -57,41 +57,6 @@ public class GlobalApplication extends Application {
         ParseInstallation.getCurrentInstallation().saveInBackground();
     }
 
-
-    /**
-     * Retorna el ParseUser buscando por ObjectId
-     *
-     * @param userId
-     * @return
-     */
-    public ParseUser getCustomParseUser(String userId) {
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.getInBackground(userId, new GetCallback<ParseUser>() {
-            @Override
-            public void done(ParseUser parseUser, ParseException e) {
-                if (e == null) {
-                    customParseUser = parseUser;
-                } else {
-                    Log.e("Parse.findUser", "Error la buscar el usuario");
-                }
-            }
-        });
-        /*
-        query.whereEqualTo("objectId", userId);
-        query.findInBackground(new FindCallback<ParseUser>() {
-            @Override
-            public void done(List<ParseUser> parseUsers, ParseException e) {
-                if (e == null) {
-                    customParseUser = parseUsers.get(0);
-                } else {
-                    Log.e("Parse.findUser", "Error la buscar el usuario");
-                }
-            }
-        });
-        */
-        return customParseUser;
-    }
-
     /**
      * Retorna el current ParseUser
      *
@@ -102,12 +67,66 @@ public class GlobalApplication extends Application {
         return this.currentUser;
     }
 
+    /**
+     * Retorna la imagen del usuario
+     *
+     * @return
+     */
+    public static Bitmap getAvatar(ParseUser currentUser) {
+        if (currentUser != null && currentUser.getParseFile("avatar") != null) {
+            byte[] byteImage;
+            try {
+                byteImage = currentUser.getParseFile("avatar").getData();
+                if (byteImage != null) {
+                    return BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
+                }
+            } catch (ParseException e) {
+                Log.e("Parse.avatar.exception", e.getMessage());
+            } catch (OutOfMemoryError e) {
+                Log.e("Parse.avatar.outmemory", e.toString());
+            }
+        }
+        return null;
+    }
+
     public Zimess getTempZimess() {
         return tempZimess;
     }
 
     public void setTempZimess(Zimess tempZimess) {
         this.tempZimess = tempZimess;
+    }
+
+    public ParseUser getCustomParseUser() {
+        return customParseUser;
+    }
+
+    public void setCustomParseUser(ParseUser customParseUser) {
+        this.customParseUser = customParseUser;
+    }
+
+    public static Integer getCantZimess() {
+        return cantZimess;
+    }
+
+    public static void setCantZimess(Integer _cantZimess) {
+        cantZimess = _cantZimess;
+    }
+
+    public static Integer getCantUsersOnline() {
+        return cantUsersOnline;
+    }
+
+    public static void setCantUsersOnline(Integer _cantUsersOnline) {
+        cantUsersOnline = _cantUsersOnline;
+    }
+
+    public Integer getCantNotifications() {
+        return cantNotifications;
+    }
+
+    public void setCantNotifications(Integer cantNotifications) {
+        this.cantNotifications = cantNotifications;
     }
 
     /**
@@ -163,7 +182,7 @@ public class GlobalApplication extends Application {
         } else if ((time / MILLSECS_PER_MINUTES) <= 60.0 && (time / MILLSECS_PER_MINUTES) >= 1.0) {
             result = new Double(time / MILLSECS_PER_MINUTES).intValue() + "m";
         } else if ((time / 1000) <= 60.0) {
-            result = ((time / 1000)) +"s";
+            result = ((time / 1000)) + "s";
         }
         return result;
     }

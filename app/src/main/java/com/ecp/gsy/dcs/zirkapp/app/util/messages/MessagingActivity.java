@@ -1,18 +1,28 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.messages;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.UserProfileActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
+import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.parse.FindCallback;
@@ -36,27 +46,28 @@ import java.util.List;
  */
 public class MessagingActivity extends Activity {
 
-    private String receptorId;
-    private String receptorUsername;
+    private String receptorId, receptorUsername, receptorName;
     private EditText txtMessageBodyField;
     private MessageService.MessageServiceInterface messageService;
-    private ParseUser currentUserId;
+    private ParseUser currentUser, receptorUser;
     private ServiceConnection serviceConnection = new MyServiceConnection();
     private MyMessageClientListener messageClientListener = new MyMessageClientListener();
     private MessageAdapter adapterMessage;
     private ListView listMessage;
+    private GlobalApplication globalApplication;
+    private Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messaging);
 
+        activity = this;
+
+        globalApplication = (GlobalApplication) getApplicationContext();
+
         bindService(new Intent(this, MessageService.class), serviceConnection, BIND_AUTO_CREATE);
 
-        //Tomar receptor
-        Intent intent = getIntent();
-        receptorId = intent.getStringExtra("RECIPIENT_ID");
-        receptorUsername = intent.getStringExtra("RECIPIENT_USERNAME");
 
         //Lista
         listMessage = (ListView) findViewById(R.id.listMessages);
@@ -64,8 +75,22 @@ public class MessagingActivity extends Activity {
         listMessage.setAdapter(adapterMessage);
 
         //Usuario actual
-        final GlobalApplication globalApplication = (GlobalApplication) getApplicationContext();
-        currentUserId = globalApplication.getCurrentUser();
+        currentUser = globalApplication.getCurrentUser();
+
+        //Usuario receptor
+        receptorUser = globalApplication.getCustomParseUser();
+        if (receptorUser != null) {
+            receptorId = receptorUser.getObjectId();
+            receptorUsername = receptorUser.getUsername();
+            receptorName = receptorUser.getString("name");
+        }
+//        Intent intent = getIntent();
+//        receptorId = intent.getStringExtra("RECIPIENT_ID");
+//        receptorUsername = intent.getStringExtra("RECIPIENT_USERNAME");
+//        receptorName = intent.getStringExtra("RECIPIENT_NAME");
+
+        //Personalizar ActionBar
+        customActionBar(getActionBar());
 
         populateMessageHistory();
 
@@ -77,6 +102,54 @@ public class MessagingActivity extends Activity {
                 sendMessage();
             }
         });
+    }
+
+    private void customActionBar(ActionBar actionBar) {
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayShowCustomEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+
+
+            View customView = getLayoutInflater().inflate(R.layout.actionbar_user_title, null);
+            RoundedImageView imageView = (RoundedImageView) customView.findViewById(R.id.imgAvatar);
+            Bitmap avatar = GlobalApplication.getAvatar(receptorUser);
+            if (avatar != null) {
+//                Resources resources = getResources();
+//                BitmapDrawable icon = new BitmapDrawable(resources, avatar);
+//                actionBar.setIcon(icon);
+                imageView.setImageBitmap(avatar);
+            } else {
+                imageView.setImageResource(R.drawable.ic_user_male);
+            }
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.anim_image_click));
+                    onBackPressed();
+                }
+            });
+            LinearLayout layoutActionBarTitle = (LinearLayout) customView.findViewById(R.id.layoutActionbarTitle);
+            TextView titleBar = (TextView) customView.findViewById(R.id.actionbarTitle);
+            TextView subTitleBar = (TextView) customView.findViewById(R.id.actionbarSubTitle);
+            titleBar.setText(receptorName != null ? receptorName : receptorUsername);
+            if (receptorName != null) {
+                subTitleBar.setText(receptorUsername);
+            }else{
+                subTitleBar.setVisibility(View.GONE);
+            }
+            layoutActionBarTitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.anim_image_click));
+                    Intent intent = new Intent(activity, UserProfileActivity.class);
+                    globalApplication.setCustomParseUser(receptorUser);
+                    activity.startActivity(intent);
+                }
+            });
+            actionBar.setCustomView(customView);
+        }
     }
 
     private void sendMessage() {
@@ -94,7 +167,7 @@ public class MessagingActivity extends Activity {
      * Busca los mensajes previos en Parse
      */
     private void populateMessageHistory() {
-        String[] userIds = {currentUserId.getObjectId(), receptorId};
+        String[] userIds = {currentUser.getObjectId(), receptorId};
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
         query.whereContainedIn("senderId", Arrays.asList(userIds));
         query.whereContainedIn("recipiendId", Arrays.asList(userIds));
@@ -105,8 +178,8 @@ public class MessagingActivity extends Activity {
                 if (e == null) {
                     for (ParseObject parseObj : parseObjects) {
                         WritableMessage message = new WritableMessage(parseObj.get("recipientId").toString(), parseObj.get("messageText").toString());
-                        if (parseObj.get("senderId").toString().equals(currentUserId.getObjectId())) {
-                            adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING, currentUserId.getUsername());
+                        if (parseObj.get("senderId").toString().equals(currentUser.getObjectId())) {
+                            adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING, currentUser.getUsername());
                         } else {
                             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING, receptorUsername);
                         }
@@ -121,6 +194,22 @@ public class MessagingActivity extends Activity {
         unbindService(serviceConnection);
         messageService.removeMessageClientListener(messageClientListener);
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private class MyServiceConnection implements ServiceConnection {
@@ -158,13 +247,13 @@ public class MessagingActivity extends Activity {
                     if (e == null) {
                         if (parseObjects.size() == 0) {
                             ParseObject parseMessage = new ParseObject("ParseMessage");
-                            parseMessage.put("senderId", currentUserId.getObjectId());
+                            parseMessage.put("senderId", currentUser.getObjectId());
                             parseMessage.put("recipientId", writableMessage.getRecipientIds().get(0));
                             parseMessage.put("messageText", writableMessage.getTextBody());
                             parseMessage.put("sinchId", writableMessage.getMessageId());
                             parseMessage.saveInBackground();
 
-                            adapterMessage.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING, currentUserId.getUsername());
+                            adapterMessage.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING, currentUser.getUsername());
                         }
                     }
                 }

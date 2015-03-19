@@ -16,7 +16,7 @@ import com.sinch.android.rtc.messaging.MessageClient;
 import com.sinch.android.rtc.messaging.MessageClientListener;
 import com.sinch.android.rtc.messaging.WritableMessage;
 
-public class MessageService extends Service implements SinchClientListener{
+public class MessageService extends Service implements SinchClientListener {
 
     private static final String APP_KEY = "308f3e50-dfb0-4855-9935-08b75028c06e";
     private static final String APP_SECRET = "UQmDdJm8nkSBUFntG4GPYQ==";
@@ -32,7 +32,7 @@ public class MessageService extends Service implements SinchClientListener{
     public int onStartCommand(Intent intent, int flags, int startId) {
         //Tomar el UserId de Parse
         currentUserId = ParseUser.getCurrentUser().getObjectId();
-        if(currentUserId != null && !isSinchClientStarted()){
+        if (currentUserId != null && !isSinchClientStarted()) {
             //TODO MENSAJERIA DISABLED
             //startSinchClient(currentUserId);
         }
@@ -95,51 +95,55 @@ public class MessageService extends Service implements SinchClientListener{
     }
 
     @Override
-    public void onRegistrationCredentialsRequired(SinchClient sinchClient, ClientRegistration clientRegistration) {    }
+    public void onRegistrationCredentialsRequired(SinchClient sinchClient, ClientRegistration clientRegistration) {
+    }
 
     @Override
-    public void onLogMessage(int i, String s, String s2) {   }
+    public void onLogMessage(int i, String s, String s2) {
+    }
 
     private void sendMessage(String recipientUserId, String textBody) {
-        if(messageClient != null){
-            WritableMessage message  = new WritableMessage(recipientUserId, textBody);
+        if (messageClient != null) {
+            WritableMessage message = new WritableMessage(recipientUserId, textBody);
             messageClient.send(message);
         }
     }
 
     private void addMessageClientListener(MessageClientListener listener) {
-        if(messageClient!= null){
+        if (messageClient != null) {
             messageClient.addMessageClientListener(listener);
         }
     }
 
     private void removeMessageClientListener(MessageClientListener listener) {
-        if(messageClient!=null){
+        if (messageClient != null) {
             messageClient.removeMessageClientListener(listener);
         }
     }
 
     @Override
     public void onDestroy() {
-        sinchClient.stopListeningOnActiveConnection();
-        sinchClient.terminate();
+        if (sinchClient != null) {
+            sinchClient.stopListeningOnActiveConnection();
+            sinchClient.terminate();
+        }
     }
 
     public class MessageServiceInterface extends Binder {
 
-        public void sendMessage(String recipientUserId, String textBody){
+        public void sendMessage(String recipientUserId, String textBody) {
             MessageService.this.sendMessage(recipientUserId, textBody);
         }
 
-        public void addMessageClientListener(MessageClientListener listener){
+        public void addMessageClientListener(MessageClientListener listener) {
             MessageService.this.addMessageClientListener(listener);
         }
 
-        public void removeMessageClientListener(MessageClientListener listener){
+        public void removeMessageClientListener(MessageClientListener listener) {
             MessageService.this.removeMessageClientListener(listener);
         }
 
-        public boolean isSinchClientStarted(){
+        public boolean isSinchClientStarted() {
             return MessageService.this.isSinchClientStarted();
         }
     }

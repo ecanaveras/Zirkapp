@@ -118,8 +118,6 @@ public class ManagerGPS extends Service implements LocationListener {
     }
 
 
-
-
     /**
      * Devuelve la direccion actual del dispositivo
      *
@@ -174,7 +172,12 @@ public class ManagerGPS extends Service implements LocationListener {
                 case 1:
                     return address.getAddressLine(0);
                 case 2:
-                    return address.getLocality();
+                    int maxLines = addressList.get(0).getMaxAddressLineIndex();
+                    for (int i = 0; i < maxLines; i++) {
+                        if ((maxLines - 1) == i) {
+                            return addressList.get(0).getAddressLine(i);
+                        }
+                    }
                 case 3:
                     return address.getPostalCode();
                 case 4:
@@ -272,6 +275,8 @@ public class ManagerGPS extends Service implements LocationListener {
         //Nueva Ubicacion
         this.getLatitud();
         this.getLongitud();
+//        Log.d("GPS.latitud", getLatitud().toString());
+//        Log.d("GPS.longitud", getLongitud().toString());
     }
 
     @Override

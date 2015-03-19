@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -28,23 +29,11 @@ public class Zimess implements Serializable {
 
     /**
      * Retorna la imagen del usuario
+     *
      * @return
      */
     public Bitmap getAvatar() {
-        if (this.user != null && this.user.getParseFile("avatar") != null) {
-            byte[] byteImage;
-            try {
-                byteImage = this.user.getParseFile("avatar").getData();
-                if (byteImage != null) {
-                    return BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
-                }
-            } catch (ParseException e) {
-                Log.e("Parse.avatar.exception", e.getMessage());
-            } catch (OutOfMemoryError e) {
-                Log.e("Parse.avatar.outmemory", e.toString());
-            }
-        }
-        return null;
+        return GlobalApplication.getAvatar(user);
     }
 
 

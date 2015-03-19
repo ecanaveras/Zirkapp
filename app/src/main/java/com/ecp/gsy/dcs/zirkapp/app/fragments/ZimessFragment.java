@@ -45,6 +45,7 @@ public class ZimessFragment extends Fragment {
     private GlobalApplication globalApplication;
     private LinearLayout layoudZimessFinder;
     private int requestCodeNewZimess = 100;
+    private int requestCodeUpdateZimess = 105;
 
 
     @Override
@@ -55,21 +56,10 @@ public class ZimessFragment extends Fragment {
 
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
 
-        managerGPS = new ManagerGPS(getActivity());
-
+        //Buscar Zimess
         findZimessAround();
 
         return view;
-    }
-
-    @Override
-    public void onResume() {
-        //Usuario actual
-        /*if (globalApplication.getCurrentUser() != null) {
-            currenUserId = globalApplication.getCurrentUser().getObjectId();
-            findZimessAround();
-        }*/
-        super.onResume();
     }
 
     private void inicializarCompUI(View view) {
@@ -114,6 +104,7 @@ public class ZimessFragment extends Fragment {
     }
 
     public void findZimessAround() {
+        managerGPS = new ManagerGPS(getActivity());
         if (!managerGPS.isOnline()) {//Si no hay internet
             managerGPS.networkShowSettingsAlert();
         } else {
@@ -133,10 +124,8 @@ public class ZimessFragment extends Fragment {
      */
     private void gotoDetail(Zimess zimess) {
         globalApplication.setTempZimess(zimess);
-        String userNameZimess = zimess.getUser().getUsername();
         Intent intent = new Intent(getActivity(), DetailZimessActivity.class);
-        intent.putExtra("usernameZimess", userNameZimess);
-        getActivity().startActivity(intent);
+        startActivityForResult(intent, requestCodeUpdateZimess);
         //Animar
         //getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
     }
@@ -174,9 +163,15 @@ public class ZimessFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == requestCodeNewZimess) {
+        if (requestCode == requestCodeNewZimess && data != null) {
             boolean newZimessOk = data.getBooleanExtra("newZimessOk", false);
             if (resultCode == Activity.RESULT_OK && newZimessOk)
+                findZimessAround();
+        }
+
+        if (requestCode == requestCodeUpdateZimess && data != null) {
+            boolean updateZimessOk = data.getBooleanExtra("updateZimessOk", false);
+            if (resultCode == Activity.RESULT_OK && updateZimessOk)
                 findZimessAround();
         }
     }

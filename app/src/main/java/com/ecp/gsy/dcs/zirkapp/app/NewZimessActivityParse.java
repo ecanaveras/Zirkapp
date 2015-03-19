@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -136,27 +137,35 @@ public class NewZimessActivityParse extends Activity {
         btnSendZimess.setEnabled(false);
 
         //Tomar ubicacion
-        managerGPS.obtenertUbicacion();
-        ParseGeoPoint parseGeoPoint = new ParseGeoPoint(managerGPS.getLatitud(), managerGPS.getLongitud());
-        ParseObject parseObject = new ParseObject("ParseZimess");
-        parseObject.put("user", currentUser);
-        parseObject.put("zimessText", zimessText);
-        parseObject.put("location", parseGeoPoint);
-        parseObject.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    Intent intent = new Intent();
-                    intent.putExtra("newZimessOk", true);
-                    activity.setResult(Activity.RESULT_OK, intent);
-                    activity.finish();
-                } else {
-                    showNotificacion(true, 0, null, context.getResources().getString(R.string.msgZimesFailed), zimessText);
-                    Log.e("ZimessError:", "No es posible publicar el Zimess");
-                    onBackPressed();
-                }
+        managerGPS = new ManagerGPS(this);
+        if (managerGPS.isOnline()) {
+            if (managerGPS.isEnableGetLocation()) {
+                ParseGeoPoint parseGeoPoint = new ParseGeoPoint(managerGPS.getLatitud(), managerGPS.getLongitud());
+                ParseObject parseObject = new ParseObject("ParseZimess");
+                parseObject.put("user", currentUser);
+                parseObject.put("zimessText", zimessText);
+                parseObject.put("location", parseGeoPoint);
+                parseObject.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            Intent intent = new Intent();
+                            intent.putExtra("newZimessOk", true);
+                            setResult(Activity.RESULT_OK, intent);
+                            finish();
+                        } else {
+                            showNotificacion(true, 0, null, context.getResources().getString(R.string.msgZimesFailed), zimessText);
+                            Log.e("ZimessError:", "No es posible publicar el Zimess");
+                            onBackPressed();
+                        }
+                    }
+                });
+            } else {
+                managerGPS.gpsShowSettingsAlert();
             }
-        });
+        } else {
+            managerGPS.networkShowSettingsAlert();
+        }
 
     }
 
@@ -209,14 +218,11 @@ public class NewZimessActivityParse extends Activity {
         manager.cancel(idNoti);
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent intent = new Intent();
-                intent.putExtra("newZimessOk", false);
-                activity.setResult(Activity.RESULT_CANCELED, intent);
-                activity.finish();
                 onBackPressed();
                 return true;
             default:

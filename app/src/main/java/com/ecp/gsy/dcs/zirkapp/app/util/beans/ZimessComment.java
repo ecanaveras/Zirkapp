@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -24,26 +25,11 @@ public class ZimessComment {
 
     /**
      * Retorna la imagen del usuario
+     *
      * @return
      */
     public Bitmap getAvatar() {
-        if(avatar != null){
-            return avatar;
-        }
-        if (this.getUserComment() != null && this.userComment.getParseFile("avatar") != null) {
-            byte[] byteImage;
-            try {
-                byteImage = this.userComment.getParseFile("avatar").getData();
-                if (byteImage != null) {
-                    this.avatar = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
-                }
-            } catch (ParseException e) {
-                Log.e("Parse.avatar.exception", e.getMessage());
-            } catch (OutOfMemoryError e) {
-                Log.e("Parse.avatar.outmemory", e.toString());
-            }
-        }
-        return avatar;
+        return GlobalApplication.getAvatar(userComment);
     }
 
     public String getCommentId() {
