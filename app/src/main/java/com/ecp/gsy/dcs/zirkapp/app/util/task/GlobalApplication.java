@@ -15,11 +15,9 @@ import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
-import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.text.SimpleDateFormat;
@@ -78,7 +76,10 @@ public class GlobalApplication extends Application {
             try {
                 byteImage = currentUser.getParseFile("avatar").getData();
                 if (byteImage != null) {
-                    return BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPurgeable = true;
+                    Bitmap bitmap1 = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length, options);
+                    return bitmap1;//Bitmap.createScaledBitmap(bitmap1, 50, 50, true);
                 }
             } catch (ParseException e) {
                 Log.e("Parse.avatar.exception", e.getMessage());

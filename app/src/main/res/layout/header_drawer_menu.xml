@@ -1,4 +1,5 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="160dp"
     android:layout_marginRight="56dp"
@@ -11,7 +12,7 @@
         android:orientation="vertical"
         android:background="@color/dark_primary_color">
 
-        <com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/imgAvatar"
             android:layout_width="80dp"
             android:layout_height="80dp"
@@ -20,7 +21,9 @@
             android:layout_marginTop="16dp"
             android:src="@drawable/ic_user_male"
             android:scaleType="centerCrop"
-            android:adjustViewBounds="true"/>
+            app:riv_corner_radius="30dip"
+            app:riv_border_width="1dp"
+            app:riv_oval="true"/>
 
         <LinearLayout
             android:layout_width="match_parent"

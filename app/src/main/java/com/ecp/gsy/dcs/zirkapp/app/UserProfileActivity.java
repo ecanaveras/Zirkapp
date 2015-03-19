@@ -7,10 +7,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.FindParseObject;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
@@ -31,7 +31,7 @@ public class UserProfileActivity extends Activity {
     private ParseUser currentUser;
 
     private ActionBar actionBar;
-    private RoundedImageView avatar;
+    private ImageView avatar;
     private String objectId;
     private TextView txtCantVisitas, txtWall, txtCantZimess, txtUserNombres;
     private ProgressBar progressBarLoad;
@@ -70,7 +70,7 @@ public class UserProfileActivity extends Activity {
     }
 
     private void inicializarCompUI() {
-        avatar = (RoundedImageView) findViewById(R.id.imgAvatar);
+        avatar = (ImageView) findViewById(R.id.imgAvatar);
         txtWall = (TextView) findViewById(R.id.txtWall);
         txtCantVisitas = (TextView) findViewById(R.id.txtCountVisit);
         txtCantZimess = (TextView) findViewById(R.id.txtCountZimess);

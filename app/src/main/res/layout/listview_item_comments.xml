@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="60dp">
 
-    <com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView
+    <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/imgCommentAvatarItem"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:src="@drawable/ic_user_male"
         android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:scaleType="centerCrop"
         android:layout_gravity="top"
         android:layout_marginRight="6dp"
         android:layout_marginLeft="6dp"
-        android:adjustViewBounds="true" />
+        android:scaleType="centerCrop"
+        app:riv_corner_radius="30dip"
+        app:riv_border_width="0.2dp"
+        app:riv_border_color="@color/divider_color_2"
+        app:riv_oval="true" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,8 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="4dp"
                 android:textStyle="bold"
-                android:textColor="@color/secondary_text_color"
-                />
+                android:textColor="@color/secondary_text_color" />
 
             <TextView
                 android:id="@+id/lblCommentUserName"
@@ -66,8 +68,7 @@
             android:layout_marginTop="2dp"
             android:layout_marginBottom="4dp"
             android:fontFamily="sans-serif"
-            android:textColor="@color/accent_color"
-            />
+            android:textColor="@color/accent_color" />
 
         <!--Iconos y datos-->
         <LinearLayout

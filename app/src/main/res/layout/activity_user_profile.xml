@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,17 +16,19 @@
         android:layout_weight="1"
         android:minHeight="270dp">
 
-        <com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/imgAvatar"
             android:layout_width="280dp"
             android:layout_height="280dp"
-            android:layout_marginTop="8dp"
             android:layout_marginBottom="10dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
+            android:src="@drawable/ic_user_male"
             android:scaleType="centerCrop"
-            android:adjustViewBounds="true"
-            android:src="@drawable/ic_user_male"/>
+            app:riv_corner_radius="30dip"
+            app:riv_border_width="1dp"
+            app:riv_border_color="@color/divider_color_2"
+            app:riv_oval="true"/>
 
         <TextView
             android:id="@+id/txtUserNombres"

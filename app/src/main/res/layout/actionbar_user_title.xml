@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center">
 
-    <com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView
+    <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/imgAvatar"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:scaleType="centerCrop"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:layout_gravity="center_vertical"
-        android:adjustViewBounds="true"
-        android:src="@drawable/ic_user_male" />
+        android:src="@drawable/ic_user_male"
+        android:scaleType="centerCrop"
+        app:riv_corner_radius="30dip"
+        app:riv_border_width="0.2dp"
+        app:riv_border_color="@color/primary_text_color"
+        app:riv_oval="true"
+        />
 
     <LinearLayout
         android:id="@+id/layoutActionbarTitle"

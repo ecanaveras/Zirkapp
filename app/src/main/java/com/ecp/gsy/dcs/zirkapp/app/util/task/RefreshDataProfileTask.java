@@ -3,18 +3,12 @@ package com.ecp.gsy.dcs.zirkapp.app.util.task;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
-import com.ecp.gsy.dcs.zirkapp.app.util.parse.FindParseObject;
-import com.parse.Parse;
-import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 /**
@@ -22,7 +16,7 @@ import com.parse.ParseUser;
  */
 public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser> {
 
-    private RoundedImageView avatar;
+    private ImageView avatar;
     private byte[] byteImage;
     private ProgressDialog progressDialog;
     private Context context;
@@ -30,16 +24,16 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser
     private TextView txtWall;
     private TextView txtNombres;
 
-    public RefreshDataProfileTask(RoundedImageView avatar) {
+    public RefreshDataProfileTask(ImageView avatar) {
         this.avatar = avatar;
     }
 
-    public RefreshDataProfileTask(RoundedImageView avatar, TextView txtNombres) {
+    public RefreshDataProfileTask(ImageView avatar, TextView txtNombres) {
         this.avatar = avatar;
         this.txtNombres = txtNombres;
     }
 
-    public RefreshDataProfileTask(RoundedImageView avatar, TextView txtWall, TextView txtNombres, String messageDialog, Context context) {
+    public RefreshDataProfileTask(ImageView avatar, TextView txtWall, TextView txtNombres, String messageDialog, Context context) {
         this.avatar = avatar;
         this.context = context;
         this.messageDialog = messageDialog;

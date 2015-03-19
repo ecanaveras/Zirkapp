@@ -17,9 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
@@ -47,7 +47,7 @@ public class EditProfileActivity extends Activity {
     private String rutaImagen;
 
     //UI
-    private RoundedImageView imgAvatar;
+    private ImageView imgAvatar;
     private EditText txtUsername;
     private EditText txtEstado;
     private EditText txtEmail;
@@ -89,7 +89,7 @@ public class EditProfileActivity extends Activity {
     }
 
     private void inicializarCompUI() {
-        imgAvatar = (RoundedImageView) findViewById(R.id.imgUserAvatar);
+        imgAvatar = (ImageView) findViewById(R.id.imgUserAvatar);
         txtUsername = (EditText) findViewById(R.id.txtUsername);
         txtEstado = (EditText) findViewById(R.id.txtUserEstado);
         txtNombres = (EditText) findViewById(R.id.txtUserNombres);

@@ -9,11 +9,11 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,7 +22,6 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.UserProfileActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
-import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.parse.FindCallback;
@@ -113,7 +112,7 @@ public class MessagingActivity extends Activity {
 
 
             View customView = getLayoutInflater().inflate(R.layout.actionbar_user_title, null);
-            RoundedImageView imageView = (RoundedImageView) customView.findViewById(R.id.imgAvatar);
+            ImageView imageView = (ImageView) customView.findViewById(R.id.imgAvatar);
             Bitmap avatar = GlobalApplication.getAvatar(receptorUser);
             if (avatar != null) {
 //                Resources resources = getResources();

@@ -9,8 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -19,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,7 +30,6 @@ import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.UpdateDrawerReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
-import com.ecp.gsy.dcs.zirkapp.app.util.images.RoundedImageView;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
@@ -65,7 +63,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     private ArrayList<ItemListDrawer> navItems;
     private NavigationAdapter navAdapter;
     private View headerDrawer;
-    private RoundedImageView avatar;
+    private ImageView avatar;
 
     private UpdateDrawerReceiver receiver;
 
@@ -251,7 +249,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
     private void refreshDatosDrawer() {
         //Personalizar el header.
-        avatar = (RoundedImageView) headerDrawer.findViewById(R.id.imgAvatar);
+        avatar = (ImageView) headerDrawer.findViewById(R.id.imgAvatar);
         TextView lblUsername = (TextView) headerDrawer.findViewById(R.id.lblUserName);
         TextView lblNombreUsuario = (TextView) headerDrawer.findViewById(R.id.lblNombreUsuario);
         TextView lblUsermail = (TextView) headerDrawer.findViewById(R.id.lblUserEmail);
