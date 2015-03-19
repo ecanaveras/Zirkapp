@@ -9,11 +9,11 @@
         <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-d3819dbd02c055b0901528dc1fd7fca29166b77a.jar" />
     </item>
     <item
-        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\20.0.0\classes.jar"
+        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.makeramen\roundedimageview\2.0.0\classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="f21927d22fe31889ecce94dd697a2e75b137e0ef">
-        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-9c877a2b3871fc253ac58ddb7e863437128edf57.jar" />
+        sha1="4dc4eeaa0c4ea16625dd2a22fe2f255143dacae0">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-85c08636bab60ee099a0449dec35a62f1f827b20.jar" />
     </item>
     <item
         jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\support-v13\21.0.3\libs\internal_impl-21.0.3.jar"
@@ -63,6 +63,13 @@
         revision="19.1.0"
         sha1="2c2071dcaf7a008c3b01a6381a33be55396bab09">
         <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-170ffbe2df575c6a035a974665d8bc94db8f96d8.jar" />
+    </item>
+    <item
+        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\19.1.0\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-1c3c44ef486d699a6687f9e9b59f9667fd557bfc.jar" />
     </item>
     <item
         jar="C:\AndroidStudioProjects\Zirkapp\app\libs\Parse-1.8.2.jar"
