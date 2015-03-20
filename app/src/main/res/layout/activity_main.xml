@@ -1,46 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/drawer_layout">
+    android:orientation="vertical">
 
-    <!-- Contenido Principal -->
-    <FrameLayout
-        android:id="@+id/content_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
-    <!--Fragments en la app-->
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/fhome"
-        android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.HomeFragment"
-        tools:layout="@layout/fragment_home" />
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/finbox"
-        android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment"
-        tools:layout="@layout/fragment_users_online" />
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/fzimessNew"
-        android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment"
-        tools:layout="@layout/fragment_zimess" />
+    <include layout="@layout/component_toolbar" />
 
-    <!-- Lista de Navegacion -->
-    <ListView
-        android:id="@+id/left_drawer"
-        android:layout_width="260dp"
+
+    <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="@color/text_primary_color"
-        android:choiceMode="singleChoice"
-        android:dividerHeight="1dp"
-        />
-    <!--android:divider="@android:color/transparent">-->
-</android.support.v4.widget.DrawerLayout>
+        android:id="@+id/drawer_layout"
+        android:fitsSystemWindows="true">
+
+        <!-- Contenido Principal -->
+        <FrameLayout
+            android:id="@+id/content_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+        <!--Fragments en la app-->
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/fhome"
+            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.HomeFragment"
+            tools:layout="@layout/fragment_home" />
+
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/finbox"
+            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment"
+            tools:layout="@layout/fragment_users_online" />
+
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/fzimessNew"
+            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment"
+            tools:layout="@layout/fragment_zimess" />
+
+        <!-- Lista de Navegacion -->
+        <ListView
+            android:id="@+id/left_drawer"
+            android:layout_width="280dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@color/text_primary_color"
+            android:choiceMode="singleChoice"
+            android:dividerHeight="1dp" />
+
+
+        <!--android:divider="@android:color/transparent">-->
+    </android.support.v4.widget.DrawerLayout>
+
+</LinearLayout>
+

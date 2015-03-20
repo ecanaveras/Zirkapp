@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -36,7 +38,7 @@ import com.parse.SaveCallback;
 
 import java.util.HashMap;
 
-public class DetailZimessActivity extends Activity {
+public class DetailZimessActivity extends ActionBarActivity {
 
     private Zimess zimessDetail;
     private Activity activity;
@@ -56,6 +58,7 @@ public class DetailZimessActivity extends Activity {
     private String zimessId;
     private ImageButton btnSendComment;
     private boolean isAddedComment = false;
+    private Toolbar toolbar;
 
 
     @Override
@@ -72,14 +75,17 @@ public class DetailZimessActivity extends Activity {
         //Tomar nombre del usuario del Zimess
         zimessUser = zimessDetail.getUser();
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setTitle("Zimess");
-
         inicializarCompUI();
         findZimessComment();
     }
 
     private void inicializarCompUI() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        toolbar.setTitle("Zimess");
+
         //UI
         lblAliasUsuario = (TextView) findViewById(R.id.lblNombreUsuario);
         lblUsername = (TextView) findViewById(R.id.lblUserName);
@@ -260,22 +266,6 @@ public class DetailZimessActivity extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.detail_zimess, menu);
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override

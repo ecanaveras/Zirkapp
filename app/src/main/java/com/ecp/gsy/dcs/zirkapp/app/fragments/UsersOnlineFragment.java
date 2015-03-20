@@ -213,32 +213,21 @@ public class UsersOnlineFragment extends Fragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //Manejar seleccion en el menú
-        switch (item.getItemId()) {
-            case R.id.switchUsersOnline:
-                System.out.println("Action SWITCH");
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_users_online_fragment, menu);
-        switchConected = (Switch) menu.findItem(R.id.switchUsersOnline).getActionView().findViewById(R.id.switchForActionBar);
-        switchConected.setChecked(isConnectedUser);
-        switchConected.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                if (checked) {
-                    conectarChat();
-                    buscarUsuariosOnline();
-                } else {
-                    desconectarChat();
-                }
-            }
-        });
+//        switchConected = (Switch) menu.findItem(R.id.switchUsersOnline).getActionView().findViewById(R.id.switchForActionBar);
+//        switchConected.setChecked(isConnectedUser);
+//        switchConected.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+//                if (checked) {
+//                    conectarChat();
+//                    buscarUsuariosOnline();
+//                } else {
+//                    desconectarChat();
+//                }
+//            }
+//        });
         super.onCreateOptionsMenu(menu, inflater);
     }
 

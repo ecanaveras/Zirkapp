@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -26,7 +28,7 @@ import java.util.List;
 /**
  * Created by Elder on 07/02/2015.
  */
-public class UserProfileActivity extends Activity {
+public class UserProfileActivity extends ActionBarActivity {
 
     private ParseUser currentUser;
 
@@ -37,6 +39,7 @@ public class UserProfileActivity extends Activity {
     private ProgressBar progressBarLoad;
     private GlobalApplication globalApplication;
     private ParseUser zimessUser;
+    private Toolbar toolbar;
 
 
     @Override
@@ -56,11 +59,6 @@ public class UserProfileActivity extends Activity {
 
         loadInfoProfile();
 
-        //Actions in Bar
-        actionBar = getActionBar();
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
         //Guardar visitar
         saveInfoVisit();
 
@@ -70,6 +68,11 @@ public class UserProfileActivity extends Activity {
     }
 
     private void inicializarCompUI() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
         avatar = (ImageView) findViewById(R.id.imgAvatar);
         txtWall = (TextView) findViewById(R.id.txtWall);
         txtCantVisitas = (TextView) findViewById(R.id.txtCountVisit);
@@ -121,22 +124,6 @@ public class UserProfileActivity extends Activity {
 
     private void loadInfoProfile() {
         new RefreshDataProfileTask(avatar, txtWall, txtUserNombres, getString(R.string.msgLoading), this).execute(zimessUser);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed(); //Regresar al intent invocador
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     private class UserProfileTask extends AsyncTask<ParseUser, Void, ParseObject> {

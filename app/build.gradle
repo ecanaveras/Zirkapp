@@ -1,13 +1,16 @@
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '19.1.0'
+    signingConfigs {
+
+    }
+    compileSdkVersion 21
+    buildToolsVersion '21.1.2'
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 19
+        targetSdkVersion 21
         versionCode 1
-        versionName '1.0'
+        versionName '1.1'
         applicationId 'com.ecp.gsy.dcs.zirkapp'
     }
     buildTypes {
@@ -16,17 +19,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(dir: 'libs', include: 'Parse-*.jar')
     compile 'com.android.support:support-v13:21.+'
-    compile 'com.android.support:appcompat-v7:19.+'
-    compile 'com.parse.bolts:bolts-android:1.+'
+    compile 'com.android.support:appcompat-v7:21.+'
+    compile 'com.android.support:recyclerview-v7:21.0.+'
+    compile 'com.parse.bolts:bolts-android:1.1.4'
     compile 'com.makeramen:roundedimageview:2.0.0'
     //compile 'com.facebook.android:facebook-android-sdk:3.23.0'
     compile files('libs/ormlite-core-4.48.jar')
     compile files('libs/ormlite-android-4.48.jar')
-    compile files('libs/Parse-1.8.2.jar')
     compile files('libs/sinch-android-rtc-3.4.3.jar')
 }

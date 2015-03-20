@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -43,7 +45,7 @@ import java.util.List;
 /**
  * Created by Elder on 21/02/2015.
  */
-public class MessagingActivity extends Activity {
+public class MessagingActivity extends ActionBarActivity {
 
     private String receptorId, receptorUsername, receptorName;
     private EditText txtMessageBodyField;
@@ -89,7 +91,8 @@ public class MessagingActivity extends Activity {
 //        receptorName = intent.getStringExtra("RECIPIENT_NAME");
 
         //Personalizar ActionBar
-        customActionBar(getActionBar());
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        customActionBar(toolbar);
 
         populateMessageHistory();
 
@@ -103,12 +106,13 @@ public class MessagingActivity extends Activity {
         });
     }
 
-    private void customActionBar(ActionBar actionBar) {
+    private void customActionBar(Toolbar actionBar) {
         if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(false);
-            actionBar.setDisplayShowCustomEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+            setSupportActionBar(actionBar);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            getSupportActionBar().setDisplayShowCustomEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
 
 
             View customView = getLayoutInflater().inflate(R.layout.actionbar_user_title, null);
@@ -135,7 +139,7 @@ public class MessagingActivity extends Activity {
             titleBar.setText(receptorName != null ? receptorName : receptorUsername);
             if (receptorName != null) {
                 subTitleBar.setText(receptorUsername);
-            }else{
+            } else {
                 subTitleBar.setVisibility(View.GONE);
             }
             layoutActionBarTitle.setOnClickListener(new View.OnClickListener() {
@@ -147,7 +151,7 @@ public class MessagingActivity extends Activity {
                     activity.startActivity(intent);
                 }
             });
-            actionBar.setCustomView(customView);
+            getSupportActionBar().setCustomView(customView);
         }
     }
 

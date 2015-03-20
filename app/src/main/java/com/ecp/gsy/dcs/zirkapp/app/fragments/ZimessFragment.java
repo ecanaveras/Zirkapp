@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,14 +39,14 @@ public class ZimessFragment extends Fragment {
     private ArrayList<Zimess> zimessArrayList;
     private ZimessAdapter zimessAdapterNew;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private ListView listViewZimess;
+    private RecyclerView recyclerView;
     private Menu menuList;
     private ManagerGPS managerGPS;
     private LinearLayout layoudZimessNoFound;
     private GlobalApplication globalApplication;
     private LinearLayout layoudZimessFinder;
     private int requestCodeNewZimess = 100;
-    private int requestCodeUpdateZimess = 105;
+    public int requestCodeUpdateZimess = 105;
 
 
     @Override
@@ -65,12 +66,12 @@ public class ZimessFragment extends Fragment {
     private void inicializarCompUI(View view) {
         layoudZimessNoFound = (LinearLayout) view.findViewById(R.id.layoudZimessNoFound);
         layoudZimessFinder = (LinearLayout) view.findViewById(R.id.layoudZimessFinder);
-        listViewZimess = (ListView) view.findViewById(R.id.listZMessages);
-        listViewZimess.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        recyclerView = (RecyclerView) view.findViewById(R.id.listZMessages);
+        recyclerView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Zimess zimess = (Zimess) adapterView.getAdapter().getItem(i);
-                gotoDetail(zimess);
+            public void onClick(View v) {
+//                Zimess zimess = (Zimess) adapterView.getAdapter().getItem(i);
+//                gotoDetail(zimess);
             }
         });
 
@@ -88,8 +89,8 @@ public class ZimessFragment extends Fragment {
                 findZimessAround();
             }
         });
-
-        listViewZimess.setOnScrollListener(new AbsListView.OnScrollListener() {
+/*
+        recyclerView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
 
@@ -97,10 +98,10 @@ public class ZimessFragment extends Fragment {
 
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                int topRowVerticalPosition = (listViewZimess == null || listViewZimess.getChildCount() == 0) ? 0 : listViewZimess.getChildAt(0).getTop();
+                int topRowVerticalPosition = (recyclerView == null || recyclerView.getChildCount() == 0) ? 0 : recyclerView.getChildAt(0).getTop();
                 swipeRefreshLayout.setEnabled(firstVisibleItem == 0 && topRowVerticalPosition >= 0);
             }
-        });
+        });*/
     }
 
     public void findZimessAround() {
@@ -110,7 +111,7 @@ public class ZimessFragment extends Fragment {
         } else {
             if (managerGPS.isEnableGetLocation()) {
                 Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
-                new RefreshDataZimessTask(this.getActivity(), currentLocation, listViewZimess, layoudZimessNoFound, layoudZimessFinder, swipeRefreshLayout).execute(5); //Todo parametrizar KMs
+                new RefreshDataZimessTask(this, currentLocation, recyclerView, layoudZimessNoFound, layoudZimessFinder, swipeRefreshLayout).execute(5); //Todo parametrizar KMs
             } else {
                 managerGPS.gpsShowSettingsAlert();
             }
@@ -126,8 +127,6 @@ public class ZimessFragment extends Fragment {
         globalApplication.setTempZimess(zimess);
         Intent intent = new Intent(getActivity(), DetailZimessActivity.class);
         startActivityForResult(intent, requestCodeUpdateZimess);
-        //Animar
-        //getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
     }
 
     @Override

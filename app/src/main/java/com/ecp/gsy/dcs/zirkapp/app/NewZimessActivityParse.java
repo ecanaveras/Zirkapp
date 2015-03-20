@@ -11,6 +11,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -36,7 +38,7 @@ import com.parse.SaveCallback;
 /**
  * Created by Elder on 23/02/2015.
  */
-public class NewZimessActivityParse extends Activity {
+public class NewZimessActivityParse extends ActionBarActivity {
 
     private ParseUser currentUser;
 
@@ -49,13 +51,13 @@ public class NewZimessActivityParse extends Activity {
     private ManagerGPS managerGPS;
     private ProgressBar progressBar;
     private Activity activity;
+    private Toolbar toolbar;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_zimess);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         globalApplication = (GlobalApplication) getApplicationContext();
 
@@ -76,6 +78,10 @@ public class NewZimessActivityParse extends Activity {
 
 
     private void inicializarCompUI() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         //Creando UI
         message = (EditText) findViewById(R.id.editText);
         message.addTextChangedListener(new TextWatcher() {

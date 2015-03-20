@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.Menu;
@@ -38,7 +40,7 @@ import java.util.List;
 /**
  * Created by Elder on 28/02/2015.
  */
-public class EditProfileActivity extends Activity {
+public class EditProfileActivity extends ActionBarActivity {
 
     private String objectId;
     private ParseFile parseFile;
@@ -59,6 +61,7 @@ public class EditProfileActivity extends Activity {
     private byte[] byteImage;
 
     private Activity activity;
+    private Toolbar toolbar;
 
 
     @Override
@@ -68,7 +71,6 @@ public class EditProfileActivity extends Activity {
         activity = this;
 
         setContentView(R.layout.activity_edit_profile);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         globalApplication = (GlobalApplication) getApplicationContext();
         currentUser = globalApplication.getCurrentUser();
@@ -89,6 +91,11 @@ public class EditProfileActivity extends Activity {
     }
 
     private void inicializarCompUI() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
         imgAvatar = (ImageView) findViewById(R.id.imgUserAvatar);
         txtUsername = (EditText) findViewById(R.id.txtUsername);
         txtEstado = (EditText) findViewById(R.id.txtUserEstado);
@@ -251,11 +258,6 @@ public class EditProfileActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     private class EditProfileTask extends AsyncTask<ParseUser, Void, String> {

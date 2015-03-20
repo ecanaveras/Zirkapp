@@ -1,6 +1,5 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -10,8 +9,10 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,7 +44,7 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
+public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActivity<DatabaseHelper> {
 
     //KEY FRAGMENT
     private static final int HOME = 0;
@@ -53,6 +54,9 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     private static final int FRAGMENT_COUNT = 3;
     //ARRAY FRAGMENTS
     private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
+
+    //Toolbar
+    private Toolbar toolbar;
 
     //Drawer
     private DrawerLayout drawerNavigation;
@@ -71,9 +75,6 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     private FragmentManager fragmentManager;
     private ScreenSlidePagerAdapter fragmentAdapter;
     private int indexBackOrDefaultFragment;
-
-    private ActionBar actionBar;
-
     private ManagerWelcome managerWelcome;
 
     //Usuario de Parse
@@ -167,7 +168,10 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     }
 
     private void createOrUpdateDrawer() {
-
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         //Layout Header Y Footer para la lista en Drawer
         headerDrawer = getLayoutInflater().inflate(R.layout.header_drawer_menu, null);
         //Config Edid Profile
@@ -188,30 +192,33 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
         navListView.setOnItemClickListener(new DrawerItemClickListener());
         drawerNavigation = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerNavigation, R.drawable.ic_drawer, R.string.app_name, R.string.lblCancel) {
+        drawerToggle = new ActionBarDrawerToggle(this, drawerNavigation, toolbar, R.string.app_name, R.string.lblCancel) {
             @Override
             public void onDrawerOpened(View drawerView) {
-                actionBar.setTitle(R.string.app_name);
+                //setTitle(R.string.app_name);
                 //navAdapter.UpdateNotificacion("zimess", receiver.getCantRows());
                 refreshDrawerAdapter();
                 invalidateOptionsMenu();
+                syncState();
                 super.onDrawerOpened(drawerView);
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 invalidateOptionsMenu();
+                syncState();
                 super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                if (slideOffset < 0.6)
+                    toolbar.setAlpha(1 - slideOffset);
             }
         };
         drawerToggle.setDrawerIndicatorEnabled(true);
         drawerNavigation.setDrawerListener(drawerToggle);
-
-        //Actions in Bar
-        actionBar = getActionBar();
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
+        drawerToggle.syncState();
     }
 
     private void initSinchService() {
@@ -284,7 +291,7 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         }
         //Establece la posicion
         navListView.setItemChecked(position, true);
-        actionBar.setTitle(position > 0 ? navTitles[position - 1] : navTitles[0]);
+        //actionBar.setTitle(position > 0 ? navTitles[position - 1] : navTitles[0]);
         drawerNavigation.closeDrawer(navListView);
     }
 
@@ -295,11 +302,11 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
             if (i == indexFragment) {
                 ft.show(fragments[i]);
                 //Todo comprobar funcionamiento adecuado
-                if(indexFragment==1){ //Actualizar listado de Zimess
+                if (indexFragment == 1) { //Actualizar listado de Zimess
                     ZimessFragment zimessFragment = (ZimessFragment) fragments[i];
                     zimessFragment.findZimessAround();
                 }
-                if(indexFragment==2){ //Actualizar listado de usuarios en el chat
+                if (indexFragment == 2) { //Actualizar listado de usuarios en el chat
                     UsersOnlineFragment usersOnlineFragment = (UsersOnlineFragment) fragments[i];
                     usersOnlineFragment.buscarUsuariosOnline();
                 }

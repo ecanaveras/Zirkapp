@@ -3,8 +3,6 @@ package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +20,6 @@ import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
-import com.parse.ParseException;
 
 import java.util.List;
 
@@ -31,13 +28,13 @@ import java.util.List;
  */
 public class ZimessAdapter extends BaseAdapter {
 
-    private List<Zimess> zimessArrayList;
+    private List<Zimess> zimessList;
     private Activity context;
     private GlobalApplication globalApplication;
     private Location currentLocation;
 
     public ZimessAdapter(Activity context, List<Zimess> zimessArrayList, Location currentLocation) {
-        this.zimessArrayList = zimessArrayList;
+        this.zimessList = zimessArrayList;
         this.context = context;
         this.currentLocation = currentLocation;
         globalApplication = (GlobalApplication) context.getApplicationContext();
@@ -45,12 +42,12 @@ public class ZimessAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return zimessArrayList.size();
+        return zimessList.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return zimessArrayList.get(i);
+        return zimessList.get(i);
     }
 
     @Override
@@ -63,10 +60,10 @@ public class ZimessAdapter extends BaseAdapter {
         View vista = view;
         if (vista == null) {
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            vista = layoutInflater.inflate(R.layout.list_item_zimess_new, viewGroup, false);
+            vista = layoutInflater.inflate(R.layout.listview_item_zimess_new, viewGroup, false);
         }
         //1. Crear Zimess
-        final Zimess zimess = zimessArrayList.get(i);
+        final Zimess zimess = zimessList.get(i);
         //2. Iniciar UI de la lista
         TextView lblAliasUsuario = (TextView) vista.findViewById(R.id.lblNombreUsuario);
         TextView lblUsername = (TextView) vista.findViewById(R.id.lblUserName);
@@ -101,8 +98,6 @@ public class ZimessAdapter extends BaseAdapter {
         });
 
         //3. Establecer datos
-
-
         lblAliasUsuario.setText(zimess.getUser().getString("name"));
         //Estableciendo Imagen;
         imgAvatar.setImageBitmap(zimess.getAvatar());

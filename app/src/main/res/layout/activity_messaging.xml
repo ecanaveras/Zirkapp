@@ -1,22 +1,25 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:orientation="vertical">
+
+    <include layout="@layout/component_toolbar"/>
 
     <ListView
         android:id="@+id/listMessages"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:transcriptMode="alwaysScroll"
-        android:layout_above="@+id/divider"
         android:padding="0dip"
         android:divider="@null"
-        android:dividerHeight="0dp" android:stackFromBottom="true" tools:listitem="@layout/message_left"/>
+        android:dividerHeight="0dp"
+        android:stackFromBottom="true"
+        tools:listitem="@layout/message_left" />
 
     <RelativeLayout
         android:id="@+id/divider"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="1dip"
         android:background="@color/off_white"
         android:layout_above="@+id/relSendMessage" />
@@ -41,7 +44,7 @@
             android:layout_alignTop="@+id/btnSendMessage"
             android:background="@android:color/white"
             android:layout_alignBottom="@+id/btnSendMessage"
-            android:layout_toLeftOf="@+id/btnSendMessage"/>
+            android:layout_toLeftOf="@+id/btnSendMessage" />
         <!-- android:hint="@string/message_elipses" -->
 
         <Button
@@ -50,11 +53,10 @@
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_margin="4dp"
-            android:text="@string/lblSend"
-            />
-            <!--android:background="@drawable/button_send"-->
+            android:text="@string/lblSend" />
+        <!--android:background="@drawable/button_send"-->
 
     </RelativeLayout>
 
 
-</RelativeLayout>
+</LinearLayout>

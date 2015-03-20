@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- extend one of the Theme.AppCompat themes -->
+    <style name="AppTheme" parent="AppTheme.Base">
+        <!-- customize the color palette -->
+        <item name="android:colorPrimary">@color/default_primary_color</item>
+        <item name="android:colorPrimaryDark">@color/dark_primary_color</item>
+        <item name="android:colorAccent">@color/accent_color</item>
+
+        <item name="android:navigationBarColor">@color/default_primary_color</item>
+
+        <!--<item name="android:windowTranslucentStatus">true</item>-->
+    </style>
+
+</resources>
