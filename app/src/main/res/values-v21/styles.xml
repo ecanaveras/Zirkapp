@@ -12,4 +12,8 @@
         <!--<item name="android:windowTranslucentStatus">true</item>-->
     </style>
 
+    <style name="My.Button" parent="android:style/Widget.Material.Button">
+        <item name="android:background">@drawable/raised_button_background</item>
+    </style>
+
 </resources>

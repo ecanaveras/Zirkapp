@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessReciclerAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
@@ -90,8 +91,6 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
         if (!findUniqueZimess) {
             ZimessReciclerAdapter zimessReciclerAdapter = new ZimessReciclerAdapter(zimessList, fragment, currentLocation);
             if (recyclerView != null) {
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager((Activity) fragment.getActivity());
-                recyclerView.setLayoutManager(linearLayoutManager);
                 recyclerView.setAdapter(zimessReciclerAdapter);
             }
             zimessReciclerAdapter.notifyDataSetChanged();

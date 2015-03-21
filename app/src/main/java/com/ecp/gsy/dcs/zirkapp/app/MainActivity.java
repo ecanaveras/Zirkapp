@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -34,6 +35,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.parse.ParseException;
@@ -90,21 +92,22 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
     //Respuesta del Login
     private int inputLoginRequestCode = 100;
 
+    private DatabaseHelper databaseHelper;
+
 
     //Manejo de la DB
-    private OrmLiteBaseActivity<DatabaseHelper> getOrlOrmLiteBaseActivity() {
+   /* private OrmLiteBaseActivity<DatabaseHelper> getOrlOrmLiteBaseActivity() {
         Activity activity = this;
         if (activity instanceof OrmLiteBaseActivity) {
             return (OrmLiteBaseActivity<DatabaseHelper>) activity;
         }
         return null;
-    }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         //Generar HashKey
 //        try {
@@ -119,6 +122,9 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
 //        } catch (NoSuchAlgorithmException e) {
 //            Log.e("KeyHash NoSuchAlgorithmException",e.getMessage());
 //        }
+
+        //Database
+        databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
 
 
         //Manipulando Fragments
@@ -195,8 +201,7 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
         drawerToggle = new ActionBarDrawerToggle(this, drawerNavigation, toolbar, R.string.app_name, R.string.lblCancel) {
             @Override
             public void onDrawerOpened(View drawerView) {
-                //setTitle(R.string.app_name);
-                //navAdapter.UpdateNotificacion("zimess", receiver.getCantRows());
+                toolbar.setTitle(R.string.app_name);
                 refreshDrawerAdapter();
                 invalidateOptionsMenu();
                 syncState();
@@ -321,14 +326,23 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
     }
 
     /**
-     * WELCOME
-     *
-     * @param run
+     * Comprueba si existen datos en Welcomedb
      */
-    private void initWelcome(boolean run) {
-        Intent intent = new Intent(this, ManagerWelcome.class);
-        intent.putExtra("run", run);
-        startActivityForResult(intent, inputWelcomeRequestCode);
+    private void findDataWelcome() {
+        List<Welcomedb> listWdb = new ArrayList<Welcomedb>();
+
+        RuntimeExceptionDao<Welcomedb, Integer> dao = databaseHelper.getWelcomedbRuntimeDao();
+        listWdb = dao.queryForAll();
+
+        //Si existe un registro de welcolme, no se mostrará la pantalla de bienvenida
+        for (Welcomedb w : listWdb) {
+            runWelcome = false;
+        }
+        if (runWelcome) {
+            Intent intent = new Intent(this, ManagerWelcome.class);
+            intent.putExtra("run", runWelcome);
+            startActivityForResult(intent, inputWelcomeRequestCode);
+        }
     }
 
     @Override
@@ -379,20 +393,8 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
 
     @Override
     protected void onStart() {
-        List<Welcomedb> listWdb = new ArrayList<Welcomedb>();
-        if (getOrlOrmLiteBaseActivity() != null) {
-            DatabaseHelper helper = getOrlOrmLiteBaseActivity().getHelper();
-            RuntimeExceptionDao<Welcomedb, Integer> dao = helper.getWelcomedbRuntimeDao();
-            listWdb = dao.queryForAll();
-        }
-        //Si existe un registro de welcolme, no se mostrará la pantalla de bienvenida
-        for (Welcomedb w : listWdb) {
-            runWelcome = false;
-            Log.i(MainActivity.class.getSimpleName(), "onStart() " + w.getRunWelcome());
-        }
-        if (runWelcome) {
-            initWelcome(true);
-        }
+        //Verificamos si el welcome fue visto.
+        findDataWelcome();
         super.onStart();
     }
 
@@ -402,12 +404,10 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
         if (requestCode == inputWelcomeRequestCode) { //Welcome
             boolean goLogin = data.getBooleanExtra("goLogin", false);
             if (resultCode == RESULT_OK && goLogin) {
+                //Creamos un resgitro indicando que ya el welcome fue visto
                 Welcomedb wdb = new Welcomedb("SI");
-                if (getOrlOrmLiteBaseActivity() != null) {
-                    DatabaseHelper helper = getOrlOrmLiteBaseActivity().getHelper();
-                    RuntimeExceptionDao<Welcomedb, Integer> dao = helper.getWelcomedbRuntimeDao();
-                    dao.create(wdb);
-                }
+                RuntimeExceptionDao<Welcomedb, Integer> dao = databaseHelper.getWelcomedbRuntimeDao();
+                dao.create(wdb);
                 runWelcome = false;
             }
         }
@@ -439,6 +439,10 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
     @Override
     protected void onDestroy() {
         stopService(new Intent(this, MessageService.class));
+        if (databaseHelper != null) {
+            OpenHelperManager.releaseHelper();
+            databaseHelper = null;
+        }
         super.onDestroy();
     }
 

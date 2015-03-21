@@ -84,7 +84,7 @@ public class DetailZimessActivity extends ActionBarActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        toolbar.setTitle("Zimess");
+        toolbar.setTitle("Inf. Zimess");
 
         //UI
         lblAliasUsuario = (TextView) findViewById(R.id.lblNombreUsuario);

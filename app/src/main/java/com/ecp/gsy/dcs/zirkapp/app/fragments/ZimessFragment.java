@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,10 +35,6 @@ import java.util.ArrayList;
  */
 public class ZimessFragment extends Fragment {
 
-    private String currenUserId;
-
-    private ArrayList<Zimess> zimessArrayList;
-    private ZimessAdapter zimessAdapterNew;
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
     private Menu menuList;
@@ -52,13 +49,15 @@ public class ZimessFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_zimess, container, false);
-        inicializarCompUI(view);
         setHasOptionsMenu(true);
+
+        inicializarCompUI(view);
 
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
 
         //Buscar Zimess
         findZimessAround();
+
 
         return view;
     }
@@ -67,13 +66,7 @@ public class ZimessFragment extends Fragment {
         layoudZimessNoFound = (LinearLayout) view.findViewById(R.id.layoudZimessNoFound);
         layoudZimessFinder = (LinearLayout) view.findViewById(R.id.layoudZimessFinder);
         recyclerView = (RecyclerView) view.findViewById(R.id.listZMessages);
-        recyclerView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Zimess zimess = (Zimess) adapterView.getAdapter().getItem(i);
-//                gotoDetail(zimess);
-            }
-        });
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         layoudZimessFinder.setVisibility(View.GONE);
 

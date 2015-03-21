@@ -1,6 +1,5 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -16,7 +15,6 @@ import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
-import com.parse.ParseUser;
 
 import java.util.List;
 
@@ -26,28 +24,29 @@ import java.util.List;
 public class ZimessReciclerAdapter extends RecyclerView.Adapter<ZimessReciclerAdapter.ZimessViewHolder> {
 
     private List<Zimess> zimessList;
-    private Fragment activity;
+    private Fragment fragment;
     private GlobalApplication globalApplication;
     private Location currentLocation;
 
-    public ZimessReciclerAdapter(List<Zimess> zimessList, Fragment activity, Location currentLocation) {
-        this.activity = activity;
+    public ZimessReciclerAdapter(List<Zimess> zimessList, Fragment fragment, Location currentLocation) {
+        this.fragment = fragment;
         this.currentLocation = currentLocation;
-        //globalApplication = (GlobalApplication) this.activity.getActivity().getApplicationContext();
+        this.zimessList = zimessList;
+        globalApplication = (GlobalApplication) this.fragment.getActivity().getApplicationContext();
     }
 
     @Override
     public ZimessViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View vista = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.listview_item_zimess_new, viewGroup, false);
+        View vista = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardview_item_zimess, viewGroup, false);
         ZimessViewHolder holder = new ZimessViewHolder(vista);
-        //holder.setActivity(activity);
+        holder.setActivity(fragment);
         return holder;
     }
 
     @Override
     public void onBindViewHolder(ZimessViewHolder zimessViewHolder, int i) {
         Zimess zimess = zimessList.get(i);
-        //zimessViewHolder.setZimess(zimess);
+        zimessViewHolder.setZimess(zimess);
 
         zimessViewHolder.lblAliasUsuario.setText(zimess.getUser().getString("name"));
         //Estableciendo Imagen;
@@ -79,7 +78,7 @@ public class ZimessReciclerAdapter extends RecyclerView.Adapter<ZimessReciclerAd
 
     @Override
     public int getItemCount() {
-        return zimessList.size();
+        return zimessList != null ? zimessList.size() : 0;
     }
 
     public static class ZimessViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -101,7 +100,7 @@ public class ZimessReciclerAdapter extends RecyclerView.Adapter<ZimessReciclerAd
 
         public ZimessViewHolder(View vista) {
             super(vista);
-            //vista.setOnClickListener(this);
+            vista.setOnClickListener(this);
             lblAliasUsuario = (TextView) vista.findViewById(R.id.lblNombreUsuario);
             lblUsername = (TextView) vista.findViewById(R.id.lblUserName);
             lblMessage = (TextView) vista.findViewById(R.id.lblZimess);
@@ -132,7 +131,7 @@ public class ZimessReciclerAdapter extends RecyclerView.Adapter<ZimessReciclerAd
 
         @Override
         public void onClick(View v) {
-            //gotoDetail();
+            gotoDetail();
         }
     }
 
