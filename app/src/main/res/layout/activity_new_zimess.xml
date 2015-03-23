@@ -65,10 +65,10 @@
                         android:id="@+id/lblCurrentLocation"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
-                        android:text=""
+                        android:text="No disponible"
                         android:textColor="@color/accent_color"
                         android:singleLine="true"
-                        android:gravity="center" />
+                        android:gravity="center_vertical" />
 
                     <ProgressBar
                         android:id="@+id/progressLoad"
@@ -77,13 +77,14 @@
 
                 </FrameLayout>
 
-                <ImageButton
-                    android:layout_width="60dp"
+                <Button
+                    android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:id="@+id/btnSendZmess"
                     android:src="@drawable/ic_action_send"
                     android:scaleType="fitCenter"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/lblSend"/>
 
             </LinearLayout>
 

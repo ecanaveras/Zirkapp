@@ -41,6 +41,7 @@
     <string name="lblSearch">Buscar</string>
     <string name="lblFav1">Favoritos</string>
     <string name="lblOk">Aceptar</string>
+    <string name="lblDelete">Eliminar</string>
     <string name="lblCancel">Cancelar</string>
     <string name="lblAbout">Acerca de...</string>
     <string name="lblSettingGPS">Config. GPS</string>
@@ -99,6 +100,17 @@
     <string name="lblSearching">Buscando Zimess...</string>
     <string name="lblSearchingUsers">Buscando usuarios online...</string>
     <string name="lblStart">Empecemos..</string>
+    <string name="action_delete_zimess">Eliminar Zimess</string>
+    <string name="action_bar_my_zimess">Mis Zimess</string>
+    <string name="action_bar_new_zimess">Nuevo Zimess</string>
+    <string name="lblZimessNoFound">No hay Zimess, empieza tu!</string>
+    <string name="lblMyZimessNoFound">No tienes Zimess... animate, empieza ya!</string>
+    <string name="lblMyZimess">Mis Zimess</string>
+    <string name="lblDetailZimess">Det. del Zimess</string>
+    <string name="msgZimessDeleteOk">Zimess eliminado!</string>
+    <string name="msgZimessDeleteFailed">No es posible borrar tu Zimess, intenta mas tarde.</string>
+    <string name="msgDeleting">Eliminando, espere...</string>
+    <string name="msgByeZimess">Despidete de tu Zimess...</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

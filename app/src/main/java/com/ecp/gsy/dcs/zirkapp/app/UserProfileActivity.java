@@ -1,7 +1,6 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.ecp.gsy.dcs.zirkapp.app.util.parse.FindParseObject;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
 import com.parse.FindCallback;
@@ -38,7 +37,7 @@ public class UserProfileActivity extends ActionBarActivity {
     private TextView txtCantVisitas, txtWall, txtCantZimess, txtUserNombres;
     private ProgressBar progressBarLoad;
     private GlobalApplication globalApplication;
-    private ParseUser zimessUser;
+    private ParseUser parseUser;
     private Toolbar toolbar;
 
 
@@ -50,8 +49,8 @@ public class UserProfileActivity extends ActionBarActivity {
         currentUser = ParseUser.getCurrentUser();
 
         globalApplication = (GlobalApplication) getApplicationContext();
-        //Tomar el user del Zimess
-        zimessUser = globalApplication.getCustomParseUser();
+        parseUser = globalApplication.getCustomParseUser();
+
 
         inicializarCompUI();
 
@@ -63,7 +62,7 @@ public class UserProfileActivity extends ActionBarActivity {
         saveInfoVisit();
 
         //Cargar info de visistas y Zimess
-        new UserProfileTask().execute(zimessUser);
+        new UserProfileTask().execute(parseUser);
 
     }
 
@@ -82,13 +81,13 @@ public class UserProfileActivity extends ActionBarActivity {
     }
 
     private void saveInfoVisit() {
-        if (currentUser.equals(zimessUser)) { //Solo usuarios de otro perfil aumentan visitas
+        if (currentUser.equals(parseUser)) { //Solo usuarios de otro perfil aumentan visitas
             return;
         }
-        final ParseObject zimessObject = ParseObject.createWithoutData("ParseZimess", zimessUser.getObjectId());
+
         //Buscar si existe
         final ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZVisit");
-        query.whereEqualTo("user", zimessObject);
+        query.whereEqualTo("user", parseUser);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
@@ -100,31 +99,43 @@ public class UserProfileActivity extends ActionBarActivity {
                         @Override
                         public void done(ParseObject parseObject, ParseException e) {
                             if (e == null) {
-                                createOrUpdateVisit(parseObject, zimessObject); //Actualiza
+                                createOrUpdateVisit(parseObject, parseUser); //Actualiza
                             }
                         }
                     });
                 } else {
-                    createOrUpdateVisit(null, zimessObject);
+                    createOrUpdateVisit(null, parseUser);
                 }
             }
         });
 
     }
 
-    private void createOrUpdateVisit(ParseObject inParseObject, ParseObject zimessObject) {
+    private void createOrUpdateVisit(ParseObject inParseObject, ParseUser parseUser) {
         ParseObject parseObject = inParseObject;
         if (parseObject == null) {
             parseObject = new ParseObject("ParseZVisit");
         }
-        parseObject.put("user", zimessObject);
+        parseObject.put("user", parseUser);
         parseObject.increment("count_visit");
         parseObject.saveInBackground();
     }
 
     private void loadInfoProfile() {
-        new RefreshDataProfileTask(avatar, txtWall, txtUserNombres, getString(R.string.msgLoading), this).execute(zimessUser);
+        new RefreshDataProfileTask(avatar, txtWall, txtUserNombres, getString(R.string.msgLoading), this).execute(parseUser);
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     private class UserProfileTask extends AsyncTask<ParseUser, Void, ParseObject> {
 
@@ -133,16 +144,15 @@ public class UserProfileActivity extends ActionBarActivity {
 
         @Override
         protected void onPreExecute() {
-            progressBarLoad.setBackgroundColor(Color.parseColor("#FFFFFF"));
             progressBarLoad.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected ParseObject doInBackground(ParseUser... parseUsers) {
             //Buscamos Cant de Zimess en Parse
-            cantZimess = FindParseObject.findCountZimess(parseUsers[0]);
+            cantZimess = DataParseHelper.findCountZimess(parseUsers[0]);
             //Buscamos Visitas en Parse
-            return FindParseObject.findDataVisit(parseUsers[0]);
+            return DataParseHelper.findDataVisit(parseUsers[0]);
         }
 
         @Override

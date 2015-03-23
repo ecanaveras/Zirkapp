@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,14 +8,19 @@
 
     <ListView
         android:id="@+id/listMessages"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:transcriptMode="alwaysScroll"
+        android:layout_above="@+id/divider"
+        android:layout_marginTop="?attr/actionBarSize"
         android:padding="0dip"
         android:divider="@null"
         android:dividerHeight="0dp"
         android:stackFromBottom="true"
-        tools:listitem="@layout/message_left" />
+        tools:listitem="@layout/message_left"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="6dp"/>
 
     <RelativeLayout
         android:id="@+id/divider"
@@ -49,7 +54,7 @@
 
         <Button
             android:id="@+id/btnSendMessage"
-            android:layout_width="72dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_margin="4dp"
@@ -59,4 +64,4 @@
     </RelativeLayout>
 
 
-</LinearLayout>
+</RelativeLayout>

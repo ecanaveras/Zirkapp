@@ -52,7 +52,7 @@ public class NavigationAdapter extends BaseAdapter {
         ItemListDrawer item = navItems.get(posicion);
         if (view == null) {
             holder = new ViewHolder();
-            view = LayoutInflater.from(context).inflate(R.layout.listview_item_drawer, viewGroup, false);
+            view = LayoutInflater.from(context).inflate(R.layout.itemlist_drawer, viewGroup, false);
             //Titulo
             holder.tituloItem = (TextView) view.findViewById(R.id.title_item);
             //Icono

@@ -13,22 +13,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.MyZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivityParse;
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
-
-import java.util.ArrayList;
 
 /**
  * Created by Elder on 23/02/2015.
@@ -58,15 +55,21 @@ public class ZimessFragment extends Fragment {
         //Buscar Zimess
         findZimessAround();
 
-
         return view;
     }
 
     private void inicializarCompUI(View view) {
+        //UI Zimess no Found
         layoudZimessNoFound = (LinearLayout) view.findViewById(R.id.layoudZimessNoFound);
+        ImageView imageView = (ImageView) view.findViewById(R.id.imgIconZimessNoFound);
+        imageView.setImageResource(R.drawable.ic_icon_radar_gray);
+        TextView textView = (TextView) view.findViewById(R.id.lblMyZimessNoFound);
+        textView.setText(R.string.lblMyZimessNoFound);
+
         layoudZimessFinder = (LinearLayout) view.findViewById(R.id.layoudZimessFinder);
         recyclerView = (RecyclerView) view.findViewById(R.id.listZMessages);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
 
         layoudZimessFinder.setVisibility(View.GONE);
 
@@ -82,19 +85,15 @@ public class ZimessFragment extends Fragment {
                 findZimessAround();
             }
         });
-/*
-        recyclerView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView absListView, int i) {
 
-            }
-
+        //Corregir bug de Swipe... [Permite el scroll sin problemas]
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                int topRowVerticalPosition = (recyclerView == null || recyclerView.getChildCount() == 0) ? 0 : recyclerView.getChildAt(0).getTop();
-                swipeRefreshLayout.setEnabled(firstVisibleItem == 0 && topRowVerticalPosition >= 0);
+            public void onScrolled(RecyclerView recyclerView, int firstVisibleItem, int dy) {
+                int topRow = (recyclerView == null || recyclerView.getChildCount() == 0) ? 0 : recyclerView.getChildAt(0).getTop();
+                swipeRefreshLayout.setEnabled(firstVisibleItem == 0 && topRow >= 0);
             }
-        });*/
+        });
     }
 
     public void findZimessAround() {
@@ -124,20 +123,26 @@ public class ZimessFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.list_zimess_activity_action, menu);
+        inflater.inflate(R.menu.menu_fragment_zimess, menu);
         menuList = menu;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         //Manejar seleccion en el menú
+        Intent intent;
         switch (item.getItemId()) {
-            case R.id.action_bar_new_zmess:
-                Intent intent = new Intent(getActivity(), NewZimessActivityParse.class);
+            case R.id.action_bar_new_zimess:
+                intent = new Intent(getActivity(), NewZimessActivityParse.class);
                 startActivityForResult(intent, requestCodeNewZimess);
-            default:
-                return super.onOptionsItemSelected(item);
+                break;
+            case R.id.action_bar_my_zimess:
+                intent = new Intent(getActivity(), MyZimessActivity.class);
+                startActivity(intent);
+                break;
+
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private MenuItem getMenuItem(int id) {

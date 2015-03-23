@@ -1,6 +1,5 @@
-package com.ecp.gsy.dcs.zirkapp.app.util.messages;
+package com.ecp.gsy.dcs.zirkapp.app;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -21,8 +20,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.UserProfileActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
@@ -66,6 +63,8 @@ public class MessagingActivity extends ActionBarActivity {
         activity = this;
 
         globalApplication = (GlobalApplication) getApplicationContext();
+        //Usuario actual
+        currentUser = globalApplication.getCurrentUser();
 
         bindService(new Intent(this, MessageService.class), serviceConnection, BIND_AUTO_CREATE);
 
@@ -75,8 +74,6 @@ public class MessagingActivity extends ActionBarActivity {
         adapterMessage = new MessageAdapter(this);
         listMessage.setAdapter(adapterMessage);
 
-        //Usuario actual
-        currentUser = globalApplication.getCurrentUser();
 
         //Usuario receptor
         receptorUser = globalApplication.getCustomParseUser();
@@ -147,6 +144,7 @@ public class MessagingActivity extends ActionBarActivity {
                 public void onClick(View view) {
                     view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.anim_image_click));
                     Intent intent = new Intent(activity, UserProfileActivity.class);
+                    intent.putExtra("activityfrom", MessagingActivity.class.getSimpleName());
                     globalApplication.setCustomParseUser(receptorUser);
                     activity.startActivity(intent);
                 }

@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -43,7 +44,7 @@ public class NewZimessActivityParse extends ActionBarActivity {
     private ParseUser currentUser;
 
     private EditText message;
-    private ImageButton btnSendZimess;
+    private Button btnSendZimess;
     private TextView txtIndicadorConn;
     private TextView lblCurrentLocation;
 
@@ -106,7 +107,7 @@ public class NewZimessActivityParse extends ActionBarActivity {
         });
 
 
-        btnSendZimess = (ImageButton) findViewById(R.id.btnSendZmess);
+        btnSendZimess = (Button) findViewById(R.id.btnSendZmess);
         btnSendZimess.setEnabled(false);
         btnSendZimess.setOnClickListener(new View.OnClickListener() {
             @Override

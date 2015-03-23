@@ -1,6 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 
-import android.app.Fragment;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
+import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.util.List;
 
@@ -24,22 +26,23 @@ import java.util.List;
 public class ZimessReciclerAdapter extends RecyclerView.Adapter<ZimessReciclerAdapter.ZimessViewHolder> {
 
     private List<Zimess> zimessList;
-    private Fragment fragment;
+    private Context context;
     private GlobalApplication globalApplication;
     private Location currentLocation;
 
-    public ZimessReciclerAdapter(List<Zimess> zimessList, Fragment fragment, Location currentLocation) {
-        this.fragment = fragment;
+    public ZimessReciclerAdapter(List<Zimess> zimessList, Context context, Location currentLocation) {
+        this.context = context;
         this.currentLocation = currentLocation;
         this.zimessList = zimessList;
-        globalApplication = (GlobalApplication) this.fragment.getActivity().getApplicationContext();
+        globalApplication = (GlobalApplication) context.getApplicationContext();
+
     }
 
     @Override
     public ZimessViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View vista = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardview_item_zimess, viewGroup, false);
         ZimessViewHolder holder = new ZimessViewHolder(vista);
-        holder.setActivity(fragment);
+        holder.setContext(context);
         return holder;
     }
 
@@ -84,7 +87,7 @@ public class ZimessReciclerAdapter extends RecyclerView.Adapter<ZimessReciclerAd
     public static class ZimessViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private Zimess zimess;
-        private Fragment activity;
+        private Context context;
 
 
         public TextView lblAliasUsuario,
@@ -93,8 +96,8 @@ public class ZimessReciclerAdapter extends RecyclerView.Adapter<ZimessReciclerAd
                 lblDistance,
                 lblTimePass,
                 lblCantComments;
-        public ImageView imgComment,
-                imgAvatar;
+        public ImageView imgComment;
+        public RoundedImageView imgAvatar;
         //imgOptions
 
 
@@ -105,7 +108,8 @@ public class ZimessReciclerAdapter extends RecyclerView.Adapter<ZimessReciclerAd
             lblUsername = (TextView) vista.findViewById(R.id.lblUserName);
             lblMessage = (TextView) vista.findViewById(R.id.lblZimess);
             lblDistance = (TextView) vista.findViewById(R.id.lblDistance);
-            imgAvatar = (ImageView) vista.findViewById(R.id.imgAvatarItem);
+            imgAvatar = (RoundedImageView) vista.findViewById(R.id.imgAvatarItem);
+            imgAvatar.setOnClickListener(this);
             lblTimePass = (TextView) vista.findViewById(R.id.txtTiempo);
             lblCantComments = (TextView) vista.findViewById(R.id.lblCantComments);
             imgComment = (ImageView) vista.findViewById(R.id.imgComment);
@@ -115,23 +119,31 @@ public class ZimessReciclerAdapter extends RecyclerView.Adapter<ZimessReciclerAd
             this.zimess = zimess;
         }
 
-        public void setActivity(Fragment activity) {
-            this.activity = activity;
+        public void setContext(Context context) {
+            this.context = context;
         }
 
         /**
          * Vamos al detalle del Zimess
          */
         private void gotoDetail() {
-            GlobalApplication globalApplication = (GlobalApplication) activity.getActivity().getApplicationContext();
-            globalApplication.setTempZimess(zimess);
-            Intent intent = new Intent(activity.getActivity(), DetailZimessActivity.class);
-            activity.startActivityForResult(intent, 105);//requestCodeUpdateZimess
+            if (context != null) {
+                GlobalApplication globalApplication = (GlobalApplication) context.getApplicationContext();
+                globalApplication.setTempZimess(zimess);
+                Intent intent = new Intent(context, DetailZimessActivity.class);
+                Activity activity = (Activity) context;
+                activity.startActivityForResult(intent, 105);//requestCodeUpdateZimess
+            }
         }
 
         @Override
         public void onClick(View v) {
-            gotoDetail();
+            if (v instanceof ImageView) {
+                System.out.println("IMG CLIIIIICK");
+            } else {
+                gotoDetail();
+            }
+
         }
     }
 

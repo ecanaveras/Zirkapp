@@ -61,10 +61,10 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser
         if (user != null) {
             //Podemos obtener todos los datos del profile
             if (txtWall != null) {
-                txtWall.setText(user.get("wall").toString());
+                txtWall.setText(user.getString("wall"));
             }
             if (txtNombres != null) {
-                txtNombres.setText(user.get("name").toString());
+                txtNombres.setText(user.getString("name"));
                 txtNombres.setVisibility(View.VISIBLE);
             }
             Bitmap bitmapAvatar = GlobalApplication.getAvatar(user);

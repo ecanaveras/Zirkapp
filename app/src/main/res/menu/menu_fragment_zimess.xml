@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_bar_new_zimess"
+        android:title="@string/action_bar_new_zimess"
+        android:icon="@drawable/ic_action_chat"
+        android:orderInCategory="200"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_bar_my_zimess"
+        android:title="@string/action_bar_my_zimess"
+        android:orderInCategory="210"
+        app:showAsAction="never" />
+
+</menu>

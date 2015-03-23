@@ -1,6 +1,5 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -12,7 +11,6 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -24,8 +22,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ScreenSlidePagerAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
@@ -36,7 +32,6 @@ import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.parse.ParseException;
 import com.parse.ParsePush;
@@ -49,11 +44,11 @@ import java.util.List;
 public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActivity<DatabaseHelper> {
 
     //KEY FRAGMENT
-    private static final int HOME = 0;
-    private static final int ZIMESS = 1;
-    private static final int INBOX = 2;
+    private static final int HOME = 0; //Disabled
+    private static final int ZIMESS = 0;
+    private static final int USERS = 1;
     //TOTAL FRAGMENTS
-    private static final int FRAGMENT_COUNT = 3;
+    private static final int FRAGMENT_COUNT = 2;
     //ARRAY FRAGMENTS
     private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
 
@@ -94,16 +89,6 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
 
     private DatabaseHelper databaseHelper;
 
-
-    //Manejo de la DB
-   /* private OrmLiteBaseActivity<DatabaseHelper> getOrlOrmLiteBaseActivity() {
-        Activity activity = this;
-        if (activity instanceof OrmLiteBaseActivity) {
-            return (OrmLiteBaseActivity<DatabaseHelper>) activity;
-        }
-        return null;
-    }*/
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,9 +114,9 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
 
         //Manipulando Fragments
         FragmentManager fm = getFragmentManager();
-        fragments[HOME] = fm.findFragmentById(R.id.fhome);
+        //fragments[HOME] = fm.findFragmentById(R.id.fhome);
         fragments[ZIMESS] = fm.findFragmentById(R.id.fzimessNew);
-        fragments[INBOX] = fm.findFragmentById(R.id.finbox);
+        fragments[USERS] = fm.findFragmentById(R.id.finbox);
 
         FragmentTransaction ft = fm.beginTransaction();
         for (int i = 0; i < fragments.length; i++) {
@@ -168,7 +153,7 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
                     }
                 }
             });
-            //initSinchService(); //TODO MENSAJERIA DISABLED
+            initSinchService(); //TODO MENSAJERIA DISABLED
             refreshDatosDrawer();
         }
     }
@@ -284,20 +269,23 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
         //fragmentManager.beginTransaction().replace(R.id.content_frame, fragmentAdapter.getItem(position)).commit();
         switch (position) {
             case 0:
-                showFragment(HOME, false);
+                showFragment(ZIMESS, false);
                 break;
             case 1:
                 showFragment(ZIMESS, false);
-
                 break;
             case 2:
-                showFragment(INBOX, false);
+                showFragment(USERS, false);
                 break;
+//            default:
+//                showFragment(ZIMESS, false);
+//                break;
         }
         //Establece la posicion
         navListView.setItemChecked(position, true);
         //actionBar.setTitle(position > 0 ? navTitles[position - 1] : navTitles[0]);
         drawerNavigation.closeDrawer(navListView);
+
     }
 
     private void showFragment(int indexFragment, boolean addToBackStack) {
@@ -307,14 +295,14 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
             if (i == indexFragment) {
                 ft.show(fragments[i]);
                 //Todo comprobar funcionamiento adecuado
-                if (indexFragment == 1) { //Actualizar listado de Zimess
+                /*if (indexFragment == 1) { //Actualizar listado de Zimess
                     ZimessFragment zimessFragment = (ZimessFragment) fragments[i];
                     zimessFragment.findZimessAround();
                 }
                 if (indexFragment == 2) { //Actualizar listado de usuarios en el chat
                     UsersOnlineFragment usersOnlineFragment = (UsersOnlineFragment) fragments[i];
                     usersOnlineFragment.buscarUsuariosOnline();
-                }
+                }*/
             } else {
                 ft.hide(fragments[i]);
             }

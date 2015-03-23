@@ -1,9 +1,6 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +10,6 @@ import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
-import com.parse.ParseException;
 import com.parse.ParseUser;
 
 import java.util.List;
@@ -51,7 +47,7 @@ public class UsersAdapter extends BaseAdapter {
         View vista = view;
         if (vista == null) {
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            vista = layoutInflater.inflate(R.layout.listview_item_users, viewGroup, false);
+            vista = layoutInflater.inflate(R.layout.cardview_item_user, viewGroup, false);
         }
 
         //1. Tomar usuario

@@ -1,23 +1,41 @@
 <resources>
 
-    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimaryDark">@color/dark_primary_color</item>
         <item name="colorPrimary">@color/default_primary_color</item>
         <item name="colorAccent">@color/accent_color</item>
 
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowActionBar">false</item>
         <item name="windowActionBar">false</item>
+
+        <item name="android:buttonStyle">@style/ButtonDialog</item>
+        <item name="android:colorButtonNormal">@color/dark_primary_color</item>
+
+        <!--<item name="alertDialogProTheme">@style/Theme.AlertDialogPro.Material.Light</item>-->
+        <item name="alertDialogProTheme">@style/FlavoredMaterialLight</item>
     </style>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="AppTheme.Base"/>
+    <style name="AppTheme" parent="AppTheme.Base" />
 
     <style name="ToolbarTheme" parent="Theme.AppCompat">
         <item name="android:textColorPrimary">@color/abc_primary_text_material_dark</item>
         <item name="actionMenuTextColor">@color/abc_primary_text_material_dark</item>
         <item name="android:textColorSecondary">@color/abc_primary_text_material_dark</item>
     </style>
+
+    <style name="FlavoredMaterialLight" parent="Theme.AlertDialogPro.Material.Light">
+        <item name="adpButtonBarPositiveButtonStyle">@style/ButtonDialog</item>
+        <item name="adpButtonBarNegativeButtonStyle">@style/ButtonDialog</item>
+    </style>
+
+    <style name="ButtonDialog" parent="Widget.AlertDialogPro.Material.Light.Button">
+        <item name="android:textColor">@color/dark_primary_color</item>
+    </style>
+
+    <style name="ButtonAppTheme" parent="android:Widget.Material.Button">
+        <item name="android:background">@drawable/raised_button_background</item>
+    </style>
+
 
     <style name="line_divider_h">
         <item name="android:layout_width">match_parent</item>

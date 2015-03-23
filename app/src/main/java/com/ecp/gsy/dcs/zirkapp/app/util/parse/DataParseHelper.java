@@ -3,6 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util.parse;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
+import com.parse.DeleteCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -15,7 +16,9 @@ import java.util.List;
 /**
  * Created by Elder on 11/03/2015.
  */
-public class FindParseObject {
+public class DataParseHelper {
+
+    private static boolean deleteOk;
 
     /**
      * Busca el perfil del usuario
@@ -187,5 +190,34 @@ public class FindParseObject {
         }
 
         return listVisita.size() > 0 ? listVisita.get(0) : null;
+    }
+
+    //##############################################################
+    //                          DELETE
+    //##############################################################
+
+    /**
+     * Elimina el zimess con todos sus comentarios y demas.
+     *
+     * @return
+     */
+    public static boolean deleteDataZimess(final String zimessId) {
+        deleteOk = false;
+        if (zimessId != null) {
+            //Buscar los comentarios.
+            List<ParseObject> listParseComments = new ArrayList<ParseObject>();
+            listParseComments = findComments(zimessId);
+            //Eliminar los comentarios
+            ParseObject.deleteAllInBackground(listParseComments);
+            //Eliminar Zimess
+            ParseObject zimess = findZimess(zimessId);
+            try {
+                zimess.delete();
+                deleteOk = true;
+            } catch (ParseException e1) {
+                Log.e("Parse.delete.Zimess", e1.getMessage());
+            }
+        }
+        return deleteOk;
     }
 }

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:weightSum="1">
 
-    <include layout="@layout/component_toolbar"/>
+    <include layout="@layout/component_toolbar" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -27,8 +27,8 @@
             android:scaleType="centerCrop"
             app:riv_corner_radius="30dip"
             app:riv_border_width="1dp"
-            app:riv_border_color="@color/divider_color_2"
-            app:riv_oval="true"/>
+            app:riv_border_color="@color/primary_text_color"
+            app:riv_oval="true" />
 
         <TextView
             android:id="@+id/txtUserNombres"
@@ -36,24 +36,12 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/imgAvatarH"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="8dp"
             android:textStyle="bold"
             android:textSize="18sp"
             android:textColor="@color/primary_text_color"
-            />
+            android:text="Zirkapp" />
 
-
-    </LinearLayout>
-
-    <View style="@style/line_divider_h" />
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_weight="1"
-        android:minHeight="40dp">
+        <View style="@style/line_divider_h" />
 
         <TextView
             android:id="@+id/txtWall"
@@ -62,7 +50,10 @@
             android:gravity="center_horizontal"
             android:fontFamily="sans-serif-medium"
             android:textSize="18sp"
-            android:textColor="@color/accent_color" />
+            android:textColor="@color/accent_color"
+            android:text="I'm using Zirkapp!" />
+
+
     </LinearLayout>
 
     <View style="@style/line_divider_h" />
@@ -85,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Zimess"
-                android:textColor="@color/secondary_text_color"
+                android:textColor="@color/primary_text_color"
                 android:fontFamily="sans-serif"
                 android:textSize="18sp" />
 
@@ -97,7 +88,7 @@
                 android:layout_marginBottom="20dp"
                 android:text="0"
                 android:textSize="30sp"
-                android:textColor="@color/accent_color"
+                android:textColor="@color/default_primary_color"
                 android:textStyle="bold"
                 android:fontFamily="sans-serif" />
 
@@ -107,16 +98,17 @@
             android:layout_width="wrap_content"
             android:layout_height="110dp">
 
-            <View
-                android:id="@+id/viewCenter"
-                style="@style/line_divider_v"
-                android:layout_gravity="center" />
+            <!--    <View
+                    android:id="@+id/viewCenter"
+                    style="@style/line_divider_v"
+                    android:layout_gravity="center" />-->
 
             <ProgressBar
                 android:id="@+id/progressLoad"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"
+                android:background="@android:color/transparent" />
 
         </FrameLayout>
 
@@ -132,7 +124,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/lblVisitas"
-                android:textColor="@color/secondary_text_color"
+                android:textColor="@color/primary_text_color"
                 android:fontFamily="sans-serif"
                 android:textSize="18sp" />
 
@@ -144,7 +136,7 @@
                 android:layout_marginBottom="20dp"
                 android:text="0"
                 android:textSize="30sp"
-                android:textColor="@color/accent_color"
+                android:textColor="@color/default_primary_color"
                 android:textStyle="bold"
                 android:fontFamily="sans-serif" />
 

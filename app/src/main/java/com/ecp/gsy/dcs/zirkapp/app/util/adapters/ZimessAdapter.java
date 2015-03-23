@@ -60,7 +60,7 @@ public class ZimessAdapter extends BaseAdapter {
         View vista = view;
         if (vista == null) {
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            vista = layoutInflater.inflate(R.layout.listview_item_zimess_new, viewGroup, false);
+            vista = layoutInflater.inflate(R.layout.itemlist_zimess, viewGroup, false);
         }
         //1. Crear Zimess
         final Zimess zimess = zimessList.get(i);
@@ -81,7 +81,7 @@ public class ZimessAdapter extends BaseAdapter {
 //            @Override
 //            public void onClick(View view) {
 //                view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.anim_image_click));
-//                showPopup(view, R.menu.option_zimess);
+//                showPopup(view, R.menu.menu_option_zimess);
 //            }
 //        });
 

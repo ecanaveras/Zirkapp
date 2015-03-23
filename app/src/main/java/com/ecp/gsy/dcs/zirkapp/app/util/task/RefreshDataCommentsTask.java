@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.CommentsAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessComment;
-import com.ecp.gsy.dcs.zirkapp.app.util.parse.FindParseObject;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.parse.ParseObject;
 
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public class RefreshDataCommentsTask extends AsyncTask<String, Void, ArrayList<Z
     protected ArrayList<ZimessComment> doInBackground(String... strings) {
         ArrayList<ZimessComment> arrayListComment = new ArrayList<ZimessComment>();
 
-        for (ParseObject comment : FindParseObject.findComments(strings[0])) {
+        for (ParseObject comment : DataParseHelper.findComments(strings[0])) {
             ZimessComment zcomment = new ZimessComment();
             zcomment.setCommentText(comment.get("commentText").toString());
             zcomment.setUserComment(comment.getParseUser("user"));

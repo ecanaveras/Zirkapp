@@ -9,8 +9,7 @@
     <include layout="@layout/component_toolbar" />
 
 
-    <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <android.support.v4.widget.DrawerLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/drawer_layout"
@@ -24,12 +23,12 @@
 
 
         <!--Fragments en la app-->
-        <fragment
+        <!--<fragment
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/fhome"
             android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.HomeFragment"
-            tools:layout="@layout/fragment_home" />
+            tools:layout="@layout/fragment_home" />-->
 
         <fragment
             android:layout_width="match_parent"

@@ -131,7 +131,7 @@ public class EditProfileActivity extends ActionBarActivity {
             txtNombres.setText(currentUser.getString("name"));
             txtEstado.setText(currentUser.getString("wall"));
             txtCiudad.setText(currentUser.getString("city"));
-            txtEmail.setText(currentUser.getEmail().toString());
+            txtEmail.setText(currentUser.getEmail());
         }
         progressDialog.dismiss();
     }
@@ -296,10 +296,10 @@ public class EditProfileActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(String s) {
             if (parseObjects.size() > 0) {
-                txtEmail.setText(parseObjects.get(0).getParseUser("user").getEmail().toString());
-                txtNombres.setText(parseObjects.get(0).get("name").toString());
-                txtEstado.setText(parseObjects.get(0).get("wall").toString());
-                txtCiudad.setText(parseObjects.get(0).get("city").toString());
+                txtEmail.setText(parseObjects.get(0).getParseUser("user").getEmail());
+                txtNombres.setText(parseObjects.get(0).getString("name"));
+                txtEstado.setText(parseObjects.get(0).getString("wall"));
+                txtCiudad.setText(parseObjects.get(0).getString("city"));
 
                 txtEstado.setSelection(txtEstado.getText().length());
 
