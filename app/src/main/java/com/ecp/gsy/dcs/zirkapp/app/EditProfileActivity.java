@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
+import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -113,7 +114,7 @@ public class EditProfileActivity extends ActionBarActivity {
             }
         });
 
-        Button btnSend = (Button) findViewById(R.id.btnUpdateProfile);
+        ButtonRectangle btnSend = (ButtonRectangle) findViewById(R.id.btnUpdateProfile);
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,7 +128,9 @@ public class EditProfileActivity extends ActionBarActivity {
         progressDialog.setMessage(getString(R.string.msgLoading));
         progressDialog.show();
         if (currentUser != null) {
-            imgAvatar.setImageBitmap(GlobalApplication.getAvatar(currentUser));
+            if (currentUser.getParseFile("avatar") != null) {
+                imgAvatar.setImageBitmap(GlobalApplication.getAvatar(currentUser));
+            }
             txtNombres.setText(currentUser.getString("name"));
             txtEstado.setText(currentUser.getString("wall"));
             txtCiudad.setText(currentUser.getString("city"));

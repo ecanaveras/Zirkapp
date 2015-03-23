@@ -32,6 +32,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataCommentsTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
+import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -61,7 +62,7 @@ public class DetailZimessActivity extends ActionBarActivity {
             lblUsername,
             lblAliasUsuario, lblCantComments;
     private ProgressBar progressBar;
-    private ImageButton btnSendComment;
+    private ButtonRectangle btnSendComment;
     private Toolbar toolbar;
 
 
@@ -148,7 +149,7 @@ public class DetailZimessActivity extends ActionBarActivity {
             }
         });
 
-        btnSendComment = (ImageButton) findViewById(R.id.btnSendZimessComment);
+        btnSendComment = (ButtonRectangle) findViewById(R.id.btnSendZimessComment);
         btnSendComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

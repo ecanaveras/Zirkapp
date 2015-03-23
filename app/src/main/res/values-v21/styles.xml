@@ -17,18 +17,4 @@
         <!--<item name="android:windowTranslucentStatus">true</item>-->
     </style>
 
-    <style name="My.Button" parent="android:style/Widget.Material.Button">
-        <item name="android:background">@drawable/raised_button_background</item>
-        <item name="android:textColor">@color/text_primary_color</item>
-    </style>
-
-    <style name="My.ButtonBarPositiveButtonStyle" parent="android:style/Widget.Material.Button">
-        <item name="android:background">@color/dark_primary_color</item>
-        <item name="android:textColor">@color/text_primary_color</item>
-    </style>
-
-    <style name="ButtonAppTheme" parent="android:Widget.Material.Button">
-        <item name="android:background">@drawable/button_primary_round</item>
-    </style>
-
 </resources>

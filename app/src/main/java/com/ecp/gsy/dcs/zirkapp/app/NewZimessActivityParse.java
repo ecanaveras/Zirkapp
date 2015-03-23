@@ -30,6 +30,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
+import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -44,7 +45,7 @@ public class NewZimessActivityParse extends ActionBarActivity {
     private ParseUser currentUser;
 
     private EditText message;
-    private Button btnSendZimess;
+    private ButtonRectangle btnSendZimess;
     private TextView txtIndicadorConn;
     private TextView lblCurrentLocation;
 
@@ -107,7 +108,7 @@ public class NewZimessActivityParse extends ActionBarActivity {
         });
 
 
-        btnSendZimess = (Button) findViewById(R.id.btnSendZmess);
+        btnSendZimess = (ButtonRectangle) findViewById(R.id.btnSendZmess);
         btnSendZimess.setEnabled(false);
         btnSendZimess.setOnClickListener(new View.OnClickListener() {
             @Override

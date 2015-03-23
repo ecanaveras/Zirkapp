@@ -17,6 +17,7 @@ import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
@@ -71,21 +72,22 @@ public class GlobalApplication extends Application {
      * @return
      */
     public static Bitmap getAvatar(ParseUser currentUser) {
-        if (currentUser != null && currentUser.getParseFile("avatar") != null) {
-            byte[] byteImage;
-            try {
-                byteImage = currentUser.getParseFile("avatar").getData();
+        ParseFile parseFile = currentUser.getParseFile("avatar");
+        try {
+            if (currentUser != null && parseFile != null && parseFile.getData().length > 0) {
+                byte[] byteImage;
+                byteImage = parseFile.getData();
                 if (byteImage != null) {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPurgeable = true;
                     Bitmap bitmap1 = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length, options);
                     return bitmap1;//Bitmap.createScaledBitmap(bitmap1, 50, 50, true);
                 }
-            } catch (ParseException e) {
-                Log.e("Parse.avatar.exception", e.getMessage());
-            } catch (OutOfMemoryError e) {
-                Log.e("Parse.avatar.outmemory", e.toString());
             }
+        } catch (ParseException e) {
+            Log.e("Parse.avatar.exception", e.getMessage());
+        } catch (OutOfMemoryError e) {
+            Log.e("Parse.avatar.outmemory", e.toString());
         }
         return null;
     }

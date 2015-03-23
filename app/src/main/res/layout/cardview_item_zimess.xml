@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="60dp"
+    android:minHeight="70dp"
     android:background="@color/text_primary_color"
     android:orientation="vertical"
     android:layout_marginLeft="6dp"
@@ -22,16 +22,16 @@
 
         <!--Avatar y Distancia-->
         <LinearLayout
-            android:layout_width="46dp"
-            android:layout_height="55dp"
+            android:layout_width="62dp"
+            android:layout_height="65dp"
             android:orientation="vertical"
             android:layout_marginRight="6dp"
             android:layout_marginLeft="6dp">
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/imgAvatarItem"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:src="@drawable/ic_user_male"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="2dp"
@@ -62,7 +62,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="18dp">
+                android:layout_height="22dp">
 
                 <TextView
                     android:id="@+id/lblNombreUsuario"
@@ -71,14 +71,15 @@
                     android:layout_marginRight="4dp"
                     android:textStyle="bold"
                     android:textColor="@color/accent_color"
-                    android:gravity="bottom" />
+                    android:gravity="bottom"
+                    android:textSize="18dp"/>
 
                 <TextView
                     android:id="@+id/lblUserName"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:textColor="@color/divider_color"
-                    android:textSize="11dp"
+                    android:textSize="14dp"
                     android:gravity="bottom"
                     android:layout_marginBottom="1px" />
 
@@ -93,13 +94,14 @@
                 android:layout_marginBottom="6dp"
                 android:fontFamily="sans-serif"
                 android:text="body"
-                android:textColor="@color/secondary_text_color" />
+                android:textColor="@color/secondary_text_color"
+                android:textSize="16dp"/>
 
 
             <!--Otros datos-->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="16dp">
+                android:layout_height="22dp">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -109,7 +111,7 @@
 
                 <TextView
                     android:id="@+id/lblDistance"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:layout_height="match_parent"
                     android:text="0m"
                     android:layout_marginLeft="1dp"
@@ -125,7 +127,7 @@
 
                 <TextView
                     android:id="@+id/lblCantComments"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:layout_height="match_parent"
                     android:text="0"
                     android:layout_marginLeft="1dp"
@@ -140,7 +142,7 @@
 
                 <TextView
                     android:id="@+id/txtTiempo"
-                    android:layout_width="50dp"
+                    android:layout_width="60dp"
                     android:layout_height="match_parent"
                     android:text="1h"
                     android:layout_marginLeft="1dp"

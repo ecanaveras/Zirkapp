@@ -123,13 +123,13 @@ public class MessagingActivity extends ActionBarActivity {
             } else {
                 imageView.setImageResource(R.drawable.ic_user_male);
             }
-            imageView.setOnClickListener(new View.OnClickListener() {
+           /* imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.anim_image_click));
                     onBackPressed();
                 }
-            });
+            });*/
             LinearLayout layoutActionBarTitle = (LinearLayout) customView.findViewById(R.id.layoutActionbarTitle);
             TextView titleBar = (TextView) customView.findViewById(R.id.actionbarTitle);
             TextView subTitleBar = (TextView) customView.findViewById(R.id.actionbarSubTitle);

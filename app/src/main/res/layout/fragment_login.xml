@@ -9,7 +9,7 @@
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@color/accent_color">
+        android:background="@color/default_primary_color">
 
         <TextView
             android:layout_width="fill_parent"
@@ -79,7 +79,7 @@
 
 
     <!--Login de Terceros-->
-    <LinearLayout
+    <!--<LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -89,27 +89,27 @@
 
         >
 
-        <!--Google+-->
+        &lt;!&ndash;Google+&ndash;&gt;
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Google+"
             android:layout_gravity="center_vertical" />
 
-        <!--Facebook-->
+        &lt;!&ndash;Facebook&ndash;&gt;
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Facebook"
             android:layout_gravity="center_vertical" />
 
-        <!--Twitter-->
+        &lt;!&ndash;Twitter&ndash;&gt;
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Twitter"
             android:layout_gravity="center_vertical" />
 
-    </LinearLayout>
+    </LinearLayout>-->
 
 </LinearLayout>

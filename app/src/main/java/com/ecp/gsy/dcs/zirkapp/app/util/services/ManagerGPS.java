@@ -127,8 +127,10 @@ public class ManagerGPS extends Service implements LocationListener {
         if (location != null) {
             Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
             try {
-                List<Address> addressList = geocoder.getFromLocation(latitud, longitud, 1);
-                return addressList;
+                if (geocoder != null) {
+                    List<Address> addressList = geocoder.getFromLocation(latitud, longitud, 1);
+                    return addressList;
+                }
             } catch (IOException e) {
                 Log.e("Error : Geocoder", "Impossible to connect to Geocoder", e);
             }

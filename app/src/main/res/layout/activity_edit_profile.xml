@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:materialdesign="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
-        layout="@layout/component_toolbar" />
+    <include layout="@layout/component_toolbar" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -29,7 +29,7 @@
                 android:text="FOTO Y ESTADO"
                 android:textColor="@color/text_primary_color"
                 android:background="@color/accent_color"
-                android:gravity="center_vertical"/>
+                android:gravity="center_vertical" />
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -38,7 +38,7 @@
                 android:layout_marginRight="8dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="280dp">
+                android:minHeight="220dp">
 
                 <com.makeramen.roundedimageview.RoundedImageView
                     android:id="@+id/imgUserAvatar"
@@ -53,8 +53,7 @@
                     app:riv_corner_radius="30dip"
                     app:riv_border_width="1dp"
                     app:riv_border_color="@color/divider_color_2"
-                    app:riv_oval="true"
-                    />
+                    app:riv_oval="true" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -73,7 +72,7 @@
                     android:textColor="@color/accent_color"
                     android:maxLength="200"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="2dp" />
 
             </LinearLayout>
 
@@ -90,7 +89,7 @@
                 android:text="OTROS DATOS"
                 android:textColor="@color/text_primary_color"
                 android:background="@color/accent_color"
-                android:gravity="center_vertical"/>
+                android:gravity="center_vertical" />
 
             <LinearLayout
                 android:orientation="vertical"
@@ -160,12 +159,12 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp">
 
-                <Button
+                <com.gc.materialdesign.views.ButtonRectangle
                     android:id="@+id/btnUpdateProfile"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="48dp"
                     android:text="@string/lblSave"
-                     />
+                    android:background="@color/default_primary_color" />
 
             </LinearLayout>
         </LinearLayout>
