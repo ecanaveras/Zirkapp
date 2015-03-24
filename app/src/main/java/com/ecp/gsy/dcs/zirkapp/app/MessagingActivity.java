@@ -1,6 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -17,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +56,7 @@ public class MessagingActivity extends ActionBarActivity {
     private ListView listMessage;
     private GlobalApplication globalApplication;
     private Activity activity;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,18 +65,11 @@ public class MessagingActivity extends ActionBarActivity {
 
         activity = this;
 
+        bindService(new Intent(this, MessageService.class), serviceConnection, BIND_AUTO_CREATE);
+
         globalApplication = (GlobalApplication) getApplicationContext();
         //Usuario actual
         currentUser = globalApplication.getCurrentUser();
-
-        bindService(new Intent(this, MessageService.class), serviceConnection, BIND_AUTO_CREATE);
-
-
-        //Lista
-        listMessage = (ListView) findViewById(R.id.listMessages);
-        adapterMessage = new MessageAdapter(this);
-        listMessage.setAdapter(adapterMessage);
-
 
         //Usuario receptor
         receptorUser = globalApplication.getCustomParseUser();
@@ -82,16 +78,24 @@ public class MessagingActivity extends ActionBarActivity {
             receptorUsername = receptorUser.getUsername();
             receptorName = receptorUser.getString("name");
         }
-//        Intent intent = getIntent();
-//        receptorId = intent.getStringExtra("RECIPIENT_ID");
-//        receptorUsername = intent.getStringExtra("RECIPIENT_USERNAME");
-//        receptorName = intent.getStringExtra("RECIPIENT_NAME");
 
+        initComponentUI();
+
+        populateMessageHistory();
+    }
+
+    private void initComponentUI() {
         //Personalizar ActionBar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         customActionBar(toolbar);
 
-        populateMessageHistory();
+        //ProgressBar
+        progressBar = (ProgressBar) findViewById(R.id.progressLoad);
+
+        //Lista
+        listMessage = (ListView) findViewById(R.id.listMessages);
+        adapterMessage = new MessageAdapter(this);
+        listMessage.setAdapter(adapterMessage);
 
         txtMessageBodyField = (EditText) findViewById(R.id.txtMessageBodyField);
 
@@ -101,6 +105,7 @@ public class MessagingActivity extends ActionBarActivity {
                 sendMessage();
             }
         });
+
     }
 
     private void customActionBar(Toolbar actionBar) {
@@ -156,7 +161,7 @@ public class MessagingActivity extends ActionBarActivity {
     private void sendMessage() {
         String messageBody = txtMessageBodyField.getText().toString();
         if (messageBody.isEmpty()) {
-            Toast.makeText(getApplicationContext(), "Please enter a message", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.msgMessageEmpty), Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -168,10 +173,11 @@ public class MessagingActivity extends ActionBarActivity {
      * Busca los mensajes previos en Parse
      */
     private void populateMessageHistory() {
+        progressBar.setVisibility(View.VISIBLE);
         String[] userIds = {currentUser.getObjectId(), receptorId};
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
         query.whereContainedIn("senderId", Arrays.asList(userIds));
-        query.whereContainedIn("recipiendId", Arrays.asList(userIds));
+        query.whereContainedIn("recipientId", Arrays.asList(userIds));
         query.orderByAscending("createdAt");
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -185,7 +191,10 @@ public class MessagingActivity extends ActionBarActivity {
                             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING, receptorUsername);
                         }
                     }
+                } else {
+                    System.out.println("Parse.chat.history: " + e.getMessage());
                 }
+                progressBar.setVisibility(View.GONE);
             }
         });
     }

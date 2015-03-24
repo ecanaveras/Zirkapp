@@ -13,7 +13,7 @@
         android:layout_width="?attr/actionBarSize"
         android:layout_height="?attr/actionBarSize"
         android:layout_gravity="center_vertical"
-        android:padding="3dp"
+        android:padding="5dp"
         android:src="@drawable/ic_user_male"
         android:scaleType="centerCrop"
         app:riv_corner_radius="30dip"
