@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/user_refresh_layout"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/divider_color_2">
+    android:layout_height="match_parent">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/layoudUsersNoFound"
+            android:id="@+id/layoudZimessNoFound"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -18,20 +16,22 @@
             android:visibility="gone">
 
             <ImageView
+                android:id="@+id/imgIconZimessNoFound"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_map2"
+                android:src="@drawable/ic_icon_radar_gray"
                 android:layout_gravity="center_horizontal" />
 
             <TextView
+                android:id="@+id/lblMyZimessNoFound"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="No hay usuarios cerca, quizás no estan Online!" />
+                android:text="@string/lblZimessNoFound" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/layoudUsersFinder"
+            android:id="@+id/layoudZimessFinder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -46,19 +46,19 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/lblSearchingUsers" />
+                android:text="@string/lblSearching" />
 
         </LinearLayout>
 
-        <ListView
-            android:id="@+id/usersListView"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/listZMessages"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@null"
-            android:dividerHeight="0dp"
-            android:layout_margin="6dp"/>
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"/>
 
     </FrameLayout>
 
+</LinearLayout>
 
-</android.support.v4.widget.SwipeRefreshLayout>

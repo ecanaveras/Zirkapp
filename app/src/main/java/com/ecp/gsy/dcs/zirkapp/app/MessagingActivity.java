@@ -1,7 +1,7 @@
-package com.ecp.gsy.dcs.zirkapp.app.util.messages;
+package com.ecp.gsy.dcs.zirkapp.app;
 
-import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -16,11 +18,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.UserProfileActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
@@ -43,7 +44,7 @@ import java.util.List;
 /**
  * Created by Elder on 21/02/2015.
  */
-public class MessagingActivity extends Activity {
+public class MessagingActivity extends ActionBarActivity {
 
     private String receptorId, receptorUsername, receptorName;
     private EditText txtMessageBodyField;
@@ -55,6 +56,7 @@ public class MessagingActivity extends Activity {
     private ListView listMessage;
     private GlobalApplication globalApplication;
     private Activity activity;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,16 +65,9 @@ public class MessagingActivity extends Activity {
 
         activity = this;
 
-        globalApplication = (GlobalApplication) getApplicationContext();
-
         bindService(new Intent(this, MessageService.class), serviceConnection, BIND_AUTO_CREATE);
 
-
-        //Lista
-        listMessage = (ListView) findViewById(R.id.listMessages);
-        adapterMessage = new MessageAdapter(this);
-        listMessage.setAdapter(adapterMessage);
-
+        globalApplication = (GlobalApplication) getApplicationContext();
         //Usuario actual
         currentUser = globalApplication.getCurrentUser();
 
@@ -83,15 +78,24 @@ public class MessagingActivity extends Activity {
             receptorUsername = receptorUser.getUsername();
             receptorName = receptorUser.getString("name");
         }
-//        Intent intent = getIntent();
-//        receptorId = intent.getStringExtra("RECIPIENT_ID");
-//        receptorUsername = intent.getStringExtra("RECIPIENT_USERNAME");
-//        receptorName = intent.getStringExtra("RECIPIENT_NAME");
 
-        //Personalizar ActionBar
-        customActionBar(getActionBar());
+        initComponentUI();
 
         populateMessageHistory();
+    }
+
+    private void initComponentUI() {
+        //Personalizar ActionBar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        customActionBar(toolbar);
+
+        //ProgressBar
+        progressBar = (ProgressBar) findViewById(R.id.progressLoad);
+
+        //Lista
+        listMessage = (ListView) findViewById(R.id.listMessages);
+        adapterMessage = new MessageAdapter(this);
+        listMessage.setAdapter(adapterMessage);
 
         txtMessageBodyField = (EditText) findViewById(R.id.txtMessageBodyField);
 
@@ -101,14 +105,16 @@ public class MessagingActivity extends Activity {
                 sendMessage();
             }
         });
+
     }
 
-    private void customActionBar(ActionBar actionBar) {
+    private void customActionBar(Toolbar actionBar) {
         if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(false);
-            actionBar.setDisplayShowCustomEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+            setSupportActionBar(actionBar);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            getSupportActionBar().setDisplayShowCustomEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
 
 
             View customView = getLayoutInflater().inflate(R.layout.actionbar_user_title, null);
@@ -122,20 +128,20 @@ public class MessagingActivity extends Activity {
             } else {
                 imageView.setImageResource(R.drawable.ic_user_male);
             }
-            imageView.setOnClickListener(new View.OnClickListener() {
+           /* imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.anim_image_click));
                     onBackPressed();
                 }
-            });
+            });*/
             LinearLayout layoutActionBarTitle = (LinearLayout) customView.findViewById(R.id.layoutActionbarTitle);
             TextView titleBar = (TextView) customView.findViewById(R.id.actionbarTitle);
             TextView subTitleBar = (TextView) customView.findViewById(R.id.actionbarSubTitle);
             titleBar.setText(receptorName != null ? receptorName : receptorUsername);
             if (receptorName != null) {
                 subTitleBar.setText(receptorUsername);
-            }else{
+            } else {
                 subTitleBar.setVisibility(View.GONE);
             }
             layoutActionBarTitle.setOnClickListener(new View.OnClickListener() {
@@ -143,18 +149,19 @@ public class MessagingActivity extends Activity {
                 public void onClick(View view) {
                     view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.anim_image_click));
                     Intent intent = new Intent(activity, UserProfileActivity.class);
+                    intent.putExtra("activityfrom", MessagingActivity.class.getSimpleName());
                     globalApplication.setCustomParseUser(receptorUser);
                     activity.startActivity(intent);
                 }
             });
-            actionBar.setCustomView(customView);
+            getSupportActionBar().setCustomView(customView);
         }
     }
 
     private void sendMessage() {
         String messageBody = txtMessageBodyField.getText().toString();
         if (messageBody.isEmpty()) {
-            Toast.makeText(getApplicationContext(), "Please enter a message", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.msgMessageEmpty), Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -166,10 +173,11 @@ public class MessagingActivity extends Activity {
      * Busca los mensajes previos en Parse
      */
     private void populateMessageHistory() {
+        progressBar.setVisibility(View.VISIBLE);
         String[] userIds = {currentUser.getObjectId(), receptorId};
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
         query.whereContainedIn("senderId", Arrays.asList(userIds));
-        query.whereContainedIn("recipiendId", Arrays.asList(userIds));
+        query.whereContainedIn("recipientId", Arrays.asList(userIds));
         query.orderByAscending("createdAt");
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -183,7 +191,10 @@ public class MessagingActivity extends Activity {
                             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING, receptorUsername);
                         }
                     }
+                } else {
+                    System.out.println("Parse.chat.history: " + e.getMessage());
                 }
+                progressBar.setVisibility(View.GONE);
             }
         });
     }

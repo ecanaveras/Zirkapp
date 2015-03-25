@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.Menu;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
+import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -38,7 +41,7 @@ import java.util.List;
 /**
  * Created by Elder on 28/02/2015.
  */
-public class EditProfileActivity extends Activity {
+public class EditProfileActivity extends ActionBarActivity {
 
     private String objectId;
     private ParseFile parseFile;
@@ -59,6 +62,7 @@ public class EditProfileActivity extends Activity {
     private byte[] byteImage;
 
     private Activity activity;
+    private Toolbar toolbar;
 
 
     @Override
@@ -68,7 +72,6 @@ public class EditProfileActivity extends Activity {
         activity = this;
 
         setContentView(R.layout.activity_edit_profile);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         globalApplication = (GlobalApplication) getApplicationContext();
         currentUser = globalApplication.getCurrentUser();
@@ -89,6 +92,11 @@ public class EditProfileActivity extends Activity {
     }
 
     private void inicializarCompUI() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
         imgAvatar = (ImageView) findViewById(R.id.imgUserAvatar);
         txtUsername = (EditText) findViewById(R.id.txtUsername);
         txtEstado = (EditText) findViewById(R.id.txtUserEstado);
@@ -106,7 +114,7 @@ public class EditProfileActivity extends Activity {
             }
         });
 
-        Button btnSend = (Button) findViewById(R.id.btnUpdateProfile);
+        ButtonRectangle btnSend = (ButtonRectangle) findViewById(R.id.btnUpdateProfile);
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,11 +128,13 @@ public class EditProfileActivity extends Activity {
         progressDialog.setMessage(getString(R.string.msgLoading));
         progressDialog.show();
         if (currentUser != null) {
-            imgAvatar.setImageBitmap(GlobalApplication.getAvatar(currentUser));
+            if (currentUser.getParseFile("avatar") != null) {
+                imgAvatar.setImageBitmap(GlobalApplication.getAvatar(currentUser));
+            }
             txtNombres.setText(currentUser.getString("name"));
             txtEstado.setText(currentUser.getString("wall"));
             txtCiudad.setText(currentUser.getString("city"));
-            txtEmail.setText(currentUser.getEmail().toString());
+            txtEmail.setText(currentUser.getEmail());
         }
         progressDialog.dismiss();
     }
@@ -253,11 +263,6 @@ public class EditProfileActivity extends Activity {
         return true;
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
     private class EditProfileTask extends AsyncTask<ParseUser, Void, String> {
 
         private Context context;
@@ -294,10 +299,10 @@ public class EditProfileActivity extends Activity {
         @Override
         protected void onPostExecute(String s) {
             if (parseObjects.size() > 0) {
-                txtEmail.setText(parseObjects.get(0).getParseUser("user").getEmail().toString());
-                txtNombres.setText(parseObjects.get(0).get("name").toString());
-                txtEstado.setText(parseObjects.get(0).get("wall").toString());
-                txtCiudad.setText(parseObjects.get(0).get("city").toString());
+                txtEmail.setText(parseObjects.get(0).getParseUser("user").getEmail());
+                txtNombres.setText(parseObjects.get(0).getString("name"));
+                txtEstado.setText(parseObjects.get(0).getString("wall"));
+                txtCiudad.setText(parseObjects.get(0).getString("city"));
 
                 txtEstado.setSelection(txtEstado.getText().length());
 

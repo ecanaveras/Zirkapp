@@ -1,59 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:layout_height="wrap_content">
 
-    <RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
-    android:layout_marginLeft="10dp">
-    <TextView
-        android:id="@+id/txtSender"
+    <android.support.v7.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:text="Tu"
-        android:textSize="16sp"
-        android:singleLine="true"
         android:layout_alignParentRight="true"
-        android:paddingRight="10dp"
-        android:paddingBottom="6dp"
-        android:textColor="@android:color/black" android:textStyle="bold"/>
-
-    <TextView
-        android:id="@+id/txtDate"
-        android:layout_alignParentLeft="true"
-        android:textColor="@color/primary_text_color"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="2dp"
-        android:paddingBottom="6dp"
-        android:textSize="12sp"
-        android:text=""
-        android:layout_alignBottom="@+id/txtSender"
-        />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/txtSender"
-        android:layout_alignParentRight="true"
-        android:padding="12dp"
-        android:background="@color/accent_color"
-        >
-        <!--android:background="@drawable/purple_bubble"-->
+        android:layout_marginLeft="15dp"
+        card_view:cardCornerRadius="6dp"
+        card_view:cardElevation="1dp"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardBackgroundColor="@color/light_back_color"
+        android:minWidth="40dp"
+        android:paddingRight="6dp"
+        android:layout_marginRight="6dp">
 
         <TextView
-            android:id="@+id/txtMessage"
-            android:paddingRight="12dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/txtDate"
             android:layout_alignParentRight="true"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            android:text="Hello, how are you?"
-            />
+            android:textColor="@color/sinch_purple"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="2dp"
+            android:paddingBottom="6dp"
+            android:textSize="12sp"
+            android:text=""
+            android:layout_alignBottom="@+id/txtSender" />
 
-    </RelativeLayout>
-</RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtSender"
+            android:layout_alignParentRight="true"
+            android:padding="8dp">
+            <!--android:background="@drawable/grey_bubble"-->
+
+            <TextView
+                android:id="@+id/txtMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/primary_text_color"
+                android:textSize="14sp"
+                android:text="I fine, thanks" />
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
 </RelativeLayout>

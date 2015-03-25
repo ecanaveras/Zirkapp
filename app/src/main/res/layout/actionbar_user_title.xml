@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutActionbarTitle"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center">
+    android:gravity="center"
+    android:clickable="true">
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/imgAvatar"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
         android:layout_gravity="center_vertical"
+        android:padding="5dp"
         android:src="@drawable/ic_user_male"
         android:scaleType="centerCrop"
         app:riv_corner_radius="30dip"
         app:riv_border_width="0.2dp"
         app:riv_border_color="@color/primary_text_color"
-        app:riv_oval="true"
-        />
+        app:riv_oval="true" />
 
     <LinearLayout
-        android:id="@+id/layoutActionbarTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -34,15 +35,14 @@
             android:layout_weight="1"
             android:textSize="16sp"
             android:textColor="@color/text_primary_color"
-            android:text="@string/app_name"
-           />
+            android:text="@string/app_name" />
 
         <TextView
             android:id="@+id/actionbarSubTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/very_dark_gray"
-            />
+            android:textColor="@color/light_primary_color"
+            android:text="User" />
 
     </LinearLayout>
 

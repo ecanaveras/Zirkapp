@@ -89,9 +89,6 @@ public class MessageAdapter extends BaseAdapter {
         TextView txtMessage = (TextView) view.findViewById(R.id.txtMessage);
         txtMessage.setText(message.getTextBody());
 
-        TextView txtSender = (TextView) view.findViewById(R.id.txtSender);
-        txtSender.setText(DIRECTION_INCOMING == direccion ? userSendMessageIncoming : userSendMessageOutgoing);
-
         return view;
     }
 }

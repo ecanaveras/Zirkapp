@@ -9,7 +9,7 @@ import android.widget.ListView;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.UsersAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
-import com.ecp.gsy.dcs.zirkapp.app.util.parse.FindParseObject;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.parse.ParseUser;
 
 import java.util.List;
@@ -61,7 +61,7 @@ public class RefreshDataUsersOnline extends AsyncTask<Integer, Void, List<ParseU
 
     @Override
     protected List<ParseUser> doInBackground(Integer... integers) {
-        return FindParseObject.findUsersLocation(currentUser, currentLocation, integers[0]);
+        return DataParseHelper.findUsersLocation(currentUser, currentLocation, integers[0]);
     }
 
     @Override

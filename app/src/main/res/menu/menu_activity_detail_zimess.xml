@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:id="@+id/menuGroupDelete">
+        <item
+            android:id="@+id/action_bar_delete_zimess"
+            android:title="@string/action_delete_zimess"
+            android:orderInCategory="200"
+            app:showAsAction="always"
+            android:icon="@drawable/ic_action_delete" />
+    </group>
+    <group android:id="@+id/menuGroupDenounce">
+        <item
+            android:id="@+id/action_bar_denounce_zimess"
+            android:title="@string/lblDenounce"
+            android:orderInCategory="300"
+            app:showAsAction="never" />
+    </group>
+</menu>

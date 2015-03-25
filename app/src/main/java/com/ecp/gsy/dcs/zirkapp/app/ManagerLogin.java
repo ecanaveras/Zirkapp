@@ -66,9 +66,9 @@ public class ManagerLogin extends Activity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Login".toUpperCase();
+                    return "Entrar".toUpperCase();
                 case 1:
-                    return "SignUp".toUpperCase();
+                    return "Registrarse".toUpperCase();
             }
             return null;
         }

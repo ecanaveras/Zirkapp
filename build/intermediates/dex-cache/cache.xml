@@ -2,88 +2,130 @@
 <items version="2" >
 
     <item
-        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
-        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-d3819dbd02c055b0901528dc1fd7fca29166b77a.jar" />
-    </item>
-    <item
-        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.makeramen\roundedimageview\2.0.0\classes.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="4dc4eeaa0c4ea16625dd2a22fe2f255143dacae0">
-        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-85c08636bab60ee099a0449dec35a62f1f827b20.jar" />
-    </item>
-    <item
-        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\support-v13\21.0.3\libs\internal_impl-21.0.3.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="0dcc55e70f7ebf7238fe2ec53f662eb378ab2668">
-        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-9c4fdd4d5877e2345328e9919ae646232f10fc1e.jar" />
-    </item>
-    <item
-        jar="C:\AndroidStudioProjects\Zirkapp\app\libs\sinch-android-rtc-3.4.3.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="c8698fa5414b110fc37c13eddef42711e14e6fd1">
-        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\sinch-android-rtc-3.4.3-09f87d69e9f3cb58fc09beb3c59742a9ab9c0a82.jar" />
-    </item>
-    <item
-        jar="C:\Android-sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.3\support-annotations-21.0.3.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
-        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-6e2d4647787238ec430cb3f97dbe269eb964d832.jar" />
-    </item>
-    <item
-        jar="C:\Users\Elder\.gradle\caches\modules-2\files-2.1\com.parse.bolts\bolts-android\1.1.4\129874135e6081269ace2312092031558865de12\bolts-android-1.1.4.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="129874135e6081269ace2312092031558865de12">
-        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\bolts-android-1.1.4-0b6d9ed0531209dba244c6eb985e92351b192bc3.jar" />
-    </item>
-    <item
         jar="C:\AndroidStudioProjects\Zirkapp\app\libs\ormlite-android-4.48.jar"
         jumboMode="false"
-        revision="19.1.0"
+        revision="21.1.2"
         sha1="9e45246f4a068cad94e03f34bf8f24358279a7f7">
         <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\ormlite-android-4.48-d43419f2d5ade9971adf2e731dd260d811516cb5.jar" />
     </item>
     <item
-        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\classes.jar"
+        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\support-v13\21.0.3\libs\internal_impl-21.0.3.jar"
         jumboMode="false"
-        revision="19.1.0"
-        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
-        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-9d7504dd5a534485f7f6c6a002f3c4a22d5213ba.jar" />
-    </item>
-    <item
-        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\support-v13\21.0.3\classes.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="2c2071dcaf7a008c3b01a6381a33be55396bab09">
-        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-170ffbe2df575c6a035a974665d8bc94db8f96d8.jar" />
-    </item>
-    <item
-        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\19.1.0\classes.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28">
-        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-1c3c44ef486d699a6687f9e9b59f9667fd557bfc.jar" />
+        revision="21.1.2"
+        sha1="0dcc55e70f7ebf7238fe2ec53f662eb378ab2668">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-9c4fdd4d5877e2345328e9919ae646232f10fc1e.jar" />
     </item>
     <item
         jar="C:\AndroidStudioProjects\Zirkapp\app\libs\Parse-1.8.2.jar"
         jumboMode="false"
-        revision="19.1.0"
+        revision="21.1.2"
         sha1="c2cb0bfe37cbefd855b6faa3c9a5be833aba7300">
         <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\Parse-1.8.2-6377d2c974716bec8d5fba81175951411d524461.jar" />
     </item>
     <item
+        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.makeramen\roundedimageview\2.0.0\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4dc4eeaa0c4ea16625dd2a22fe2f255143dacae0">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-85c08636bab60ee099a0449dec35a62f1f827b20.jar" />
+    </item>
+    <item
+        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-9d7504dd5a534485f7f6c6a002f3c4a22d5213ba.jar" />
+    </item>
+    <item
+        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4b8945fc23a7461c6fdde15753456d64b0a9358b">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-0436440267e7cdbd97ae40d0a0907eb0fc62d397.jar" />
+    </item>
+    <item
+        jar="C:\Users\Elder\.gradle\caches\modules-2\files-2.1\com.nineoldandroids\library\2.4.0\e9b63380f3a242dbdbf103a2355ad7e43bad17cb\library-2.4.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="e9b63380f3a242dbdbf103a2355ad7e43bad17cb">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\library-2.4.0-c28e6e2bb936b880db9095943b1b7f66acc6dc84.jar" />
+    </item>
+    <item
+        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-b51a9a1661081a04f10e294658889d236bd2d237.jar" />
+    </item>
+    <item
+        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.github.fengdai\alertdialogpro-core\0.2.1\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="822644b2077df8e2964aad39984bfd543b5e7ebb">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-ffd0284f90051cec9d82baf6ef8082d97ef46f23.jar" />
+    </item>
+    <item
         jar="C:\AndroidStudioProjects\Zirkapp\app\libs\ormlite-core-4.48.jar"
         jumboMode="false"
-        revision="19.1.0"
+        revision="21.1.2"
         sha1="00b3081e1074bf380cc1d09d6ef4f8e5415311f2">
         <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\ormlite-core-4.48-b3ab987d4373195d4be8c3bc8138bb42c9ca2ccc.jar" />
+    </item>
+    <item
+        jar="C:\AndroidStudioProjects\Zirkapp\app\libs\sinch-android-rtc-3.4.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="c8698fa5414b110fc37c13eddef42711e14e6fd1">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\sinch-android-rtc-3.4.3-09f87d69e9f3cb58fc09beb3c59742a9ab9c0a82.jar" />
+    </item>
+    <item
+        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-d3819dbd02c055b0901528dc1fd7fca29166b77a.jar" />
+    </item>
+    <item
+        jar="C:\Android-sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.3\support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-6e2d4647787238ec430cb3f97dbe269eb964d832.jar" />
+    </item>
+    <item
+        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.github.navasmdc\MaterialDesign\1.4\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="87405405e403de68f4057757b8a2e8de02bd65d0">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-daa4873faf231550eb40eb388cabb7cad5a91436.jar" />
+    </item>
+    <item
+        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\support-v13\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c2071dcaf7a008c3b01a6381a33be55396bab09">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-170ffbe2df575c6a035a974665d8bc94db8f96d8.jar" />
+    </item>
+    <item
+        jar="C:\Users\Elder\.gradle\caches\modules-2\files-2.1\com.parse.bolts\bolts-android\1.1.4\129874135e6081269ace2312092031558865de12\bolts-android-1.1.4.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="129874135e6081269ace2312092031558865de12">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\bolts-android-1.1.4-0b6d9ed0531209dba244c6eb985e92351b192bc3.jar" />
+    </item>
+    <item
+        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.github.fengdai\alertdialogpro-theme-material\0.2.1\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="70c9947a44130f08e2b5669ce30eacdc45bad680">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-7ea3ae5ba4fe056ebb0701253bbf70d719e8cfb5.jar" />
+    </item>
+    <item
+        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\cardview-v7\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="00b0b7233e1ec64acebfac40d4983d32d4712426">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-bd2dde1e46dc91f1b44b339066b72498cf283f15.jar" />
     </item>
 
 </items>

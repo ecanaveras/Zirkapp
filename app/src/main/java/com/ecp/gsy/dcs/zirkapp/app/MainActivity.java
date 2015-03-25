@@ -1,7 +1,5 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -10,8 +8,10 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,8 +22,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ScreenSlidePagerAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
@@ -33,7 +31,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
-import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.parse.ParseException;
 import com.parse.ParsePush;
@@ -43,16 +41,19 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
+public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActivity<DatabaseHelper> {
 
     //KEY FRAGMENT
-    private static final int HOME = 0;
-    private static final int ZIMESS = 1;
-    private static final int INBOX = 2;
+    private static final int HOME = 0; //Disabled
+    private static final int ZIMESS = 0;
+    private static final int USERS = 1;
     //TOTAL FRAGMENTS
-    private static final int FRAGMENT_COUNT = 3;
+    private static final int FRAGMENT_COUNT = 2;
     //ARRAY FRAGMENTS
     private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
+
+    //Toolbar
+    private Toolbar toolbar;
 
     //Drawer
     private DrawerLayout drawerNavigation;
@@ -71,9 +72,6 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     private FragmentManager fragmentManager;
     private ScreenSlidePagerAdapter fragmentAdapter;
     private int indexBackOrDefaultFragment;
-
-    private ActionBar actionBar;
-
     private ManagerWelcome managerWelcome;
 
     //Usuario de Parse
@@ -89,21 +87,12 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     //Respuesta del Login
     private int inputLoginRequestCode = 100;
 
-
-    //Manejo de la DB
-    private OrmLiteBaseActivity<DatabaseHelper> getOrlOrmLiteBaseActivity() {
-        Activity activity = this;
-        if (activity instanceof OrmLiteBaseActivity) {
-            return (OrmLiteBaseActivity<DatabaseHelper>) activity;
-        }
-        return null;
-    }
+    private DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         //Generar HashKey
 //        try {
@@ -119,12 +108,15 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 //            Log.e("KeyHash NoSuchAlgorithmException",e.getMessage());
 //        }
 
+        //Database
+        databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+
 
         //Manipulando Fragments
         FragmentManager fm = getFragmentManager();
-        fragments[HOME] = fm.findFragmentById(R.id.fhome);
+        //fragments[HOME] = fm.findFragmentById(R.id.fhome);
         fragments[ZIMESS] = fm.findFragmentById(R.id.fzimessNew);
-        fragments[INBOX] = fm.findFragmentById(R.id.finbox);
+        fragments[USERS] = fm.findFragmentById(R.id.finbox);
 
         FragmentTransaction ft = fm.beginTransaction();
         for (int i = 0; i < fragments.length; i++) {
@@ -161,13 +153,16 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
                     }
                 }
             });
-            //initSinchService(); //TODO MENSAJERIA DISABLED
+            initSinchService(); //TODO MENSAJERIA DISABLED
             refreshDatosDrawer();
         }
     }
 
     private void createOrUpdateDrawer() {
-
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         //Layout Header Y Footer para la lista en Drawer
         headerDrawer = getLayoutInflater().inflate(R.layout.header_drawer_menu, null);
         //Config Edid Profile
@@ -188,30 +183,32 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
         navListView.setOnItemClickListener(new DrawerItemClickListener());
         drawerNavigation = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerNavigation, R.drawable.ic_drawer, R.string.app_name, R.string.lblCancel) {
+        drawerToggle = new ActionBarDrawerToggle(this, drawerNavigation, toolbar, R.string.app_name, R.string.lblCancel) {
             @Override
             public void onDrawerOpened(View drawerView) {
-                actionBar.setTitle(R.string.app_name);
-                //navAdapter.UpdateNotificacion("zimess", receiver.getCantRows());
+                toolbar.setTitle(R.string.app_name);
                 refreshDrawerAdapter();
                 invalidateOptionsMenu();
+                syncState();
                 super.onDrawerOpened(drawerView);
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 invalidateOptionsMenu();
+                syncState();
                 super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                if (slideOffset < 0.6)
+                    toolbar.setAlpha(1 - slideOffset);
             }
         };
         drawerToggle.setDrawerIndicatorEnabled(true);
         drawerNavigation.setDrawerListener(drawerToggle);
-
-        //Actions in Bar
-        actionBar = getActionBar();
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
+        drawerToggle.syncState();
     }
 
     private void initSinchService() {
@@ -272,20 +269,23 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         //fragmentManager.beginTransaction().replace(R.id.content_frame, fragmentAdapter.getItem(position)).commit();
         switch (position) {
             case 0:
-                showFragment(HOME, false);
+                showFragment(ZIMESS, false);
                 break;
             case 1:
                 showFragment(ZIMESS, false);
-
                 break;
             case 2:
-                showFragment(INBOX, false);
+                showFragment(USERS, false);
                 break;
+//            default:
+//                showFragment(ZIMESS, false);
+//                break;
         }
         //Establece la posicion
         navListView.setItemChecked(position, true);
-        actionBar.setTitle(position > 0 ? navTitles[position - 1] : navTitles[0]);
+        //actionBar.setTitle(position > 0 ? navTitles[position - 1] : navTitles[0]);
         drawerNavigation.closeDrawer(navListView);
+
     }
 
     private void showFragment(int indexFragment, boolean addToBackStack) {
@@ -295,14 +295,14 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
             if (i == indexFragment) {
                 ft.show(fragments[i]);
                 //Todo comprobar funcionamiento adecuado
-                if(indexFragment==1){ //Actualizar listado de Zimess
+                /*if (indexFragment == 1) { //Actualizar listado de Zimess
                     ZimessFragment zimessFragment = (ZimessFragment) fragments[i];
                     zimessFragment.findZimessAround();
                 }
-                if(indexFragment==2){ //Actualizar listado de usuarios en el chat
+                if (indexFragment == 2) { //Actualizar listado de usuarios en el chat
                     UsersOnlineFragment usersOnlineFragment = (UsersOnlineFragment) fragments[i];
                     usersOnlineFragment.buscarUsuariosOnline();
-                }
+                }*/
             } else {
                 ft.hide(fragments[i]);
             }
@@ -314,14 +314,23 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     }
 
     /**
-     * WELCOME
-     *
-     * @param run
+     * Comprueba si existen datos en Welcomedb
      */
-    private void initWelcome(boolean run) {
-        Intent intent = new Intent(this, ManagerWelcome.class);
-        intent.putExtra("run", run);
-        startActivityForResult(intent, inputWelcomeRequestCode);
+    private void findDataWelcome() {
+        List<Welcomedb> listWdb = new ArrayList<Welcomedb>();
+
+        RuntimeExceptionDao<Welcomedb, Integer> dao = databaseHelper.getWelcomedbRuntimeDao();
+        listWdb = dao.queryForAll();
+
+        //Si existe un registro de welcolme, no se mostrará la pantalla de bienvenida
+        for (Welcomedb w : listWdb) {
+            runWelcome = false;
+        }
+        if (runWelcome) {
+            Intent intent = new Intent(this, ManagerWelcome.class);
+            intent.putExtra("run", runWelcome);
+            startActivityForResult(intent, inputWelcomeRequestCode);
+        }
     }
 
     @Override
@@ -372,20 +381,8 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
     @Override
     protected void onStart() {
-        List<Welcomedb> listWdb = new ArrayList<Welcomedb>();
-        if (getOrlOrmLiteBaseActivity() != null) {
-            DatabaseHelper helper = getOrlOrmLiteBaseActivity().getHelper();
-            RuntimeExceptionDao<Welcomedb, Integer> dao = helper.getWelcomedbRuntimeDao();
-            listWdb = dao.queryForAll();
-        }
-        //Si existe un registro de welcolme, no se mostrará la pantalla de bienvenida
-        for (Welcomedb w : listWdb) {
-            runWelcome = false;
-            Log.i(MainActivity.class.getSimpleName(), "onStart() " + w.getRunWelcome());
-        }
-        if (runWelcome) {
-            initWelcome(true);
-        }
+        //Verificamos si el welcome fue visto.
+        findDataWelcome();
         super.onStart();
     }
 
@@ -395,12 +392,10 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         if (requestCode == inputWelcomeRequestCode) { //Welcome
             boolean goLogin = data.getBooleanExtra("goLogin", false);
             if (resultCode == RESULT_OK && goLogin) {
+                //Creamos un resgitro indicando que ya el welcome fue visto
                 Welcomedb wdb = new Welcomedb("SI");
-                if (getOrlOrmLiteBaseActivity() != null) {
-                    DatabaseHelper helper = getOrlOrmLiteBaseActivity().getHelper();
-                    RuntimeExceptionDao<Welcomedb, Integer> dao = helper.getWelcomedbRuntimeDao();
-                    dao.create(wdb);
-                }
+                RuntimeExceptionDao<Welcomedb, Integer> dao = databaseHelper.getWelcomedbRuntimeDao();
+                dao.create(wdb);
                 runWelcome = false;
             }
         }
@@ -432,6 +427,10 @@ public class MainActivity extends OrmLiteBaseActivity<DatabaseHelper> {
     @Override
     protected void onDestroy() {
         stopService(new Intent(this, MessageService.class));
+        if (databaseHelper != null) {
+            OpenHelperManager.releaseHelper();
+            databaseHelper = null;
+        }
         super.onDestroy();
     }
 

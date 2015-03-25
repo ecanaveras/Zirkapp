@@ -11,12 +11,15 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -27,6 +30,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
+import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -36,12 +40,12 @@ import com.parse.SaveCallback;
 /**
  * Created by Elder on 23/02/2015.
  */
-public class NewZimessActivityParse extends Activity {
+public class NewZimessActivityParse extends ActionBarActivity {
 
     private ParseUser currentUser;
 
     private EditText message;
-    private ImageButton btnSendZimess;
+    private ButtonRectangle btnSendZimess;
     private TextView txtIndicadorConn;
     private TextView lblCurrentLocation;
 
@@ -49,13 +53,13 @@ public class NewZimessActivityParse extends Activity {
     private ManagerGPS managerGPS;
     private ProgressBar progressBar;
     private Activity activity;
+    private Toolbar toolbar;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_zimess);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         globalApplication = (GlobalApplication) getApplicationContext();
 
@@ -76,6 +80,10 @@ public class NewZimessActivityParse extends Activity {
 
 
     private void inicializarCompUI() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         //Creando UI
         message = (EditText) findViewById(R.id.editText);
         message.addTextChangedListener(new TextWatcher() {
@@ -100,7 +108,7 @@ public class NewZimessActivityParse extends Activity {
         });
 
 
-        btnSendZimess = (ImageButton) findViewById(R.id.btnSendZmess);
+        btnSendZimess = (ButtonRectangle) findViewById(R.id.btnSendZmess);
         btnSendZimess.setEnabled(false);
         btnSendZimess.setOnClickListener(new View.OnClickListener() {
             @Override

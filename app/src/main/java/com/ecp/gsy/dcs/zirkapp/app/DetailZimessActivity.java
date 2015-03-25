@@ -1,12 +1,15 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,13 +23,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataCommentsTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
+import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -36,26 +42,28 @@ import com.parse.SaveCallback;
 
 import java.util.HashMap;
 
-public class DetailZimessActivity extends Activity {
+public class DetailZimessActivity extends ActionBarActivity {
 
+    private ManagerGPS managerGPS;
+    private GlobalApplication globalApplication;
     private Zimess zimessDetail;
-    private Activity activity;
     private ParseUser currentUser, zimessUser;
+
+    public boolean isZimessUpdated = false;
+
+    //UI
     private EditText txtComment;
     private ListView listComment;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private ManagerGPS managerGPS;
     private ImageView imgAvatar, imgComment;
-    private GlobalApplication globalApplication;
     private TextView lblTimePass,
             lblDistance,
             lblMessage,
             lblUsername,
             lblAliasUsuario, lblCantComments;
     private ProgressBar progressBar;
-    private String zimessId;
-    private ImageButton btnSendComment;
-    private boolean isAddedComment = false;
+    private ButtonRectangle btnSendComment;
+    private Toolbar toolbar;
 
 
     @Override
@@ -63,7 +71,6 @@ public class DetailZimessActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_zimess);
 
-        activity = this;
         globalApplication = (GlobalApplication) getApplicationContext();
         currentUser = globalApplication.getCurrentUser();
 
@@ -72,14 +79,17 @@ public class DetailZimessActivity extends Activity {
         //Tomar nombre del usuario del Zimess
         zimessUser = zimessDetail.getUser();
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setTitle("Zimess");
-
         inicializarCompUI();
         findZimessComment();
     }
 
     private void inicializarCompUI() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        toolbar.setTitle("Inf. Zimess");
+
         //UI
         lblAliasUsuario = (TextView) findViewById(R.id.lblNombreUsuario);
         lblUsername = (TextView) findViewById(R.id.lblUserName);
@@ -134,12 +144,12 @@ public class DetailZimessActivity extends Activity {
             public void onClick(View view) {
                 view.startAnimation(AnimationUtils.loadAnimation(view.getContext(), R.anim.anim_image_click));
                 Intent intent = new Intent(view.getContext(), UserProfileActivity.class);
-                globalApplication.setTempZimess(zimessDetail);
+                globalApplication.setCustomParseUser(zimessDetail.getUser());
                 startActivity(intent);
             }
         });
 
-        btnSendComment = (ImageButton) findViewById(R.id.btnSendZimessComment);
+        btnSendComment = (ButtonRectangle) findViewById(R.id.btnSendZimessComment);
         btnSendComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -205,7 +215,7 @@ public class DetailZimessActivity extends Activity {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    isAddedComment = true;
+                    isZimessUpdated = true;
                     txtComment.setText(null);
                     updateCantComments();
                 } else {
@@ -247,36 +257,74 @@ public class DetailZimessActivity extends Activity {
         new RefreshDataZimessTask(this, zimessDetail).execute();
     }
 
+    /**
+     * Elimina el Zimess Actual
+     */
+    private void deleteZimess() {
+        final Activity activity = this;
+        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(this);
+        //alert.setTitle(getString(R.string.msgDeleting));
+        alert.setMessage(getString(R.string.msgByeZimess));
+        alert.setPositiveButton(getString(R.string.lblDelete), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (zimessDetail != null) {
+                    //Delete
+                    new DeleteDataZimessTask(activity).execute(zimessDetail.getZimessId());
+                }
+            }
+        });
+
+        alert.setNegativeButton(getString(R.string.lblCancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        alert.show();
+
+    }
+
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
-        intent.putExtra("updateZimessOk", isAddedComment);
+        intent.putExtra("updateZimessOk", isZimessUpdated);
         setResult(Activity.RESULT_OK, intent);
         super.onBackPressed();
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.detail_zimess, menu);
-        return true;
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            case R.id.action_bar_delete_zimess:
+                deleteZimess();
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_activity_detail_zimess, menu);
+        if (menu == null) {
+            return true;
         }
+        if (currentUser.equals(zimessUser)) {
+            menu.setGroupVisible(R.id.menuGroupDelete, true);
+            menu.setGroupVisible(R.id.menuGroupDenounce, false);
+        } else {
+            menu.setGroupVisible(R.id.menuGroupDelete, false);
+            menu.setGroupVisible(R.id.menuGroupDenounce, true);
+        }
+        return true;
     }
+
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

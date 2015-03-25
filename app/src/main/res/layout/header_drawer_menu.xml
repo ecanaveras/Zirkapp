@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
-        android:background="@color/dark_primary_color">
+        android:background="@color/default_primary_color">
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/imgAvatar"

@@ -101,6 +101,7 @@ public class SignupFragment extends Fragment {
                 user.setUsername(username);
                 user.setPassword(password1);
                 user.setEmail(correo);
+                user.put("online", false);
 
                 user.signUpInBackground(new SignUpCallback() {
                     @Override
