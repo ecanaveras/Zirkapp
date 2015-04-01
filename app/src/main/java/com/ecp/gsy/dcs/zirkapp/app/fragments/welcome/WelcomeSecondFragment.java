@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.ecp.gsy.dcs.zirkapp.app.ManagerLogin;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
@@ -29,18 +30,8 @@ public class WelcomeSecondFragment extends Fragment implements View.OnClickListe
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.btnWelcome2) {
-            Intent intent = new Intent();
-            intent.putExtra("goLogin", true);
-            this.getActivity().setResult(Activity.RESULT_OK, intent);
-            this.getActivity().finish();
+            Intent intent = new Intent(getActivity(), ManagerLogin.class);
+            startActivity(intent);
         }
-    }
-
-    private OrmLiteBaseActivity<DatabaseHelper> getOrmLiteBaseActivity() {
-        Activity activity = getActivity();
-        if (activity instanceof OrmLiteBaseActivity) {
-            return (OrmLiteBaseActivity<DatabaseHelper>) activity;
-        }
-        return null;
     }
 }

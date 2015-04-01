@@ -17,10 +17,12 @@ public class RefreshDataAddressTask extends AsyncTask<String, Void, String> {
     private TextView textView;
     private ProgressBar progressBar;
     private ManagerGPS managerGPS;
+    private boolean isHint = false;
 
-    public RefreshDataAddressTask(ManagerGPS managerGPS, TextView textView) {
+    public RefreshDataAddressTask(ManagerGPS managerGPS, TextView textView, boolean isHint) {
         this.managerGPS = managerGPS;
         this.textView = textView;
+        this.isHint = isHint;
     }
 
     public RefreshDataAddressTask(ManagerGPS managerGPS, TextView textView, ProgressBar progressBar) {
@@ -39,8 +41,10 @@ public class RefreshDataAddressTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... strings) {
-        if(managerGPS.isEnableGetLocation()){
-            return managerGPS.getLocality();
+        if (textView != null && textView.getText() != null) {
+            if (managerGPS.isEnableGetLocation()) {
+                return managerGPS.getLocality();
+            }
         }
         return null;
     }
@@ -53,7 +57,11 @@ public class RefreshDataAddressTask extends AsyncTask<String, Void, String> {
         }
 
         if (textView != null && addressLine != null) {
-            textView.setText(addressLine);
+            if (isHint) {
+                textView.setHint(addressLine);
+            } else {
+                textView.setText(addressLine);
+            }
         }
     }
 }

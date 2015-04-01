@@ -1,22 +1,45 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeFirstFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeSecondFragment;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Elder on 30/05/2014.
  */
-public class ManagerWelcome extends OrmLiteBaseActivity<DatabaseHelper> {
+public class ManagerWelcome extends Activity {
+
+
+    //Usuario de Parse
+    private ParseUser currentUser;
+
+    //Respuesta del Login
+    private int inputLoginRequestCode = 100;
+
+    private boolean runWelcome = true;
+
+    //Database Local
+    private DatabaseHelper databaseHelper;
 
 
     SectionsPagerAdapter mSectionsPagerAdapter;
@@ -25,13 +48,17 @@ public class ManagerWelcome extends OrmLiteBaseActivity<DatabaseHelper> {
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+    private Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-         // Create the adapter that will return a fragment for each of the three
+        //Database
+        databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+
+        // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
@@ -46,7 +73,7 @@ public class ManagerWelcome extends OrmLiteBaseActivity<DatabaseHelper> {
         showMessageExitApp();
     }
 
-    private void showMessageExitApp(){
+    private void showMessageExitApp() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setTitle(R.string.msgExitApp);
         alertDialogBuilder
@@ -56,7 +83,7 @@ public class ManagerWelcome extends OrmLiteBaseActivity<DatabaseHelper> {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         moveTaskToBack(true);
                         android.os.Process.killProcess(android.os.Process.myPid());
-                        System.exit(1);
+                        //System.exit(1);
                     }
                 })
                 .setNegativeButton(R.string.msgNo, new DialogInterface.OnClickListener() {
@@ -65,8 +92,67 @@ public class ManagerWelcome extends OrmLiteBaseActivity<DatabaseHelper> {
                         dialogInterface.cancel();
                     }
                 });
-        AlertDialog alertDialog  = alertDialogBuilder.create();
+        AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
+    }
+
+    /**
+     * Comprueba si existen datos en Welcomedb
+     */
+    private void findDataWelcome() {
+        List<Welcomedb> listWdb = new ArrayList<Welcomedb>();
+
+        RuntimeExceptionDao<Welcomedb, Integer> dao = databaseHelper.getWelcomedbRuntimeDao();
+        listWdb = dao.queryForAll();
+
+        //Si existe un registro de welcolme, no se mostrará la pantalla de bienvenida
+        for (Welcomedb w : listWdb) {
+            runWelcome = false;
+        }
+        if (!runWelcome) {
+            currentUser = ParseUser.getCurrentUser();
+            if (currentUser == null) {
+                Intent login = new Intent(this, ManagerLogin.class);
+                startActivityForResult(login, inputLoginRequestCode);
+            } else {
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }
+    }
+
+
+    @Override
+    protected void onStart() {
+        findDataWelcome();
+        super.onStart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (databaseHelper != null) {
+            OpenHelperManager.releaseHelper();
+            databaseHelper = null;
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //Respuesta del Login
+        if (requestCode == inputLoginRequestCode && data != null) {
+            boolean loginOk = data.getBooleanExtra("loginOk", false);
+            if (resultCode == RESULT_OK && loginOk) {
+                currentUser = ParseUser.getCurrentUser();
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(getApplicationContext(),
+                        "No ha sido posible loguearse",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -77,7 +163,7 @@ public class ManagerWelcome extends OrmLiteBaseActivity<DatabaseHelper> {
 
         @Override
         public Fragment getItem(int position) {
-            switch (position+1){
+            switch (position + 1) {
                 case 1:
                     return new WelcomeFirstFragment();
                 case 2:

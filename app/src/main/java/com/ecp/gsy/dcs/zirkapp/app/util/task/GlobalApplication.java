@@ -6,6 +6,9 @@ import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -13,23 +16,36 @@ import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.util.Log;
 
+import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseInstallation;
+import com.parse.ParsePush;
 import com.parse.ParseUser;
+import com.parse.PushService;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.logging.Handler;
 
 /**
  * Created by Elder on 15/07/2014.
  */
 public class GlobalApplication extends Application {
+
+    //Key GCM
+    public static final String SENDER_ID = "323224512527"; //Key GCM
+    public static final String EXTRA_MESSAGE = "message";
+    public static final String PROPERTY_REG_ID = "registration_id";
+    private static final String PROPERTY_APP_VERSION = "1.1.1";
+    public static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     //Parse
     private ParseUser currentUser;
@@ -42,7 +58,94 @@ public class GlobalApplication extends Application {
     private static Integer cantNotifications;
 
 
-    private Context context;
+    //GCM
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    public boolean checkPlayServices(Activity activity) {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, activity,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i("Error.GooglePlaySer", "This device is not supported.");
+            }
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * Stores the registration ID and app versionCode in the application's
+     * {@code SharedPreferences}.
+     *
+     * @param context application's context.
+     * @param regId   registration ID
+     */
+    public void storeRegistrationId(Context context, String regId) {
+        final SharedPreferences prefs = getGCMPreferences();
+        int appVersion = getAppVersion(context);
+        Log.i("GCM", "Saving regId on app version " + appVersion);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(PROPERTY_REG_ID, regId);
+        editor.putInt(PROPERTY_APP_VERSION, appVersion);
+        editor.commit();
+    }
+
+    /**
+     * Gets the current registration ID for application on GCM service.
+     * <p/>
+     * If result is empty, the app needs to register.
+     *
+     * @return registration ID, or empty string if there is no existing
+     * registration ID.
+     */
+    public String getRegistrationId(Context context) {
+        SharedPreferences preferences = getGCMPreferences();
+        String registrationId = preferences.getString(PROPERTY_REG_ID, "");
+        if (registrationId.isEmpty()) {
+            Log.i("GCM", "Registration not found.");
+            return "";
+        }
+
+        // Check if app was updated; if so, it must clear the registration ID
+        // since the existing registration ID is not guaranteed to work with
+        // the new app version.
+        int registeredVersion = preferences.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
+        int currentVersion = getAppVersion(context);
+        if (registeredVersion != currentVersion) {
+            Log.i("GCM", "App version changed.");
+            return "";
+        }
+        return registrationId;
+    }
+
+    /**
+     * @return Application's version code from the {@code PackageManager}.
+     */
+    public static int getAppVersion(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            // should never happen
+            throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
+
+    /**
+     * @return Application's {@code SharedPreferences}.
+     */
+    private SharedPreferences getGCMPreferences() {
+        return getSharedPreferences(MainActivity.class.getSimpleName(), Context.MODE_PRIVATE);
+    }
+
 
     @Override
     public void onCreate() {
@@ -53,7 +156,24 @@ public class GlobalApplication extends Application {
         Parse.enableLocalDatastore(this);
 
         Parse.initialize(this, "VDJEJIMbyuOiis9bwBHmrOIc7XDUqYHQ0TMhA23c", "9EJKzvp4LhRdnLqfH6jkHPaWd58IVXaBKAWdeItE");
-        ParseInstallation.getCurrentInstallation().saveInBackground();
+        //ParseInstallation.getCurrentInstallation().saveInBackground();
+        /*final ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
+        final String androidId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        android.os.Handler handler = new android.os.Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                parseInstallation.put("GCMSenderId", SENDER_ID);
+                parseInstallation.saveInBackground();
+            }
+        }, 3000);*/
+    }
+
+    public void storeParseInstallation(final String androidId) {
+        final ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
+        //final String androidId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        parseInstallation.put("GCMSenderId", SENDER_ID);
+        parseInstallation.saveInBackground();
     }
 
     /**
@@ -199,48 +319,5 @@ public class GlobalApplication extends Application {
             return true;
         }
         return false;
-    }
-
-    private void showDiaglogConection() {
-        AlertDialog.Builder alBuilder = new AlertDialog.Builder(context);
-        alBuilder.setTitle(R.string.msgDisconnet);
-        alBuilder.setCancelable(false)
-                .setMessage("Quieres conectarte?")
-                .setPositiveButton(R.string.msgYes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        context.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-                    }
-                })
-                .setNegativeButton(R.string.msgNo, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                });
-        AlertDialog alertDialog = alBuilder.create();
-        alertDialog.show();
-    }
-
-    private void selectApi() {
-        AlertDialog.Builder alBuilder = new AlertDialog.Builder(context);
-        alBuilder.setTitle(R.string.msgDisconnet);
-        alBuilder.setCancelable(false)
-                .setMessage("Quieres la API Python, solo funciona local?")
-                .setPositiveButton(R.string.msgYes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-//                        useApiPython = true;
-                    }
-                })
-                .setNegativeButton(R.string.msgNo, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-//                        useApiPython = false;
-                        dialogInterface.cancel();
-                    }
-                });
-        AlertDialog alertDialog = alBuilder.create();
-        alertDialog.show();
     }
 }

@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
@@ -60,40 +61,44 @@ public class SignupFragment extends Fragment {
                 //Validación Basica -Deben estar los datos diligenciados-
                 int error = 0;
 
-                if(correo.isEmpty()){
+                if (correo.isEmpty()) {
                     txtCorreo.setError(getResources().getString(R.string.msgSignUpEmailEmpty));
                     error++;
-                }else if(!Patterns.EMAIL_ADDRESS.matcher(correo).matches()){
+                } else if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
                     txtCorreo.setError(getResources().getString(R.string.msgEmailInvalid));
                     error++;
                 }
-                if(username.isEmpty()){
+                if (username.isEmpty()) {
                     txtUsername.setError(getResources().getString(R.string.msgSignUpUserEmpty));
                     error++;
                 }
-                if(password1.isEmpty() || password2.isEmpty()){
+                if (password1.isEmpty() || password2.isEmpty()) {
                     txtPassword1.setError(getResources().getString(R.string.msgSignUpPassEmpty));
                     txtPassword2.setError(getResources().getString(R.string.msgSignUpPassEmpty));
                     error++;
                 }
 
-                if(error != 0){
+                if (error != 0) {
                     return;
                 }
 
 
                 //Validacion de Password
                 //Minimo 6 caracteres
-                if(password1.trim().length() < 6){
+                if (password1.trim().length() < 6) {
                     txtPassword1.setError(getResources().getString(R.string.msgLoginPassInvalid));
                     return;
                 }
 
                 //Contraseñas no coinciden
-                if(!password1.equals(password2)){
+                if (!password1.equals(password2)) {
                     txtPassword2.setError(getResources().getString(R.string.msgSignUpPassDif));
                     return;
                 }
+
+                final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setMessage("Ingresando...");
+                progressDialog.show();
 
                 //Crear usuario en Parse.
 
@@ -112,10 +117,9 @@ public class SignupFragment extends Fragment {
                             activity.setResult(Activity.RESULT_OK, intent);
                             activity.finish();
                         } else {
-                            Toast.makeText(getActivity(),
-                                    "There was an error signing up."
-                                    , Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
                         }
+                        progressDialog.dismiss();
                     }
                 });
 
@@ -126,6 +130,7 @@ public class SignupFragment extends Fragment {
 
     /**
      * Obtiene la cuenta de gmail de Android para sugerirla en el signup
+     *
      * @return
      */
     private String getEmailAccount() {

@@ -61,9 +61,9 @@ public class UsersOnlineFragment extends Fragment {
         setHasOptionsMenu(true);
         //showSpinner();
 
-        if(getActivity() instanceof ActionBarActivity){
+        if (getActivity() instanceof ActionBarActivity) {
             MainActivity activity = (MainActivity) getActivity();
-            if(activity.getSupportActionBar() != null){
+            if (activity.getSupportActionBar() != null) {
                 activity.getSupportActionBar().setTitle("Chat");
             }
         }
@@ -76,7 +76,7 @@ public class UsersOnlineFragment extends Fragment {
         inicializarCompUI(view);
 
         if (isConnectedUser)
-            conectarChat();
+            conectarChat(getCurrentLocation());
 
         return view;
     }
@@ -100,9 +100,10 @@ public class UsersOnlineFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                buscarUsuariosOnline();
+                conectarChat(getCurrentLocation());
             }
         });
+        swipeRefreshLayout.setEnabled(isConnectedUser);
 
         listViewUserOnline.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -118,19 +119,24 @@ public class UsersOnlineFragment extends Fragment {
         });
     }
 
-    public void buscarUsuariosOnline() {
-        if (isConnectedUser) {
-            managerGPS = new ManagerGPS(getActivity());
-            if (managerGPS.isOnline()) {
-                if (managerGPS.isEnableGetLocation()) {
-                    Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
-                    new RefreshDataUsersOnline(getActivity(), currentUser, currentLocation, listViewUserOnline, swipeRefreshLayout, layoudUsersNoFound, layoudUsersFinder).execute(5);
-                } else {
-                    managerGPS.gpsShowSettingsAlert();
-                }
+    private Location getCurrentLocation() {
+        managerGPS = new ManagerGPS(getActivity());
+        if (managerGPS.isOnline()) {
+            if (managerGPS.isEnableGetLocation()) {
+                return new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
             } else {
-                managerGPS.networkShowSettingsAlert();
+                managerGPS.gpsShowSettingsAlert();
             }
+        } else {
+            managerGPS.networkShowSettingsAlert();
+        }
+        return null;
+    }
+
+    public void buscarUsuariosOnline() {
+        Location currentLocation = getCurrentLocation();
+        if (isConnectedUser && currentLocation != null) {
+            new RefreshDataUsersOnline(getActivity(), currentUser, currentLocation, listViewUserOnline, swipeRefreshLayout, layoudUsersNoFound, layoudUsersFinder).execute(5);
         } else {
             Toast.makeText(getActivity(), "No estas conectado...", Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
@@ -140,33 +146,23 @@ public class UsersOnlineFragment extends Fragment {
     /**
      * Conecta el usuario al chat
      */
-    private void conectarChat() {
-        managerGPS = new ManagerGPS(getActivity());
-        if (managerGPS.isOnline()) {
-            if (managerGPS.isEnableGetLocation()) {
-                if (currentUser != null) {
-                    ParseGeoPoint parseGeoPoint = new ParseGeoPoint(managerGPS.getLatitud(), managerGPS.getLongitud());
-                    ParseUser parseUser = currentUser;
-                    parseUser.put("location", parseGeoPoint);
-                    parseUser.put("online", true);
-                    parseUser.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                swipeRefreshLayout.setEnabled(true);
-                                isConnectedUser = true;
-                                buscarUsuariosOnline();
-                            }
-                        }
-                    });
+    private void conectarChat(Location currentLocation) {
+        if (currentUser != null && currentLocation != null) {
+            ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
+            ParseUser parseUser = currentUser;
+            parseUser.put("location", parseGeoPoint);
+            parseUser.put("online", true);
+            parseUser.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        swipeRefreshLayout.setEnabled(true);
+                        isConnectedUser = true;
+                        buscarUsuariosOnline();
+                    }
                 }
-            } else {
-                managerGPS.gpsShowSettingsAlert();
-            }
-        } else {
-            managerGPS.networkShowSettingsAlert();
+            });
         }
-
     }
 
     /**
@@ -180,9 +176,9 @@ public class UsersOnlineFragment extends Fragment {
                 @Override
                 public void done(ParseException e) {
                     isConnectedUser = false;
-                    swipeRefreshLayout.setEnabled(false);
                 }
             });
+            swipeRefreshLayout.setEnabled(false);
             listViewUserOnline.setAdapter(null);
         }
 
@@ -192,9 +188,6 @@ public class UsersOnlineFragment extends Fragment {
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
         globalApplication.setCustomParseUser(parseUserDestino);
         Intent intent = new Intent(getActivity().getApplicationContext(), MessagingActivity.class);
-//        intent.putExtra("RECIPIENT_ID", parseUserDestino.getObjectId());
-//        intent.putExtra("RECIPIENT_USERNAME", parseUserDestino.getUsername());
-//        intent.putExtra("RECIPIENT_NAME", parseUserDestino.getString("name"));
         startActivity(intent);
     }
 
@@ -205,7 +198,7 @@ public class UsersOnlineFragment extends Fragment {
         progressDialog.setMessage("Espera...");
         progressDialog.show();
 
-        broadcastReceiver = new BroadcastReceiver() {
+        /*broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Boolean success = intent.getBooleanExtra("success", false);
@@ -214,9 +207,9 @@ public class UsersOnlineFragment extends Fragment {
                     Toast.makeText(getActivity().getApplicationContext(), "Messaging service failed to start", Toast.LENGTH_LONG).show();
                 }
             }
-        };
+        };*/
 
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver, new IntentFilter("com.ecp.gsy.dcs.zirkapp.MainActivity"));
+        //LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver, new IntentFilter("com.ecp.gsy.dcs.zirkapp.MainActivity"));
     }
 
     @Override
@@ -245,10 +238,12 @@ public class UsersOnlineFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_bar_chat_on:
-                conectarChat();
+                conectarChat(getCurrentLocation());
+                Toast.makeText(getActivity(), "Conectando...", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.action_bar_chat_off:
                 desconectarChat();
+                Toast.makeText(getActivity(), "Desconectando...", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 break;

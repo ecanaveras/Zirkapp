@@ -79,14 +79,6 @@ public class EditProfileActivity extends ActionBarActivity {
 
         inicializarCompUI();
 
-        //get Name Ubicacion
-        ManagerGPS managerGPS = new ManagerGPS(getApplicationContext());
-        if (managerGPS.isEnableGetLocation()) {
-            new RefreshDataAddressTask(managerGPS, txtCiudad).execute();
-        } else {
-            managerGPS.gpsShowSettingsAlert();
-        }
-
         loadDatos();
         //new EditProfileTask(this, getResources().getString(R.string.msgLoading)).execute(currentUser);
     }
@@ -137,6 +129,15 @@ public class EditProfileActivity extends ActionBarActivity {
             txtEmail.setText(currentUser.getEmail());
         }
         progressDialog.dismiss();
+        if (txtCiudad.getText() == null || txtCiudad.getText().toString().isEmpty()) { //Sugerir Ubicación
+            //get Name Ubicacion
+            ManagerGPS managerGPS = new ManagerGPS(getApplicationContext());
+            if (managerGPS.isEnableGetLocation()) {
+                new RefreshDataAddressTask(managerGPS, txtCiudad, true).execute();
+            } else {
+                managerGPS.gpsShowSettingsAlert();
+            }
+        }
     }
 
     /**
@@ -263,71 +264,4 @@ public class EditProfileActivity extends ActionBarActivity {
         return true;
     }
 
-    private class EditProfileTask extends AsyncTask<ParseUser, Void, String> {
-
-        private Context context;
-        private String messageDialog;
-        private List<ParseObject> parseObjects;
-
-        private EditProfileTask(Context context, String messageDialog) {
-            this.context = context;
-            this.messageDialog = messageDialog;
-        }
-
-        @Override
-        protected String doInBackground(ParseUser... parseUsers) {
-            //Buscamos datos en Parse
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZProfile");
-            query.whereEqualTo("user", parseUsers[0]);
-            query.include("user");
-            parseObjects = null;
-            try {
-                parseObjects = query.find();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return "finish";
-        }
-
-        @Override
-        protected void onPreExecute() {
-            progressDialog = new ProgressDialog(context);
-            progressDialog.setMessage(messageDialog);
-            progressDialog.show();
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            if (parseObjects.size() > 0) {
-                txtEmail.setText(parseObjects.get(0).getParseUser("user").getEmail());
-                txtNombres.setText(parseObjects.get(0).getString("name"));
-                txtEstado.setText(parseObjects.get(0).getString("wall"));
-                txtCiudad.setText(parseObjects.get(0).getString("city"));
-
-                txtEstado.setSelection(txtEstado.getText().length());
-
-                //Setter Imagen
-                byteImage = new byte[0];
-                try {
-                    byteImage = parseObjects.get(0).getParseFile("avatar").getData();
-                    Bitmap bmp = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
-                    imgAvatar.setImageBitmap(bmp);
-                } catch (ParseException e1) {
-                    e1.printStackTrace();
-                }
-            } else {
-                if (byteImage == null) {
-                    imgAvatar.setImageResource(R.drawable.ic_user_male);
-                }
-            }
-            progressDialog.dismiss();
-        }
-
-        @Override
-        protected void onCancelled() {
-            if (byteImage == null) {
-                imgAvatar.setImageResource(R.drawable.ic_user_male);
-            }
-        }
-    }
 }

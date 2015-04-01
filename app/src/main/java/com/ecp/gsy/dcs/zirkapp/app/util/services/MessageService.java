@@ -24,17 +24,22 @@ public class MessageService extends Service implements SinchClientListener {
     private final MessageServiceInterface serviceInterface = new MessageServiceInterface();
     private SinchClient sinchClient = null;
     private MessageClient messageClient = null;
-    private String currentUserId = null;
+    private ParseUser currentUser = null;
     private LocalBroadcastManager broadcaster;
     private Intent broadcastIntent = new Intent("com.ecp.gsy.dcs.zirkapp.MainActivity");
 
+    private String regId;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null)
+            regId = intent.getStringExtra("regId");
+
         //Tomar el UserId de Parse
-        currentUserId = ParseUser.getCurrentUser().getObjectId();
-        if (currentUserId != null && !isSinchClientStarted()) {
+        currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null && !isSinchClientStarted()) {
             //TODO MENSAJERIA DISABLED
-            startSinchClient(currentUserId);
+            startSinchClient(currentUser.getObjectId());
         }
 
         //broadcaster = LocalBroadcastManager.getInstance(this);
@@ -56,9 +61,11 @@ public class MessageService extends Service implements SinchClientListener {
         //Mensajes encendidos
         sinchClient.setSupportMessaging(true);
         sinchClient.setSupportActiveConnectionInBackground(true);
+        sinchClient.setSupportPushNotifications(true);
 
         sinchClient.checkManifest();
         sinchClient.start();
+        sinchClient.registerPushNotificationData(regId.getBytes());
     }
 
     private boolean isSinchClientStarted() {

@@ -7,10 +7,12 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -25,6 +27,7 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -38,8 +41,18 @@ import com.sinch.android.rtc.messaging.MessageDeliveryInfo;
 import com.sinch.android.rtc.messaging.MessageFailureInfo;
 import com.sinch.android.rtc.messaging.WritableMessage;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Elder on 21/02/2015.
@@ -57,6 +70,7 @@ public class MessagingActivity extends ActionBarActivity {
     private GlobalApplication globalApplication;
     private Activity activity;
     private ProgressBar progressBar;
+    private WritableMessage writableMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,7 +163,7 @@ public class MessagingActivity extends ActionBarActivity {
                 public void onClick(View view) {
                     view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.anim_image_click));
                     Intent intent = new Intent(activity, UserProfileActivity.class);
-                    intent.putExtra("activityfrom", MessagingActivity.class.getSimpleName());
+                    //intent.putExtra("activityfrom", MessagingActivity.class.getSimpleName());
                     globalApplication.setCustomParseUser(receptorUser);
                     activity.startActivity(intent);
                 }
@@ -246,7 +260,7 @@ public class MessagingActivity extends ActionBarActivity {
 
         @Override
         public void onMessageSent(MessageClient messageClient, Message message, String s) {
-            final WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
+            writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
 
             //Agregar el mensaje en parse.com si no existe.
             ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
@@ -280,7 +294,49 @@ public class MessagingActivity extends ActionBarActivity {
         }
 
         @Override
-        public void onShouldSendPushData(MessageClient messageClient, Message message, List<PushPair> pushPairs) {
+        public void onShouldSendPushData(final MessageClient messageClient, final Message message, final List<PushPair> pushPairs) {
+            final String regId = new String(pushPairs.get(0).getPushData());
+            final AtomicInteger msgId = new AtomicInteger();
+            final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(activity);
+
+            class SendPushTask extends AsyncTask<Void, Void, Void> {
+
+
+                @Override
+                protected Void doInBackground(Void... params) {
+                  /*  HttpClient httpClient = new DefaultHttpClient();
+                    HttpPost httpPost = new HttpPost("http://localhost?reg_id=" + regId);
+                    try {
+                        HttpResponse httpResponse = httpClient.execute(httpPost);
+                        ResponseHandler<String> handler = new BasicResponseHandler();
+                        Log.d("HttpResponse", handler.handleResponse(httpResponse));
+                    } catch (ClientProtocolException e) {
+                        Log.d("ClientProtocolException", e.toString());
+                    } catch (IOException e) {
+                        Log.d("IOException", e.toString());
+                    }*/
+                    System.out.println("onShouldSendPushData.MessageClient " + messageClient);
+                    System.out.println("onShouldSendPushData.Message " + message);
+                    for (PushPair push : pushPairs) {
+                        System.out.println("onShouldSendPushData.pushPairs " + push);
+                    }
+                    if (writableMessage != null) {
+                        try {
+                            Bundle data = new Bundle();
+                            data.putString("my_message", writableMessage.getTextBody());
+                            String id = Integer.toString(msgId.incrementAndGet());
+                            gcm.send(GlobalApplication.SENDER_ID + "@gcm.googleapis.com", id, data);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    return null;
+                }
+            }
+
+            new SendPushTask().execute();
+
         }
     }
 }

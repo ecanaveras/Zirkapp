@@ -20,7 +20,7 @@
             android:typeface="sans"
             android:gravity="center_vertical|center_horizontal"
             android:padding="16dp"
-            android:textColor="@color/text_primary_color"/>
+            android:textColor="@color/text_primary_color" />
     </LinearLayout>
 
     <!--Login-->
@@ -51,7 +51,9 @@
                 android:id="@+id/txtUserLogin"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:hint="@string/lblUser" />
+                android:hint="@string/lblUser"
+                android:inputType="textVisiblePassword|textNoSuggestions"
+                android:imeOptions="actionNext" />
 
             <EditText
                 android:id="@+id/txtPassLogin"
@@ -59,7 +61,8 @@
                 android:layout_height="60dp"
                 android:ems="10"
                 android:inputType="textPassword"
-                android:hint="@string/lblPassword" />
+                android:hint="@string/lblPassword"
+                android:imeOptions="actionNext" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -71,7 +74,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/lblLogin"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:imeOptions="actionDone" />
 
             </LinearLayout>
         </LinearLayout>

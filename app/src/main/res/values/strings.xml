@@ -16,7 +16,7 @@
     <string name="lblWelcomeLogin">Ingresa con tu cuenta favorita</string>
     <string name="lblLogin">Iniciar Sesion</string>
     <string name="lblSingUp">Registrarse</string>
-    <string name="lblCreateCount">Crear Cuenta</string>
+    <string name="lblCreateCount">Crea tu cuenta</string>
     <string name="lblRecuPass">Recuperar Contraseña</string>
     <string name="lblPassword">Contraseña</string>
     <string name="lblPasswordConfirm">Confirmar contraseña</string>

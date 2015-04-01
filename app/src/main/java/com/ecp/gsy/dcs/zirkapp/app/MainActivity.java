@@ -3,10 +3,15 @@ package com.ecp.gsy.dcs.zirkapp.app;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -31,6 +36,10 @@ import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.RegisterGcmTask;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.parse.ParseException;
@@ -38,17 +47,20 @@ import com.parse.ParsePush;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActivity<DatabaseHelper> {
+public class MainActivity extends ActionBarActivity {
 
     //KEY FRAGMENT
     private static final int HOME = 0; //Disabled
     private static final int ZIMESS = 0;
     private static final int USERS = 1;
+
     //TOTAL FRAGMENTS
     private static final int FRAGMENT_COUNT = 2;
+
     //ARRAY FRAGMENTS
     private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
 
@@ -66,51 +78,44 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
     private View headerDrawer;
     private ImageView avatar;
 
-    private UpdateDrawerReceiver receiver;
-
     //Fragments
-    private FragmentManager fragmentManager;
-    private ScreenSlidePagerAdapter fragmentAdapter;
     private int indexBackOrDefaultFragment;
-    private ManagerWelcome managerWelcome;
 
     //Usuario de Parse
     private ParseUser userZirkapp = null;
 
     //Respuesta del welcome
     private int inputWelcomeRequestCode = 10;
-    private boolean runWelcome = true;
 
     //Respuesta del edit profile
     private int inputEditProfileRequestCode = 20;
 
-    //Respuesta del Login
-    private int inputLoginRequestCode = 100;
+    GlobalApplication globalApplication;
 
-    private DatabaseHelper databaseHelper;
+    //GCM
+    private GoogleCloudMessaging gcm;
+    private String regId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Generar HashKey
-//        try {
-//            PackageInfo info = getPackageManager().getPackageInfo("com.ecp.gsy.dcs.zirkapp", PackageManager.GET_SIGNATURES);
-//            for (Signature signature : info.signatures) {
-//                MessageDigest md = MessageDigest.getInstance("SHA");
-//                md.update(signature.toByteArray());
-//                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-//            }
-//        } catch (PackageManager.NameNotFoundException e) {
-//            Log.e("KeyHash NameNotFoundException",e.getMessage());
-//        } catch (NoSuchAlgorithmException e) {
-//            Log.e("KeyHash NoSuchAlgorithmException",e.getMessage());
-//        }
+        globalApplication = (GlobalApplication) getApplicationContext();
+        Context context = getApplicationContext();
+        // Check device for Play Services APK.
+        if (globalApplication.checkPlayServices(this)) {
+            //GCM
+            gcm = GoogleCloudMessaging.getInstance(this);
+            regId = globalApplication.getRegistrationId(this);
 
-        //Database
-        databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
-
+            if (regId.isEmpty()) {
+                //Register InBackground
+                new RegisterGcmTask(gcm, this).execute();
+            }
+        } else {
+            Log.i("GCM", "No valid Google Play Services APK found.");
+        }
 
         //Manipulando Fragments
         FragmentManager fm = getFragmentManager();
@@ -139,10 +144,8 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
 
         //User Parse
         userZirkapp = ParseUser.getCurrentUser();
-        if (userZirkapp == null) {
-            Intent login = new Intent(this, ManagerLogin.class);
-            startActivityForResult(login, inputLoginRequestCode);
-        } else {
+        if (userZirkapp != null) {
+            new RegisterGcmTask(gcm, getApplicationContext()).execute();
             ParsePush.subscribeInBackground("", new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
@@ -153,10 +156,10 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
                     }
                 }
             });
-            initSinchService(); //TODO MENSAJERIA DISABLED
             refreshDatosDrawer();
         }
     }
+
 
     private void createOrUpdateDrawer() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -211,10 +214,6 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
         drawerToggle.syncState();
     }
 
-    private void initSinchService() {
-        final Intent serviceIntent = new Intent(getApplicationContext(), MessageService.class);
-        startService(serviceIntent);
-    }
 
     private void refreshDrawerAdapter() {
         //UI
@@ -313,37 +312,15 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
         ft.commit();
     }
 
-    /**
-     * Comprueba si existen datos en Welcomedb
-     */
-    private void findDataWelcome() {
-        List<Welcomedb> listWdb = new ArrayList<Welcomedb>();
-
-        RuntimeExceptionDao<Welcomedb, Integer> dao = databaseHelper.getWelcomedbRuntimeDao();
-        listWdb = dao.queryForAll();
-
-        //Si existe un registro de welcolme, no se mostrará la pantalla de bienvenida
-        for (Welcomedb w : listWdb) {
-            runWelcome = false;
-        }
-        if (runWelcome) {
-            Intent intent = new Intent(this, ManagerWelcome.class);
-            intent.putExtra("run", runWelcome);
-            startActivityForResult(intent, inputWelcomeRequestCode);
-        }
-    }
-
     @Override
     protected void onResume() {
-        receiver = new UpdateDrawerReceiver();
-        registerReceiver(receiver, new IntentFilter("actualizarcantnotifi"));
+        globalApplication.checkPlayServices(this);
         super.onResume();
 
     }
 
     @Override
     protected void onPause() {
-        unregisterReceiver(receiver);
         super.onPause();
     }
 
@@ -380,40 +357,9 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
     }
 
     @Override
-    protected void onStart() {
-        //Verificamos si el welcome fue visto.
-        findDataWelcome();
-        super.onStart();
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //Respuesta del Welcome
-        if (requestCode == inputWelcomeRequestCode) { //Welcome
-            boolean goLogin = data.getBooleanExtra("goLogin", false);
-            if (resultCode == RESULT_OK && goLogin) {
-                //Creamos un resgitro indicando que ya el welcome fue visto
-                Welcomedb wdb = new Welcomedb("SI");
-                RuntimeExceptionDao<Welcomedb, Integer> dao = databaseHelper.getWelcomedbRuntimeDao();
-                dao.create(wdb);
-                runWelcome = false;
-            }
-        }
-        //Respuesta del Login
-        if (requestCode == inputLoginRequestCode) {
-            boolean loginOk = data.getBooleanExtra("loginOk", false);
-            if (resultCode == RESULT_OK && loginOk) {
-                userZirkapp = ParseUser.getCurrentUser();
-                initSinchService();
-                refreshDatosDrawer();
-            } else {
-                Toast.makeText(getApplicationContext(),
-                        "No ha sido posible loguearse",
-                        Toast.LENGTH_LONG).show();
-            }
-        }
-
-        if (requestCode == inputEditProfileRequestCode) {
+        //Respuesta del Edit Profile
+        if (requestCode == inputEditProfileRequestCode && data != null) {
             drawerNavigation.closeDrawers();
             if (resultCode == RESULT_OK) {
                 Boolean update = data.getBooleanExtra("editprofileOk", false);
@@ -427,10 +373,6 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
     @Override
     protected void onDestroy() {
         stopService(new Intent(this, MessageService.class));
-        if (databaseHelper != null) {
-            OpenHelperManager.releaseHelper();
-            databaseHelper = null;
-        }
         super.onDestroy();
     }
 
@@ -444,3 +386,17 @@ public class MainActivity extends ActionBarActivity { // extends OrmLiteBaseActi
         }
     }
 }
+
+//Generar HashKey onCreate
+//        try {
+//            PackageInfo info = getPackageManager().getPackageInfo("com.ecp.gsy.dcs.zirkapp", PackageManager.GET_SIGNATURES);
+//            for (Signature signature : info.signatures) {
+//                MessageDigest md = MessageDigest.getInstance("SHA");
+//                md.update(signature.toByteArray());
+//                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+//            }
+//        } catch (PackageManager.NameNotFoundException e) {
+//            Log.e("KeyHash NameNotFoundException",e.getMessage());
+//        } catch (NoSuchAlgorithmException e) {
+//            Log.e("KeyHash NoSuchAlgorithmException",e.getMessage());
+//        }

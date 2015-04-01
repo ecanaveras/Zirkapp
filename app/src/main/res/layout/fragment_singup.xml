@@ -20,7 +20,7 @@
             android:typeface="sans"
             android:gravity="center_vertical|center_horizontal"
             android:padding="16dp"
-            android:textColor="@color/text_primary_color"/>
+            android:textColor="@color/text_primary_color" />
     </LinearLayout>
 
     <!--Login-->
@@ -52,13 +52,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:inputType="textEmailAddress"
-                android:hint="@string/lblEmail" />
+                android:hint="@string/lblEmail"
+                android:imeOptions="actionNext" />
 
             <EditText
                 android:id="@+id/txtUserSignUp"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:hint="@string/lblUser" />
+                android:hint="@string/lblUser"
+                android:inputType="textVisiblePassword|textNoSuggestions"
+                android:imeOptions="actionNext" />
 
             <EditText
                 android:id="@+id/txtPassSignUp1"
@@ -66,7 +69,8 @@
                 android:layout_height="60dp"
                 android:ems="10"
                 android:inputType="textPassword"
-                android:hint="@string/lblPassword" />
+                android:hint="@string/lblPassword"
+                android:imeOptions="actionNext" />
 
             <EditText
                 android:id="@+id/txtPassSignUp2"
@@ -74,7 +78,8 @@
                 android:layout_height="60dp"
                 android:ems="10"
                 android:inputType="textPassword"
-                android:hint="@string/lblPasswordConfirm" />
+                android:hint="@string/lblPasswordConfirm"
+                android:imeOptions="actionNext" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -86,7 +91,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/lblSingUp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:imeOptions="actionDone" />
 
             </LinearLayout>
         </LinearLayout>
