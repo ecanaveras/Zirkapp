@@ -1,23 +1,26 @@
-<android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/pager"
-    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
     tools:context="com.ecp.gsy.dcs.zirkapp.app.ManagerWelcome">
 
-    <com.viewpagerindicator.TitlePageIndicator
-        android:id="@+id/titles"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <!--<com.viewpagerindicator.TitlePageIndicator-->
+    <!--android:id="@+id/titles"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_width="fill_parent" />-->
+
+    <com.viewpagerindicator.CirclePageIndicator
+        android:id="@+id/indicator"
+        android:padding="10dip"
         android:layout_height="wrap_content"
-        android:layout_width="fill_parent" />
-
-<!--<android.support.v4.view.PagerTabStrip
-            android:id="@+id/p_t_s"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="@color/default_primary_color"
-            android:paddingBottom="1dp"
-            android:paddingTop="1dp"
-            android:textColor="#fff" />-->
-
-</android.support.v4.view.ViewPager>
+        android:layout_width="match_parent"
+        android:background="@color/default_primary_color"/>
+</LinearLayout>

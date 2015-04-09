@@ -20,6 +20,8 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.parse.ParseUser;
+import com.viewpagerindicator.CirclePageIndicator;
+import com.viewpagerindicator.TitlePageIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +66,10 @@ public class ManagerWelcome extends Activity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        CirclePageIndicator circlePageIndicator = (CirclePageIndicator) findViewById(R.id.indicator);
+        circlePageIndicator.setViewPager(mViewPager);
+
     }
 
 
@@ -83,7 +89,7 @@ public class ManagerWelcome extends Activity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         moveTaskToBack(true);
                         android.os.Process.killProcess(android.os.Process.myPid());
-                        //System.exit(1);
+                        System.exit(1);
                     }
                 })
                 .setNegativeButton(R.string.msgNo, new DialogInterface.OnClickListener() {
