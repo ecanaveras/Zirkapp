@@ -3,4 +3,21 @@
     android:id="@+id/pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ecp.gsy.dcs.zirkapp.app.ManagerWelcome" />
+    tools:context="com.ecp.gsy.dcs.zirkapp.app.ManagerWelcome">
+
+    <com.viewpagerindicator.TitlePageIndicator
+        android:id="@+id/titles"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent" />
+
+<!--<android.support.v4.view.PagerTabStrip
+            android:id="@+id/p_t_s"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@color/default_primary_color"
+            android:paddingBottom="1dp"
+            android:paddingTop="1dp"
+            android:textColor="#fff" />-->
+
+</android.support.v4.view.ViewPager>

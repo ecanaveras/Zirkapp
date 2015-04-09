@@ -17,6 +17,11 @@ import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
+import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
+import com.gc.materialdesign.views.ButtonRectangle;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
@@ -30,18 +35,23 @@ import java.util.List;
 public class SignupFragment extends Fragment {
 
     private Activity activity;
+    private DatabaseHelper databaseHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_singup, container, false);
         inicializarCompUI(view);
         activity = getActivity();
+
+        //Database
+        databaseHelper = OpenHelperManager.getHelper(getActivity(), DatabaseHelper.class);
+
         return view;
     }
 
     private void inicializarCompUI(View view) {
 
-        Button btnSingUp = (Button) view.findViewById(R.id.btnSingUp);
+        ButtonRectangle btnSingUp = (ButtonRectangle) view.findViewById(R.id.btnSingUp);
         final EditText txtCorreo = (EditText) view.findViewById(R.id.txtUserEmail);
         final EditText txtUsername = (EditText) view.findViewById(R.id.txtUserSignUp);
         final EditText txtPassword1 = (EditText) view.findViewById(R.id.txtPassSignUp1);
@@ -112,9 +122,9 @@ public class SignupFragment extends Fragment {
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            Intent intent = new Intent(activity, MainActivity.class);
-                            intent.putExtra("loginOk", true);
-                            activity.setResult(Activity.RESULT_OK, intent);
+                            Welcomedb wdb = new Welcomedb("SI");
+                            RuntimeExceptionDao<Welcomedb, Integer> dao = databaseHelper.getWelcomedbRuntimeDao();
+                            dao.create(wdb);
                             activity.finish();
                         } else {
                             Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
@@ -126,6 +136,15 @@ public class SignupFragment extends Fragment {
 
             }
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (databaseHelper != null) {
+            OpenHelperManager.releaseHelper();
+            databaseHelper = null;
+        }
+        super.onDestroyView();
     }
 
     /**

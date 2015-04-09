@@ -27,6 +27,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RegisterGcmTask;
+import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.parse.ParseException;
 import com.parse.ParsePush;
@@ -301,11 +302,18 @@ public class MainActivity extends ActionBarActivity {
         globalApplication.checkPlayServices(this);
         super.onResume();
 
+        //FACEBOOK
+        // Logs 'install' and 'app activate' App Events.
+        AppEventsLogger.activateApp(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+
+        //FACEBOOK
+        // Logs 'app deactivate' App Event.
+        AppEventsLogger.deactivateApp(this);
     }
 
     @Override

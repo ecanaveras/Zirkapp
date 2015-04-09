@@ -6,17 +6,22 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.ManagerLogin;
+import com.ecp.gsy.dcs.zirkapp.app.ManagerWelcome;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
+import com.gc.materialdesign.views.ButtonRectangle;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
@@ -30,10 +35,6 @@ import java.io.IOException;
  * Created by Elder on 18/02/2015.
  */
 public class LoginFragment extends Fragment {
-
-    private Button btnLogin;
-    private EditText txtUser;
-    private EditText txtPassword;
 
     private String username = null;
     private String password = null;
@@ -54,9 +55,20 @@ public class LoginFragment extends Fragment {
 
     private void inicializarCompUI(View view) {
 
-        btnLogin = (Button) view.findViewById(R.id.btnLogin);
-        txtUser = (EditText) view.findViewById(R.id.txtUserLogin);
-        txtPassword = (EditText) view.findViewById(R.id.txtPassLogin);
+        ButtonRectangle btnLogin = (ButtonRectangle) view.findViewById(R.id.btnLogin);
+        final EditText txtUser = (EditText) view.findViewById(R.id.txtUserLogin);
+        final EditText txtPassword = (EditText) view.findViewById(R.id.txtPassLogin);
+        TextView createAccount = (TextView) view.findViewById(R.id.lblCreateAccount);
+
+        createAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Cambia el fragment
+                ManagerLogin managerLogin = (ManagerLogin) activity;
+                managerLogin.mViewPager.setCurrentItem(managerLogin.mViewPager.getCurrentItem() + 1);
+            }
+        });
+
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +76,16 @@ public class LoginFragment extends Fragment {
                 username = txtUser.getText().toString();
                 password = txtPassword.getText().toString();
 
-                if (username.isEmpty() || password.isEmpty()) {
+                if (username.isEmpty()) {
+                    txtUser.setError(getResources().getString(R.string.msgSignUpUserEmpty));
+                    Toast.makeText(getActivity(),
+                            R.string.msgLoginEmpty,
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (password.isEmpty()) {
+                    txtPassword.setError(getResources().getString(R.string.msgSignUpPassEmpty));
                     Toast.makeText(getActivity(),
                             R.string.msgLoginEmpty,
                             Toast.LENGTH_SHORT).show();

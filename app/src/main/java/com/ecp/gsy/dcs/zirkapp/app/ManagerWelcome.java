@@ -48,7 +48,6 @@ public class ManagerWelcome extends Activity {
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
-    private Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +73,7 @@ public class ManagerWelcome extends Activity {
     }
 
     private void showMessageExitApp() {
+        //Todo Cambiar el AlertDialog
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setTitle(R.string.msgExitApp);
         alertDialogBuilder

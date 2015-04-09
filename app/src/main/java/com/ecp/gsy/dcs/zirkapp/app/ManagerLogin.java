@@ -26,12 +26,12 @@ import java.util.List;
 
 public class ManagerLogin extends Activity {
 
-    SectionsPagerAdapter mSectionsPagerAdapter;
+    public SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    ViewPager mViewPager;
+    public ViewPager mViewPager;
 
 
     @Override

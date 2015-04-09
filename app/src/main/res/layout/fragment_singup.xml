@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.LoginFragment">
+    tools:context="com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.SignupFragment">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -50,7 +50,7 @@
             <EditText
                 android:id="@+id/txtUserEmail"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="45dp"
                 android:inputType="textEmailAddress"
                 android:hint="@string/lblEmail"
                 android:imeOptions="actionNext" />
@@ -58,7 +58,7 @@
             <EditText
                 android:id="@+id/txtUserSignUp"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="45dp"
                 android:hint="@string/lblUser"
                 android:inputType="textVisiblePassword|textNoSuggestions"
                 android:imeOptions="actionNext" />
@@ -66,7 +66,7 @@
             <EditText
                 android:id="@+id/txtPassSignUp1"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="45dp"
                 android:ems="10"
                 android:inputType="textPassword"
                 android:hint="@string/lblPassword"
@@ -75,7 +75,7 @@
             <EditText
                 android:id="@+id/txtPassSignUp2"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="45dp"
                 android:ems="10"
                 android:inputType="textPassword"
                 android:hint="@string/lblPasswordConfirm"
@@ -86,13 +86,14 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button
+                <com.gc.materialdesign.views.ButtonRectangle
                     android:id="@+id/btnSingUp"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/lblSingUp"
+                    android:layout_height="48dp"
                     android:layout_weight="1"
-                    android:imeOptions="actionDone" />
+                    android:text="@string/lblSingUp"
+                    android:imeOptions="actionSend"
+                    android:background="@color/default_primary_color" />
 
             </LinearLayout>
         </LinearLayout>

@@ -23,8 +23,8 @@
     <string name="lblLoginZirkapp">Cuenta de Zirkapp</string>
     <string name="lblUser">Usuario</string>
     <string name="lblEmail">Correo electrónico</string>
-    <string name="msgLoginError">Usuario y/o Contraseña no válidos</string>
-    <string name="msgLoginEmpty">Usuario y/o Contraseña necesarios</string>
+    <string name="msgLoginError">Usuario y/o contraseña no válidos</string>
+    <string name="msgLoginEmpty">Usuario y/o contraseña necesarios</string>
     <string name="msgSignUpEmailEmpty">El correo es necesario</string>
     <string name="msgSignUpUserEmpty">El usuario es necesario</string>
     <string name="msgSignUpPassEmpty">La contraseña es necesaria</string>
