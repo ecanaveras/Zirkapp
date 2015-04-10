@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -38,6 +39,14 @@ import com.sinch.android.rtc.messaging.MessageClientListener;
 import com.sinch.android.rtc.messaging.MessageDeliveryInfo;
 import com.sinch.android.rtc.messaging.MessageFailureInfo;
 import com.sinch.android.rtc.messaging.WritableMessage;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -174,6 +183,37 @@ public class MessagingActivity extends ActionBarActivity {
     }
 
     /**
+     * Guarda el historial del chat de forma local
+     * @param message
+     * @param writableMessage
+     * @param senderId
+     * @param messageDirection
+     */
+    private void saveLocalMessage(Message message, final WritableMessage writableMessage, final String senderId, final Integer messageDirection) {
+        //Agregar el mensaje en parse.com si no existe.
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
+        query.whereEqualTo("sinchId", message.getMessageId());
+        query.fromLocalDatastore();
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    if (parseObjects.size() == 0) {
+                        ParseObject parseMessage = new ParseObject("ParseMessage");
+                        parseMessage.put("senderId", senderId);
+                        parseMessage.put("recipientId", writableMessage.getRecipientIds().get(0));
+                        parseMessage.put("messageText", writableMessage.getTextBody());
+                        parseMessage.put("sinchId", writableMessage.getMessageId());
+                        parseMessage.pinInBackground();
+
+                        adapterMessage.addMessage(writableMessage, messageDirection, receptorId);
+                    }
+                }
+            }
+        });
+    }
+
+    /**
      * Busca los mensajes previos en Parse
      */
     private void populateMessageHistory() {
@@ -183,6 +223,7 @@ public class MessagingActivity extends ActionBarActivity {
         query.whereContainedIn("senderId", Arrays.asList(userIds));
         query.whereContainedIn("recipientId", Arrays.asList(userIds));
         query.orderByAscending("createdAt");
+        query.fromLocalDatastore();
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
@@ -243,8 +284,11 @@ public class MessagingActivity extends ActionBarActivity {
         @Override
         public void onIncomingMessage(MessageClient messageClient, Message message) {
             if (message.getSenderId().equals(receptorId)) {
-                WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
-                adapterMessage.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING, receptorId);
+                final WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
+
+                //Guardar historial local.
+                saveLocalMessage(message, writableMessage, receptorId, MessageAdapter.DIRECTION_INCOMING);
+
             }
         }
 
@@ -252,26 +296,9 @@ public class MessagingActivity extends ActionBarActivity {
         public void onMessageSent(MessageClient messageClient, Message message, String s) {
             writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
 
-            //Agregar el mensaje en parse.com si no existe.
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
-            query.whereEqualTo("sinchId", message.getMessageId());
-            query.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> parseObjects, ParseException e) {
-                    if (e == null) {
-                        if (parseObjects.size() == 0) {
-                            ParseObject parseMessage = new ParseObject("ParseMessage");
-                            parseMessage.put("senderId", currentUser.getObjectId());
-                            parseMessage.put("recipientId", writableMessage.getRecipientIds().get(0));
-                            parseMessage.put("messageText", writableMessage.getTextBody());
-                            parseMessage.put("sinchId", writableMessage.getMessageId());
-                            parseMessage.saveInBackground();
+            //Guardar historial local.
+            saveLocalMessage(message, writableMessage, currentUser.getObjectId(), MessageAdapter.DIRECTION_OUTGOING);
 
-                            adapterMessage.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING, currentUser.getUsername());
-                        }
-                    }
-                }
-            });
         }
 
         @Override
@@ -294,8 +321,8 @@ public class MessagingActivity extends ActionBarActivity {
 
                 @Override
                 protected Void doInBackground(Void... params) {
-                  /*  HttpClient httpClient = new DefaultHttpClient();
-                    HttpPost httpPost = new HttpPost("http://localhost?reg_id=" + regId);
+                    HttpClient httpClient = new DefaultHttpClient();
+                    HttpPost httpPost = new HttpPost("http://ecanaveras.blogspot.com?reg_id=" + regId);
                     try {
                         HttpResponse httpResponse = httpClient.execute(httpPost);
                         ResponseHandler<String> handler = new BasicResponseHandler();
@@ -304,8 +331,8 @@ public class MessagingActivity extends ActionBarActivity {
                         Log.d("ClientProtocolException", e.toString());
                     } catch (IOException e) {
                         Log.d("IOException", e.toString());
-                    }*/
-                    System.out.println("onShouldSendPushData.MessageClient " + messageClient);
+                    }
+                    /*System.out.println("onShouldSendPushData.MessageClient " + messageClient);
                     System.out.println("onShouldSendPushData.Message " + message);
                     for (PushPair push : pushPairs) {
                         System.out.println("onShouldSendPushData.pushPairs " + push);
@@ -319,7 +346,7 @@ public class MessagingActivity extends ActionBarActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                    }
+                    }*/
 
                     return null;
                 }

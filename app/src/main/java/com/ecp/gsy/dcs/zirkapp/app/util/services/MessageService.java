@@ -65,7 +65,8 @@ public class MessageService extends Service implements SinchClientListener {
 
         sinchClient.checkManifest();
         sinchClient.start();
-        sinchClient.registerPushNotificationData(regId.getBytes());
+        if (regId != null)
+            sinchClient.registerPushNotificationData(regId.getBytes());
     }
 
     private boolean isSinchClientStarted() {

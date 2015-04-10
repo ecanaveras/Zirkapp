@@ -87,7 +87,6 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         globalApplication = (GlobalApplication) getApplicationContext();
-        Context context = getApplicationContext();
         // Check device for Play Services APK.
         if (globalApplication.checkPlayServices(this)) {
             //GCM

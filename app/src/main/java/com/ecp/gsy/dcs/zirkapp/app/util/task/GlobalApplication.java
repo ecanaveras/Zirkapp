@@ -19,6 +19,7 @@ import android.util.Log;
 import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
+import com.facebook.FacebookSdk;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.parse.Parse;
@@ -56,6 +57,31 @@ public class GlobalApplication extends Application {
     private static Integer cantZimess;
     private static Integer cantUsersOnline;
     private static Integer cantNotifications;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        //Iniciar Parse
+        // Enable Local Datastore.
+        Parse.enableLocalDatastore(this);
+
+        Parse.initialize(this, "VDJEJIMbyuOiis9bwBHmrOIc7XDUqYHQ0TMhA23c", "9EJKzvp4LhRdnLqfH6jkHPaWd58IVXaBKAWdeItE");
+        //ParseInstallation.getCurrentInstallation().saveInBackground();
+        /*final ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
+        final String androidId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        android.os.Handler handler = new android.os.Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                parseInstallation.put("GCMSenderId", SENDER_ID);
+                parseInstallation.saveInBackground();
+            }
+        }, 3000);*/
+
+        //Facebook
+        FacebookSdk.sdkInitialize(getApplicationContext());
+    }
 
 
     //GCM
@@ -146,28 +172,6 @@ public class GlobalApplication extends Application {
         return getSharedPreferences(MainActivity.class.getSimpleName(), Context.MODE_PRIVATE);
     }
 
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        //Iniciar Parse
-        // Enable Local Datastore.
-        Parse.enableLocalDatastore(this);
-
-        Parse.initialize(this, "VDJEJIMbyuOiis9bwBHmrOIc7XDUqYHQ0TMhA23c", "9EJKzvp4LhRdnLqfH6jkHPaWd58IVXaBKAWdeItE");
-        //ParseInstallation.getCurrentInstallation().saveInBackground();
-        /*final ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
-        final String androidId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        android.os.Handler handler = new android.os.Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                parseInstallation.put("GCMSenderId", SENDER_ID);
-                parseInstallation.saveInBackground();
-            }
-        }, 3000);*/
-    }
 
     public void storeParseInstallation(final String androidId) {
         final ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();

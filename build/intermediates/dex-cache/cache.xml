@@ -51,6 +51,13 @@
         <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-6e2d4647787238ec430cb3f97dbe269eb964d832.jar" />
     </item>
     <item
+        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.facebook.android\facebook-android-sdk\4.0.1\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="f7188fc9a524a8f965b5aeab74879036f0431080">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-11d458ad907000eed647dd9d850a54493a4074c5.jar" />
+    </item>
+    <item
         jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\com.android.support\support-v13\21.0.3\classes.jar"
         jumboMode="false"
         revision="21.1.2"
@@ -91,6 +98,13 @@
         revision="21.1.2"
         sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
         <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-b51a9a1661081a04f10e294658889d236bd2d237.jar" />
+    </item>
+    <item
+        jar="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\exploded-aar\fr.avianey.com.viewpagerindicator\library\2.4.1\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="86f452c126cb92a79e1dcf08efec5404529b698e">
+        <dex dex="C:\AndroidStudioProjects\Zirkapp\app\build\intermediates\pre-dexed\debug\classes-c3e0470b02246d313d94ea063c1668fbdd782927.jar" />
     </item>
     <item
         jar="C:\AndroidStudioProjects\Zirkapp\app\libs\ormlite-core-4.48.jar"
