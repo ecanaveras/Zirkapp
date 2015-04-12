@@ -16,4 +16,10 @@
         android:orderInCategory="210"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_bar_sort_zimess"
+        android:title="@string/action_bar_sort_zimess"
+        android:orderInCategory="220"
+        app:showAsAction="never" />
+
 </menu>

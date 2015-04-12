@@ -1,16 +1,11 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,11 +19,9 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
-import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.adapters.UsersAdapter;
-import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.MessagingActivity;
+import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersOnline;
@@ -60,13 +53,6 @@ public class UsersOnlineFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_users_online, container, false);
         setHasOptionsMenu(true);
         //showSpinner();
-
-        if (getActivity() instanceof ActionBarActivity) {
-            MainActivity activity = (MainActivity) getActivity();
-            if (activity.getSupportActionBar() != null) {
-                activity.getSupportActionBar().setTitle("Chat");
-            }
-        }
 
         currentUser = ParseUser.getCurrentUser();
 

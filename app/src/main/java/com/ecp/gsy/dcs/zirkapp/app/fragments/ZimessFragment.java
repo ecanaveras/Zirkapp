@@ -2,9 +2,11 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,8 +18,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.MyZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivityParse;
 import com.ecp.gsy.dcs.zirkapp.app.R;
@@ -41,6 +46,7 @@ public class ZimessFragment extends Fragment {
     private LinearLayout layoudZimessFinder;
     private int requestCodeNewZimess = 100;
     public int requestCodeUpdateZimess = 105;
+    private AlertDialogPro sortDialog;
 
 
     @Override
@@ -96,6 +102,9 @@ public class ZimessFragment extends Fragment {
         });
     }
 
+    /**
+     * Busca los Zimess Cercanos
+     */
     public void findZimessAround() {
         managerGPS = new ManagerGPS(getActivity());
         if (!managerGPS.isOnline()) {//Si no hay internet
@@ -108,6 +117,30 @@ public class ZimessFragment extends Fragment {
                 managerGPS.gpsShowSettingsAlert();
             }
         }
+    }
+
+    private void showSortDialog() {
+        sortDialog = null;
+        final CharSequence[] optionsSort = {"Mas Recientes", "Mas Cerca", "Mas Lejos"};
+        AlertDialogPro.Builder builder = new AlertDialogPro.Builder(getActivity());
+        builder.setTitle("Ordernar...");
+        builder.setSingleChoiceItems(optionsSort, 0, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getActivity(), optionsSort[which], Toast.LENGTH_SHORT).show();
+                switch (which) {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                }
+                sortDialog.dismiss();
+            }
+        });
+        sortDialog = builder.create();
+        sortDialog.show();
     }
 
     /**
@@ -123,8 +156,10 @@ public class ZimessFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.menu_fragment_zimess, menu);
         menuList = menu;
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -140,9 +175,18 @@ public class ZimessFragment extends Fragment {
                 intent = new Intent(getActivity(), MyZimessActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.action_bar_sort_zimess:
+                showSortDialog();
+                break;
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+
+        super.onPrepareOptionsMenu(menu);
     }
 
     private MenuItem getMenuItem(int id) {

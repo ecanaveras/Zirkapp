@@ -169,10 +169,10 @@ public class ManagerWelcome extends Activity {
 
         @Override
         public Fragment getItem(int position) {
-            switch (position + 1) {
-                case 1:
+            switch (position) {
+                case 0:
                     return new WelcomeFirstFragment();
-                case 2:
+                case 1:
                     return new WelcomeSecondFragment();
             }
             return null;

@@ -33,16 +33,23 @@
         <fragment
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/finbox"
-            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment"
+            android:id="@+id/f_chat"
+            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.ChatFragment"
             tools:layout="@layout/fragment_users_online" />
 
         <fragment
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/fzimessNew"
+            android:id="@+id/f_zimess"
             android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment"
             tools:layout="@layout/fragment_zimess" />
+
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/f_notificaciones"
+            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.NotificationsFragment"
+            tools:layout="@layout/fragment_notifications" />
 
         <!-- Lista de Navegacion -->
         <ListView

@@ -3,7 +3,6 @@ package com.ecp.gsy.dcs.zirkapp.app;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -41,10 +40,11 @@ public class MainActivity extends ActionBarActivity {
     //KEY FRAGMENT
     private static final int HOME = 0; //Disabled
     private static final int ZIMESS = 0;
-    private static final int USERS = 1;
+    private static final int CHAT = 1;
+    private static final int NOTI = 2;
 
     //TOTAL FRAGMENTS
-    private static final int FRAGMENT_COUNT = 2;
+    private static final int FRAGMENT_COUNT = 3;
 
     //ARRAY FRAGMENTS
     private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
@@ -104,8 +104,9 @@ public class MainActivity extends ActionBarActivity {
         //Manipulando Fragments
         FragmentManager fm = getFragmentManager();
         //fragments[HOME] = fm.findFragmentById(R.id.fhome);
-        fragments[ZIMESS] = fm.findFragmentById(R.id.fzimessNew);
-        fragments[USERS] = fm.findFragmentById(R.id.finbox);
+        fragments[ZIMESS] = fm.findFragmentById(R.id.f_zimess);
+        fragments[CHAT] = fm.findFragmentById(R.id.f_chat);
+        fragments[NOTI] = fm.findFragmentById(R.id.f_notificaciones);
 
         FragmentTransaction ft = fm.beginTransaction();
         for (int i = 0; i < fragments.length; i++) {
@@ -252,13 +253,20 @@ public class MainActivity extends ActionBarActivity {
         //fragmentManager.beginTransaction().replace(R.id.content_frame, fragmentAdapter.getItem(position)).commit();
         switch (position) {
             case 0:
+                toolbar.setTitle(R.string.title_fragment_zimess);
                 showFragment(ZIMESS, false);
                 break;
             case 1:
+                toolbar.setTitle(R.string.title_fragment_zimess);
                 showFragment(ZIMESS, false);
                 break;
             case 2:
-                showFragment(USERS, false);
+                toolbar.setTitle(R.string.title_fragment_chat);
+                showFragment(CHAT, false);
+                break;
+            case 3:
+                toolbar.setTitle(R.string.title_fragment_notifications);
+                showFragment(NOTI, false);
                 break;
 //            default:
 //                showFragment(ZIMESS, false);

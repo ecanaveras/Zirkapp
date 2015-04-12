@@ -113,6 +113,10 @@
     <string name="msgDeleting">Eliminando, espere...</string>
     <string name="msgByeZimess">Despidete de tu Zimess...</string>
     <string name="msgMessageEmpty">Debes escribir algo!</string>
+    <string name="title_fragment_zimess">Zimess</string>
+    <string name="title_fragment_notifications">Notificaciones</string>
+    <string name="title_fragment_chat">Chat</string>
+    <string name="action_bar_sort_zimess">Ordenar...</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>
