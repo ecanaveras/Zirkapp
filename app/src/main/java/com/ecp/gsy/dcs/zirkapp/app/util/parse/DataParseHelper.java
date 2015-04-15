@@ -3,6 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util.parse;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
 import com.parse.DeleteCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -95,14 +96,26 @@ public class DataParseHelper {
      * @param cantKmAround
      * @return
      */
-    public static List<ParseObject> findZimessLocation(Location currentLocation, int cantKmAround) {
+    public static List<ParseObject> findZimessLocation(Location currentLocation, int cantKmAround, int sortZimess) {
         List<ParseObject> listZimess = new ArrayList<ParseObject>();
         //Buscar Zimess
         ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZimess");
         query.whereWithinKilometers("location", parseGeoPoint, cantKmAround);
         query.include("user");
-        query.orderByDescending("createdAt");
+        switch (sortZimess) {
+            case 1:
+                query.whereNear("location", parseGeoPoint);
+                //query.orderByDescending("location");
+                break;
+            case 2:
+                query.whereNear("location", parseGeoPoint);
+                query.orderByAscending("location");
+                break;
+            default:
+                query.orderByDescending("createdAt");
+                break;
+        }
         try {
             listZimess = query.find();
         } catch (ParseException e) {

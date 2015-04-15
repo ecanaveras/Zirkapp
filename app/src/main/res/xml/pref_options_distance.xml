@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="min_dist_list"
+        android:title="@string/pref_title_dist_min"
+        android:defaultValue="-1"
+        android:entries="@array/pref_dist_min_list_titles"
+        android:entryValues="@array/pref_dist_min_list_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+    <ListPreference
+        android:key="max_dist_list"
+        android:title="@string/pref_title_dist_max"
+        android:defaultValue="-1"
+        android:entries="@array/pref_dist_max_list_titles"
+        android:entryValues="@array/pref_dist_max_list_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+
+</PreferenceScreen>

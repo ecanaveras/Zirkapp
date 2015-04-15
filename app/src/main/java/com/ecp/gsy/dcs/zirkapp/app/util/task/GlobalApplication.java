@@ -58,6 +58,9 @@ public class GlobalApplication extends Application {
     private static Integer cantUsersOnline;
     private static Integer cantNotifications;
 
+    //Order Zimess
+    private int sortZimess;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -254,6 +257,14 @@ public class GlobalApplication extends Application {
 
     public void setCantNotifications(Integer cantNotifications) {
         this.cantNotifications = cantNotifications;
+    }
+
+    public int getSortZimess() {
+        return sortZimess;
+    }
+
+    public void setSortZimess(int sortZimess) {
+        this.sortZimess = sortZimess;
     }
 
     /**

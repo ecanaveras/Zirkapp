@@ -239,11 +239,6 @@ public class NewZimessActivityParse extends ActionBarActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-    }
-
-    @Override
     public void onBackPressed() {
         super.onBackPressed();
     }

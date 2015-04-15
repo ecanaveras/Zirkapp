@@ -59,7 +59,7 @@ public class ZimessFragment extends Fragment {
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
 
         //Buscar Zimess
-        findZimessAround();
+        findZimessAround(RefreshDataZimessTask.RECIENTE);
 
         return view;
     }
@@ -88,7 +88,7 @@ public class ZimessFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                findZimessAround();
+                findZimessAround(globalApplication.getSortZimess());
             }
         });
 
@@ -105,14 +105,14 @@ public class ZimessFragment extends Fragment {
     /**
      * Busca los Zimess Cercanos
      */
-    public void findZimessAround() {
+    public void findZimessAround(Integer sortZimess) {
         managerGPS = new ManagerGPS(getActivity());
         if (!managerGPS.isOnline()) {//Si no hay internet
             managerGPS.networkShowSettingsAlert();
         } else {
             if (managerGPS.isEnableGetLocation()) {
                 Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
-                new RefreshDataZimessTask(this, currentLocation, recyclerView, layoudZimessNoFound, layoudZimessFinder, swipeRefreshLayout).execute(5); //Todo parametrizar KMs
+                new RefreshDataZimessTask(this, currentLocation, recyclerView, layoudZimessNoFound, layoudZimessFinder, swipeRefreshLayout, sortZimess).execute(5); //Todo parametrizar KMs
             } else {
                 managerGPS.gpsShowSettingsAlert();
             }
@@ -124,16 +124,22 @@ public class ZimessFragment extends Fragment {
         final CharSequence[] optionsSort = {"Mas Recientes", "Mas Cerca", "Mas Lejos"};
         AlertDialogPro.Builder builder = new AlertDialogPro.Builder(getActivity());
         builder.setTitle("Ordernar...");
-        builder.setSingleChoiceItems(optionsSort, 0, new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(optionsSort, globalApplication.getSortZimess(), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Toast.makeText(getActivity(), optionsSort[which], Toast.LENGTH_SHORT).show();
                 switch (which) {
                     case 0:
+                        findZimessAround(RefreshDataZimessTask.RECIENTE);
+                        globalApplication.setSortZimess(RefreshDataZimessTask.RECIENTE);
                         break;
                     case 1:
+                        findZimessAround(RefreshDataZimessTask.CERCA);
+                        globalApplication.setSortZimess(RefreshDataZimessTask.CERCA);
                         break;
                     case 2:
+                        findZimessAround(RefreshDataZimessTask.LEJOS);
+                        globalApplication.setSortZimess(RefreshDataZimessTask.LEJOS);
                         break;
                 }
                 sortDialog.dismiss();
@@ -156,7 +162,6 @@ public class ZimessFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
         inflater.inflate(R.menu.menu_fragment_zimess, menu);
         menuList = menu;
         super.onCreateOptionsMenu(menu, inflater);
@@ -185,8 +190,12 @@ public class ZimessFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-
+        if (menu != null) {
+            menu.setGroupVisible(R.id.menuGroupChatOff, false);
+            menu.setGroupVisible(R.id.menuGroupChatOn, false);
+        }
         super.onPrepareOptionsMenu(menu);
+
     }
 
     private MenuItem getMenuItem(int id) {
@@ -207,13 +216,13 @@ public class ZimessFragment extends Fragment {
         if (requestCode == requestCodeNewZimess && data != null) {
             boolean newZimessOk = data.getBooleanExtra("newZimessOk", false);
             if (resultCode == Activity.RESULT_OK && newZimessOk)
-                findZimessAround();
+                findZimessAround(RefreshDataZimessTask.RECIENTE);
         }
 
         if (requestCode == requestCodeUpdateZimess && data != null) {
             boolean updateZimessOk = data.getBooleanExtra("updateZimessOk", false);
             if (resultCode == Activity.RESULT_OK && updateZimessOk)
-                findZimessAround();
+                findZimessAround(RefreshDataZimessTask.RECIENTE);
         }
     }
 }

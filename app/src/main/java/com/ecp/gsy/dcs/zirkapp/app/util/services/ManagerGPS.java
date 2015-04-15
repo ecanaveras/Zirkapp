@@ -37,8 +37,8 @@ public class ManagerGPS extends Service implements LocationListener {
     private Double latitud;
     private Double longitud;
 
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 metros
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 2; // 2 minutoS
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 15; // 15 metros
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 5; // 5 minutoS
 
     protected LocationManager locationManager;
 

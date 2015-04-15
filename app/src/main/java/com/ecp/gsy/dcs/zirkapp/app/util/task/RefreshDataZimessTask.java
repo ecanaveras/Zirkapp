@@ -25,6 +25,10 @@ import java.util.List;
  */
 public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>> {
 
+    public static final int RECIENTE = 0;
+    public static final int CERCA = 1;
+    public static final int LEJOS = 2;
+
     private RecyclerView recyclerView;
     private Context context;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -36,7 +40,18 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
     private DetailZimessActivity detailZimessActivity;
     private boolean findForUser;
     private ParseUser parseUser;
+    private int sortZimess;
 
+    /**
+     * Busca los Zimess cerca
+     *
+     * @param fragment
+     * @param currentLocation
+     * @param recyclerView
+     * @param layoudZimessNoFound
+     * @param layoudZimessFinder
+     * @param swipeRefreshLayout
+     */
     public RefreshDataZimessTask(Fragment fragment, Location currentLocation, RecyclerView recyclerView, LinearLayout layoudZimessNoFound, LinearLayout layoudZimessFinder, SwipeRefreshLayout swipeRefreshLayout) {
         this.currentLocation = currentLocation;
         this.context = fragment.getActivity();
@@ -46,7 +61,33 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
         this.layoudZimessFinder = layoudZimessFinder;
     }
 
-    //Busca unico Zimess del Detail
+    /**
+     * Busca los Zimess cerca
+     *
+     * @param fragment
+     * @param currentLocation
+     * @param recyclerView
+     * @param layoudZimessNoFound
+     * @param layoudZimessFinder
+     * @param swipeRefreshLayout
+     */
+    public RefreshDataZimessTask(Fragment fragment, Location currentLocation, RecyclerView recyclerView, LinearLayout layoudZimessNoFound, LinearLayout layoudZimessFinder, SwipeRefreshLayout swipeRefreshLayout, int sort) {
+        this.currentLocation = currentLocation;
+        this.context = fragment.getActivity();
+        this.layoudZimessNoFound = layoudZimessNoFound;
+        this.swipeRefreshLayout = swipeRefreshLayout;
+        this.recyclerView = recyclerView;
+        this.layoudZimessFinder = layoudZimessFinder;
+        this.sortZimess = sort;
+    }
+
+
+    /**
+     * Busca un unico Zimess (Detail)
+     *
+     * @param detailZimessActivity
+     * @param zimessDetail
+     */
     public RefreshDataZimessTask(DetailZimessActivity detailZimessActivity, Zimess zimessDetail) {
         this.detailZimessActivity = detailZimessActivity;
         this.zimessDetail = zimessDetail;
@@ -54,6 +95,16 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
     }
 
 
+    /**
+     * Busca los Zimess de un usuario
+     *
+     * @param activity
+     * @param parseUser
+     * @param currentLocation
+     * @param recyclerView
+     * @param layoudZimessNoFound
+     * @param layoudZimessFinder
+     */
     public RefreshDataZimessTask(Activity activity, ParseUser parseUser, Location currentLocation, RecyclerView recyclerView, LinearLayout layoudZimessNoFound, LinearLayout layoudZimessFinder) {
         this.currentLocation = currentLocation;
         this.context = activity;
@@ -79,7 +130,7 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
         List<Zimess> zimessList = new ArrayList<Zimess>();
         //Buscar por ubicacion
         if (currentLocation != null && !findForUser && !findUniqueZimess) {
-            for (ParseObject parseZimess : DataParseHelper.findZimessLocation(currentLocation, integers[0])) {
+            for (ParseObject parseZimess : DataParseHelper.findZimessLocation(currentLocation, integers[0], sortZimess)) {
                 zimessList.add(getZimess(parseZimess));
             }
             //Cant de Zimess en el Drawer

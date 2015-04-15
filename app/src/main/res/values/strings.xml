@@ -118,11 +118,13 @@
     <string name="title_fragment_chat">Chat</string>
     <string name="action_bar_sort_zimess">Ordenar...</string>
 
+
+
     <string-array name="options_drawer">
         <item>Zimess</item>
         <item>Chat</item>
         <item>Notificaciones</item>
-        <item>Configuración</item>
+        <item>Ajustes</item>
         <item>Calificar</item>
         <item>Compartir</item>
     </string-array>

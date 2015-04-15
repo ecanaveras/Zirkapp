@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.ecp.gsy.dcs.zirkapp.app.fragments.SettingsFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
@@ -267,6 +268,10 @@ public class MainActivity extends ActionBarActivity {
             case 3:
                 toolbar.setTitle(R.string.title_fragment_notifications);
                 showFragment(NOTI, false);
+                break;
+            case 4:
+                Intent intent = new Intent(this, CustomSettingsActivity.class);
+                startActivity(intent);
                 break;
 //            default:
 //                showFragment(ZIMESS, false);
