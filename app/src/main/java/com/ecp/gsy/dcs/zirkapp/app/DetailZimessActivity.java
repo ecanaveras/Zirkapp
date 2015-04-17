@@ -235,7 +235,7 @@ public class DetailZimessActivity extends ActionBarActivity {
         ParseCloud.callFunctionInBackground("ParseZComment", new HashMap<String, Object>(), new FunctionCallback<String>() {
             public void done(String result, ParseException e) {
                 if (e == null) {
-                    System.out.println(result);
+                    //System.out.println(result);
                 } else {
                     Log.e("Parze.Cloud.ZComment", e.getMessage());
                 }

@@ -22,8 +22,7 @@
             android:layout_marginRight="6dp"
             android:layout_marginLeft="6dp">
 
-
-            <com.makeramen.roundedimageview.RoundedImageView
+            <ImageView
                 android:id="@+id/imgAvatarItem"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
@@ -32,12 +31,23 @@
                 android:layout_marginBottom="2dp"
                 android:layout_gravity="center"
                 android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                app:riv_corner_radius="30dip"
-                app:riv_border_width="0.2dp"
-                app:riv_border_color="@color/divider_color_2"
-                app:riv_oval="true"
-                app:riv_mutate_background="true" />
+                android:scaleType="centerCrop" />
+
+            <!-- <com.makeramen.roundedimageview.RoundedImageView
+                 android:id="@+id/imgAvatarItem"
+                 android:layout_width="45dp"
+                 android:layout_height="45dp"
+                 android:src="@drawable/ic_user_male"
+                 android:layout_marginTop="2dp"
+                 android:layout_marginBottom="2dp"
+                 android:layout_gravity="center"
+                 android:adjustViewBounds="true"
+                 android:scaleType="centerCrop"
+                 app:riv_corner_radius="30dip"
+                 app:riv_border_width="0.2dp"
+                 app:riv_border_color="@color/divider_color_2"
+                 app:riv_oval="true"
+                 app:riv_mutate_background="true" />-->
 
 
         </LinearLayout>

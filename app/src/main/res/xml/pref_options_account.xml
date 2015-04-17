@@ -2,10 +2,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
+        android:key="logout"
         android:title="@string/msgLogout"
         android:summary="@string/msgSummaryLogout" />
 
     <Preference
+        android:key="delete_account"
         android:title="@string/msgDeleteAccount"
         android:summary="@string/msgSummaryDeleteAccount" />
 

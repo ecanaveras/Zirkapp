@@ -1,8 +1,12 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -19,6 +23,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.alertdialogpro.AlertDialogPro;
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.CropOptionAdapter;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.CropOption;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
@@ -29,8 +36,11 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Elder on 28/02/2015.
@@ -57,6 +67,11 @@ public class EditProfileActivity extends ActionBarActivity {
 
     private Activity activity;
     private Toolbar toolbar;
+
+    private static final int PICK_FROM_CAMERA = 1;
+    private static final int CROP_FROM_CAMERA = 2;
+    private static final int PICK_FROM_FILE = 3;
+    private Uri mImageCaptureUri;
 
 
     @Override
@@ -203,7 +218,7 @@ public class EditProfileActivity extends ActionBarActivity {
             fileInputStream = getApplicationContext().getContentResolver().openInputStream(filePath);
         } catch (FileNotFoundException e) {
             Log.e("FileNotFound", e.getMessage());
-            Toast.makeText(getApplicationContext(), "Problemas con tu Avatar...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Problemas con tu Avatar...", Toast.LENGTH_SHORT).show();
             return null;
         }
 
@@ -213,17 +228,20 @@ public class EditProfileActivity extends ActionBarActivity {
         return stream.toByteArray();
     }
 
+    /**
+     * Cambiar imagen
+     *
+     * @param view
+     */
     public void onLongClickAvatar(View view) {
         if (view.getId() == R.id.imgUserAvatar) {
-            Intent intent = null;
+            Intent intent = new Intent();
             //Verificar plataforma Android
             if (Build.VERSION.SDK_INT < 19) {
                 //Android Jelly Bean 4.3 y Anteriores
-                intent = new Intent();
                 intent.setAction(Intent.ACTION_GET_CONTENT);
             } else {
                 //Android Kitkat 4.4 +
-                intent = new Intent();
                 intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
             }
@@ -233,11 +251,90 @@ public class EditProfileActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * Corta la imagen
+     */
+    private void cropImage() {
+        final ArrayList<CropOption> cropOptions = new ArrayList();
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setType("image/*");
+
+        List<ResolveInfo> resolveInfos = getPackageManager().queryIntentActivities(intent, 0);
+        if (resolveInfos.size() == 0) {
+            Toast.makeText(this, "Problemas con tu Avatar, no se puede encontrar...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        intent.setData(mImageCaptureUri);
+        intent.putExtra("outputX", 200);
+        intent.putExtra("outputY", 200);
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        intent.putExtra("scale", true);
+        intent.putExtra("return-data", true);
+
+        if (resolveInfos.size() == 1) {
+            Intent i = new Intent(intent);
+            ResolveInfo res = resolveInfos.get(0);
+            i.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+            startActivityForResult(i, CROP_FROM_CAMERA);
+        } else {
+            for (ResolveInfo res : resolveInfos) {
+                CropOption cropOpt = new CropOption();
+                cropOpt.title = getPackageManager().getApplicationLabel(res.activityInfo.applicationInfo);
+                cropOpt.icon = getPackageManager().getApplicationIcon(res.activityInfo.applicationInfo);
+                cropOpt.appIntent = new Intent(intent);
+                cropOpt.appIntent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+                cropOptions.add(cropOpt);
+            }
+        }
+
+        CropOptionAdapter adapter = new CropOptionAdapter(getApplicationContext(), cropOptions);
+        AlertDialogPro.Builder builder = new AlertDialogPro.Builder(this);
+        builder.setTitle("Seleccione...");
+        builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                startActivityForResult(cropOptions.get(item).appIntent, CROP_FROM_CAMERA);
+            }
+        });
+
+        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+
+                if (mImageCaptureUri != null) {
+                    getContentResolver().delete(mImageCaptureUri, null, null);
+                    mImageCaptureUri = null;
+                }
+            }
+        });
+
+        AlertDialog alert = builder.create();
+
+        alert.show();
+
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && this.avatarRequestCode == requestCode) {
-            imgAvatar.setImageURI(data.getData());
-            imgAvatar.setTag(data.getData());
+//            imgAvatar.setImageURI(data.getData());
+//            imgAvatar.setTag(data.getData());
+            mImageCaptureUri = data.getData();
+            cropImage();
+        }
+
+        if (resultCode == Activity.RESULT_OK && requestCode == CROP_FROM_CAMERA) {
+            Bundle extras = data.getExtras();
+            if (extras != null) {
+                Bitmap photo = extras.getParcelable("data");
+                imgAvatar.setImageBitmap(photo);
+                imgAvatar.setTag(photo);//Para activar el cambio.
+            }
+
+            File f = new File(mImageCaptureUri.getPath());
+            if (f.exists()) f.delete();
         }
     }
 

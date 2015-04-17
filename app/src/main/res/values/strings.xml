@@ -105,7 +105,7 @@
     <string name="action_bar_my_zimess">Mis Zimess</string>
     <string name="action_bar_new_zimess">Nuevo Zimess</string>
     <string name="lblZimessNoFound">No hay Zimess, empieza tu!</string>
-    <string name="lblMyZimessNoFound">No tienes Zimess... animate, empieza ya!</string>
+    <string name="lblMyZimessNoFound">No hay Zimess... animate, empieza ya!</string>
     <string name="lblMyZimess">Mis Zimess</string>
     <string name="lblDetailZimess">Det. del Zimess</string>
     <string name="msgZimessDeleteOk">Zimess eliminado!</string>
@@ -117,7 +117,8 @@
     <string name="title_fragment_notifications">Notificaciones</string>
     <string name="title_fragment_chat">Chat</string>
     <string name="action_bar_sort_zimess">Ordenar...</string>
-
+    <string name="msgLogoutOk">Tu sesión se ha cerrado, bye...</string>
+    <string name="msgAbout">Acerca de...</string>
 
 
     <string-array name="options_drawer">

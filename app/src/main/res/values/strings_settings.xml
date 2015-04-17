@@ -55,9 +55,9 @@
         <item>Máximo 5000 metros</item>
     </string-array>
     <string-array name="pref_dist_max_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>5</item>
     </string-array>
 
 
@@ -93,6 +93,8 @@
     <string name="pref_ringtone_silent">Silenciar</string>
 
     <string name="pref_title_vibrate">Vibrar</string>
+    <string name="msgMyProfile">Mi perfil</string>
+    <string name="msgSummaryMyProfile">Edita los datos de tu perfil</string>
 
 
 </resources>

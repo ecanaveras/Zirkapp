@@ -4,9 +4,10 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,7 +23,6 @@ import android.widget.Toast;
 
 import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
-import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.MyZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivityParse;
 import com.ecp.gsy.dcs.zirkapp.app.R;
@@ -111,8 +111,13 @@ public class ZimessFragment extends Fragment {
             managerGPS.networkShowSettingsAlert();
         } else {
             if (managerGPS.isEnableGetLocation()) {
+                //Tomar valores de las preferencias de usuarios
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                int dist_min = Integer.parseInt(preferences.getString("min_dist_list", "-1"));
+                int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "5"));
+
                 Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
-                new RefreshDataZimessTask(this, currentLocation, recyclerView, layoudZimessNoFound, layoudZimessFinder, swipeRefreshLayout, sortZimess).execute(5); //Todo parametrizar KMs
+                new RefreshDataZimessTask(this, currentLocation, recyclerView, layoudZimessNoFound, layoudZimessFinder, swipeRefreshLayout, sortZimess).execute(dist_min, dist_max);
             } else {
                 managerGPS.gpsShowSettingsAlert();
             }
@@ -121,7 +126,7 @@ public class ZimessFragment extends Fragment {
 
     private void showSortDialog() {
         sortDialog = null;
-        final CharSequence[] optionsSort = {"Mas Recientes", "Mas Cerca", "Mas Lejos"};
+        final CharSequence[] optionsSort = {"Mas Recientes", "Mas Cerca"};//, "Mas Lejos" //Todo usar como recurso
         AlertDialogPro.Builder builder = new AlertDialogPro.Builder(getActivity());
         builder.setTitle("Ordernar...");
         builder.setSingleChoiceItems(optionsSort, globalApplication.getSortZimess(), new DialogInterface.OnClickListener() {
@@ -162,6 +167,7 @@ public class ZimessFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.menu_fragment_zimess, menu);
         menuList = menu;
         super.onCreateOptionsMenu(menu, inflater);
@@ -197,6 +203,7 @@ public class ZimessFragment extends Fragment {
         super.onPrepareOptionsMenu(menu);
 
     }
+
 
     private MenuItem getMenuItem(int id) {
         if (menuList != null) {

@@ -3,15 +3,21 @@ package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.EditProfileActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.UserProfileActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
@@ -53,7 +59,11 @@ public class ZimessReciclerAdapter extends RecyclerView.Adapter<ZimessReciclerAd
 
         zimessViewHolder.lblAliasUsuario.setText(zimess.getUser().getString("name"));
         //Estableciendo Imagen;
-        zimessViewHolder.imgAvatar.setImageBitmap(zimess.getAvatar());
+        Bitmap bitmap = zimess.getAvatar();
+        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(context.getResources(), bitmap);
+        //corner radius
+        roundedBitmapDrawable.setCornerRadius(bitmap.getHeight()); //La imagen debe ser cuadrada
+        zimessViewHolder.imgAvatar.setImageDrawable(roundedBitmapDrawable);
 
         zimessViewHolder.lblUsername.setText(zimess.getUser().getUsername());
         zimessViewHolder.lblCantComments.setText(Integer.toString(zimess.getCantComment()));
@@ -63,7 +73,6 @@ public class ZimessReciclerAdapter extends RecyclerView.Adapter<ZimessReciclerAd
             zimessViewHolder.imgComment.setImageResource(R.drawable.ic_icon_response_color);
         else
             zimessViewHolder.imgComment.setImageResource(R.drawable.ic_icon_response);
-
 
         //Manejando tiempos transcurridos
         String tiempoTranscurrido = globalApplication.getTimepass(zimess.getCreateAt());
@@ -96,8 +105,8 @@ public class ZimessReciclerAdapter extends RecyclerView.Adapter<ZimessReciclerAd
                 lblDistance,
                 lblTimePass,
                 lblCantComments;
-        public ImageView imgComment;
-        public RoundedImageView imgAvatar;
+        public ImageView imgComment, imgAvatar;
+        //public RoundedImageView imgAvatar;
         //imgOptions
 
 
@@ -139,7 +148,12 @@ public class ZimessReciclerAdapter extends RecyclerView.Adapter<ZimessReciclerAd
         @Override
         public void onClick(View v) {
             if (v instanceof ImageView) {
-                System.out.println("IMG CLIIIIICK");
+                GlobalApplication globalApplication = (GlobalApplication) context.getApplicationContext();
+                v.startAnimation(AnimationUtils.loadAnimation(v.getContext(), R.anim.anim_image_click));
+                Intent intent = new Intent(v.getContext(), UserProfileActivity.class);
+                globalApplication.setCustomParseUser(zimess.getUser());
+                Activity activity = (Activity) context;
+                activity.startActivity(intent);
             } else {
                 gotoDetail();
             }

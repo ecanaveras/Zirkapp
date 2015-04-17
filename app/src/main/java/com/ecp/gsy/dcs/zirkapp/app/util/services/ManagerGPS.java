@@ -18,6 +18,7 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 
+import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 
 import java.io.IOException;
@@ -226,7 +227,7 @@ public class ManagerGPS extends Service implements LocationListener {
      * Muestra una alerta en caso que esten desabilitados los accesorios de ubicacion
      */
     public void gpsShowSettingsAlert() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(mContext);
 
         alert.setTitle(R.string.lblSettingGPS);
         alert.setMessage(R.string.msgGPSdisabled);
@@ -251,7 +252,7 @@ public class ManagerGPS extends Service implements LocationListener {
      * Muestra una alerta en caso que esten desabilitados los datos (wifi, movil)
      */
     public void networkShowSettingsAlert() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(mContext);
 
         alert.setTitle(R.string.lblSettingNetwork);
         alert.setMessage(R.string.msgNetworkDisabled);

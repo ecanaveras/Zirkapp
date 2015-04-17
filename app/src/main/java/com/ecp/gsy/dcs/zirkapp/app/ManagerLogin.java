@@ -32,12 +32,15 @@ public class ManagerLogin extends Activity {
      * The {@link ViewPager} that will host the section contents.
      */
     public ViewPager mViewPager;
+    private boolean isLogout;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        isLogout = getIntent().getBooleanExtra("logout", false);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -47,6 +50,16 @@ public class ManagerLogin extends Activity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isLogout) {
+            moveTaskToBack(true);
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(1);
+        }
+        super.onBackPressed();
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

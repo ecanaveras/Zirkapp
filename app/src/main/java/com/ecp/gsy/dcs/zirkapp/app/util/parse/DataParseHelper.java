@@ -93,16 +93,31 @@ public class DataParseHelper {
      * Busca Zimess de acuerdo a la posicion
      *
      * @param currentLocation
-     * @param cantKmAround
+     * @param cantMaxKmAround
      * @return
      */
-    public static List<ParseObject> findZimessLocation(Location currentLocation, int cantKmAround, int sortZimess) {
-        List<ParseObject> listZimess = new ArrayList<ParseObject>();
+    public static List<ParseObject> findZimessLocation(Location currentLocation, int cantMinKmAround, int cantMaxKmAround, int sortZimess) {
+        List<ParseObject> listZimess = new ArrayList();
         //Buscar Zimess
         ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
+        //Distancia Maxima
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZimess");
-        query.whereWithinKilometers("location", parseGeoPoint, cantKmAround);
+        query.whereWithinKilometers("location", parseGeoPoint, cantMaxKmAround);
         query.include("user");
+        //Distancia minima
+        if (cantMinKmAround != -1) { //-1 todos
+            ParseQuery<ParseObject> innerQuery = ParseQuery.getQuery("ParseZimess");
+            //500 Metros
+            if (cantMinKmAround == 0) {
+                innerQuery.whereWithinKilometers("location", parseGeoPoint, 0.5);
+            } else {
+                //1000 Metros
+                innerQuery.whereWithinKilometers("location", parseGeoPoint, cantMaxKmAround);
+            }
+            query.whereDoesNotMatchKeyInQuery("objectId", "objectId", innerQuery);
+        }
+
+        //Orden
         switch (sortZimess) {
             case 1:
                 query.whereNear("location", parseGeoPoint);
@@ -116,6 +131,7 @@ public class DataParseHelper {
                 query.orderByDescending("createdAt");
                 break;
         }
+
         try {
             listZimess = query.find();
         } catch (ParseException e) {

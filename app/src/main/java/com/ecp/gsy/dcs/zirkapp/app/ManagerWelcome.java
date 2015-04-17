@@ -11,6 +11,7 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.widget.Toast;
 
+import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeFirstFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeSecondFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
@@ -79,8 +80,7 @@ public class ManagerWelcome extends Activity {
     }
 
     private void showMessageExitApp() {
-        //Todo Cambiar el AlertDialog
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        AlertDialogPro.Builder alertDialogBuilder = new AlertDialogPro.Builder(this);
         alertDialogBuilder.setTitle(R.string.msgExitApp);
         alertDialogBuilder
                 .setCancelable(false)

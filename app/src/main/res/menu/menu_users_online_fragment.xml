@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- <item
+     <item
          android:id="@+id/switchUsersOnline"
          android:title="On"
          app:showAsAction="always"
-         android:actionLayout="@layout/component_switch" />-->
+         android:actionLayout="@layout/component_switch" />
 
     <group android:id="@+id/menuGroupChatOn">
         <item
             android:id="@+id/action_bar_chat_on"
             android:title="ON"
             android:orderInCategory="100"
-            android:showAsAction="always" />
+            app:showAsAction="always" />
     </group>
 
     <group android:id="@+id/menuGroupChatOff">
@@ -21,7 +21,7 @@
             android:id="@+id/action_bar_chat_off"
             android:title="OFF"
             android:orderInCategory="105"
-            android:showAsAction="always" />
+            app:showAsAction="always" />
     </group>
 
     -->

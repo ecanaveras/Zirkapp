@@ -130,7 +130,7 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
         List<Zimess> zimessList = new ArrayList<Zimess>();
         //Buscar por ubicacion
         if (currentLocation != null && !findForUser && !findUniqueZimess) {
-            for (ParseObject parseZimess : DataParseHelper.findZimessLocation(currentLocation, integers[0], sortZimess)) {
+            for (ParseObject parseZimess : DataParseHelper.findZimessLocation(currentLocation, integers[0], integers[1], sortZimess)) {
                 zimessList.add(getZimess(parseZimess));
             }
             //Cant de Zimess en el Drawer

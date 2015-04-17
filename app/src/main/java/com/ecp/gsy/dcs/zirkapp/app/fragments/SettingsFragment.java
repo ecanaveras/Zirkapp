@@ -2,6 +2,7 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -17,8 +18,12 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.ManagerLogin;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.parse.Parse;
+import com.parse.ParseUser;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -65,29 +70,29 @@ public class SettingsFragment extends PreferenceFragment {
         // Add 'general' preferences.
         addPreferencesFromResource(R.xml.pref_general);
 
-        //Agregar opciones de distancia
-        PreferenceCategory fakeHeader = new PreferenceCategory(getActivity());
-        fakeHeader.setTitle(R.string.msgHeaderOptionsDist);
-        getPreferenceScreen().addPreference(fakeHeader);
-        addPreferencesFromResource(R.xml.pref_options_distance);
-
         //Agregar opciones de usuario
-        fakeHeader = new PreferenceCategory(getActivity());
+        PreferenceCategory fakeHeader = new PreferenceCategory(getActivity());
         fakeHeader.setTitle(R.string.msgHeaderOptionsUser);
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_options_user);
+
+        //Agregar opciones de distancia
+        fakeHeader = new PreferenceCategory(getActivity());
+        fakeHeader.setTitle(R.string.msgHeaderOptionsDist);
+        getPreferenceScreen().addPreference(fakeHeader);
+        addPreferencesFromResource(R.xml.pref_options_distance);
 
         // Add 'notifications' preferences, and a corresponding header.
         fakeHeader = new PreferenceCategory(getActivity());
         fakeHeader.setTitle(R.string.pref_header_notifications);
         getPreferenceScreen().addPreference(fakeHeader);
-        addPreferencesFromResource(R.xml.pref_notification);
+        addPreferencesFromResource(R.xml.pref_options_notification);
 
         // Add 'data and sync' preferences, and a corresponding header.
         fakeHeader = new PreferenceCategory(getActivity());
         fakeHeader.setTitle(R.string.pref_header_data_sync);
         getPreferenceScreen().addPreference(fakeHeader);
-        addPreferencesFromResource(R.xml.pref_data_sync);
+        addPreferencesFromResource(R.xml.pref_options_data_sync);
 
         //Agregar opciones de cuenta
         fakeHeader = new PreferenceCategory(getActivity());
@@ -95,13 +100,50 @@ public class SettingsFragment extends PreferenceFragment {
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_options_account);
 
+        //Acciones
+
+        //USERS LOCK
+        Preference pref_users_lock = findPreference("users_lock");
+        pref_users_lock.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Toast.makeText(getActivity(), "Proximamente...", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
+
+        //LOGOUT
+        Preference pref_logout = findPreference("logout");
+        pref_logout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                ParseUser.logOut();
+                Intent intent = new Intent(getActivity(), ManagerLogin.class);
+                intent.putExtra("logout", true);
+                startActivity(intent);
+                Toast.makeText(getActivity(), getString(R.string.msgLogoutOk), Toast.LENGTH_SHORT).show();
+                getActivity().finish();
+                return false;
+            }
+        });
+
+        //DELETE
+        Preference pref_del_accout = findPreference("delete_account");
+        pref_del_accout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Toast.makeText(getActivity(), "Proximamente...", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
+
         // Bind the summaries of EditText/List/Dialog/Ringtone preferences to
         // their values. When their values change, their summaries are updated
         // to reflect the new value, per the Android Design guidelines.
         bindPreferenceSummaryToValue(findPreference("min_dist_list"));
         bindPreferenceSummaryToValue(findPreference("max_dist_list"));
-        bindPreferenceSummaryToValue(findPreference("example_text"));
-        bindPreferenceSummaryToValue(findPreference("example_list"));
         bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
         bindPreferenceSummaryToValue(findPreference("sync_frequency"));
 
@@ -266,7 +308,7 @@ public class SettingsFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_notification);
+            addPreferencesFromResource(R.xml.pref_options_notification);
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
@@ -285,7 +327,7 @@ public class SettingsFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_data_sync);
+            addPreferencesFromResource(R.xml.pref_options_data_sync);
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
