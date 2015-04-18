@@ -252,6 +252,7 @@ public class MainActivity extends ActionBarActivity {
     public void selectItemDrawer(int position) {
         //Reemplazar el content_frame
         //fragmentManager.beginTransaction().replace(R.id.content_frame, fragmentAdapter.getItem(position)).commit();
+        invalidateOptionsMenu();
         switch (position) {
             case 0:
                 toolbar.setTitle(R.string.title_fragment_zimess);

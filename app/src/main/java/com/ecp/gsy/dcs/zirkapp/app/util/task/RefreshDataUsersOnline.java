@@ -1,5 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.task;
 
+import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -7,6 +9,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.UsersAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
@@ -25,6 +28,7 @@ public class RefreshDataUsersOnline extends AsyncTask<Integer, Void, List<ParseU
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView listUsersOnline;
     private Context context;
+    private UsersOnlineFragment fragment;
 
     public RefreshDataUsersOnline(Context context, ParseUser currentUser, Location currentLocation, ListView listUsersOnline) {
         this.context = context;
@@ -51,12 +55,24 @@ public class RefreshDataUsersOnline extends AsyncTask<Integer, Void, List<ParseU
         this.swipeRefreshLayout = swipeRefreshLayout;
     }
 
+    public RefreshDataUsersOnline(Fragment fragment, ParseUser currentUser, Location currentLocation, ListView listUsersOnline, SwipeRefreshLayout swipeRefreshLayout, LinearLayout layoudUsersNoFound, LinearLayout layoudUsersFinder) {
+        this.context = fragment.getActivity();
+        this.fragment = (UsersOnlineFragment) fragment;
+        this.currentUser = currentUser;
+        this.currentLocation = currentLocation;
+        this.layoudUsersNoFound = layoudUsersNoFound;
+        this.layoudUsersFinder = layoudUsersFinder;
+        this.listUsersOnline = listUsersOnline;
+        this.swipeRefreshLayout = swipeRefreshLayout;
+    }
+
     @Override
     protected void onPreExecute() {
         if (layoudUsersFinder != null)
             layoudUsersFinder.setVisibility(View.VISIBLE);
         if (layoudUsersNoFound != null)
             layoudUsersNoFound.setVisibility(View.GONE);
+
     }
 
     @Override
@@ -76,15 +92,19 @@ public class RefreshDataUsersOnline extends AsyncTask<Integer, Void, List<ParseU
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);
 
-        boolean zimessFound = parseUsers.size() > 0;
+        boolean usersFound = parseUsers.size() > 0;
+
+        if (usersFound)
+            fragment.updateCantMessagesNoRead();
 
         if (layoudUsersFinder != null)
             layoudUsersFinder.setVisibility(View.GONE);
 
-        if (zimessFound && layoudUsersNoFound != null) //Si hay Usuarios
+        if (usersFound && layoudUsersNoFound != null) //Si hay Usuarios
             layoudUsersNoFound.setVisibility(View.GONE);
-        if (!zimessFound && layoudUsersNoFound != null)// No hay Usuarios
+        if (!usersFound && layoudUsersNoFound != null)// No hay Usuarios
             layoudUsersNoFound.setVisibility(View.VISIBLE);
+
 
     }
 }

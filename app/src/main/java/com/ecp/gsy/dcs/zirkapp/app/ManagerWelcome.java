@@ -117,6 +117,8 @@ public class ManagerWelcome extends Activity {
         }
         if (!runWelcome) {
             currentUser = ParseUser.getCurrentUser();
+            currentUser = null; //Por bug en parse
+            currentUser = ParseUser.getCurrentUser(); //Por bug en parse
             if (currentUser == null) {
                 Intent login = new Intent(this, ManagerLogin.class);
                 startActivityForResult(login, inputLoginRequestCode);

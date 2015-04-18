@@ -58,8 +58,15 @@ public class ZimessReciclerAdapter extends RecyclerView.Adapter<ZimessReciclerAd
         zimessViewHolder.setZimess(zimess);
 
         zimessViewHolder.lblAliasUsuario.setText(zimess.getUser().getString("name"));
+
         //Estableciendo Imagen;
         Bitmap bitmap = zimess.getAvatar();
+        //Cuadrar imagen
+        if (bitmap.getWidth() > bitmap.getHeight()) {
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getHeight(), bitmap.getHeight());
+        } else if (bitmap.getHeight() > bitmap.getWidth()) {
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getWidth());
+        }
         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(context.getResources(), bitmap);
         //corner radius
         roundedBitmapDrawable.setCornerRadius(bitmap.getHeight()); //La imagen debe ser cuadrada

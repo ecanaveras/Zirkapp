@@ -1,6 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,13 +57,18 @@ public class UsersAdapter extends BaseAdapter {
         ImageView imgAvatar = (ImageView) vista.findViewById(R.id.imgAvatar);
         TextView lblCommentUser = (TextView) vista.findViewById(R.id.lblUserName);
         TextView lblCommentName = (TextView) vista.findViewById(R.id.lblNombreUsuario);
+        TextView lblCantMessages = (TextView) vista.findViewById(R.id.lblCantMessages);
 
         //3. Asignar valores
         lblCommentUser.setText(parseUser.getUsername());
-        lblCommentName.setText(parseUser.getString("name"));
+        lblCommentName.setText(parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername());
         //Estableciendo Imagen;
-        imgAvatar.setImageBitmap(GlobalApplication.getAvatar(parseUser));
-
+        Bitmap avatar = GlobalApplication.getAvatar(parseUser);
+        if (avatar != null) {
+            imgAvatar.setImageBitmap(avatar);
+        } else {
+            imgAvatar.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_user_male));
+        }
         return vista;
     }
 

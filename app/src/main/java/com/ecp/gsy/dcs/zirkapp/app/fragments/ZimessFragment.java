@@ -196,10 +196,6 @@ public class ZimessFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (menu != null) {
-            menu.setGroupVisible(R.id.menuGroupChatOff, false);
-            menu.setGroupVisible(R.id.menuGroupChatOn, false);
-        }
         super.onPrepareOptionsMenu(menu);
 
     }

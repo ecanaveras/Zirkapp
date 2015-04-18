@@ -178,7 +178,7 @@ public class EditProfileActivity extends ActionBarActivity {
         if (currentUser != null) {
             //Imagen cambiada desde la activity
             if (imgAvatar.getTag() != null) {
-                byteImage = getByteAvatar((Uri) imgAvatar.getTag());
+                byteImage = getByteAvatar((Bitmap) imgAvatar.getTag());
             }
 
             parseFile = new ParseFile("ParseZAvatar", byteImage != null ? byteImage : new byte[0]);
@@ -212,19 +212,12 @@ public class EditProfileActivity extends ActionBarActivity {
         }
     }
 
-    private byte[] getByteAvatar(Uri filePath) {
-        InputStream fileInputStream = null;
-        try {
-            fileInputStream = getApplicationContext().getContentResolver().openInputStream(filePath);
-        } catch (FileNotFoundException e) {
-            Log.e("FileNotFound", e.getMessage());
-            Toast.makeText(this, "Problemas con tu Avatar...", Toast.LENGTH_SHORT).show();
+    private byte[] getByteAvatar(Bitmap photo) {
+        if (photo == null)
             return null;
-        }
 
-        Bitmap bitmap = BitmapFactory.decodeStream(fileInputStream);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+        photo.compress(Bitmap.CompressFormat.JPEG, 80, stream);
         return stream.toByteArray();
     }
 
@@ -247,7 +240,7 @@ public class EditProfileActivity extends ActionBarActivity {
             }
 
             intent.setType("image/*");
-            startActivityForResult(intent, avatarRequestCode);
+            startActivityForResult(intent, PICK_FROM_FILE);
         }
     }
 
@@ -261,7 +254,7 @@ public class EditProfileActivity extends ActionBarActivity {
 
         List<ResolveInfo> resolveInfos = getPackageManager().queryIntentActivities(intent, 0);
         if (resolveInfos.size() == 0) {
-            Toast.makeText(this, "Problemas con tu Avatar, no se puede encontrar...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Problemas con tu Avatar, no hay con que cortar...", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -310,7 +303,6 @@ public class EditProfileActivity extends ActionBarActivity {
         });
 
         AlertDialog alert = builder.create();
-
         alert.show();
 
     }
@@ -318,24 +310,28 @@ public class EditProfileActivity extends ActionBarActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK && this.avatarRequestCode == requestCode) {
-//            imgAvatar.setImageURI(data.getData());
-//            imgAvatar.setTag(data.getData());
-            mImageCaptureUri = data.getData();
-            cropImage();
+        if (resultCode != Activity.RESULT_OK)
+            return;
+
+        switch (requestCode) {
+            case PICK_FROM_FILE:
+                mImageCaptureUri = data.getData();
+                cropImage();
+                break;
+            case CROP_FROM_CAMERA:
+                Bundle extras = data.getExtras();
+                if (extras != null) {
+                    Bitmap photo = extras.getParcelable("data");
+                    imgAvatar.setImageBitmap(photo);
+                    imgAvatar.setTag(photo);//Para activar el cambio.
+                }
+
+                File f = new File(mImageCaptureUri.getPath());
+                if (f.exists()) f.delete();
+                break;
         }
 
-        if (resultCode == Activity.RESULT_OK && requestCode == CROP_FROM_CAMERA) {
-            Bundle extras = data.getExtras();
-            if (extras != null) {
-                Bitmap photo = extras.getParcelable("data");
-                imgAvatar.setImageBitmap(photo);
-                imgAvatar.setTag(photo);//Para activar el cambio.
-            }
 
-            File f = new File(mImageCaptureUri.getPath());
-            if (f.exists()) f.delete();
-        }
     }
 
 

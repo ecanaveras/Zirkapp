@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:layout_marginBottom="4dp">
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/imgAvatar"
@@ -17,47 +18,63 @@
         app:riv_corner_radius="30dip"
         app:riv_border_width="0.2dp"
         app:riv_border_color="@color/divider_color_2"
-        app:riv_oval="true"/>
+        app:riv_oval="true" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginRight="6dp"
-        android:orientation="vertical"
-        android:gravity="center_vertical">
+        android:orientation="horizontal">
 
-
-        <TextView
-            android:id="@+id/lblNombreUsuario"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textColor="@color/secondary_text_color"
-            android:text="Zirkapp"
-            android:textSize="18dp"
-            />
-
-        <TextView
-            android:id="@+id/lblUserName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/divider_color"
-            android:textSize="14dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
             android:gravity="center_vertical"
-            android:text="User" />
+            android:layout_weight="1">
 
 
-        <!--<TextView
-            android:id="@+id/lblEstado"
-            android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/lblNombreUsuario"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="@color/secondary_text_color"
+                android:text="Zirkapp"
+                android:textSize="18dp" />
+
+            <TextView
+                android:id="@+id/lblUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/divider_color"
+                android:textSize="14dp"
+                android:gravity="center_vertical"
+                android:text="User" />
+
+
+            <!--<TextView
+                android:id="@+id/lblEstado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/accent_color"
+                />-->
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/lblCantMessages"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="4dp"
-            android:fontFamily="sans-serif"
-            android:textColor="@color/accent_color"
-            />-->
-
+            android:textColor="@color/dark_primary_color"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:layout_marginRight="16dp" />
     </LinearLayout>
 
 </LinearLayout>

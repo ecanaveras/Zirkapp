@@ -54,7 +54,8 @@ public class ManagerLogin extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (isLogout) {
+        invalidateOptionsMenu();
+        if (isLogout && ParseUser.getCurrentUser() == null) {
             moveTaskToBack(true);
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(1);
@@ -70,10 +71,10 @@ public class ManagerLogin extends Activity {
 
         @Override
         public Fragment getItem(int position) {
-            switch (position + 1) {
-                case 1:
+            switch (position) {
+                case 0:
                     return new LoginFragment();
-                case 2:
+                case 1:
                     return new SignupFragment();
             }
             return null;
@@ -81,7 +82,7 @@ public class ManagerLogin extends Activity {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show 2 total pages.
             return 2;
         }
 

@@ -94,7 +94,7 @@ public class MessagingActivity extends ActionBarActivity {
 
         initComponentUI();
 
-        populateMessageHistory();
+        findLocalMessageHistory();
     }
 
     private void initComponentUI() {
@@ -184,6 +184,7 @@ public class MessagingActivity extends ActionBarActivity {
 
     /**
      * Guarda el historial del chat de forma local
+     *
      * @param message
      * @param writableMessage
      * @param senderId
@@ -204,6 +205,8 @@ public class MessagingActivity extends ActionBarActivity {
                         parseMessage.put("recipientId", writableMessage.getRecipientIds().get(0));
                         parseMessage.put("messageText", writableMessage.getTextBody());
                         parseMessage.put("sinchId", writableMessage.getMessageId());
+                        if (messageDirection == MessageAdapter.DIRECTION_INCOMING)
+                            parseMessage.put("messageRead", false);
                         parseMessage.pinInBackground();
 
                         adapterMessage.addMessage(writableMessage, messageDirection, receptorId);
@@ -216,7 +219,7 @@ public class MessagingActivity extends ActionBarActivity {
     /**
      * Busca los mensajes previos en Parse
      */
-    private void populateMessageHistory() {
+    private void findLocalMessageHistory() {
         progressBar.setVisibility(View.VISIBLE);
         String[] userIds = {currentUser.getObjectId(), receptorId};
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
@@ -233,11 +236,13 @@ public class MessagingActivity extends ActionBarActivity {
                         if (parseObj.get("senderId").toString().equals(currentUser.getObjectId())) {
                             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING, currentUser.getUsername());
                         } else {
+                            parseObj.put("messageRead", true);
+                            parseObj.pinInBackground();
                             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING, receptorUsername);
                         }
                     }
                 } else {
-                    System.out.println("Parse.chat.history: " + e.getMessage());
+                    Log.e("Parse.chat.history", e.getMessage());
                 }
                 progressBar.setVisibility(View.GONE);
             }
@@ -289,6 +294,11 @@ public class MessagingActivity extends ActionBarActivity {
                 //Guardar historial local.
                 saveLocalMessage(message, writableMessage, receptorId, MessageAdapter.DIRECTION_INCOMING);
 
+                //Receiver
+                Intent intent = new Intent("cant_messages");
+                intent.putExtra("senderId", receptorId);
+                intent.putExtra("recipientId", currentUser.getObjectId());
+                sendBroadcast(intent);
             }
         }
 
@@ -298,12 +308,11 @@ public class MessagingActivity extends ActionBarActivity {
 
             //Guardar historial local.
             saveLocalMessage(message, writableMessage, currentUser.getObjectId(), MessageAdapter.DIRECTION_OUTGOING);
-
         }
 
         @Override
         public void onMessageFailed(MessageClient messageClient, Message message, MessageFailureInfo messageFailureInfo) {
-            Toast.makeText(MessagingActivity.this, "Message failed to send.", Toast.LENGTH_LONG).show();
+            Toast.makeText(MessagingActivity.this, "El mensaje no pudo ser enviado.", Toast.LENGTH_LONG).show();
         }
 
         @Override
