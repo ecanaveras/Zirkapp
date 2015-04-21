@@ -3,10 +3,15 @@ package com.ecp.gsy.dcs.zirkapp.app;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,6 +24,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.fragments.SettingsFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
@@ -81,6 +87,7 @@ public class MainActivity extends ActionBarActivity {
     //GCM
     private GoogleCloudMessaging gcm;
     private String regId;
+    private BroadcastReceiver broadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,25 +95,37 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         globalApplication = (GlobalApplication) getApplicationContext();
-        // Check device for Play Services APK.
-        if (globalApplication.checkPlayServices(this)) {
+
+        //User Parse
+        userZirkapp = ParseUser.getCurrentUser();
+        if (userZirkapp != null) {
+            new RegisterGcmTask(gcm, this).execute();
+        }
+        /*// Check device for Play Services APK.
+        if (globalApplication.checkPlayServices(this) && userZirkapp != null) {
             //GCM
             gcm = GoogleCloudMessaging.getInstance(this);
             regId = globalApplication.getRegistrationId(this);
-
             if (regId.isEmpty()) {
-                //Register InBackground
+                //Register InBackground e iniciar MessageService
                 new RegisterGcmTask(gcm, this).execute();
+            } else {
+                //Iniciar servicio
+                Intent serviceIntent = new Intent(getApplicationContext(), MessageService.class);
+                serviceIntent.putExtra("regId", regId);
+                startService(serviceIntent);
+                waitSinchClientStarts();
             }
         } else {
             Log.i("GCM", "No valid Google Play Services APK found.");
-        }
+        }*/
+
 
         //Manipulando Fragments
         FragmentManager fm = getFragmentManager();
         //fragments[HOME] = fm.findFragmentById(R.id.fhome);
         fragments[ZIMESS] = fm.findFragmentById(R.id.f_zimess);
-        fragments[CHAT] = fm.findFragmentById(R.id.f_chat);
+        fragments[CHAT] = fm.findFragmentById(R.id.f_usuariosOnline);
         fragments[NOTI] = fm.findFragmentById(R.id.f_notificaciones);
 
         FragmentTransaction ft = fm.beginTransaction();
@@ -128,22 +147,8 @@ public class MainActivity extends ActionBarActivity {
             selectItemDrawer(indexBackOrDefaultFragment);
         }
 
-        //User Parse
-        userZirkapp = ParseUser.getCurrentUser();
-        if (userZirkapp != null) {
-            new RegisterGcmTask(gcm, getApplicationContext()).execute();
-            ParsePush.subscribeInBackground("", new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
-                    } else {
-                        Log.e("com.parse.push", "failed to subscribe for push", e);
-                    }
-                }
-            });
+        if (userZirkapp != null)
             refreshDatosDrawer();
-        }
     }
 
 
@@ -199,7 +204,6 @@ public class MainActivity extends ActionBarActivity {
         drawerNavigation.setDrawerListener(drawerToggle);
         drawerToggle.syncState();
     }
-
 
     private void refreshDrawerAdapter() {
         //UI

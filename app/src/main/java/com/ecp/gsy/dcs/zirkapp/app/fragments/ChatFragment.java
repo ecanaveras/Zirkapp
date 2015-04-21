@@ -26,7 +26,7 @@ public class ChatFragment extends Fragment {
         setHasOptionsMenu(true);
 
         final ArrayList<Fragment> fragmentArrayList = new ArrayList<>();
-        final String[] titles = {"Online", "Historial"};
+        final String[] titles = {"Usuarios", "Historial"};
 
         fragmentArrayList.add(new UsersOnlineFragment());
         fragmentArrayList.add(new ChatHistoryFragment());

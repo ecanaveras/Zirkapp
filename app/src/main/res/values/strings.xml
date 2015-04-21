@@ -119,6 +119,9 @@
     <string name="action_bar_sort_zimess">Ordenar...</string>
     <string name="msgLogoutOk">Tu sesión se ha cerrado, bye...</string>
     <string name="msgAbout">Acerca de...</string>
+    <string name="lblSearchingChats">Buscando conversaciones...</string>
+    <string name="action_bar_history">Historial</string>
+    <string name="title_activity_chat_history">Historial del Chat</string>
 
 
     <string-array name="options_drawer">

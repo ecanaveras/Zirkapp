@@ -3,8 +3,6 @@ package com.ecp.gsy.dcs.zirkapp.app.util.parse;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
-import com.parse.DeleteCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -12,7 +10,9 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Elder on 11/03/2015.
@@ -42,7 +42,7 @@ public class DataParseHelper {
     }
 
     /**
-     * Busca Zimess de acuerdo a la posicion
+     * Busca Usuarios de acuerdo a la posicion
      *
      * @param currentLocation
      * @param cantKmAround
@@ -50,13 +50,34 @@ public class DataParseHelper {
      */
     public static List<ParseUser> findUsersLocation(ParseUser currentUser, Location currentLocation, int cantKmAround) {
         List<ParseUser> listUsers = new ArrayList<ParseUser>();
-        //Buscar Zimess
+        //Buscar Usuarios
         ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.whereNotEqualTo("objectId", currentUser.getObjectId());
         query.whereWithinKilometers("location", parseGeoPoint, cantKmAround);
         query.whereEqualTo("online", true);
         query.orderByAscending("name");
+        try {
+            listUsers = query.find();
+        } catch (ParseException e) {
+            Log.e("Parse.Users", e.getMessage());
+        }
+
+        return listUsers;
+    }
+
+
+    /**
+     * Busca Usuarios de acuerdo a un lista de Ids
+     *
+     * @param usersSearch
+     * @return
+     */
+    public static List<ParseUser> findUsersList(ArrayList<String> usersSearch) {
+        List<ParseUser> listUsers = new ArrayList<ParseUser>();
+        //Buscar Usuarios
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.whereContainedIn("objectId", usersSearch);
         try {
             listUsers = query.find();
         } catch (ParseException e) {

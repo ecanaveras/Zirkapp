@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.ManagerLogin;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.parse.Parse;
 import com.parse.ParseUser;
@@ -119,6 +120,8 @@ public class SettingsFragment extends PreferenceFragment {
         pref_logout.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
+                //Deteniendo los servicios Sinch
+                getActivity().stopService(new Intent(getActivity().getApplicationContext(), MessageService.class));
                 ParseUser.logOut();
                 Intent intent = new Intent(getActivity(), ManagerLogin.class);
                 intent.putExtra("logout", true);

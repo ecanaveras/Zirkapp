@@ -1,14 +1,18 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -70,6 +74,7 @@ public class MessagingActivity extends ActionBarActivity {
     private Activity activity;
     private ProgressBar progressBar;
     private WritableMessage writableMessage;
+    private BroadcastReceiver broadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,7 +196,7 @@ public class MessagingActivity extends ActionBarActivity {
      * @param messageDirection
      */
     private void saveLocalMessage(Message message, final WritableMessage writableMessage, final String senderId, final Integer messageDirection) {
-        //Agregar el mensaje en parse.com si no existe.
+        //Agregar el mensaje en el local si no existe.
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
         query.whereEqualTo("sinchId", message.getMessageId());
         query.fromLocalDatastore();
@@ -217,7 +222,7 @@ public class MessagingActivity extends ActionBarActivity {
     }
 
     /**
-     * Busca los mensajes previos en Parse
+     * Busca los mensajes previos en Local
      */
     private void findLocalMessageHistory() {
         progressBar.setVisibility(View.VISIBLE);
@@ -251,8 +256,8 @@ public class MessagingActivity extends ActionBarActivity {
 
     @Override
     protected void onDestroy() {
-        unbindService(serviceConnection);
         messageService.removeMessageClientListener(messageClientListener);
+        unbindService(serviceConnection);
         super.onDestroy();
     }
 
@@ -322,16 +327,15 @@ public class MessagingActivity extends ActionBarActivity {
         @Override
         public void onShouldSendPushData(final MessageClient messageClient, final Message message, final List<PushPair> pushPairs) {
             final String regId = new String(pushPairs.get(0).getPushData());
-            final AtomicInteger msgId = new AtomicInteger();
-            final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(activity);
+            //final AtomicInteger msgId = new AtomicInteger();
+            //final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(activity);
 
             class SendPushTask extends AsyncTask<Void, Void, Void> {
-
 
                 @Override
                 protected Void doInBackground(Void... params) {
                     HttpClient httpClient = new DefaultHttpClient();
-                    HttpPost httpPost = new HttpPost("http://ecanaveras.blogspot.com?reg_id=" + regId);
+                    HttpPost httpPost = new HttpPost("http://localhost?reg_id=" + regId);
                     try {
                         HttpResponse httpResponse = httpClient.execute(httpPost);
                         ResponseHandler<String> handler = new BasicResponseHandler();
@@ -341,12 +345,7 @@ public class MessagingActivity extends ActionBarActivity {
                     } catch (IOException e) {
                         Log.d("IOException", e.toString());
                     }
-                    /*System.out.println("onShouldSendPushData.MessageClient " + messageClient);
-                    System.out.println("onShouldSendPushData.Message " + message);
-                    for (PushPair push : pushPairs) {
-                        System.out.println("onShouldSendPushData.pushPairs " + push);
-                    }
-                    if (writableMessage != null) {
+                    /*if (writableMessage != null) {
                         try {
                             Bundle data = new Bundle();
                             data.putString("my_message", writableMessage.getTextBody());

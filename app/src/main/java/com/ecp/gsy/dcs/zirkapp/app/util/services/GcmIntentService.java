@@ -1,6 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.services;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
+import com.ecp.gsy.dcs.zirkapp.app.MessagingActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
@@ -35,12 +37,12 @@ public class GcmIntentService extends IntentService {
         String messageType = gcm.getMessageType(intent);
 
         if (!extras.isEmpty()) { // has effect of unparcelling Bundle
-            /*
-             * Filter messages based on message type. Since it is likely that GCM
+
+            /** Filter messages based on message type. Since it is likely that GCM
              * will be extended in the future with new message types, just ignore
              * any message types you're not interested in, or that you don't
-             * recognize.
-             */
+             * recognize.*/
+
             if (GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR.equals(messageType)) {
                 sendNotification("Send error: " + extras.toString());
             } else if (GoogleCloudMessaging.MESSAGE_TYPE_DELETED.equals(messageType)) {
@@ -59,22 +61,29 @@ public class GcmIntentService extends IntentService {
                 }
                 Log.i("GCM", "Completed work @ " + SystemClock.elapsedRealtime());
                 // Post notification of received message.
-                sendNotification("Received: " + extras.toString());
+                sendNotification(extras.toString());
                 Log.i("GCM", "Received: " + extras.toString());
             }
         }
+        //sendNotification("Nuevo mensaje");
+
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
     private void sendNotification(String msg) {
         notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         NotificationCompat.Builder nBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_launcher)
+                .setDefaults(Notification.DEFAULT_ALL)
                 .setContentTitle("Zirkapp Notification")
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(msg))
-                .setContentText(msg);
+                .setContentText(msg)
+                .setAutoCancel(true);
 
         nBuilder.setContentIntent(contentIntent);
         notificationManager.notify(NOTIFICATION_ID, nBuilder.build());

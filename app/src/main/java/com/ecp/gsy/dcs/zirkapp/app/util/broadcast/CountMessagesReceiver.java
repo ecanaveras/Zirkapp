@@ -50,8 +50,10 @@ public class CountMessagesReceiver extends BroadcastReceiver {
             View v = listUsers.getChildAt(i - listUsers.getFirstVisiblePosition());
             if (v != null) {
                 TextView lblCommentUser = (TextView) v.findViewById(R.id.lblUserName);
-                if (lblCommentUser.getText().toString().equals(senderId))
+                if (lblCommentUser.getText().toString().equals(senderId)) {
                     lblCantMessages = (TextView) v.findViewById(R.id.lblCantMessages);
+                    break;
+                }
             }
         }
 
@@ -61,7 +63,7 @@ public class CountMessagesReceiver extends BroadcastReceiver {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
         query.whereEqualTo("senderId", senderId);
         query.whereEqualTo("recipientId", recipientId);
-        query.whereEqualTo("messageRead", false);
+        //query.whereEqualTo("messageRead", false);
         query.fromLocalDatastore();
         query.countInBackground(new CountCallback() {
             @Override

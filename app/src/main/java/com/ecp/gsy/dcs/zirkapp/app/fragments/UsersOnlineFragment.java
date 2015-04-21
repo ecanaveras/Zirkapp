@@ -3,9 +3,11 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
@@ -23,9 +25,13 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.ChatHistoryActivity;
 import com.ecp.gsy.dcs.zirkapp.app.MessagingActivity;
+import com.ecp.gsy.dcs.zirkapp.app.MyZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivityParse;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.CountMessagesReceiver;
+import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.SinchConnectReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
@@ -52,14 +58,15 @@ public class UsersOnlineFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout layoudUsersNoFound, layoudUsersFinder;
 
-    private BroadcastReceiver broadcastReceiver = null;
-
     private ManagerGPS managerGPS;
     private ParseUser currentUser;
     private boolean isConnectedUser;
     private GlobalApplication globalApplication;
     private Menu menu;
     private CountMessagesReceiver receiver;
+    private LinearLayout layoudChatOffline;
+    private LinearLayout layoutInitService;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,9 +81,15 @@ public class UsersOnlineFragment extends Fragment {
 
         inicializarCompUI(view);
 
-        if (isConnectedUser)
-            conectarChat(getCurrentLocation());
+        //Comprobar el estado del servicio Sinch
+        SinchConnectReceiver sinchConnectReceiver = new SinchConnectReceiver(layoutInitService);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(sinchConnectReceiver, new IntentFilter("com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment"));
 
+        if (isConnectedUser) {
+            conectarChat(getCurrentLocation());
+        } else {
+            layoudChatOffline.setVisibility(View.VISIBLE);
+        }
         return view;
     }
 
@@ -84,6 +97,8 @@ public class UsersOnlineFragment extends Fragment {
         //Layout
         layoudUsersNoFound = (LinearLayout) view.findViewById(R.id.layoudUsersNoFound);
         layoudUsersFinder = (LinearLayout) view.findViewById(R.id.layoudUsersFinder);
+        layoudChatOffline = (LinearLayout) view.findViewById(R.id.layoudChatOffline);
+        layoutInitService = (LinearLayout) view.findViewById(R.id.layoutInitService);
         //ListView
         listViewUserOnline = (ListView) view.findViewById(R.id.usersListView);
         listViewUserOnline.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -118,14 +133,13 @@ public class UsersOnlineFragment extends Fragment {
         });
     }
 
-
     /**
      * Busca los usuarios en Linea y que esten en cerca
      */
     public void buscarUsuariosOnline() {
         Location currentLocation = getCurrentLocation();
         if (isConnectedUser && currentLocation != null) {
-            new RefreshDataUsersOnline(this, currentUser, currentLocation, listViewUserOnline, swipeRefreshLayout, layoudUsersNoFound, layoudUsersFinder).execute(5);
+            new RefreshDataUsersOnline(getActivity(), currentUser, currentLocation, listViewUserOnline, swipeRefreshLayout, layoudUsersNoFound, layoudUsersFinder).execute(5);
         } else {
             Toast.makeText(getActivity(), "No estas conectado...", Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
@@ -137,24 +151,15 @@ public class UsersOnlineFragment extends Fragment {
      */
     private void conectarChat(Location currentLocation) {
         if (currentUser != null && currentLocation != null) {
-//            progressDialog = new ProgressDialog(getActivity());
-//            progressDialog.setMessage("Conectando...");
-//            progressDialog.show();
             ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
             ParseUser parseUser = currentUser;
             parseUser.put("location", parseGeoPoint);
             parseUser.put("online", true);
-            parseUser.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        swipeRefreshLayout.setEnabled(true);
-                        isConnectedUser = true;
-                        buscarUsuariosOnline();
-                    }
-//                    progressDialog.dismiss();
-                }
-            });
+            parseUser.saveInBackground();
+            isConnectedUser = true;
+            buscarUsuariosOnline();
+            layoudChatOffline.setVisibility(View.GONE);
+            swipeRefreshLayout.setEnabled(true);
         }
     }
 
@@ -169,6 +174,8 @@ public class UsersOnlineFragment extends Fragment {
             isConnectedUser = false;
             swipeRefreshLayout.setEnabled(false);
             listViewUserOnline.setAdapter(null);
+            layoudChatOffline.setVisibility(View.VISIBLE);
+            layoudUsersNoFound.setVisibility(View.GONE);
         }
 
     }
@@ -206,6 +213,7 @@ public class UsersOnlineFragment extends Fragment {
     }
 
 
+    /*
     public void updateCantMessagesNoRead() {
         if (listViewUserOnline.getChildCount() == 0)
             return;
@@ -255,9 +263,8 @@ public class UsersOnlineFragment extends Fragment {
                 }
             }
         });
-
-
     }
+    */
 
     @Override
     public void onResume() {
@@ -291,6 +298,19 @@ public class UsersOnlineFragment extends Fragment {
             }
         });
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //Manejar seleccion en el menú
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.action_bar_history:
+                intent = new Intent(getActivity(), ChatHistoryActivity.class);
+                startActivity(intent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }
