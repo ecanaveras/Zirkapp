@@ -180,6 +180,7 @@ public class GlobalApplication extends Application {
         final ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
         //final String androidId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         parseInstallation.put("GCMSenderId", SENDER_ID);
+        parseInstallation.put("user", ParseUser.getCurrentUser());
         parseInstallation.saveInBackground();
     }
 

@@ -1,9 +1,6 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -21,32 +18,19 @@ import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.ChatHistoryActivity;
 import com.ecp.gsy.dcs.zirkapp.app.MessagingActivity;
-import com.ecp.gsy.dcs.zirkapp.app.MyZimessActivity;
-import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivityParse;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.CountMessagesReceiver;
+import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.LocationReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.SinchConnectReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersOnline;
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by elcapi05 on 13/08/2014.
@@ -56,23 +40,25 @@ public class UsersOnlineFragment extends Fragment {
 
     private ListView listViewUserOnline;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private LinearLayout layoudUsersNoFound, layoudUsersFinder;
+    private LinearLayout layoudUsersNoFound, layoudUsersFinder, layoudChatOffline, layoutInitService;
 
     private ManagerGPS managerGPS;
     private ParseUser currentUser;
-    private boolean isConnectedUser;
+
     private GlobalApplication globalApplication;
     private Menu menu;
-    private CountMessagesReceiver receiver;
-    private LinearLayout layoudChatOffline;
-    private LinearLayout layoutInitService;
+
+    private CountMessagesReceiver countMessagesReceiver;
+    private LocationReceiver locationReceiver;
+    private SinchConnectReceiver sinchConnectReceiver;
+
+    private boolean isConnectedUser;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_users_online, container, false);
         setHasOptionsMenu(true);
-        //showSpinner();
 
         currentUser = ParseUser.getCurrentUser();
 
@@ -81,15 +67,12 @@ public class UsersOnlineFragment extends Fragment {
 
         inicializarCompUI(view);
 
-        //Comprobar el estado del servicio Sinch
-        SinchConnectReceiver sinchConnectReceiver = new SinchConnectReceiver(layoutInitService);
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(sinchConnectReceiver, new IntentFilter("com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment"));
-
         if (isConnectedUser) {
             conectarChat(getCurrentLocation());
         } else {
             layoudChatOffline.setVisibility(View.VISIBLE);
         }
+
         return view;
     }
 
@@ -134,30 +117,24 @@ public class UsersOnlineFragment extends Fragment {
     }
 
     /**
-     * Busca los usuarios en Linea y que esten en cerca
+     * Actualiza la ubicacion del usuario actual y busca los usuarios en Linea y que esten en cerca
      */
-    public void buscarUsuariosOnline() {
-        Location currentLocation = getCurrentLocation();
+    public void findUsersOnline(Location currentLocation) {
         if (isConnectedUser && currentLocation != null) {
             new RefreshDataUsersOnline(getActivity(), currentUser, currentLocation, listViewUserOnline, swipeRefreshLayout, layoudUsersNoFound, layoudUsersFinder).execute(5);
         } else {
-            Toast.makeText(getActivity(), "No estas conectado...", Toast.LENGTH_SHORT).show();
-            swipeRefreshLayout.setRefreshing(false);
+            //Toast.makeText(getActivity(), "No estas conectado...", Toast.LENGTH_SHORT).show();
+            swipeRefreshLayout.setEnabled(false);
         }
     }
 
     /**
      * Conecta el usuario al chat
      */
-    private void conectarChat(Location currentLocation) {
+    public void conectarChat(Location currentLocation) {
         if (currentUser != null && currentLocation != null) {
-            ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
-            ParseUser parseUser = currentUser;
-            parseUser.put("location", parseGeoPoint);
-            parseUser.put("online", true);
-            parseUser.saveInBackground();
             isConnectedUser = true;
-            buscarUsuariosOnline();
+            findUsersOnline(currentLocation);
             layoudChatOffline.setVisibility(View.GONE);
             swipeRefreshLayout.setEnabled(true);
         }
@@ -177,7 +154,6 @@ public class UsersOnlineFragment extends Fragment {
             layoudChatOffline.setVisibility(View.VISIBLE);
             layoudUsersNoFound.setVisibility(View.GONE);
         }
-
     }
 
     /**
@@ -268,14 +244,23 @@ public class UsersOnlineFragment extends Fragment {
 
     @Override
     public void onResume() {
-        receiver = new CountMessagesReceiver(listViewUserOnline);
-        getActivity().registerReceiver(receiver, new IntentFilter("cant_messages"));
+        //Comprobar el estado del servicio Sinch
+        sinchConnectReceiver = new SinchConnectReceiver(layoutInitService, listViewUserOnline);
+        //actualiza la lista de usuarios al cambiar de ubicacion
+        locationReceiver = new LocationReceiver(this);
+        //Contar los mensajes recibidos
+//        countMessagesReceiver = new CountMessagesReceiver(listViewUserOnline);
+//        getActivity().registerReceiver(countMessagesReceiver, new IntentFilter("cant_messages"));
+        getActivity().registerReceiver(sinchConnectReceiver, new IntentFilter("app.fragments.UsersOnlineFragment"));
+        getActivity().registerReceiver(locationReceiver, new IntentFilter("broadcast.gps.location_change"));
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        getActivity().unregisterReceiver(receiver);
+        //getActivity().unregisterReceiver(countMessagesReceiver);
+        getActivity().unregisterReceiver(sinchConnectReceiver);
+        getActivity().unregisterReceiver(locationReceiver);
         super.onPause();
     }
 

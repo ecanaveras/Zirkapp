@@ -100,6 +100,16 @@ public class MainActivity extends ActionBarActivity {
         userZirkapp = ParseUser.getCurrentUser();
         if (userZirkapp != null) {
             new RegisterGcmTask(gcm, this).execute();
+            ParsePush.subscribeInBackground("", new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+                    } else {
+                        Log.e("com.parse.push", "failed to subscribe for push", e);
+                    }
+                }
+            });
         }
         /*// Check device for Play Services APK.
         if (globalApplication.checkPlayServices(this) && userZirkapp != null) {
@@ -259,8 +269,13 @@ public class MainActivity extends ActionBarActivity {
         invalidateOptionsMenu();
         switch (position) {
             case 0:
-                toolbar.setTitle(R.string.title_fragment_zimess);
-                showFragment(ZIMESS, false);
+                if (getIntent().getAction() != null && getIntent().getAction().equals("OPEN_FRAGMENT_USER")) {
+                    toolbar.setTitle(R.string.title_fragment_chat);
+                    showFragment(CHAT, false);
+                } else {
+                    toolbar.setTitle(R.string.title_fragment_zimess);
+                    showFragment(ZIMESS, false);
+                }
                 break;
             case 1:
                 toolbar.setTitle(R.string.title_fragment_zimess);
@@ -302,7 +317,7 @@ public class MainActivity extends ActionBarActivity {
                 }
                 if (indexFragment == 2) { //Actualizar listado de usuarios en el chat
                     UsersOnlineFragment usersOnlineFragment = (UsersOnlineFragment) fragments[i];
-                    usersOnlineFragment.buscarUsuariosOnline();
+                    usersOnlineFragment.findUsersOnline();
                 }*/
             } else {
                 ft.hide(fragments[i]);
@@ -315,9 +330,18 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent.getAction() != null) {
+            Log.d("onResume", intent.getAction());
+            showFragment(CHAT, false);
+        }
+    }
+
+    @Override
     protected void onResume() {
-        globalApplication.checkPlayServices(this);
         super.onResume();
+        globalApplication.checkPlayServices(this);
 
         //FACEBOOK
         // Logs 'install' and 'app activate' App Events.

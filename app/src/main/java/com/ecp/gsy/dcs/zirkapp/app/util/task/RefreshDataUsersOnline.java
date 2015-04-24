@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.UsersAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -68,6 +70,17 @@ public class RefreshDataUsersOnline extends AsyncTask<Integer, Void, List<ParseU
     protected List<ParseUser> doInBackground(Integer... integers) {
         if (isSearchHistory)
             return DataParseHelper.findUsersList(userList);
+
+        //Actualizar la ubicacion del usuario
+        ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
+        ParseUser parseUser = currentUser;
+        parseUser.put("location", parseGeoPoint);
+        parseUser.put("online", true);
+        try {
+            parseUser.save();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return DataParseHelper.findUsersLocation(currentUser, currentLocation, integers[0]);
     }
 

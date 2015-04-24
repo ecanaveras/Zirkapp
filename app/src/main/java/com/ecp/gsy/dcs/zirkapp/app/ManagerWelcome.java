@@ -143,6 +143,7 @@ public class ManagerWelcome extends Activity {
             OpenHelperManager.releaseHelper();
             databaseHelper = null;
         }
+        stopService(new Intent(this, MessageService.class));
         super.onDestroy();
     }
 

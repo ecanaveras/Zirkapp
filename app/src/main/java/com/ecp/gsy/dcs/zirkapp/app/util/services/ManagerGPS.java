@@ -1,6 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.services;
 
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +21,7 @@ import android.util.Log;
 
 import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.LocationReceiver;
 
 import java.io.IOException;
 import java.util.List;
@@ -60,6 +62,8 @@ public class ManagerGPS extends Service implements LocationListener {
      */
     public Location obtenertUbicacion() {
         try {
+//            Intent intent = new Intent(mContext, LocationReceiver.class);
+//            PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             locationManager = (LocationManager) mContext.getSystemService(mContext.LOCATION_SERVICE);
             isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -76,6 +80,7 @@ public class ManagerGPS extends Service implements LocationListener {
                         this.establecerUbicacion(LocationManager.GPS_PROVIDER);
                         Log.d("GPS Enabled", "GPS Enabled");
                     }
+
                 }
             }
         } catch (Exception e) {
@@ -95,19 +100,22 @@ public class ManagerGPS extends Service implements LocationListener {
         //Log.d(provider, provider);
         if (locationManager != null) {
             location = locationManager.getLastKnownLocation(provider);
-            updateGPSCoordenadas();
         }
     }
 
     /**
-     * Actualiza las coordenadas
+     * Establece la ubicacion
+     *
+     * @param provider
      */
-    private void updateGPSCoordenadas() {
-        if (location != null) {
-            latitud = location.getLatitude();
-            longitud = location.getLongitude();
+    private void establecerUbicacion(String provider, PendingIntent pendingIntent) {
+        locationManager.requestLocationUpdates(provider, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, pendingIntent);
+        //Log.d(provider, provider);
+        if (locationManager != null) {
+            location = locationManager.getLastKnownLocation(provider);
         }
     }
+
 
     /**
      * Detiene la peticion del servicio para ManagerGPS
@@ -276,10 +284,11 @@ public class ManagerGPS extends Service implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         //Nueva Ubicacion
-        this.getLatitud();
-        this.getLongitud();
-//        Log.d("GPS.latitud", getLatitud().toString());
-//        Log.d("GPS.longitud", getLongitud().toString());
+        Intent intent = new Intent("broadcast.gps.location_change");
+        intent.putExtra("locationchange", true);
+        intent.putExtra("latitud", this.getLatitud());
+        intent.putExtra("longitud", this.getLongitud());
+        mContext.sendBroadcast(intent);
     }
 
     @Override

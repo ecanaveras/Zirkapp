@@ -25,8 +25,7 @@ public class MessageService extends Service implements SinchClientListener {
     private SinchClient sinchClient = null;
     private MessageClient messageClient = null;
     private ParseUser currentUser = null;
-    private LocalBroadcastManager broadcaster;
-    private Intent broadcastIntent = new Intent("com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment");
+    private Intent broadcastIntent = new Intent("app.fragments.UsersOnlineFragment");
 
     private String regId;
 
@@ -41,8 +40,6 @@ public class MessageService extends Service implements SinchClientListener {
             //TODO MENSAJERIA DISABLED
             startSinchClient(currentUser.getObjectId());
         }
-
-        broadcaster = LocalBroadcastManager.getInstance(this);
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -82,7 +79,7 @@ public class MessageService extends Service implements SinchClientListener {
     @Override
     public void onClientStarted(SinchClient sinchClient) {
         broadcastIntent.putExtra("success", true);
-        broadcaster.sendBroadcast(broadcastIntent);
+        sendBroadcast(broadcastIntent);
 
         sinchClient.startListeningOnActiveConnection();
         messageClient = sinchClient.getMessageClient();
@@ -96,7 +93,7 @@ public class MessageService extends Service implements SinchClientListener {
     @Override
     public void onClientFailed(SinchClient sinchClient, SinchError sinchError) {
         broadcastIntent.putExtra("success", false);
-        broadcaster.sendBroadcast(broadcastIntent);
+        sendBroadcast(broadcastIntent);
         sinchClient = null;
     }
 
@@ -129,7 +126,7 @@ public class MessageService extends Service implements SinchClientListener {
 
     @Override
     public void onDestroy() {
-        if(ParseUser.getCurrentUser() == null){
+        if (ParseUser.getCurrentUser() == null) {
             sinchClient.unregisterPushNotificationData();
         }
         if (sinchClient != null) {

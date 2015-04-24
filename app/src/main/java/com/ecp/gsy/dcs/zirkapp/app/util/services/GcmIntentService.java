@@ -12,8 +12,8 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
-import com.ecp.gsy.dcs.zirkapp.app.MessagingActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.GcmBroadcastReceiver;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 /**
@@ -61,7 +61,7 @@ public class GcmIntentService extends IntentService {
                 }
                 Log.i("GCM", "Completed work @ " + SystemClock.elapsedRealtime());
                 // Post notification of received message.
-                sendNotification(extras.toString());
+                sendNotification(extras.getString("alert"));
                 Log.i("GCM", "Received: " + extras.toString());
             }
         }

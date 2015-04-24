@@ -32,10 +32,14 @@ import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.parse.FindCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SendCallback;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.messaging.Message;
 import com.sinch.android.rtc.messaging.MessageClient;
@@ -51,6 +55,8 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -74,7 +80,6 @@ public class MessagingActivity extends ActionBarActivity {
     private Activity activity;
     private ProgressBar progressBar;
     private WritableMessage writableMessage;
-    private BroadcastReceiver broadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -325,36 +330,53 @@ public class MessagingActivity extends ActionBarActivity {
         }
 
         @Override
-        public void onShouldSendPushData(final MessageClient messageClient, final Message message, final List<PushPair> pushPairs) {
-            final String regId = new String(pushPairs.get(0).getPushData());
-            //final AtomicInteger msgId = new AtomicInteger();
-            //final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(activity);
+        public void onShouldSendPushData(MessageClient messageClient, final Message message, final List<PushPair> pushPairs) {
 
             class SendPushTask extends AsyncTask<Void, Void, Void> {
 
                 @Override
                 protected Void doInBackground(Void... params) {
-                    HttpClient httpClient = new DefaultHttpClient();
-                    HttpPost httpPost = new HttpPost("http://localhost?reg_id=" + regId);
-                    try {
-                        HttpResponse httpResponse = httpClient.execute(httpPost);
-                        ResponseHandler<String> handler = new BasicResponseHandler();
-                        Log.d("HttpResponse", handler.handleResponse(httpResponse));
-                    } catch (ClientProtocolException e) {
-                        Log.d("ClientProtocolException", e.toString());
-                    } catch (IOException e) {
-                        Log.d("IOException", e.toString());
-                    }
-                    /*if (writableMessage != null) {
+                    if (receptorId != null && pushPairs.size() > 0 && message != null) {
+                        PushPair pushPair = pushPairs.get(0);
+                        String pushPayLoad = pushPair.getPushPayload();
+
+                        //1. Tomar el usuario a notificar
+                        ParseQuery userQuery = ParseUser.getQuery();
+                        userQuery.whereEqualTo("objectId", receptorId);
+                        //2. Tomar la instalacion del usuario a notificar
+                        ParseQuery query = ParseInstallation.getQuery();
+                        query.whereMatchesQuery("user", userQuery);
+                        //3. Establecer query de filtro
+                        ParsePush parsePush = new ParsePush();
+                        parsePush.setQuery(query);
+
+                        String messageNotification = "Nuevo mensaje de Zirkapp";
+
                         try {
-                            Bundle data = new Bundle();
-                            data.putString("my_message", writableMessage.getTextBody());
-                            String id = Integer.toString(msgId.incrementAndGet());
-                            gcm.send(GlobalApplication.SENDER_ID + "@gcm.googleapis.com", id, data);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            JSONObject data = new JSONObject();
+                            data.put("alert", String.format(messageNotification, message.getTextBody()));
+                            data.put("badge", "Increment");
+                            data.put("sound", "default"); //Todo obtener Tono de preferencias
+                            //Pasar sender como titulo
+                            data.put("title", currentUser.getUsername());
+                            data.put("uri", "");
+                            data.put("SIN", pushPayLoad);
+
+                            parsePush.setData(data);
+                            parsePush.sendInBackground(new SendCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    if (e == null) {
+                                        Log.i("parse.push", "success");
+                                    } else {
+                                        Log.i("parse.push", "failed");
+                                    }
+                                }
+                            });
+                        } catch (JSONException e) {
+                            Log.e("json.exception", e.getMessage());
                         }
-                    }*/
+                    }
 
                     return null;
                 }
