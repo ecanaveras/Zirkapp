@@ -350,11 +350,11 @@ public class MessagingActivity extends ActionBarActivity {
                         ParsePush parsePush = new ParsePush();
                         parsePush.setQuery(query);
 
-                        String messageNotification = "Nuevo mensaje de Zirkapp";
+                        String messageNotification = getString(R.string.mgsNewChat);
 
                         try {
                             JSONObject data = new JSONObject();
-                            data.put("alert", String.format(messageNotification, message.getTextBody()));
+                            data.put("alert", String.format(messageNotification, message.getTextBody(), "-:-1")); //1 = CHAT
                             data.put("badge", "Increment");
                             data.put("sound", "default"); //Todo obtener Tono de preferencias
                             //Pasar sender como titulo

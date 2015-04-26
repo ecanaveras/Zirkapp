@@ -41,7 +41,7 @@ public class SinchConnectReceiver extends BroadcastReceiver {
             if (layoutInfo != null) layoutInfo.setVisibility(View.VISIBLE);
             if (listUsers != null) listUsers.setEnabled(false);
         } else {
-            Log.i("Sinch.service.state", "Starting...");
+            Log.i("Sinch.service.state", "Started...");
             if (layoutInfo != null) layoutInfo.setVisibility(View.GONE);
             if (listUsers != null) listUsers.setEnabled(true);
 

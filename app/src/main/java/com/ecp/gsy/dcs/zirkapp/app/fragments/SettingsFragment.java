@@ -20,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.AboutActivity;
 import com.ecp.gsy.dcs.zirkapp.app.ManagerLogin;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
@@ -103,6 +104,18 @@ public class SettingsFragment extends PreferenceFragment {
         addPreferencesFromResource(R.xml.pref_options_account);
 
         //Acciones
+
+        //ABOUT
+        Preference pref_about = findPreference("about");
+        pref_about.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(getActivity(), AboutActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
+
 
         //USERS LOCK
         Preference pref_users_lock = findPreference("users_lock");

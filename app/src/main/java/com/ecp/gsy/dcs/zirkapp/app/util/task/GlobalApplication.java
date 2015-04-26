@@ -118,7 +118,7 @@ public class GlobalApplication extends Application {
      */
     public void storeRegistrationId(Context context, String regId) {
         final SharedPreferences prefs = getGCMPreferences();
-        int appVersion = getAppVersion(context);
+        int appVersion = getAppVersionCode(context);
         Log.i("GCM", "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PROPERTY_REG_ID, regId);
@@ -146,7 +146,7 @@ public class GlobalApplication extends Application {
         // since the existing registration ID is not guaranteed to work with
         // the new app version.
         int registeredVersion = preferences.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
-        int currentVersion = getAppVersion(context);
+        int currentVersion = getAppVersionCode(context);
         if (registeredVersion != currentVersion) {
             Log.i("GCM", "App version changed.");
             return "";
@@ -157,11 +157,25 @@ public class GlobalApplication extends Application {
     /**
      * @return Application's version code from the {@code PackageManager}.
      */
-    public static int getAppVersion(Context context) {
+    public static int getAppVersionCode(Context context) {
         try {
             PackageInfo packageInfo = context.getPackageManager()
                     .getPackageInfo(context.getPackageName(), 0);
             return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            // should never happen
+            throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
+
+    /**
+     * @return Application's version code from the {@code PackageManager}.
+     */
+    public static String getAppVersionName(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             // should never happen
             throw new RuntimeException("Could not get package name: " + e);

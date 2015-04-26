@@ -1,6 +1,5 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.services;
 
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -21,7 +20,6 @@ import android.util.Log;
 
 import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.LocationReceiver;
 
 import java.io.IOException;
 import java.util.List;
@@ -137,7 +135,7 @@ public class ManagerGPS extends Service implements LocationListener {
             Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
             try {
                 if (geocoder != null) {
-                    List<Address> addressList = geocoder.getFromLocation(latitud, longitud, 1);
+                    List<Address> addressList = geocoder.getFromLocation(getLatitud(), getLongitud(), 1);
                     return addressList;
                 }
             } catch (IOException e) {

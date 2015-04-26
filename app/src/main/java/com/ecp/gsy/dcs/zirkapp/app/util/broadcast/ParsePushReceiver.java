@@ -25,6 +25,11 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
     public static final int NOTIFICATION_ID = 1;
 
     @Override
+    protected Notification getNotification(Context context, Intent intent) {
+        return null;
+    }
+
+    @Override
     protected void onPushReceive(Context context, Intent intent) {
         super.onPushReceive(context, intent);
         Bundle bundle = intent.getExtras();
@@ -48,17 +53,30 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
     }
 
     private void sendNotification(String msg, String title, Context context) {
+        String[] messages = msg.split("-:-");
+        msg = msg.contains("-:-") ? msg.substring(0, msg.length() - 4) : msg; //Limpiar mensaje
+        int typeNotification = 0;
+        if (messages.length > 1)
+            typeNotification = Integer.parseInt(messages[messages.length - 1]);
+        //Notificacion
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent intent = new Intent(context, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        intent.setAction("OPEN_FRAGMENT_USER");
-        //intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        switch (typeNotification) {
+            case 1:
+                intent.setAction("OPEN_FRAGMENT_USER"); //Notificacion desde chat
+                break;
+            case 2:
+                intent.setAction("OPEN_FRAGMENT_NOTI"); //Notificacion desde comentarios
+                break;
+        }
+
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder nBuilder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.ic_icon_chat)
+                .setSmallIcon(R.drawable.ic_zirkapp_noti)
                 .setDefaults(Notification.DEFAULT_ALL)
-                .setContentTitle(title != null ? title : "Zirkapp: Chat")
+                .setContentTitle(title != null ? title : "Zirkapp")
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(msg))
                 .setContentText(msg)
                 .setAutoCancel(true)
@@ -68,3 +86,4 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
         notificationManager.notify(NOTIFICATION_ID, nBuilder.build());
     }
 }
+

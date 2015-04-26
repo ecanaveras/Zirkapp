@@ -23,7 +23,7 @@
     <application
         android:name=".util.task.GlobalApplication"
         android:allowBackup="true"
-        android:icon="@drawable/ic_main"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
@@ -109,6 +109,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/title_activity_about"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
         <activity
             android:name=".CustomSettingsActivity"
             android:label="@string/title_activity_settings">
@@ -126,26 +136,9 @@
 
         <service android:name=".util.services.MessageService" />
 
-        <!-- GCM -->
-        <!--<service
-            android:name=".util.services.GcmIntentService"
-            android:enabled="true" />-->
-        <!-- GCM Version -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
-        <!--<receiver
-            android:name=".util.broadcast.GcmBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter >&lt;!&ndash;android:priority="2"&ndash;&gt;
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                &lt;!&ndash; <action android:name="com.ecp.gsy.dcs.zirkapp.GCM_NOTIFICATION_ACTION" /> &ndash;&gt;
-                &lt;!&ndash;                   IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name. &ndash;&gt;
-                <category android:name="com.ecp.gsy.dcs.zirkapp" />
-            </intent-filter>
-        </receiver>-->
-        <!-- FIN GCM -->
 
         <!-- PARSE -->
         <service android:name="com.parse.PushService" />
@@ -163,7 +156,7 @@
             <intent-filter android:priority="1">
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                <!--                   IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name. -->
+                <!-- IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name. -->
                 <category android:name="com.ecp.gsy.dcs.zirkapp" />
             </intent-filter>
         </receiver>
@@ -181,7 +174,7 @@
         <!-- replace @drawable/push_icon with your push icon identifier -->
         <meta-data
             android:name="com.parse.push.notification_icon"
-            android:resource="@android:drawable/ic_menu_mylocation" />
+            android:resource="@drawable/ic_zirkapp_noti" />
 
         <meta-data
             android:name="com.parse.push.gcm_sender_id"

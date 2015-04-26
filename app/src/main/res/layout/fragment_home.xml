@@ -157,7 +157,7 @@
                         android:layout_marginLeft="5dp"
                         android:adjustViewBounds="false"
                         android:baselineAlignBottom="false"
-                        android:src="@drawable/ic_radar"
+                        android:src="@drawable/ic_icon_radar_new"
                         android:scaleType="fitCenter"
                         android:layout_gravity="center_vertical" />
 

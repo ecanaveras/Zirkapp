@@ -333,8 +333,9 @@ public class MainActivity extends ActionBarActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (intent.getAction() != null) {
-            Log.d("onResume", intent.getAction());
-            showFragment(CHAT, false);
+            if (intent.getAction().equals("OPEN_FRAGMENT_USER")) showFragment(CHAT, false);
+            if (intent.getAction().equals("OPEN_FRAGMENT_NOTI")) showFragment(NOTI, false);
+            Log.d("onNewIntent", intent.getAction());
         }
     }
 

@@ -123,6 +123,11 @@
     <string name="lblSearchingChats">Buscando conversaciones...</string>
     <string name="action_bar_history">Historial</string>
     <string name="title_activity_chat_history">Historial del Chat</string>
+    <string name="msgCopyRights">© 2015 Zirkapp Inc.</string>
+    <string name="msgCopyRights2">All rights reserved.</string>
+    <string name="lblVersion">Versión</string>
+    <string name="title_activity_about">Acerca de...</string>
+    <string name="mgsNewChat">Mensaje instantaneo</string>
 
 
     <string-array name="options_drawer">
