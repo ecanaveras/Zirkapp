@@ -1,11 +1,8 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.task;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -13,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.provider.Settings;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
@@ -24,9 +20,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseFile;
 import com.parse.ParseInstallation;
-import com.parse.ParsePush;
 import com.parse.ParseUser;
 import com.parse.PushService;
 
@@ -34,7 +30,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.logging.Handler;
 
 /**
  * Created by Elder on 15/07/2014.
@@ -65,25 +60,16 @@ public class GlobalApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        //Iniciar Parse
         // Enable Local Datastore.
         Parse.enableLocalDatastore(this);
 
+        //Iniciar Parse
         Parse.initialize(this, "VDJEJIMbyuOiis9bwBHmrOIc7XDUqYHQ0TMhA23c", "9EJKzvp4LhRdnLqfH6jkHPaWd58IVXaBKAWdeItE");
-        //ParseInstallation.getCurrentInstallation().saveInBackground();
-        /*final ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
-        final String androidId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        android.os.Handler handler = new android.os.Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                parseInstallation.put("GCMSenderId", SENDER_ID);
-                parseInstallation.saveInBackground();
-            }
-        }, 3000);*/
+        PushService.setDefaultPushCallback(this, MainActivity.class);
 
         //Facebook
-        FacebookSdk.sdkInitialize(getApplicationContext());
+        FacebookSdk.sdkInitialize(this);
+        //ParseFacebookUtils.initialize(getResources().getString(R.string.facebook_app_id));
     }
 
 

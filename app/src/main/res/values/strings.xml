@@ -127,7 +127,7 @@
     <string name="msgCopyRights2">All rights reserved.</string>
     <string name="lblVersion">Versión</string>
     <string name="title_activity_about">Acerca de...</string>
-    <string name="mgsNewChat">Mensaje instantaneo</string>
+    <string name="mgsNewChat">Nuevo chat</string>
 
 
     <string-array name="options_drawer">

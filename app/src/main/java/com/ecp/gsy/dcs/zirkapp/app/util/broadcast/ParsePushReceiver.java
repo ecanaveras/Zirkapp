@@ -61,7 +61,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
         //Notificacion
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent intent = new Intent(context, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         switch (typeNotification) {
             case 1:
                 intent.setAction("OPEN_FRAGMENT_USER"); //Notificacion desde chat

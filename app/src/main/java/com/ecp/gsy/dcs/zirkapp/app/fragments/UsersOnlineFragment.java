@@ -249,8 +249,10 @@ public class UsersOnlineFragment extends Fragment {
         //actualiza la lista de usuarios al cambiar de ubicacion
         locationReceiver = new LocationReceiver(this);
         //Contar los mensajes recibidos
-//        countMessagesReceiver = new CountMessagesReceiver(listViewUserOnline);
-//        getActivity().registerReceiver(countMessagesReceiver, new IntentFilter("cant_messages"));
+        countMessagesReceiver = new CountMessagesReceiver(listViewUserOnline);
+
+        //Registrar los Broadcast
+        getActivity().registerReceiver(countMessagesReceiver, new IntentFilter("broadcast.cant_messages"));
         getActivity().registerReceiver(sinchConnectReceiver, new IntentFilter("app.fragments.UsersOnlineFragment"));
         getActivity().registerReceiver(locationReceiver, new IntentFilter("broadcast.gps.location_change"));
         super.onResume();
@@ -258,7 +260,7 @@ public class UsersOnlineFragment extends Fragment {
 
     @Override
     public void onPause() {
-        //getActivity().unregisterReceiver(countMessagesReceiver);
+        getActivity().unregisterReceiver(countMessagesReceiver);
         getActivity().unregisterReceiver(sinchConnectReceiver);
         getActivity().unregisterReceiver(locationReceiver);
         super.onPause();

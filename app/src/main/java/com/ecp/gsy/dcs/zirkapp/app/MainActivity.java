@@ -58,7 +58,6 @@ public class MainActivity extends ActionBarActivity {
 
     //Toolbar
     private Toolbar toolbar;
-
     //Drawer
     private DrawerLayout drawerNavigation;
     private ActionBarDrawerToggle drawerToggle;
@@ -69,16 +68,12 @@ public class MainActivity extends ActionBarActivity {
     private NavigationAdapter navAdapter;
     private View headerDrawer;
     private ImageView avatar;
-
     //Fragments
     private int indexBackOrDefaultFragment;
-
     //Usuario de Parse
     private ParseUser userZirkapp = null;
-
     //Respuesta del welcome
     private int inputWelcomeRequestCode = 10;
-
     //Respuesta del edit profile
     private int inputEditProfileRequestCode = 20;
 

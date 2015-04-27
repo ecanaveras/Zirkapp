@@ -1,18 +1,14 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -30,9 +26,8 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.parse.FindCallback;
-import com.parse.Parse;
+import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
@@ -48,20 +43,11 @@ import com.sinch.android.rtc.messaging.MessageDeliveryInfo;
 import com.sinch.android.rtc.messaging.MessageFailureInfo;
 import com.sinch.android.rtc.messaging.WritableMessage;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Elder on 21/02/2015.
@@ -305,7 +291,7 @@ public class MessagingActivity extends ActionBarActivity {
                 saveLocalMessage(message, writableMessage, receptorId, MessageAdapter.DIRECTION_INCOMING);
 
                 //Receiver
-                Intent intent = new Intent("cant_messages");
+                Intent intent = new Intent("broadcast.cant_messages");
                 intent.putExtra("senderId", receptorId);
                 intent.putExtra("recipientId", currentUser.getObjectId());
                 sendBroadcast(intent);
@@ -350,17 +336,26 @@ public class MessagingActivity extends ActionBarActivity {
                         ParsePush parsePush = new ParsePush();
                         parsePush.setQuery(query);
 
-                        String messageNotification = getString(R.string.mgsNewChat);
+                        String messageBody = "Chat: %s -:-%d";
+                        String messageNotification = getResources().getString(R.string.mgsNewChat);
+                        int typeNotificacion = 1; //1 = CHAT
 
                         try {
                             JSONObject data = new JSONObject();
-                            data.put("alert", String.format(messageNotification, message.getTextBody(), "-:-1")); //1 = CHAT
+                            data.put("alert", String.format(messageBody, message.getTextBody(), typeNotificacion));
                             data.put("badge", "Increment");
                             data.put("sound", "default"); //Todo obtener Tono de preferencias
                             //Pasar sender como titulo
                             data.put("title", currentUser.getUsername());
-                            data.put("uri", "");
                             data.put("SIN", pushPayLoad);
+
+                            /*//Usuario
+                            JSONObject juser = new JSONObject();
+                            juser.put("objectId", currentUser.getObjectId());
+                            juser.put("username", currentUser.getUsername());
+                            juser.put("name", currentUser.getString("name"));
+
+                            data.put("user", juser);*/
 
                             parsePush.setData(data);
                             parsePush.sendInBackground(new SendCallback() {
