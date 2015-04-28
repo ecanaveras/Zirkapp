@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;

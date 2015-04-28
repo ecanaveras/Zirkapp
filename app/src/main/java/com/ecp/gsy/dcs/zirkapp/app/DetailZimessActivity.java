@@ -32,10 +32,12 @@ import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataCommentsTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -131,8 +133,8 @@ public class DetailZimessActivity extends ActionBarActivity {
 
         //Set custom hint
         if (zimessUser != null) {
-            String name = zimessUser.getString("name");
-            String msgUsername = new StringBuffer(getResources().getString(R.string.msgReply)).append(" ").append(!name.isEmpty() ? name : zimessUser.getUsername()).toString();
+            String name = zimessUser.getString("name") != null ? zimessUser.getString("name") : zimessUser.getUsername();
+            String msgUsername = new StringBuffer(getResources().getString(R.string.msgReply)).append(" ").append(name).toString();
             txtComment.setHint(msgUsername);
         } else {
             txtComment.setHint(null);
@@ -205,7 +207,11 @@ public class DetailZimessActivity extends ActionBarActivity {
      *
      * @param commentText
      */
-    private void sendZimessComment(String commentText) {
+    private void sendZimessComment(final String commentText) {
+        if (zimessDetail == null || currentUser == null) {
+            Toast.makeText(this, "Problemas con le Zimess, intenta mas tarde!", Toast.LENGTH_SHORT).show();
+            return;
+        }
         final ParseObject zimessObject = ParseObject.createWithoutData("ParseZimess", zimessDetail.getZimessId());
         ParseObject commentObject = new ParseObject("ParseZComment");
         commentObject.put("user", currentUser);
@@ -215,6 +221,16 @@ public class DetailZimessActivity extends ActionBarActivity {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
+                    try {
+                        String receptorId = zimessObject.fetchIfNeeded().getParseUser("user").getObjectId();
+                        ParseFile parseFile = currentUser.getParseFile("avatar");
+                        if (receptorId != null && !currentUser.getObjectId().equals(receptorId)) {
+                            String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+                            new SendPushTask(name, commentText, receptorId, parseFile, SendPushTask.PUSH_COMMENT).execute();
+                        }
+                    } catch (ParseException e1) {
+                        Log.e("find.parse.user", e.getMessage());
+                    }
                     isZimessUpdated = true;
                     txtComment.setText(null);
                     updateCantComments();

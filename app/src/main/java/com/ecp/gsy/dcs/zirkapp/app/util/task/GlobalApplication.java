@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -52,6 +53,7 @@ public class GlobalApplication extends Application {
     private static Integer cantZimess;
     private static Integer cantUsersOnline;
     private static Integer cantNotifications;
+    private static Resources resources;
 
     //Order Zimess
     private int sortZimess;
@@ -59,6 +61,8 @@ public class GlobalApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        resources = this.getResources();
 
         // Enable Local Datastore.
         Parse.enableLocalDatastore(this);
@@ -200,24 +204,29 @@ public class GlobalApplication extends Application {
      * @return
      */
     public static Bitmap getAvatar(ParseUser currentUser) {
-        ParseFile parseFile = currentUser.getParseFile("avatar");
-        try {
-            if (currentUser != null && parseFile != null && parseFile.getData().length > 0) {
-                byte[] byteImage;
-                byteImage = parseFile.getData();
-                if (byteImage != null) {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inPurgeable = true;
-                    Bitmap bitmap1 = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length, options);
-                    return bitmap1;//Bitmap.createScaledBitmap(bitmap1, 50, 50, true);
+        if(currentUser != null) {
+            ParseFile parseFile = currentUser.getParseFile("avatar");
+            try {
+                if (parseFile != null && parseFile.getData().length > 0) {
+                    byte[] byteImage;
+                    byteImage = parseFile.getData();
+                    if (byteImage != null) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPurgeable = true;
+                        Bitmap bitmap1 = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length, options);
+                        if (bitmap1 != null)
+                            return bitmap1;//Bitmap.createScaledBitmap(bitmap1, 50, 50, true);
+                    }
                 }
+            } catch (ParseException e) {
+                Log.e("Parse.avatar.exception", e.getMessage());
+            } catch (OutOfMemoryError e) {
+                Log.e("Parse.avatar.outmemory", e.toString());
             }
-        } catch (ParseException e) {
-            Log.e("Parse.avatar.exception", e.getMessage());
-        } catch (OutOfMemoryError e) {
-            Log.e("Parse.avatar.outmemory", e.toString());
         }
-        return null;
+        //Si no hay imagen se retorna una imagen por defecto.
+        Bitmap bitmapDefault = BitmapFactory.decodeResource(resources, R.drawable.ic_user_male);
+        return bitmapDefault;
     }
 
     public Zimess getTempZimess() {

@@ -33,7 +33,6 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -53,11 +52,11 @@
             android:launchMode="singleTask"/>
         <activity
             android:name=".ManagerLogin"
-            android:label="@string/lblLogin" />
+            android:label="@string/lblLogin"/>
         <activity android:name=".MessagingActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.ecp.gsy.dcs.zirkapp.app.MainActivity" />
         </activity>
         <activity
             android:name=".NewZimessActivityParse"
@@ -65,7 +64,7 @@
             android:windowSoftInputMode="stateVisible|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.ecp.gsy.dcs.zirkapp.app.MainActivity" />
         </activity>
         <activity
             android:name=".DetailZimessActivity"
@@ -73,7 +72,7 @@
             android:windowSoftInputMode="stateHidden|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.ecp.gsy.dcs.zirkapp.app.MainActivity" />
         </activity>
         <activity
             android:name=".UserProfileActivity"
@@ -81,7 +80,7 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.ecp.gsy.dcs.zirkapp.app.MainActivity" />
         </activity>
         <activity
             android:name=".EditProfileActivity"
@@ -90,7 +89,7 @@
             android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.ecp.gsy.dcs.zirkapp.app.MainActivity" />
             <intent-filter>
                 <action android:name="action.EDIT_PROFILE" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -101,14 +100,14 @@
             android:label="@string/lblMyZimess">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.ecp.gsy.dcs.zirkapp.app.MainActivity" />
         </activity>
         <activity
             android:name=".ChatHistoryActivity"
             android:label="@string/title_activity_chat_history">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.ecp.gsy.dcs.zirkapp.app.MainActivity" />
         </activity>
 
         <activity
@@ -117,7 +116,7 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.ecp.gsy.dcs.zirkapp.app.MainActivity" />
         </activity>
 
         <activity
@@ -125,7 +124,7 @@
             android:label="@string/title_activity_settings">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.ecp.gsy.dcs.zirkapp.app.MainActivity" />
         </activity>
 
         <!-- Fcebook -->

@@ -5,12 +5,15 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.parse.ParseFile;
 import com.parse.ParsePushBroadcastReceiver;
 
 import org.json.JSONException;
@@ -23,6 +26,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
 
     private NotificationManager notificationManager;
     public static final int NOTIFICATION_ID = 1;
+    private Bitmap imgLargeIcon;
 
     @Override
     protected Notification getNotification(Context context, Intent intent) {
@@ -31,17 +35,27 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
 
     @Override
     protected void onPushReceive(Context context, Intent intent) {
-        super.onPushReceive(context, intent);
         Bundle bundle = intent.getExtras();
         JSONObject data = null;
         try {
             data = new JSONObject(bundle.getString("com.parse.Data"));
-            sendNotification(data.getString("alert"), data.getString("title"), context);
+            String message = data.getString("alert");
+            String title = data.getString("title");
+            byte[] byteImage = (byte[]) data.get("avatar");
+            if (byteImage != null) {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPurgeable = true;
+                Bitmap bitmap1 = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length, options);
+                if (bitmap1 != null)
+                    imgLargeIcon = bitmap1;
+            }
+            //Enviar notificacion
+            sendNotification(message, title, context);
         } catch (JSONException e) {
             Log.e("push.json.receiver", e.getMessage());
             try {
                 //Enviar sin title
-                if (data != null && e.getMessage().contains("title")) {
+                if (data != null && (e.getMessage().contains("title") || e.getMessage().contains("avatar"))) {
                     sendNotification(data.getString("alert"), null, context);
                 }
             } catch (JSONException e1) {
@@ -49,6 +63,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
             }
 
         }
+        super.onPushReceive(context, intent);
         //Log.d("bundlePush", bundle.toString());
     }
 
@@ -75,6 +90,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
 
         NotificationCompat.Builder nBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_zirkapp_noti)
+                .setLargeIcon(imgLargeIcon != null ? imgLargeIcon : BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher))
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setContentTitle(title != null ? title : "Zirkapp")
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(msg))

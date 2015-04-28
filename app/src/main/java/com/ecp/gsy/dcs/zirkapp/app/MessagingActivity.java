@@ -26,9 +26,11 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.FindCallback;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
@@ -318,66 +320,12 @@ public class MessagingActivity extends ActionBarActivity {
         @Override
         public void onShouldSendPushData(MessageClient messageClient, final Message message, final List<PushPair> pushPairs) {
 
-            class SendPushTask extends AsyncTask<Void, Void, Void> {
-
-                @Override
-                protected Void doInBackground(Void... params) {
-                    if (receptorId != null && pushPairs.size() > 0 && message != null) {
-                        PushPair pushPair = pushPairs.get(0);
-                        String pushPayLoad = pushPair.getPushPayload();
-
-                        //1. Tomar el usuario a notificar
-                        ParseQuery userQuery = ParseUser.getQuery();
-                        userQuery.whereEqualTo("objectId", receptorId);
-                        //2. Tomar la instalacion del usuario a notificar
-                        ParseQuery query = ParseInstallation.getQuery();
-                        query.whereMatchesQuery("user", userQuery);
-                        //3. Establecer query de filtro
-                        ParsePush parsePush = new ParsePush();
-                        parsePush.setQuery(query);
-
-                        String messageBody = "Chat: %s -:-%d";
-                        String messageNotification = getResources().getString(R.string.mgsNewChat);
-                        int typeNotificacion = 1; //1 = CHAT
-
-                        try {
-                            JSONObject data = new JSONObject();
-                            data.put("alert", String.format(messageBody, message.getTextBody(), typeNotificacion));
-                            data.put("badge", "Increment");
-                            data.put("sound", "default"); //Todo obtener Tono de preferencias
-                            //Pasar sender como titulo
-                            data.put("title", currentUser.getUsername());
-                            data.put("SIN", pushPayLoad);
-
-                            /*//Usuario
-                            JSONObject juser = new JSONObject();
-                            juser.put("objectId", currentUser.getObjectId());
-                            juser.put("username", currentUser.getUsername());
-                            juser.put("name", currentUser.getString("name"));
-
-                            data.put("user", juser);*/
-
-                            parsePush.setData(data);
-                            parsePush.sendInBackground(new SendCallback() {
-                                @Override
-                                public void done(ParseException e) {
-                                    if (e == null) {
-                                        Log.i("parse.push", "success");
-                                    } else {
-                                        Log.i("parse.push", "failed");
-                                    }
-                                }
-                            });
-                        } catch (JSONException e) {
-                            Log.e("json.exception", e.getMessage());
-                        }
-                    }
-
-                    return null;
-                }
+            //Enviar notificacion.
+            if (receptorId != null && pushPairs.size() > 0 && message != null) {
+                String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+                ParseFile parseFile = currentUser.getParseFile("avatar");
+                new SendPushTask(name, message.getTextBody(), receptorId, parseFile, pushPairs, SendPushTask.PUSH_CHAT).execute();
             }
-
-            new SendPushTask().execute();
 
         }
     }
