@@ -26,6 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.fragments.NotificationsFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.SettingsFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
@@ -224,7 +225,7 @@ public class MainActivity extends ActionBarActivity {
         //Chat
         navItems.add(new ItemListDrawer(navTitles[1], navIcons.getResourceId(1, -1), GlobalApplication.getCantUsersOnline()));
         //Notificaciones
-        navItems.add(new ItemListDrawer(navTitles[2], navIcons.getResourceId(2, -1)));
+        navItems.add(new ItemListDrawer(navTitles[2], navIcons.getResourceId(2, -1), GlobalApplication.getCantNotifications()));
         //Configurar
         navItems.add(new ItemListDrawer(navTitles[3], navIcons.getResourceId(3, -1), "Opciones".toUpperCase()));
         //Compartir Zirkapp
@@ -328,8 +329,19 @@ public class MainActivity extends ActionBarActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (intent.getAction() != null) {
-            if (intent.getAction().equals("OPEN_FRAGMENT_USER")) showFragment(CHAT, false);
-            if (intent.getAction().equals("OPEN_FRAGMENT_NOTI")) showFragment(NOTI, false);
+            if (intent.getAction().equals("OPEN_FRAGMENT_USER")) {
+                Log.d("chat.receptorId", intent.getStringExtra("receptorId"));
+                Log.d("chat.senderId", intent.getStringExtra("senderId"));
+                showFragment(CHAT, false);
+            }
+            if (intent.getAction().equals("OPEN_FRAGMENT_NOTI")) {
+                Log.d("noti.targetId", intent.getStringExtra("targetId"));
+                Log.d("noti.receptorId", intent.getStringExtra("receptorId"));
+                Log.d("noti.senderId", intent.getStringExtra("senderId"));
+                NotificationsFragment frag = (NotificationsFragment) fragments[NOTI];
+                frag.findNotifications();
+                showFragment(NOTI, false);
+            }
             Log.d("onNewIntent", intent.getAction());
         }
     }

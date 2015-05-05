@@ -223,10 +223,9 @@ public class DetailZimessActivity extends ActionBarActivity {
                 if (e == null) {
                     try {
                         String receptorId = zimessObject.fetchIfNeeded().getParseUser("user").getObjectId();
-                        ParseFile parseFile = currentUser.getParseFile("avatar");
                         if (receptorId != null && !currentUser.getObjectId().equals(receptorId)) {
                             String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
-                            new SendPushTask(name, commentText, receptorId, parseFile, SendPushTask.PUSH_COMMENT).execute();
+                            new SendPushTask(zimessDetail.getZimessId(), receptorId, currentUser.getObjectId(), name, commentText, SendPushTask.PUSH_COMMENT).execute();
                         }
                     } catch (ParseException e1) {
                         Log.e("find.parse.user", e.getMessage());
@@ -238,12 +237,11 @@ public class DetailZimessActivity extends ActionBarActivity {
                     Toast.makeText(getApplicationContext(),
                             "Error al enviar tu comentario, reintentalo!",
                             Toast.LENGTH_SHORT).show();
-                    Log.e("Parse.sendZimessComment", e.getMessage());
+                    Log.e("Parse.Zimess.Comment", e.getMessage());
                 }
                 btnSendComment.setEnabled(true);
             }
         });
-        //findZimessComment();
     }
 
     private void updateCantComments() {

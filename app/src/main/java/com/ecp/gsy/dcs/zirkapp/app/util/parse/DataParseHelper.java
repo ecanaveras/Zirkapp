@@ -111,6 +111,26 @@ public class DataParseHelper {
     }
 
     /**
+     * Busca notificaciones
+     *
+     * @param receptorId
+     * @return
+     */
+    public static List<ParseObject> findNotifications(String receptorId) {
+        List<ParseObject> parseObjects = new ArrayList<ParseObject>();
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZNotifi");
+        query.whereEqualTo("receptorId", receptorId);
+        query.orderByDescending("createdAt");
+        try {
+            parseObjects = query.find();
+        } catch (ParseException e) {
+            Log.e("Parse.Notifi", e.getMessage());
+        }
+
+        return parseObjects;
+    }
+
+    /**
      * Busca Zimess de acuerdo a la posicion
      *
      * @param currentLocation
@@ -132,7 +152,7 @@ public class DataParseHelper {
             if (cantMinKmAround == 0) {
                 innerQuery.whereWithinKilometers("location", parseGeoPoint, 0.5);
             } else {
-                //1000 Metros
+                //1000 Metros en adelante
                 innerQuery.whereWithinKilometers("location", parseGeoPoint, cantMaxKmAround);
             }
             query.whereDoesNotMatchKeyInQuery("objectId", "objectId", innerQuery);
@@ -240,6 +260,27 @@ public class DataParseHelper {
         }
 
         return listVisita.size() > 0 ? listVisita.get(0) : null;
+    }
+
+
+    /**
+     * Busca un usuarios de acuerdo a su objectId
+     *
+     * @param userId
+     * @return
+     */
+    public static ParseUser findUser(String userId) {
+        List<ParseUser> parseUsers = new ArrayList<>();
+        //Buscar Usuario
+        ParseQuery query = ParseUser.getQuery();
+        query.whereEqualTo("objectId", userId);
+        try {
+            parseUsers = query.find();
+        } catch (ParseException e) {
+            Log.e("Parse.Users", e.getMessage());
+        }
+
+        return parseUsers.size() > 0 ? parseUsers.get(0) : null;
     }
 
     //##############################################################

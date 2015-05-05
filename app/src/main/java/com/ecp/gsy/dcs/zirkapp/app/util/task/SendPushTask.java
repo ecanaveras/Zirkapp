@@ -10,6 +10,7 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SendCallback;
+import com.parse.codec.binary.Base64;
 import com.sinch.android.rtc.PushPair;
 
 import org.json.JSONException;
@@ -27,12 +28,14 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
     public static final int PUSH_ZIMESS = 3;
 
     private List<PushPair> pushPairs;
+    private String targetId;
     private String receptorId;
+    private String senderId;
     private String message;
     private String title;
     private String pushPayLoad;
     private int typeNotificacion;
-    private ParseFile parseFile;
+
 
     /**
      * Envia una notificacion
@@ -42,12 +45,13 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
      * @param receptorId
      * @param typeNotificacion
      */
-    public SendPushTask(String title, String message, String receptorId, ParseFile senderAvatar, int typeNotificacion) {
+    public SendPushTask(String targetId, String receptorId, String senderId, String title, String message, int typeNotificacion) {
+        this.targetId = targetId;
+        this.receptorId = receptorId;
+        this.senderId = senderId;
         this.title = title;
         this.message = message;
-        this.receptorId = receptorId;
         this.typeNotificacion = typeNotificacion;
-        this.parseFile = senderAvatar;
     }
 
     /**
@@ -56,16 +60,18 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
      * @param title
      * @param message
      * @param receptorId
+     * @param senderId
      * @param pushPairs
      * @param typeNotificacion
      */
-    public SendPushTask(String title, String message, String receptorId, ParseFile senderAvatar, List<PushPair> pushPairs, int typeNotificacion) {
+    public SendPushTask(String targetId, String receptorId, String senderId, String title, String message, List<PushPair> pushPairs, int typeNotificacion) {
+        this.targetId = targetId;
+        this.receptorId = receptorId;
+        this.senderId = senderId;
         this.title = title;
         this.message = message;
-        this.receptorId = receptorId;
         this.pushPairs = pushPairs;
         this.typeNotificacion = typeNotificacion;
-        this.parseFile = senderAvatar;
     }
 
     @Override
@@ -88,32 +94,20 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
             parsePush.setQuery(query);
 
             //Alert
-            String messageBody = "%s: %s -:-%d";
-            String messageSummary = "Zirkapp";
-            switch (typeNotificacion) {
-                case 1:
-                    messageSummary = "Chat";
-                    break;
-                case 2:
-                    messageSummary = "Comentario";
-                    break;
-                case 3:
-                    messageSummary = "Zimess";
-                    break;
-            }
+            String messageBody = "%s -:-%d";
 
             try {
                 JSONObject data = new JSONObject();
-                data.put("alert", String.format(messageBody, messageSummary, message.length() < 61 ? message : message.substring(0, 60).concat("..."), typeNotificacion));
+                data.put("alert", String.format(messageBody, message.length() < 61 ? message : message.substring(0, 60).concat("..."), typeNotificacion));
                 data.put("badge", "Increment");
                 data.put("sound", "default"); //Todo obtener Tono de preferencias
                 //Pasar sender como titulo
                 data.put("title", title);
-                if (parseFile != null && parseFile.getData().length > 0) {
-                    data.put("avatar", parseFile.getData());
-                }
-                if (pushPayLoad != null)
-                    data.put("SIN", pushPayLoad);
+                //Datos para el manejo de la notificacion
+                if (targetId != null) data.put("targetId", targetId); //Objeto afectado
+                if (receptorId != null) data.put("receptorId", receptorId); //Quien recibe
+                if (senderId != null) data.put("senderId", senderId); //Quien produce la notificacion
+                if (pushPayLoad != null) data.put("SIN", pushPayLoad);
 
                 parsePush.setData(data);
                 parsePush.sendInBackground(new SendCallback() {
@@ -128,8 +122,6 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
                 });
             } catch (JSONException e) {
                 Log.e("json.exception", e.getMessage());
-            } catch (ParseException e) {
-                Log.e("parse.exception", e.getMessage());
             }
         }
 

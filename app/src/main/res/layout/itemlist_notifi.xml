@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:minHeight="50dp">
+
+    <ImageView
+        android:id="@+id/imgIconNoti"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:src="@drawable/ic_icon_review_comment"
+        android:layout_marginRight="4dp"
+        android:layout_gravity="center"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center">
+
+        <TextView
+            android:id="@+id/lblSummaryNoti"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="[Zimess] Nuevo comentario de Gasy:"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/lblDetailNoti"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:text="Gracias por el favor, me quedé esperando, pense que eras una persona seria!"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/lblReceptorid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/lblSenderId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/lblTargetId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+
+
+</LinearLayout>

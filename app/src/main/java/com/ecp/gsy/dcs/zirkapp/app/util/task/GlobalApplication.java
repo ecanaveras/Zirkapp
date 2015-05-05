@@ -188,6 +188,13 @@ public class GlobalApplication extends Application {
         parseInstallation.saveInBackground();
     }
 
+    public void storeParseInstallation() {
+        final ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
+        parseInstallation.put("GCMSenderId", SENDER_ID);
+        parseInstallation.put("user", ParseUser.getCurrentUser());
+        parseInstallation.saveInBackground();
+    }
+
     /**
      * Retorna el current ParseUser
      *
@@ -261,12 +268,12 @@ public class GlobalApplication extends Application {
         cantUsersOnline = _cantUsersOnline;
     }
 
-    public Integer getCantNotifications() {
+    public static Integer getCantNotifications() {
         return cantNotifications;
     }
 
-    public void setCantNotifications(Integer cantNotifications) {
-        this.cantNotifications = cantNotifications;
+    public static void  setCantNotifications(Integer _cantNotifications) {
+        cantNotifications = _cantNotifications;
     }
 
     public int getSortZimess() {

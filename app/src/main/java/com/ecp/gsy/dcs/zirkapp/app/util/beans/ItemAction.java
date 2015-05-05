@@ -6,16 +6,16 @@ import android.graphics.drawable.Drawable;
 /**
  * Created by Elder on 03/08/2014.
  */
-public class ActionItem {
+public class ItemAction {
     private Drawable icon;
     private Bitmap thumb;
     private String title;
     private boolean selected;
 
-    public ActionItem() {
+    public ItemAction() {
     }
 
-    public ActionItem(Drawable icon) {
+    public ItemAction(Drawable icon) {
         this.icon = icon;
     }
 

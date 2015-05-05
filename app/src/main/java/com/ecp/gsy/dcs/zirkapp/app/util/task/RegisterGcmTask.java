@@ -46,10 +46,13 @@ public class RegisterGcmTask extends AsyncTask<Void, Void, String> {
             msg = regId;
 
             globalApplication.storeRegistrationId(context, regId);
-            globalApplication.storeParseInstallation(regId);
+            if(regId != null) {
+                globalApplication.storeParseInstallation(regId);
+            }else globalApplication.storeParseInstallation();
 
         } catch (IOException e) {
             msg = "Error :" + e.getMessage();
+            globalApplication.storeParseInstallation();
         }
 
 

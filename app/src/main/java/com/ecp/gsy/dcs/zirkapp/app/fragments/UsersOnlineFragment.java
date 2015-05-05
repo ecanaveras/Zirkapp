@@ -37,7 +37,6 @@ import com.parse.ParseUser;
  */
 public class UsersOnlineFragment extends Fragment {
 
-
     private ListView listViewUserOnline;
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout layoudUsersNoFound, layoudUsersFinder, layoudChatOffline, layoutInitService;
