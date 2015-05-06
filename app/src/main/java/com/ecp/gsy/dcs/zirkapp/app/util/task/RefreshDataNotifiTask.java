@@ -3,6 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util.task;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -27,6 +28,7 @@ public class RefreshDataNotifiTask extends AsyncTask<String, Void, ArrayList<Ite
     private ProgressBar progressBar;
     private String receptorId;
     private TextView lblNotiNotFound;
+    private int noLeidas = 0;
 
     public RefreshDataNotifiTask(Context context, String receptorId, ListView listView, SwipeRefreshLayout swipeRefreshLayout, ProgressBar progressBar, TextView lblNotiNotFound) {
         this.context = context;
@@ -56,6 +58,9 @@ public class RefreshDataNotifiTask extends AsyncTask<String, Void, ArrayList<Ite
             item.setSummaryNoti(parseObject.getString("summaryNoti"));
             item.setTypeNoti(parseObject.getInt("typeNoti"));
             item.setReadNoti(parseObject.getBoolean("readNoti"));
+            if (!item.isReadNoti()) {
+                noLeidas++;
+            }
             arrayList.add(item);
         }
         return arrayList;
@@ -66,12 +71,12 @@ public class RefreshDataNotifiTask extends AsyncTask<String, Void, ArrayList<Ite
         adapter = new NotifiAdapter(context, itemNotifications);
         listView.setAdapter(adapter);
 
-        GlobalApplication.setCantNotifications(adapter.getCantNotiNoRead());
-
+        if(noLeidas > 0) GlobalApplication.setCantNotifications(noLeidas);
         if (progressBar != null) progressBar.setVisibility(View.GONE);
         if (lblNotiNotFound != null && itemNotifications.size() == 0)
             lblNotiNotFound.setVisibility(View.VISIBLE);
 
         swipeRefreshLayout.setRefreshing(false);
+        Log.i("task.cant.noti", String.valueOf(GlobalApplication.getCantNotifications()));
     }
 }

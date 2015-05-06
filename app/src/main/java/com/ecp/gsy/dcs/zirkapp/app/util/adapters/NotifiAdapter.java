@@ -57,9 +57,6 @@ public class NotifiAdapter extends BaseAdapter {
         ImageView icon = (ImageView) vista.findViewById(R.id.imgIconNoti);
         TextView summary = (TextView) vista.findViewById(R.id.lblSummaryNoti);
         TextView detail = (TextView) vista.findViewById(R.id.lblDetailNoti);
-        TextView senderId = (TextView) vista.findViewById(R.id.lblSenderId);
-        TextView receptorId = (TextView) vista.findViewById(R.id.lblReceptorid);
-        TextView targetId = (TextView) vista.findViewById(R.id.lblTargetId);
         //3. Asignar Valores
         switch (item.getTypeNoti()) {
             case SendPushTask.PUSH_CHAT:
@@ -74,16 +71,13 @@ public class NotifiAdapter extends BaseAdapter {
         }
         summary.setText(item.getSummaryNoti());
         detail.setText(item.getDetailNoti());
-        receptorId.setText(item.getReceptorId());
-        senderId.setText(item.getSenderId());
-        targetId.setText(item.getTargetId());
-        if (!item.isReadNoti()) cantNotiNoRead++;
+        //if (!item.isReadNoti()) cantNotiNoRead++;
 
         return vista;
     }
 
-    public Integer getCantNotiNoRead() {
+    /*public Integer getCantNotiNoRead() {
         if (cantNotiNoRead == 0) return null;
         return cantNotiNoRead;
-    }
+    }*/
 }

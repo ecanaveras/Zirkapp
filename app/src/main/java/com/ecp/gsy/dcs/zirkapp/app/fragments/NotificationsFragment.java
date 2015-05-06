@@ -1,6 +1,8 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -14,9 +16,11 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemNotification;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataNotifiTask;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -60,6 +64,7 @@ public class NotificationsFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ItemNotification item = (ItemNotification) parent.getAdapter().getItem(position);
                 if (!item.isReadNoti()) saveReadNotificacion(item);
+                goToTarget(item.getTypeNoti(), item.getTargetId());
             }
         });
 
@@ -85,6 +90,23 @@ public class NotificationsFragment extends Fragment {
 
     public void findNotifications() {
         new RefreshDataNotifiTask(getActivity(), receptorId, listNotifi, swipeRefreshLayout, progressBar, lblNotiNotFound).execute();
+    }
+
+    /**
+     * Navega hasta el objeto afectado por la notificacion
+     *
+     * @param typeTarget
+     * @param targetId
+     */
+    private void goToTarget(int typeTarget, String targetId) {
+        switch (typeTarget) {
+            case SendPushTask.PUSH_COMMENT:
+                Activity activity = getActivity();
+                Intent intent = new Intent(activity, DetailZimessActivity.class);
+                intent.putExtra("targetId", targetId);
+                activity.startActivityForResult(intent, 105);
+                break;
+        }
     }
 
     /**

@@ -27,6 +27,7 @@ import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
@@ -74,10 +75,26 @@ public class DetailZimessActivity extends ActionBarActivity {
         setContentView(R.layout.activity_detail_zimess);
 
         globalApplication = (GlobalApplication) getApplicationContext();
-        currentUser = globalApplication.getCurrentUser();
+        currentUser = ParseUser.getCurrentUser();
 
         //Tomar Zimess enviado.
-        zimessDetail = globalApplication.getTempZimess();
+        if (getIntent() != null && getIntent().getStringExtra("targetId") != null) {
+            ParseObject parseZimess = DataParseHelper.findZimess(getIntent().getStringExtra("targetId"));
+            if (parseZimess != null) {
+                zimessDetail = new Zimess();
+                zimessDetail.setZimessId(parseZimess.getObjectId());
+                zimessDetail.setUser(parseZimess.getParseUser("user"));
+                zimessDetail.setLocation(parseZimess.getParseGeoPoint("location"));
+                zimessDetail.setZimessText(parseZimess.getString("zimessText"));
+                zimessDetail.setCantComment(parseZimess.getInt("cant_comment"));
+                zimessDetail.setCreateAt(parseZimess.getCreatedAt());
+            } else {
+                Toast.makeText(this, "Zimess no encontrado!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } else {
+            zimessDetail = globalApplication.getTempZimess();
+        }
         //Tomar nombre del usuario del Zimess
         zimessUser = zimessDetail.getUser();
 

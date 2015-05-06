@@ -1,5 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.beans;
 
+import java.util.Date;
+
 /**
  * Created by Elder on 04/05/2015.
  */
@@ -13,6 +15,7 @@ public class ItemNotification {
     private String senderId;
     private String targetId;
     private boolean readNoti;
+    private Date created;
 
 
     public String getSummaryNoti() {
@@ -79,5 +82,13 @@ public class ItemNotification {
 
     public void setNotiId(String notiId) {
         this.notiId = notiId;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
     }
 }
