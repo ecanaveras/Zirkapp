@@ -3,10 +3,12 @@ package com.ecp.gsy.dcs.zirkapp.app;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -282,6 +284,25 @@ public class MainActivity extends ActionBarActivity {
             case 4:
                 Intent intent = new Intent(this, CustomSettingsActivity.class);
                 startActivity(intent);
+                break;
+            case 5:
+                //Log.i("package.name", this.getApplicationContext().getPackageName());
+                Uri uri = Uri.parse("market://details?id=" + this.getApplicationContext().getPackageName());
+                Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+                try {
+                    startActivity(goToMarket);
+                } catch (ActivityNotFoundException e) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getResources().getString(R.string.urlPlayStore))));
+                }
+                break;
+            case 6:
+                String msg1 = getResources().getString(R.string.msgShareApp);
+                String urlPS = getResources().getString(R.string.urlPlayStore);
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, String.format("%s: %s", msg1, urlPS));
+                sendIntent.setType("text/plain");
+                startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.msgShareTo)));
                 break;
 //            default:
 //                showFragment(ZIMESS, false);

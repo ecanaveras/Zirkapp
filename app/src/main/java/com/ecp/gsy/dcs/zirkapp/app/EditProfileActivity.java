@@ -1,17 +1,16 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ComponentName;
-import android.content.DialogInterface;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,9 +22,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.alertdialogpro.AlertDialogPro;
-import com.ecp.gsy.dcs.zirkapp.app.util.adapters.CropOptionAdapter;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.CropOption;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
@@ -37,10 +33,10 @@ import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.OutputStream;
+import java.net.URL;
 
 /**
  * Created by Elder on 28/02/2015.
@@ -230,15 +226,12 @@ public class EditProfileActivity extends ActionBarActivity {
         if (view.getId() == R.id.imgUserAvatar) {
             Intent intent = new Intent();
             //Verificar plataforma Android
-            if (Build.VERSION.SDK_INT < 19) {
+            if (Build.VERSION.SDK_INT < 20) {
                 //Android Jelly Bean 4.3 y Anteriores
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-            } else {
-                //Android Kitkat 4.4 +
-                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
+            } else {//if (Build.VERSION.SDK_INT > 20) {
+                intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             }
-
             intent.setType("image/*");
             startActivityForResult(intent, PICK_FROM_FILE);
         }
@@ -248,63 +241,25 @@ public class EditProfileActivity extends ActionBarActivity {
      * Corta la imagen
      */
     private void cropImage() {
-        final ArrayList<CropOption> cropOptions = new ArrayList();
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setType("image/*");
-
-        List<ResolveInfo> resolveInfos = getPackageManager().queryIntentActivities(intent, 0);
-        if (resolveInfos.size() == 0) {
-            Toast.makeText(this, "Problemas con tu Avatar, no hay con que cortar...", Toast.LENGTH_SHORT).show();
+        if (mImageCaptureUri == null) {
             return;
         }
+        try {
+            Intent intent = new Intent("com.android.camera.action.CROP");
+            intent.setDataAndType(mImageCaptureUri, "image/*");
 
-        intent.setData(mImageCaptureUri);
-        intent.putExtra("outputX", 200);
-        intent.putExtra("outputY", 200);
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
-        intent.putExtra("scale", true);
-        intent.putExtra("return-data", true);
+            intent.putExtra("outputX", 200);
+            intent.putExtra("outputY", 200);
+            intent.putExtra("aspectX", 1);
+            intent.putExtra("aspectY", 1);
+            intent.putExtra("scale", true);
+            intent.putExtra("crop", true);
+            intent.putExtra("return-data", true);
 
-        if (resolveInfos.size() == 1) {
-            Intent i = new Intent(intent);
-            ResolveInfo res = resolveInfos.get(0);
-            i.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
-            startActivityForResult(i, CROP_FROM_CAMERA);
-        } else {
-            for (ResolveInfo res : resolveInfos) {
-                CropOption cropOpt = new CropOption();
-                cropOpt.title = getPackageManager().getApplicationLabel(res.activityInfo.applicationInfo);
-                cropOpt.icon = getPackageManager().getApplicationIcon(res.activityInfo.applicationInfo);
-                cropOpt.appIntent = new Intent(intent);
-                cropOpt.appIntent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
-                cropOptions.add(cropOpt);
-            }
+            startActivityForResult(intent, CROP_FROM_CAMERA);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "Tu dispositivo no soporta la acción CORTAR!", Toast.LENGTH_SHORT).show();
         }
-
-        CropOptionAdapter adapter = new CropOptionAdapter(getApplicationContext(), cropOptions);
-        AlertDialogPro.Builder builder = new AlertDialogPro.Builder(this);
-        builder.setTitle("Seleccione...");
-        builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int item) {
-                startActivityForResult(cropOptions.get(item).appIntent, CROP_FROM_CAMERA);
-            }
-        });
-
-        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-
-                if (mImageCaptureUri != null) {
-                    getContentResolver().delete(mImageCaptureUri, null, null);
-                    mImageCaptureUri = null;
-                }
-            }
-        });
-
-        AlertDialog alert = builder.create();
-        alert.show();
-
     }
 
 
@@ -330,10 +285,7 @@ public class EditProfileActivity extends ActionBarActivity {
                 if (f.exists()) f.delete();
                 break;
         }
-
-
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
