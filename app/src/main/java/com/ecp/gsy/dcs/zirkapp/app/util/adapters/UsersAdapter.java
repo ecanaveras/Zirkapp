@@ -63,12 +63,7 @@ public class UsersAdapter extends BaseAdapter {
         lblCommentUser.setText(parseUser.getUsername());
         lblCommentName.setText(parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername());
         //Estableciendo Imagen;
-        Bitmap avatar = GlobalApplication.getAvatar(parseUser);
-        if (avatar != null) {
-            imgAvatar.setImageBitmap(avatar);
-        } else {
-            imgAvatar.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_user_male));
-        }
+        imgAvatar.setImageDrawable(GlobalApplication.getAvatar(parseUser));
         return vista;
     }
 

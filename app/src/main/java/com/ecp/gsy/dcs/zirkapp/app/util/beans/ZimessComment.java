@@ -2,6 +2,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util.beans;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
@@ -28,7 +29,7 @@ public class ZimessComment {
      *
      * @return
      */
-    public Bitmap getAvatar() {
+    public RoundedBitmapDrawable getAvatar() {
         return GlobalApplication.getAvatar(userComment);
     }
 

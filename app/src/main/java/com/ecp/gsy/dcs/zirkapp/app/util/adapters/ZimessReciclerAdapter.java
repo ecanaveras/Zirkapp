@@ -60,17 +60,7 @@ public class ZimessReciclerAdapter extends RecyclerView.Adapter<ZimessReciclerAd
         zimessViewHolder.lblAliasUsuario.setText(zimess.getUser().getString("name"));
 
         //Estableciendo Imagen;
-        Bitmap bitmap = zimess.getAvatar();
-        //Cuadrar imagen
-        if (bitmap != null && bitmap.getWidth() > bitmap.getHeight()) {
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getHeight(), bitmap.getHeight());
-        } else if (bitmap != null && bitmap.getHeight() > bitmap.getWidth()) {
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getWidth());
-        }
-        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(context.getResources(), bitmap);
-        //corner radius
-        roundedBitmapDrawable.setCornerRadius(bitmap.getHeight()); //La imagen debe ser cuadrada
-        zimessViewHolder.imgAvatar.setImageDrawable(roundedBitmapDrawable);
+        zimessViewHolder.imgAvatar.setImageDrawable(zimess.getAvatar());
 
         zimessViewHolder.lblUsername.setText(zimess.getUser().getUsername());
         zimessViewHolder.lblCantComments.setText(Integer.toString(zimess.getCantComment()));

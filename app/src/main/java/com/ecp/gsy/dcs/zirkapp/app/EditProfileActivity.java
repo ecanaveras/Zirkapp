@@ -130,7 +130,7 @@ public class EditProfileActivity extends ActionBarActivity {
         progressDialog.show();
         if (currentUser != null) {
             if (currentUser.getParseFile("avatar") != null) {
-                imgAvatar.setImageBitmap(GlobalApplication.getAvatar(currentUser));
+                imgAvatar.setImageDrawable(GlobalApplication.getAvatar(currentUser));
             }
             txtNombres.setText(currentUser.getString("name"));
             txtEstado.setText(currentUser.getString("wall"));

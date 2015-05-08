@@ -3,15 +3,11 @@ package com.ecp.gsy.dcs.zirkapp.app;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -24,10 +20,8 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.fragments.NotificationsFragment;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.SettingsFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
@@ -72,7 +66,7 @@ public class MainActivity extends ActionBarActivity {
     //Fragments
     private int indexBackOrDefaultFragment;
     //Usuario de Parse
-    private ParseUser userZirkapp = null;
+    private ParseUser currentUser = null;
     //Respuesta del welcome
     private int inputWelcomeRequestCode = 10;
     //Respuesta del edit profile
@@ -93,8 +87,8 @@ public class MainActivity extends ActionBarActivity {
         globalApplication = (GlobalApplication) getApplicationContext();
 
         //User Parse
-        userZirkapp = ParseUser.getCurrentUser();
-        if (userZirkapp != null) {
+        currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
             new RegisterGcmTask(gcm, this).execute();
             ParsePush.subscribeInBackground("", new SaveCallback() {
                 @Override
@@ -108,7 +102,7 @@ public class MainActivity extends ActionBarActivity {
             });
         }
         /*// Check device for Play Services APK.
-        if (globalApplication.checkPlayServices(this) && userZirkapp != null) {
+        if (globalApplication.checkPlayServices(this) && currentUser != null) {
             //GCM
             gcm = GoogleCloudMessaging.getInstance(this);
             regId = globalApplication.getRegistrationId(this);
@@ -153,7 +147,7 @@ public class MainActivity extends ActionBarActivity {
             selectItemDrawer(indexBackOrDefaultFragment);
         }
 
-        if (userZirkapp != null)
+        if (currentUser != null)
             refreshDatosDrawer();
     }
 
@@ -245,12 +239,12 @@ public class MainActivity extends ActionBarActivity {
         TextView lblUsername = (TextView) headerDrawer.findViewById(R.id.lblUserName);
         TextView lblNombreUsuario = (TextView) headerDrawer.findViewById(R.id.lblNombreUsuario);
         TextView lblUsermail = (TextView) headerDrawer.findViewById(R.id.lblUserEmail);
-        lblUsername.setText(userZirkapp.getUsername());
-        lblUsermail.setText(userZirkapp.getEmail());
-        lblNombreUsuario.setText(userZirkapp.getString("name"));
-        avatar.setImageBitmap(GlobalApplication.getAvatar(userZirkapp));
+        lblUsername.setText(currentUser.getUsername());
+        lblUsermail.setText(currentUser.getEmail());
+        lblNombreUsuario.setText(currentUser.getString("name"));
+        avatar.setImageDrawable(GlobalApplication.getAvatar(currentUser));
         //Buscar en segundo plano
-        new RefreshDataProfileTask(avatar, lblNombreUsuario).execute(userZirkapp); //TODO psoiblemente no necesario
+        new RefreshDataProfileTask(avatar, lblNombreUsuario).execute(currentUser); //TODO psoiblemente no necesario
     }
 
 
@@ -329,17 +323,15 @@ public class MainActivity extends ActionBarActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (intent.getAction() != null) {
-            if (intent.getAction().equals("OPEN_FRAGMENT_USER")) {
-                Log.d("chat.receptorId", intent.getStringExtra("receptorId"));
-                Log.d("chat.senderId", intent.getStringExtra("senderId"));
-                showFragment(CHAT, false);
+            if (intent.getAction().equals("OPEN_FRAGMENT_USER") && globalApplication.getCustomParseUser() != null) {
+                //globalApplication.setCustomParseUser(parseUserDestino); Seteado en la notifcacion
+                Intent intent1 = new Intent(this, MessagingActivity.class);
+                startActivity(intent1);
+                //showFragment(CHAT, false);
             }
             if (intent.getAction().equals("OPEN_FRAGMENT_NOTI")) {
-                Log.d("noti.targetId", intent.getStringExtra("targetId"));
-                Log.d("noti.receptorId", intent.getStringExtra("receptorId"));
-                Log.d("noti.senderId", intent.getStringExtra("senderId"));
                 NotificationsFragment frag = (NotificationsFragment) fragments[NOTI];
-                frag.findNotifications();
+                frag.findNotifications(currentUser);
                 showFragment(NOTI, false);
             }
             Log.d("onNewIntent", intent.getAction());
@@ -349,7 +341,8 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        globalApplication.checkPlayServices(this);
+        //globalApplication.checkPlayServices(this);
+        globalApplication.setListeningNotifi(false);
 
         //FACEBOOK
         // Logs 'install' and 'app activate' App Events.
@@ -359,6 +352,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        globalApplication.setListeningNotifi(true);
 
         //FACEBOOK
         // Logs 'app deactivate' App Event.
@@ -413,6 +407,8 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onDestroy() {
+        globalApplication.setListeningNotifi(true);
+        globalApplication.setCustomParseUser(null);
         stopService(new Intent(this, MessageService.class));
         super.onDestroy();
     }

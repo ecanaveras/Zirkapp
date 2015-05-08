@@ -110,7 +110,7 @@ public class ZimessFragment extends Fragment {
         if (!managerGPS.isOnline()) {//Si no hay internet
             managerGPS.networkShowSettingsAlert();
         } else {
-            if (managerGPS.isEnableGetLocation()) {
+            if (managerGPS.isEnableGetLocation() && managerGPS.getLatitud() != null) {
                 //Tomar valores de las preferencias de usuarios
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
                 int dist_min = Integer.parseInt(preferences.getString("min_dist_list", "-1"));

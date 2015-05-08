@@ -100,7 +100,7 @@ public class ZimessAdapter extends BaseAdapter {
         //3. Establecer datos
         lblAliasUsuario.setText(zimess.getUser().getString("name"));
         //Estableciendo Imagen;
-        imgAvatar.setImageBitmap(zimess.getAvatar());
+        imgAvatar.setImageDrawable(zimess.getAvatar());
 
         lblUsername.setText(zimess.getUser().getUsername());
         lblCantComments.setText(Integer.toString(zimess.getCantComment()));

@@ -68,7 +68,7 @@ public class CommentsAdapter extends BaseAdapter {
 
         lblCommentName.setText(comment.getUserComment().getString("name"));
         //Estableciendo Imagen;
-        imgAvatar.setImageBitmap(comment.getAvatar());
+        imgAvatar.setImageDrawable(comment.getAvatar());
 
         //Manejando tiempos transcurridos
         String tiempoTranscurrido = globalApplication.getTimepass(comment.getCreateAt());

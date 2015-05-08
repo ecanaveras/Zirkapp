@@ -67,13 +67,8 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser
                 txtNombres.setText(user.getString("name"));
                 txtNombres.setVisibility(View.VISIBLE);
             }
-            Bitmap bitmapAvatar = GlobalApplication.getAvatar(user);
-            if (bitmapAvatar != null) {
-                avatar.setImageBitmap(bitmapAvatar);
-            } else {
-                avatar.setImageResource(R.drawable.ic_user_male);
-            }
 
+            avatar.setImageDrawable(GlobalApplication.getAvatar(user));
         }
         if (context != null)
             progressDialog.dismiss();

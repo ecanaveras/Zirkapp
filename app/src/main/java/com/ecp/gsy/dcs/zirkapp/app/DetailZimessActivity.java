@@ -77,24 +77,8 @@ public class DetailZimessActivity extends ActionBarActivity {
         globalApplication = (GlobalApplication) getApplicationContext();
         currentUser = ParseUser.getCurrentUser();
 
-        //Tomar Zimess enviado.
-        if (getIntent() != null && getIntent().getStringExtra("targetId") != null) {
-            ParseObject parseZimess = DataParseHelper.findZimess(getIntent().getStringExtra("targetId"));
-            if (parseZimess != null) {
-                zimessDetail = new Zimess();
-                zimessDetail.setZimessId(parseZimess.getObjectId());
-                zimessDetail.setUser(parseZimess.getParseUser("user"));
-                zimessDetail.setLocation(parseZimess.getParseGeoPoint("location"));
-                zimessDetail.setZimessText(parseZimess.getString("zimessText"));
-                zimessDetail.setCantComment(parseZimess.getInt("cant_comment"));
-                zimessDetail.setCreateAt(parseZimess.getCreatedAt());
-            } else {
-                Toast.makeText(this, "Zimess no encontrado!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        } else {
-            zimessDetail = globalApplication.getTempZimess();
-        }
+        zimessDetail = globalApplication.getTempZimess();
+
         //Tomar nombre del usuario del Zimess
         zimessUser = zimessDetail.getUser();
 
@@ -187,7 +171,7 @@ public class DetailZimessActivity extends ActionBarActivity {
 
     public void refreshDataZimess(Zimess zimess) {
         //Estableciendo Imagen;
-        imgAvatar.setImageBitmap(zimess.getAvatar());
+        imgAvatar.setImageDrawable(zimess.getAvatar());
 
         lblAliasUsuario.setText(zimess.getUser().getString("name"));
         lblUsername.setText(zimess.getUser().getUsername());

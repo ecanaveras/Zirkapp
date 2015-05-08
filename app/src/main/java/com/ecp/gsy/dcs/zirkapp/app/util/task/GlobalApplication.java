@@ -11,6 +11,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
@@ -57,6 +59,7 @@ public class GlobalApplication extends Application {
 
     //Order Zimess
     private int sortZimess;
+    private boolean listeningNotifi;
 
     @Override
     public void onCreate() {
@@ -210,19 +213,26 @@ public class GlobalApplication extends Application {
      *
      * @return
      */
-    public static Bitmap getAvatar(ParseUser currentUser) {
-        if(currentUser != null) {
+    public static RoundedBitmapDrawable getAvatar(ParseUser currentUser) {
+        if (currentUser != null) {
             ParseFile parseFile = currentUser.getParseFile("avatar");
             try {
                 if (parseFile != null && parseFile.getData().length > 0) {
                     byte[] byteImage;
                     byteImage = parseFile.getData();
                     if (byteImage != null) {
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inPurgeable = true;
-                        Bitmap bitmap1 = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length, options);
-                        if (bitmap1 != null)
-                            return bitmap1;//Bitmap.createScaledBitmap(bitmap1, 50, 50, true);
+                        Bitmap bitmap = decodeSampledBitmapFromResource(byteImage, 100, 100);
+                        if (bitmap != null)
+                            //Cuadrar imagen
+                            if (bitmap != null && bitmap.getWidth() > bitmap.getHeight()) {
+                                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getHeight(), bitmap.getHeight());
+                            } else if (bitmap != null && bitmap.getHeight() > bitmap.getWidth()) {
+                                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getWidth());
+                            }
+                        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, bitmap);
+                        //corner radius
+                        roundedBitmapDrawable.setCornerRadius(bitmap.getHeight());
+                        return roundedBitmapDrawable;
                     }
                 }
             } catch (ParseException e) {
@@ -233,7 +243,62 @@ public class GlobalApplication extends Application {
         }
         //Si no hay imagen se retorna una imagen por defecto.
         Bitmap bitmapDefault = BitmapFactory.decodeResource(resources, R.drawable.ic_user_male);
-        return bitmapDefault;
+        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, bitmapDefault);
+        return roundedBitmapDrawable;
+    }
+
+
+    /**
+     * Code by http://developer.android.com/intl/es/training/displaying-bitmaps/load-bitmap.html
+     *
+     * @param reqWidth
+     * @param reqHeight
+     * @return
+     */
+    private static Bitmap decodeSampledBitmapFromResource(byte[] byteImage, int reqWidth, int reqHeight) {
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        //BitmapFactory.decodeResource(res, resId, options);
+        BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        //return BitmapFactory.decodeResource(res, resId, options);
+        return BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length, options);
+    }
+
+    /**
+     * Code by http://developer.android.com/intl/es/training/displaying-bitmaps/load-bitmap.html
+     *
+     * @param options
+     * @param reqWidth
+     * @param reqHeight
+     * @return
+     */
+    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
     }
 
     public Zimess getTempZimess() {
@@ -272,7 +337,7 @@ public class GlobalApplication extends Application {
         return cantNotifications;
     }
 
-    public static void  setCantNotifications(Integer _cantNotifications) {
+    public static void setCantNotifications(Integer _cantNotifications) {
         cantNotifications = _cantNotifications;
     }
 
@@ -351,5 +416,13 @@ public class GlobalApplication extends Application {
             return true;
         }
         return false;
+    }
+
+    public boolean isListeningNotifi() {
+        return listeningNotifi;
+    }
+
+    public void setListeningNotifi(boolean listeningNotifi) {
+        this.listeningNotifi = listeningNotifi;
     }
 }

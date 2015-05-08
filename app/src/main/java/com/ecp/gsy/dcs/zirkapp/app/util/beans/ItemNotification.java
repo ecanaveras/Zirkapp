@@ -1,5 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.beans;
 
+import com.parse.ParseUser;
+
 import java.util.Date;
 
 /**
@@ -11,11 +13,12 @@ public class ItemNotification {
     private int typeNoti;
     private String summaryNoti;
     private String detailNoti;
-    private String receptorId;
-    private String senderId;
-    private String targetId;
+    private ParseUser receptorUser;
+    private ParseUser senderUser;
     private boolean readNoti;
     private Date created;
+    private ParseUser userTarget;
+    private Zimess zimessTarget;
 
 
     public String getSummaryNoti() {
@@ -34,23 +37,6 @@ public class ItemNotification {
         this.detailNoti = detailNoti;
     }
 
-
-    public String getReceptorId() {
-        return receptorId;
-    }
-
-    public void setReceptorId(String receptorId) {
-        this.receptorId = receptorId;
-    }
-
-    public String getSenderId() {
-        return senderId;
-    }
-
-    public void setSenderId(String senderId) {
-        this.senderId = senderId;
-    }
-
     public int getTypeNoti() {
         return typeNoti;
     }
@@ -58,15 +44,6 @@ public class ItemNotification {
     public void setTypeNoti(int typeNoti) {
         this.typeNoti = typeNoti;
     }
-
-    public String getTargetId() {
-        return targetId;
-    }
-
-    public void setTargetId(String targetId) {
-        this.targetId = targetId;
-    }
-
 
     public boolean isReadNoti() {
         return readNoti;
@@ -90,5 +67,37 @@ public class ItemNotification {
 
     public void setCreated(Date created) {
         this.created = created;
+    }
+
+    public ParseUser getSenderUser() {
+        return senderUser;
+    }
+
+    public void setSenderUser(ParseUser senderUser) {
+        this.senderUser = senderUser;
+    }
+
+    public ParseUser getUserTarget() {
+        return userTarget;
+    }
+
+    public void setUserTarget(ParseUser userTarget) {
+        this.userTarget = userTarget;
+    }
+
+    public Zimess getZimessTarget() {
+        return zimessTarget;
+    }
+
+    public void setZimessTarget(Zimess zimessTarget) {
+        this.zimessTarget = zimessTarget;
+    }
+
+    public ParseUser getReceptorUser() {
+        return receptorUser;
+    }
+
+    public void setReceptorUser(ParseUser receptorUser) {
+        this.receptorUser = receptorUser;
     }
 }

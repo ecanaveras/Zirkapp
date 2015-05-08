@@ -3,7 +3,6 @@ package com.ecp.gsy.dcs.zirkapp.app.util.task;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -11,8 +10,10 @@ import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NotifiAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemNotification;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 
@@ -26,16 +27,16 @@ public class RefreshDataNotifiTask extends AsyncTask<String, Void, ArrayList<Ite
     private SwipeRefreshLayout swipeRefreshLayout;
     private Context context;
     private ProgressBar progressBar;
-    private String receptorId;
+    private ParseUser receptorUser;
     private TextView lblNotiNotFound;
     private int noLeidas = 0;
 
-    public RefreshDataNotifiTask(Context context, String receptorId, ListView listView, SwipeRefreshLayout swipeRefreshLayout, ProgressBar progressBar, TextView lblNotiNotFound) {
+    public RefreshDataNotifiTask(Context context, ParseUser receptorUser, ListView listView, SwipeRefreshLayout swipeRefreshLayout, ProgressBar progressBar, TextView lblNotiNotFound) {
         this.context = context;
         this.listView = listView;
         this.swipeRefreshLayout = swipeRefreshLayout;
         this.progressBar = progressBar;
-        this.receptorId = receptorId;
+        this.receptorUser = receptorUser;
         this.lblNotiNotFound = lblNotiNotFound;
     }
 
@@ -48,16 +49,24 @@ public class RefreshDataNotifiTask extends AsyncTask<String, Void, ArrayList<Ite
     @Override
     protected ArrayList<ItemNotification> doInBackground(String... params) {
         ArrayList<ItemNotification> arrayList = new ArrayList<>();
-        for (ParseObject parseObject : DataParseHelper.findNotifications(receptorId)) {
+        for (ParseObject parseObject : DataParseHelper.findNotifications(receptorUser)) {
             ItemNotification item = new ItemNotification();
             item.setNotiId(parseObject.getObjectId());
-            item.setTargetId(parseObject.getString("targetId"));
-            item.setSenderId(parseObject.getString("senderId"));
-            item.setReceptorId(parseObject.getString("receptorId"));
+            item.setTypeNoti(parseObject.getInt("typeNoti"));
+            switch (item.getTypeNoti()) {
+                case SendPushTask.PUSH_CHAT:
+                    item.setUserTarget(parseObject.getParseUser("userTarget"));
+                    break;
+                case SendPushTask.PUSH_COMMENT:
+                    item.setZimessTarget(getZimess(parseObject.getParseObject("zimessTarget")));
+                    break;
+            }
+            item.setSenderUser(parseObject.getParseUser("senderUser"));
+            item.setReceptorUser(parseObject.getParseUser("receptorUser"));
             item.setDetailNoti(parseObject.getString("detailNoti"));
             item.setSummaryNoti(parseObject.getString("summaryNoti"));
-            item.setTypeNoti(parseObject.getInt("typeNoti"));
             item.setReadNoti(parseObject.getBoolean("readNoti"));
+            item.setCreated(parseObject.getCreatedAt());
             if (!item.isReadNoti()) {
                 noLeidas++;
             }
@@ -71,12 +80,32 @@ public class RefreshDataNotifiTask extends AsyncTask<String, Void, ArrayList<Ite
         adapter = new NotifiAdapter(context, itemNotifications);
         listView.setAdapter(adapter);
 
-        if(noLeidas > 0) GlobalApplication.setCantNotifications(noLeidas);
+        GlobalApplication.setCantNotifications(noLeidas);
+
         if (progressBar != null) progressBar.setVisibility(View.GONE);
         if (lblNotiNotFound != null && itemNotifications.size() == 0)
             lblNotiNotFound.setVisibility(View.VISIBLE);
 
         swipeRefreshLayout.setRefreshing(false);
-        Log.i("task.cant.noti", String.valueOf(GlobalApplication.getCantNotifications()));
+    }
+
+    /**
+     * Crea un Zimess
+     *
+     * @param parseObject
+     * @return
+     */
+    private Zimess getZimess(ParseObject parseObject) {
+        if (parseObject != null) {
+            Zimess zimessNew = new Zimess();
+            zimessNew.setZimessId(parseObject.getObjectId());
+            zimessNew.setUser(parseObject.getParseUser("user"));
+            zimessNew.setZimessText(parseObject.get("zimessText").toString());
+            zimessNew.setLocation(parseObject.getParseGeoPoint("location"));
+            zimessNew.setCantComment(parseObject.getInt("cant_comment"));
+            zimessNew.setCreateAt(parseObject.getCreatedAt());
+            return zimessNew;
+        }
+        return null;
     }
 }

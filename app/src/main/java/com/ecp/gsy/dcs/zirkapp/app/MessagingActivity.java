@@ -122,15 +122,7 @@ public class MessagingActivity extends ActionBarActivity {
 
             View customView = getLayoutInflater().inflate(R.layout.actionbar_user_title, null);
             ImageView imageView = (ImageView) customView.findViewById(R.id.imgAvatar);
-            Bitmap avatar = GlobalApplication.getAvatar(receptorUser);
-            if (avatar != null) {
-//                Resources resources = getResources();
-//                BitmapDrawable icon = new BitmapDrawable(resources, avatar);
-//                actionBar.setIcon(icon);
-                imageView.setImageBitmap(avatar);
-            } else {
-                imageView.setImageResource(R.drawable.ic_user_male);
-            }
+            imageView.setImageDrawable(GlobalApplication.getAvatar(receptorUser));
            /* imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -240,7 +232,21 @@ public class MessagingActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onPause() {
+        globalApplication.setListeningNotifi(true);
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        globalApplication.setListeningNotifi(false);
+        super.onResume();
+    }
+
+    @Override
     protected void onDestroy() {
+        globalApplication.setListeningNotifi(true);
+        globalApplication.setCustomParseUser(null);
         messageService.removeMessageClientListener(messageClientListener);
         unbindService(serviceConnection);
         super.onDestroy();
@@ -248,6 +254,7 @@ public class MessagingActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
+        globalApplication.setCustomParseUser(null);
         super.onBackPressed();
     }
 
@@ -298,6 +305,12 @@ public class MessagingActivity extends ActionBarActivity {
 
             //Guardar historial local.
             saveLocalMessage(message, writableMessage, currentUser.getObjectId(), MessageAdapter.DIRECTION_OUTGOING);
+
+            //Enviar notificacion.
+            if (receptorId != null && message != null && !globalApplication.isListeningNotifi()) {
+                String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+                new SendPushTask(currentUser.getObjectId(), receptorId, currentUser.getObjectId(), name, message.getTextBody(), SendPushTask.PUSH_CHAT).execute();
+            }
         }
 
         @Override
