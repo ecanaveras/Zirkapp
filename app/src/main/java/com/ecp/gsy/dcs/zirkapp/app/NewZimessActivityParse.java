@@ -71,7 +71,7 @@ public class NewZimessActivityParse extends ActionBarActivity {
 
         //Name Location
         managerGPS = new ManagerGPS(this);
-        if (managerGPS.isEnableGetLocation()) {
+        if (managerGPS.isEnableGetLocation() && managerGPS.getLatitud() != null) {
             new RefreshDataAddressTask(managerGPS, lblCurrentLocation, progressBar).execute();
         } else {
             managerGPS.gpsShowSettingsAlert();
@@ -147,7 +147,7 @@ public class NewZimessActivityParse extends ActionBarActivity {
         //Tomar ubicacion
         managerGPS = new ManagerGPS(this);
         if (managerGPS.isOnline()) {
-            if (managerGPS.isEnableGetLocation()) {
+            if (managerGPS.isEnableGetLocation() && managerGPS.getLatitud() != null) {
                 ParseGeoPoint parseGeoPoint = new ParseGeoPoint(managerGPS.getLatitud(), managerGPS.getLongitud());
                 ParseObject parseObject = new ParseObject("ParseZimess");
                 parseObject.put("user", currentUser);

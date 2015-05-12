@@ -176,7 +176,7 @@ public class UsersOnlineFragment extends Fragment {
     private Location getCurrentLocation() {
         managerGPS = new ManagerGPS(getActivity());
         if (managerGPS.isOnline()) {
-            if (managerGPS.isEnableGetLocation()) {
+            if (managerGPS.isEnableGetLocation() && managerGPS.getLatitud() != null) {
                 return new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
             } else {
                 managerGPS.gpsShowSettingsAlert();

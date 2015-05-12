@@ -25,8 +25,8 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:largeHeap="true">
+        android:largeHeap="true"
+        android:theme="@style/AppTheme">
         <activity
             android:name=".ManagerWelcome"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -49,11 +49,11 @@
             android:name=".MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ManagerLogin"
-            android:label="@string/lblLogin"/>
+            android:label="@string/lblLogin" />
         <activity android:name=".MessagingActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

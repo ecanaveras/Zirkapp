@@ -279,6 +279,8 @@ public class ManagerGPS extends Service implements LocationListener {
         alert.show();
     }
 
+    //LISTENER
+
     @Override
     public void onLocationChanged(Location location) {
         //Nueva Ubicacion
@@ -286,7 +288,7 @@ public class ManagerGPS extends Service implements LocationListener {
         intent.putExtra("locationchange", true);
         intent.putExtra("latitud", this.getLatitud());
         intent.putExtra("longitud", this.getLongitud());
-        mContext.sendBroadcast(intent);
+        sendBroadcast(intent);
     }
 
     @Override

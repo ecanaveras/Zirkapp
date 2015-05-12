@@ -290,12 +290,7 @@ public class MessagingActivity extends ActionBarActivity {
 
                 //Guardar historial local.
                 saveLocalMessage(message, writableMessage, receptorId, MessageAdapter.DIRECTION_INCOMING);
-
-                //Receiver
-                Intent intent = new Intent("broadcast.cant_messages");
-                intent.putExtra("senderId", receptorId);
-                intent.putExtra("recipientId", currentUser.getObjectId());
-                sendBroadcast(intent);
+                Log.i("incoming.message", message.getTextBody());
             }
         }
 
@@ -315,11 +310,12 @@ public class MessagingActivity extends ActionBarActivity {
 
         @Override
         public void onMessageFailed(MessageClient messageClient, Message message, MessageFailureInfo messageFailureInfo) {
-            Toast.makeText(MessagingActivity.this, "El mensaje no pudo ser enviado.", Toast.LENGTH_LONG).show();
+            Toast.makeText(MessagingActivity.this, "Tu mensaje no pudo ser enviado.", Toast.LENGTH_LONG).show();
         }
 
         @Override
         public void onMessageDelivered(MessageClient messageClient, MessageDeliveryInfo messageDeliveryInfo) {
+            Toast.makeText(MessagingActivity.this, "Tu mensaje no fue entregado.", Toast.LENGTH_LONG).show();
         }
 
         @Override

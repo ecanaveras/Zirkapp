@@ -101,6 +101,12 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
         if (senderId != null) {
             switch (typeNotification) {
                 case SendPushTask.PUSH_CHAT:
+                    //Receiver
+                    Intent broad = new Intent("broadcast.cant_messages");
+                    broad.putExtra("senderId", senderId);
+                    broad.putExtra("recipientId", receptorId);
+                    context.sendBroadcast(intent);
+
                     intent.setAction("OPEN_FRAGMENT_USER"); //Notificacion desde chat
                     intent.putExtra("targetId", targetId);
                     intent.putExtra("receptorId", receptorId);

@@ -130,6 +130,12 @@
     <string name="msgShareApp">Hola, te invito a probar Zirkapp</string>
     <string name="urlPlayStore">https://play.google.com/store/apps/details?id=com.ecp.gsy.dcs.zirkapp</string>
     <string name="msgShareTo">Compartir usando...</string>
+    <string name="sinch_prod_key">e4287600-6187-4659-90c8-da1bef616489</string>
+    <string name="sinch_prod_secret">GGOGQzBGX0qHMyl4UrIrEQ==</string>
+    <string name="sinch_prod_environment">clientapi.sinch.com</string>
+    <string name="sinch_dev_key">308f3e50-dfb0-4855-9935-08b75028c06e</string>
+    <string name="sinch_dev_secret">UQmDdJm8nkSBUFntG4GPYQ==</string>
+    <string name="sinch_dev_environment">sandbox.sinch.com</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

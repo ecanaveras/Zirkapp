@@ -75,7 +75,7 @@ public class MyZimessActivity extends ActionBarActivity {
         if (!managerGPS.isOnline()) {//Si no hay internet
             managerGPS.networkShowSettingsAlert();
         } else {
-            if (managerGPS.isEnableGetLocation()) {
+            if (managerGPS.isEnableGetLocation() && managerGPS.getLatitud() != null) {
                 Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
                 new RefreshDataZimessTask(this, currentUser, currentLocation, recyclerView, layoudZimessNoFound, layoudZimessFinder).execute();
             } else {

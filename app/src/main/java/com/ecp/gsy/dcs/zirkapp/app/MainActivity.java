@@ -264,6 +264,8 @@ public class MainActivity extends ActionBarActivity {
                 if (getIntent().getAction() != null && getIntent().getAction().equals("OPEN_FRAGMENT_USER")) {
                     toolbar.setTitle(R.string.title_fragment_chat);
                     showFragment(CHAT, false);
+                    //Intent intent1 = new Intent(this, MessagingActivity.class);
+                    //startActivity(intent1);
                 } else {
                     toolbar.setTitle(R.string.title_fragment_zimess);
                     showFragment(ZIMESS, false);
@@ -304,9 +306,10 @@ public class MainActivity extends ActionBarActivity {
                 sendIntent.setType("text/plain");
                 startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.msgShareTo)));
                 break;
-//            default:
-//                showFragment(ZIMESS, false);
-//                break;
+            default:
+                toolbar.setTitle(R.string.title_fragment_zimess);
+                showFragment(ZIMESS, false);
+                break;
         }
         //Establece la posicion
         navListView.setItemChecked(position, true);
@@ -445,7 +448,7 @@ public class MainActivity extends ActionBarActivity {
     }
 }
 
-//Generar HashKey onCreate
+//      Generar HashKey onCreate
 //        try {
 //            PackageInfo info = getPackageManager().getPackageInfo("com.ecp.gsy.dcs.zirkapp", PackageManager.GET_SIGNATURES);
 //            for (Signature signature : info.signatures) {

@@ -6,6 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.parse.ParseUser;
 import com.sinch.android.rtc.ClientRegistration;
 import com.sinch.android.rtc.Sinch;
@@ -18,9 +19,9 @@ import com.sinch.android.rtc.messaging.WritableMessage;
 
 public class MessageService extends Service implements SinchClientListener {
 
-    private static final String APP_KEY = "308f3e50-dfb0-4855-9935-08b75028c06e";
-    private static final String APP_SECRET = "UQmDdJm8nkSBUFntG4GPYQ==";
-    private static final String ENVIRONMENT = "sandbox.sinch.com";
+    private final String APP_KEY = getApplicationContext().getResources().getString(R.string.sinch_prod_key);
+    private final String APP_SECRET = getApplicationContext().getResources().getString(R.string.sinch_prod_secret);
+    private final String ENVIRONMENT = getApplicationContext().getResources().getString(R.string.sinch_prod_environment);
     private final MessageServiceInterface serviceInterface = new MessageServiceInterface();
     private SinchClient sinchClient = null;
     private MessageClient messageClient = null;
