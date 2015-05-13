@@ -70,12 +70,13 @@ public class NewZimessActivityParse extends ActionBarActivity {
         currentUser = globalApplication.getCurrentUser();
 
         //Name Location
-        managerGPS = new ManagerGPS(this);
-        if (managerGPS.isEnableGetLocation()) {
+        managerGPS = new ManagerGPS(this, true);
+        if (managerGPS.getLatitud() != null) {
             new RefreshDataAddressTask(managerGPS, lblCurrentLocation, progressBar).execute();
-        } else {
-            managerGPS.gpsShowSettingsAlert();
         }
+        /*else {
+            managerGPS.gpsShowSettingsAlert();
+        }*/
     }
 
 
@@ -134,9 +135,8 @@ public class NewZimessActivityParse extends ActionBarActivity {
 
 
     private void sendZmessPost(final String zimessText) {
-        final Context context = getApplicationContext();
         if (zimessText.length() < 4) {
-            Toast.makeText(context,
+            Toast.makeText(this,
                     "Escribe mínimo 4 caracteres!",
                     Toast.LENGTH_LONG).show();
             return;
@@ -145,36 +145,29 @@ public class NewZimessActivityParse extends ActionBarActivity {
         btnSendZimess.setEnabled(false);
 
         //Tomar ubicacion
-        managerGPS = new ManagerGPS(this);
-        if (managerGPS.isOnline()) {
-            if (managerGPS.isEnableGetLocation()) {
-                ParseGeoPoint parseGeoPoint = new ParseGeoPoint(managerGPS.getLatitud(), managerGPS.getLongitud());
-                ParseObject parseObject = new ParseObject("ParseZimess");
-                parseObject.put("user", currentUser);
-                parseObject.put("zimessText", zimessText);
-                parseObject.put("location", parseGeoPoint);
-                parseObject.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            Intent intent = new Intent();
-                            intent.putExtra("newZimessOk", true);
-                            setResult(Activity.RESULT_OK, intent);
-                            finish();
-                        } else {
-                            showNotificacion(true, 0, null, context.getResources().getString(R.string.msgZimesFailed), zimessText);
-                            Log.e("ZimessError:", "No es posible publicar el Zimess");
-                            onBackPressed();
-                        }
+        managerGPS = new ManagerGPS(this, true);
+        if (managerGPS.getLatitud() != null) {
+            ParseGeoPoint parseGeoPoint = new ParseGeoPoint(managerGPS.getLatitud(), managerGPS.getLongitud());
+            ParseObject parseObject = new ParseObject("ParseZimess");
+            parseObject.put("user", currentUser);
+            parseObject.put("zimessText", zimessText);
+            parseObject.put("location", parseGeoPoint);
+            parseObject.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        Intent intent = new Intent();
+                        intent.putExtra("newZimessOk", true);
+                        setResult(Activity.RESULT_OK, intent);
+                        finish();
+                    } else {
+                        showNotificacion(true, 0, null, getResources().getString(R.string.msgZimesFailed), zimessText);
+                        Log.e("ZimessError:", "No es posible publicar el Zimess");
+                        onBackPressed();
                     }
-                });
-            } else {
-                managerGPS.gpsShowSettingsAlert();
-            }
-        } else {
-            managerGPS.networkShowSettingsAlert();
+                }
+            });
         }
-
     }
 
     /**

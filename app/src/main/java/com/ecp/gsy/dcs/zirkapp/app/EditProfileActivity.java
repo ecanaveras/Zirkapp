@@ -136,11 +136,9 @@ public class EditProfileActivity extends ActionBarActivity {
         progressDialog.dismiss();
         if (txtCiudad.getText() == null || txtCiudad.getText().toString().isEmpty()) { //Sugerir Ubicación
             //get Name Ubicacion
-            ManagerGPS managerGPS = new ManagerGPS(getApplicationContext());
-            if (managerGPS.isEnableGetLocation()) {
+            ManagerGPS managerGPS = new ManagerGPS(this, true);
+            if (managerGPS.getLatitud() != null) {
                 new RefreshDataAddressTask(managerGPS, txtCiudad, true).execute();
-            } else {
-                managerGPS.gpsShowSettingsAlert();
             }
         }
     }

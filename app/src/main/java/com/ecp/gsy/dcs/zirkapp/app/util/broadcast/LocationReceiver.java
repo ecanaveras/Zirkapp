@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 
 /**
  * Created by Elder on 21/04/2015.
@@ -16,9 +18,15 @@ import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 public class LocationReceiver extends BroadcastReceiver {
 
     private UsersOnlineFragment usersOnlineFragment;
+    private ZimessFragment zimessFragment;
+    private GlobalApplication globalApplication;
 
     public LocationReceiver(UsersOnlineFragment usersOnlineFragment) {
         this.usersOnlineFragment = usersOnlineFragment;
+    }
+
+    public LocationReceiver(ZimessFragment zimessFragment) {
+        this.zimessFragment = zimessFragment;
     }
 
     @Override
@@ -26,12 +34,24 @@ public class LocationReceiver extends BroadcastReceiver {
         boolean locationUpdate = intent.getBooleanExtra("locationchange", false);
         double latitud = intent.getDoubleExtra("latitud", 0.0);
         double longitud = intent.getDoubleExtra("longitud", 0.0);
-//        Bundle bundle = intent.getExtras();
-//        android.location.Location currentLocation = (android.location.Location) bundle.get(LocationManager.KEY_LOCATION_CHANGED);
+
         Location location = new Location(latitud, longitud);
-        if (locationUpdate && usersOnlineFragment != null) {
-            usersOnlineFragment.findUsersOnline(location);
+        if (locationUpdate) {
+            //actualizar lista de usuarios en el chat y posicion
+            if (usersOnlineFragment != null) {
+                if (usersOnlineFragment.isConnectedUser) {
+                    usersOnlineFragment.conectarChat(location);
+                }
+                Log.i("chat.location", "update");
+            }
+
+            //actualizar lista de Zimess en la nueva posision
+            if (zimessFragment != null) {
+                globalApplication = (GlobalApplication) zimessFragment.getActivity().getApplicationContext();
+                zimessFragment.findZimessAround(location, globalApplication.getSortZimess());
+                Log.i("zimess.location", "update");
+            }
         }
-        Log.i("current.location", "update");
+
     }
 }

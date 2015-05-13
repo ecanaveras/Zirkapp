@@ -42,7 +42,7 @@ public class RefreshDataAddressTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... strings) {
         if (textView != null && textView.getText() != null) {
-            if (managerGPS.isEnableGetLocation()) {
+            if (managerGPS.getLatitud() != null) {
                 return managerGPS.getLocality();
             }
         }

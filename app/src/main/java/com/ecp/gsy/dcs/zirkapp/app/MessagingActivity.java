@@ -218,9 +218,9 @@ public class MessagingActivity extends ActionBarActivity {
                         if (parseObj.get("senderId").toString().equals(currentUser.getObjectId())) {
                             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING, currentUser.getUsername());
                         } else {
+                            adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING, receptorUsername);
                             parseObj.put("messageRead", true);
                             parseObj.pinInBackground();
-                            adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING, receptorUsername);
                         }
                     }
                 } else {

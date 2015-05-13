@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
@@ -18,7 +17,6 @@ import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.ChatHistoryActivity;
 import com.ecp.gsy.dcs.zirkapp.app.MessagingActivity;
@@ -51,7 +49,7 @@ public class UsersOnlineFragment extends Fragment {
     private LocationReceiver locationReceiver;
     private SinchConnectReceiver sinchConnectReceiver;
 
-    private boolean isConnectedUser;
+    public boolean isConnectedUser;
 
 
     @Override
@@ -66,9 +64,7 @@ public class UsersOnlineFragment extends Fragment {
 
         inicializarCompUI(view);
 
-        if (isConnectedUser) {
-            conectarChat(getCurrentLocation());
-        } else {
+        if (!isConnectedUser) {
             layoudChatOffline.setVisibility(View.VISIBLE);
         }
 
@@ -97,7 +93,7 @@ public class UsersOnlineFragment extends Fragment {
             @Override
             public void onRefresh() {
                 if (isConnectedUser)
-                    conectarChat(getCurrentLocation());
+                    conectarChat(getUpdateCurrentLocation());
             }
         });
         swipeRefreshLayout.setEnabled(isConnectedUser);
@@ -131,9 +127,9 @@ public class UsersOnlineFragment extends Fragment {
      * Conecta el usuario al chat
      */
     public void conectarChat(Location currentLocation) {
-        if (currentUser != null && currentLocation != null) {
-            isConnectedUser = true;
+        if (currentUser != null) {
             findUsersOnline(currentLocation);
+            isConnectedUser = true;
             layoudChatOffline.setVisibility(View.GONE);
             swipeRefreshLayout.setEnabled(true);
         }
@@ -169,24 +165,15 @@ public class UsersOnlineFragment extends Fragment {
 
 
     /**
-     * Ovbtiene la Ubicacion actual
+     * actualiza la Ubicacion actual
      *
      * @return
      */
-    private Location getCurrentLocation() {
+    private Location getUpdateCurrentLocation() {
+        //LocationReceiver se encarga de ejecutar las actualizaciones
         managerGPS = new ManagerGPS(getActivity());
-        if (managerGPS.isOnline()) {
-            if (managerGPS.isEnableGetLocation()) {
-                return new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
-            } else {
-                managerGPS.gpsShowSettingsAlert();
-            }
-        } else {
-            managerGPS.networkShowSettingsAlert();
-        }
-        return null;
+        return new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
     }
-
 
     /*
     public void updateCantMessagesNoRead() {
@@ -277,7 +264,7 @@ public class UsersOnlineFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    conectarChat(getCurrentLocation());
+                    conectarChat(getUpdateCurrentLocation());
                 } else {
                     desconectarChat();
                 }

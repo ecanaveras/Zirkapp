@@ -1,17 +1,8 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.task;
 
-import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
-import android.support.v4.content.LocalBroadcastManager;
-import android.widget.Toast;
-
-import com.ecp.gsy.dcs.zirkapp.app.MessagingActivity;
-import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.SinchConnectReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
@@ -46,9 +37,9 @@ public class RegisterGcmTask extends AsyncTask<Void, Void, String> {
             msg = regId;
 
             globalApplication.storeRegistrationId(context, regId);
-            if(regId != null) {
+            if (regId != null) {
                 globalApplication.storeParseInstallation(regId);
-            }else globalApplication.storeParseInstallation();
+            } else globalApplication.storeParseInstallation();
 
         } catch (IOException e) {
             msg = "Error :" + e.getMessage();
@@ -62,9 +53,10 @@ public class RegisterGcmTask extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPostExecute(String _msg) {
         if (context != null) {
+            //Iniciar SINCH
             Intent serviceIntent = new Intent(context.getApplicationContext(), MessageService.class);
             serviceIntent.putExtra("regId", _msg);
-            context.startService(serviceIntent); //TODO Mensajeria Disabled
+            context.startService(serviceIntent);
         }
     }
 }

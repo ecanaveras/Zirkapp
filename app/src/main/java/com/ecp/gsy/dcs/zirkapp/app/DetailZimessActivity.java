@@ -189,18 +189,14 @@ public class DetailZimessActivity extends ActionBarActivity {
         //lblCreatedAt.setText(globalApplication.getDescFechaPublicacion(zimess.getCreateAt()));
 
         //Calcular distancia del Zimess remoto
-        managerGPS = new ManagerGPS(this);
-        if (managerGPS.isEnableGetLocation()) {
+        managerGPS = new ManagerGPS(this, true);
+        if (managerGPS.getLatitud() != null) {
             Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
-
             Location zimessLocation = new Location(zimess.getLocation().getLatitude(), zimess.getLocation().getLongitude());
             ManagerDistance mDistance = new ManagerDistance(currentLocation, zimessLocation);
             lblDistance.setText(mDistance.getDistanciaToString());
             lblMessage.setText(zimess.getZimessText());
-        } else {
-            managerGPS.gpsShowSettingsAlert();
         }
-
     }
 
     /**

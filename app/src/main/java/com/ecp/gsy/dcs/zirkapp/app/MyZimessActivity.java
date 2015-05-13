@@ -71,18 +71,11 @@ public class MyZimessActivity extends ActionBarActivity {
      * Busca los Zimess del Usuario
      */
     private void findZimessCurrentUser() {
-        managerGPS = new ManagerGPS(this);
-        if (!managerGPS.isOnline()) {//Si no hay internet
-            managerGPS.networkShowSettingsAlert();
-        } else {
-            if (managerGPS.isEnableGetLocation()) {
-                Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
-                new RefreshDataZimessTask(this, currentUser, currentLocation, recyclerView, layoudZimessNoFound, layoudZimessFinder).execute();
-            } else {
-                managerGPS.gpsShowSettingsAlert();
-            }
+        managerGPS = new ManagerGPS(this, true);
+        if (managerGPS.getLatitud() != null) {
+            Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
+            new RefreshDataZimessTask(this, currentUser, currentLocation, recyclerView, layoudZimessNoFound, layoudZimessFinder).execute();
         }
-
     }
 
     @Override

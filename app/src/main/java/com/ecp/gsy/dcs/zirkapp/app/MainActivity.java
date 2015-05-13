@@ -381,6 +381,11 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
+
+    @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         drawerToggle.syncState();
         super.onPostCreate(savedInstanceState);
