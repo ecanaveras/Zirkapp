@@ -30,6 +30,7 @@ import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.LocationReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
@@ -62,7 +63,7 @@ public class ZimessFragment extends Fragment {
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
 
         //Actualizar Zimess, escucha un broadcast
-        findZimessAround(getUpdateCurrentLocation(), globalApplication.getSortZimess());
+        //findZimessAround(getCurrentLocation(), globalApplication.getSortZimess());
 
         return view;
     }
@@ -91,7 +92,7 @@ public class ZimessFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                findZimessAround(getUpdateCurrentLocation(), globalApplication.getSortZimess());
+                findZimessAround(getCurrentLocation(), globalApplication.getSortZimess());
             }
         });
 
@@ -130,11 +131,11 @@ public class ZimessFragment extends Fragment {
                 Toast.makeText(getActivity(), optionsSort[which], Toast.LENGTH_SHORT).show();
                 switch (which) {
                     case 0:
-                        findZimessAround(getUpdateCurrentLocation(), RefreshDataZimessTask.RECIENTE);
+                        findZimessAround(getCurrentLocation(), RefreshDataZimessTask.RECIENTE);
                         globalApplication.setSortZimess(RefreshDataZimessTask.RECIENTE);
                         break;
                     case 1:
-                        findZimessAround(getUpdateCurrentLocation(), RefreshDataZimessTask.CERCA);
+                        findZimessAround(getCurrentLocation(), RefreshDataZimessTask.CERCA);
                         globalApplication.setSortZimess(RefreshDataZimessTask.CERCA);
                         break;
                 }
@@ -161,9 +162,14 @@ public class ZimessFragment extends Fragment {
      *
      * @return
      */
-    private Location getUpdateCurrentLocation() {
-        managerGPS = new ManagerGPS(getActivity());
-        return new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
+    private Location getCurrentLocation() {
+        Location location = null;
+        if (LocationService.isRunning()) {
+            LocationService locationService = LocationService.getInstance();
+            android.location.Location tmpLocation = locationService.getCurrentLocation(true);
+            location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+        }
+        return location;
     }
 
     @Override
@@ -234,13 +240,13 @@ public class ZimessFragment extends Fragment {
         if (requestCode == requestCodeNewZimess && data != null) {
             boolean newZimessOk = data.getBooleanExtra("newZimessOk", false);
             if (resultCode == Activity.RESULT_OK && newZimessOk)
-                getUpdateCurrentLocation();
+                getCurrentLocation();
         }
 
         if (requestCode == requestCodeUpdateZimess && data != null) {
             boolean updateZimessOk = data.getBooleanExtra("updateZimessOk", false);
             if (resultCode == Activity.RESULT_OK && updateZimessOk)
-                getUpdateCurrentLocation();
+                getCurrentLocation();
         }
     }
 }

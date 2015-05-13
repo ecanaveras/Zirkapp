@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.NotificationsFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
@@ -85,6 +86,10 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Iniciar servicio de ubicacion
+        Intent intentService = new Intent(this, LocationService.class);
+        startService(intentService);
 
         globalApplication = (GlobalApplication) getApplicationContext();
 

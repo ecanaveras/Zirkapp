@@ -4,15 +4,15 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
@@ -20,90 +20,100 @@ import android.util.Log;
 import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 
 /**
- * Created by Elder on 02/06/2014.
+ * Created by Elder on 13/05/2015.
  */
-public class ManagerGPS extends Service {
+public class LocationService extends Service {
 
-    private Context mContext;
-    private boolean isEnabledGPS = false;
-    private boolean isEnabledNetwork = false;
+    private static LocationService instance = null;
+    boolean isLocationEnabled = false;
+    private boolean isAutomatic = false;
+
+    //private Context mContext;
+
     private MyLocationListener listener;
-    private String TAG = MyLocationListener.class.getName();
-    private Location location;
     private Location currentBestLocation;
-    private Double latitud;
-    private Double longitud;
+    private String TAG = MyLocationListener.class.getName();
+    private boolean isEnabledGPS;
+    private boolean isEnabledNetwork;
     private Intent intent;
 
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 15; // 15 metros
+
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 500; // 500 metros
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 5; // 5 minutoS
+
+    private final Handler handler = new Handler();
 
     protected LocationManager locationManager;
 
-    /**
-     * Establece comunicacion con los servicios de Android para hallar la ubicacion
-     *
-     * @param mContext
-     */
-    public ManagerGPS(Context mContext) {
-        this.mContext = mContext;
-        intent = new Intent("broadcast.gps.location_change");
-        if (isOnline()) {
-            location = this.getCurrentLocation();
-        } else {
-            networkShowSettingsAlert();
-        }
-
+    @Override
+    public void onCreate() {
+        instance = this;
+        this.intent = new Intent("broadcast.gps.location_change");
     }
 
-    /**
-     * Establece comunicacion con los servicios de Android para hallar la ubicacion bajo demanda
-     *
-     * @param mContext
-     */
-    public ManagerGPS(Context mContext, boolean isOnDemand) {
-        this.mContext = mContext;
-        if (isOnline()) {
-            location = this.getCurrentLocation();
-        } else {
-            networkShowSettingsAlert();
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        handler.post(getLocation);
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    private final Runnable getLocation = new Runnable() {
+        @Override
+        public void run() {
+            if (intent == null) intent = new Intent("broadcast.gps.location_change");
+            getCurrentLocation();
         }
+    };
+
+    public static boolean isRunning() {
+        return instance != null;
+    }
+
+    private Location getCurrentLocation() {
+        return getCurrentLocation(false);
     }
 
     /**
      * Utiliza android para localizar el dispositivo
      *
+     * @param isManual
      * @return
      */
-    private Location getCurrentLocation() {
-        try {
-            locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-            isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            //Network
-            if (isEnabledNetwork) {
-                Log.d("provider.location", "network");
-                return getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            }
-            //Gps
-            if (isEnabledGPS) {
-                Log.d("provider.location", "gps");
-                return getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            }
+    public Location getCurrentLocation(boolean isManual) {
+        if (isLocationEnabled) {
+            isLocationEnabled = false;
+            stopUsingGPS();
+        }
+        if (!isLocationEnabled) {
+            isLocationEnabled = true;
+            isAutomatic = !isManual;
+            try {
+                locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                //Network
+                if (isEnabledNetwork) {
+                    Log.d("provider.location", "network");
+                    return getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                }
+                //Gps
+                if (isEnabledGPS) {
+                    Log.d("provider.location", "gps");
+                    return getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                }
 
-            if (!isEnabledNetwork && !isEnabledGPS) {//Desabilitado GPS
-                Log.d("provider.location", "disabled");
-                gpsShowSettingsAlert();
+                if (!isEnabledNetwork && !isEnabledGPS) {//Desabilitado GPS
+                    Log.d("provider.location", "disabled");
+                    gpsShowSettingsAlert();
+                }
+            } catch (Exception e) {
+                Log.e("Error : Location", "Impossible to connect to LocationManager", e);
             }
-        } catch (Exception e) {
-            Log.e("Error : Location", "Impossible to connect to LocationManager", e);
         }
 
+        handler.postDelayed(getLocation, MIN_TIME_BW_UPDATES);
         return null;
     }
 
@@ -117,6 +127,7 @@ public class ManagerGPS extends Service {
         locationManager.requestLocationUpdates(provider, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, listener);
         return locationManager.getLastKnownLocation(provider);
     }
+
 
     /**
      * Determinar la mejor ubicacion
@@ -179,6 +190,28 @@ public class ManagerGPS extends Service {
     }
 
     /**
+     * Indica si estamos conectados a Internet
+     *
+     * @return
+     */
+    public boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new MyBinder();
+    }
+
+    @Override
+    public void onDestroy() {
+        stopUsingGPS();
+        super.onDestroy();
+    }
+
+    /**
      * Detiene la peticion del servicio para ManagerGPS
      */
     public void stopUsingGPS() {
@@ -187,95 +220,30 @@ public class ManagerGPS extends Service {
         }
     }
 
-
-    /**
-     * Devuelve la direccion actual del dispositivo
-     *
-     * @return
-     */
-    public List<Address> getGeocoderAddress() {
-        if (location != null) {
-            Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
-            try {
-                if (geocoder != null) {
-                    List<Address> addressList = geocoder.getFromLocation(getLatitud(), getLongitud(), 1);
-                    return addressList;
-                }
-            } catch (IOException e) {
-                Log.e("Error : Geocoder", "Impossible to connect to Geocoder", e);
-            }
-        }
-        return null;
-    }
-
-
-    /**
-     * Retorna los datos de la direccion, segun el TypeAddres
-     *
-     * @param typeAddress
-     * @return
-     */
-    private String getDataAddress(int typeAddress) {
-        List<Address> addressList = getGeocoderAddress();
-        if (addressList != null && addressList.size() > 0) {
-            Address address = addressList.get(0);
-
-            switch (typeAddress) {
-                case 1:
-                    return address.getAddressLine(0);
-                case 2:
-                    int maxLines = addressList.get(0).getMaxAddressLineIndex();
-                    for (int i = 0; i < maxLines; i++) {
-                        if ((maxLines - 1) == i) {
-                            return addressList.get(0).getAddressLine(i);
-                        }
-                    }
-                case 3:
-                    return address.getPostalCode();
-                case 4:
-                    return address.getCountryName();
-                default:
-                    return null;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Indica si estamos conectados a Internet
-     *
-     * @return
-     */
-    public boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.v("stop.managerGsp", "done");
-        stopUsingGPS();
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
     //LISTENER
     public class MyLocationListener implements LocationListener {
+
+        private void sendItent(Location location) {
+            if (location != null && intent != null && isAutomatic) {
+                currentBestLocation = location;
+                intent.putExtra("locationchange", true);
+                intent.putExtra("latitud", location.getLatitude());
+                intent.putExtra("longitud", location.getLongitude());
+                intent.putExtra("provider", location.getProvider());
+                sendBroadcast(intent);//mContext.sendBroadcast(intent);
+                Log.i("intent.location.service", "update");
+            }
+        }
 
         @Override
         public void onLocationChanged(Location location) {
             //Nueva Ubicacion
             if (currentBestLocation != null) {
                 if (isBetterLocation(location, currentBestLocation)) {
-                    currentBestLocation = location;
+                    sendItent(location);
                 }
             } else {
-                currentBestLocation = location;
+                sendItent(location);
             }
         }
 
@@ -301,13 +269,24 @@ public class ManagerGPS extends Service {
         }
     }
 
+    public static LocationService getInstance() {
+        return instance;
+    }
+
+    //BINDER
+    public class MyBinder extends Binder {
+        LocationService getService() {
+            return LocationService.this;
+        }
+    }
+
     //ALERTAS
 
     /**
      * Muestra una alerta en caso que esten desabilitados los accesorios de ubicacion
      */
     public void gpsShowSettingsAlert() {
-        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(mContext);
+        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(this.getApplicationContext());
 
         alert.setTitle(R.string.lblSettingGPS);
         alert.setMessage(R.string.msgGPSdisabled);
@@ -315,7 +294,7 @@ public class ManagerGPS extends Service {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                mContext.startActivity(intent);
+                startActivity(intent);
             }
         });
 
@@ -332,7 +311,7 @@ public class ManagerGPS extends Service {
      * Muestra una alerta en caso que esten desabilitados los datos (wifi, movil)
      */
     public void networkShowSettingsAlert() {
-        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(mContext);
+        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(this.getApplicationContext());
 
         alert.setTitle(R.string.lblSettingNetwork);
         alert.setMessage(R.string.msgNetworkDisabled);
@@ -340,7 +319,7 @@ public class ManagerGPS extends Service {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Intent intent = new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK);
-                mContext.startActivity(intent);
+                startActivity(intent);
             }
         });
 
@@ -354,40 +333,4 @@ public class ManagerGPS extends Service {
     }
 
 
-    //GETTERS AND SETTERS
-
-    /**
-     * Retorna la direccion resumida del dispositivo
-     *
-     * @return
-     */
-    public String getAddressLine() {
-        return getDataAddress(1);
-    }
-
-    public String getLocality() {
-        return getDataAddress(2);
-    }
-
-    public String getPostalCode() {
-        return getDataAddress(3);
-    }
-
-    public String getCountryName() {
-        return getDataAddress(4);
-    }
-
-    public Double getLatitud() {
-        if (location != null) {
-            latitud = location.getLatitude();
-        }
-        return latitud;
-    }
-
-    public Double getLongitud() {
-        if (location != null) {
-            longitud = location.getLongitude();
-        }
-        return longitud;
-    }
 }
