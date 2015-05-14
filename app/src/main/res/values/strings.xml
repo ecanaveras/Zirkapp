@@ -130,6 +130,7 @@
     <string name="msgShareApp">Hola, te invito a probar Zirkapp</string>
     <string name="urlPlayStore">https://play.google.com/store/apps/details?id=com.ecp.gsy.dcs.zirkapp</string>
     <string name="msgShareTo">Compartir usando...</string>
+    <string name="msgZimessSending">Publicando Zimess...</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

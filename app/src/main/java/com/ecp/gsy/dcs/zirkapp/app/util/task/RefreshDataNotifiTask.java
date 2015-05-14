@@ -23,7 +23,6 @@ import java.util.ArrayList;
 public class RefreshDataNotifiTask extends AsyncTask<String, Void, ArrayList<ItemNotification>> {
 
     private ListView listView;
-    private NotifiAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Context context;
     private ProgressBar progressBar;
@@ -77,7 +76,7 @@ public class RefreshDataNotifiTask extends AsyncTask<String, Void, ArrayList<Ite
 
     @Override
     protected void onPostExecute(ArrayList<ItemNotification> itemNotifications) {
-        adapter = new NotifiAdapter(context, itemNotifications);
+        NotifiAdapter adapter = new NotifiAdapter(context, itemNotifications);
         listView.setAdapter(adapter);
 
         GlobalApplication.setCantNotifications(noLeidas);

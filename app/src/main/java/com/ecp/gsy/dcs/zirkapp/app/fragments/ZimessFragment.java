@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -25,13 +24,11 @@ import android.widget.Toast;
 import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.MyZimessActivity;
-import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivityParse;
+import com.ecp.gsy.dcs.zirkapp.app.NewZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
-import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.LocationReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
-import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
 
@@ -40,17 +37,18 @@ import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
  */
 public class ZimessFragment extends Fragment {
 
+    private static ZimessFragment instance = null;
+
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
     private Menu menuList;
-    private ManagerGPS managerGPS;
     private LinearLayout layoudZimessNoFound;
     private GlobalApplication globalApplication;
     private LinearLayout layoudZimessFinder;
     private int requestCodeNewZimess = 100;
     public int requestCodeUpdateZimess = 105;
     private AlertDialogPro sortDialog;
-    private LocationReceiver locationReceiver;
+    private TextView lblRangoZimess;
 
 
     @Override
@@ -58,30 +56,34 @@ public class ZimessFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_zimess, container, false);
         setHasOptionsMenu(true);
 
-        inicializarCompUI(view);
-
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
 
-        //Actualizar Zimess, escucha un broadcast
-        //findZimessAround(getCurrentLocation(), globalApplication.getSortZimess());
+        inicializarCompUI(view);
+
+        instance = this;
 
         return view;
     }
 
+    public static boolean isRunning() {
+        return instance != null;
+    }
+
+    public static ZimessFragment getInstance() {
+        return instance;
+    }
+
+
     private void inicializarCompUI(View view) {
         //UI Zimess no Found
         layoudZimessNoFound = (LinearLayout) view.findViewById(R.id.layoudZimessNoFound);
-        ImageView imageView = (ImageView) view.findViewById(R.id.imgIconZimessNoFound);
-        imageView.setImageResource(R.drawable.ic_icon_radar_gray);
-        TextView textView = (TextView) view.findViewById(R.id.lblMyZimessNoFound);
-        textView.setText(R.string.lblMyZimessNoFound);
-
         layoudZimessFinder = (LinearLayout) view.findViewById(R.id.layoudZimessFinder);
+
+        lblRangoZimess = (TextView) view.findViewById(R.id.lblInfoRango);
+
         recyclerView = (RecyclerView) view.findViewById(R.id.listZMessages);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-
-        layoudZimessFinder.setVisibility(View.GONE);
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.zimess_refresh_layout);
         swipeRefreshLayout.setColorScheme(android.R.color.holo_blue_bright,
@@ -116,6 +118,7 @@ public class ZimessFragment extends Fragment {
             int dist_min = Integer.parseInt(preferences.getString("min_dist_list", "-1"));
             int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "5"));
             new RefreshDataZimessTask(this, currentLocation, recyclerView, layoudZimessNoFound, layoudZimessFinder, swipeRefreshLayout, sortZimess).execute(dist_min, dist_max);
+            lblRangoZimess.setText("Rango actual de Zimess: " + getHomoMinDistance(dist_min) + " a " + getHomoMaxDistance(dist_max)+" metros");
         }
     }
 
@@ -158,7 +161,7 @@ public class ZimessFragment extends Fragment {
     }
 
     /**
-     * actualiza la Ubicacion actual
+     * retorna la Ubicacion actual
      *
      * @return
      */
@@ -172,19 +175,30 @@ public class ZimessFragment extends Fragment {
         return location;
     }
 
-    @Override
-    public void onResume() {
-        //actualiza la lista de usuarios al cambiar de ubicacion
-        locationReceiver = new LocationReceiver(this);
-        //Registrar los Broadcast
-        getActivity().registerReceiver(locationReceiver, new IntentFilter("broadcast.gps.location_change"));
-        super.onResume();
+    private String getHomoMinDistance(int minDinstance) {
+        String minD = "1";
+        switch (minDinstance) {
+            case 0:
+                minD = "500";
+                break;
+            case 1:
+                minD = "1000";
+                break;
+        }
+        return minD;
     }
 
-    @Override
-    public void onPause() {
-        getActivity().unregisterReceiver(locationReceiver);
-        super.onPause();
+    private String getHomoMaxDistance(int maxDinstance) {
+        String maxD = "2000";
+        switch (maxDinstance) {
+            case 4:
+                maxD = "4000";
+                break;
+            case 5:
+                maxD = "5000";
+                break;
+        }
+        return maxD;
     }
 
     @Override
@@ -201,7 +215,7 @@ public class ZimessFragment extends Fragment {
         Intent intent;
         switch (item.getItemId()) {
             case R.id.action_bar_new_zimess:
-                intent = new Intent(getActivity(), NewZimessActivityParse.class);
+                intent = new Intent(getActivity(), NewZimessActivity.class);
                 startActivityForResult(intent, requestCodeNewZimess);
                 break;
             case R.id.action_bar_my_zimess:

@@ -2,59 +2,60 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    tools:context="com.ecp.gsy.dcs.zirkapp.app.NewZimessActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="com.ecp.gsy.dcs.zirkapp.app.NewZimessActivity">
 
     <include layout="@layout/component_toolbar" />
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/text_primary_color">
+        android:background="@color/text_primary_color"
+        android:orientation="vertical">
 
         <TextView
+            android:id="@+id/txtIndicadorConn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/txtIndicadorConn"
             android:layout_weight="1"
-            android:minHeight="40dp"
             android:gravity="center"
-            android:visibility="gone"
-            android:textColor="#ffffffff" />
+            android:minHeight="40dp"
+            android:textColor="#ffffffff"
+            android:visibility="gone" />
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:layout_marginLeft="5dp">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <EditText
                 android:id="@+id/editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textShortMessage|textAutoCorrect|textMultiLine|textAutoComplete"
-                android:imeOptions="actionSend|flagNoEnterAction"
-                android:imeActionLabel="@string/lblSend"
-                android:maxLength="300"
-                android:hint="@string/lblNewZmess"
                 android:layout_weight="1"
-                android:gravity="top" />
+                android:gravity="top"
+                android:hint="@string/lblNewZmess"
+                android:imeActionLabel="@string/lblSend"
+                android:imeOptions="actionSend|flagNoEnterAction"
+                android:inputType="textShortMessage|textAutoCorrect|textMultiLine|textAutoComplete"
+                android:maxLength="300" />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="bottom">
+                android:gravity="bottom"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:src="@android:drawable/ic_menu_mylocation"
-                    android:scaleType="fitCenter" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:scaleType="fitCenter"
+                    android:src="@android:drawable/ic_menu_mylocation" />
 
                 <FrameLayout
                     android:layout_width="wrap_content"
@@ -64,27 +65,28 @@
                     <TextView
                         android:id="@+id/lblCurrentLocation"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:text="No disponible"
-                        android:textColor="@color/accent_color"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center_vertical"
                         android:singleLine="true"
-                        android:gravity="center_vertical" />
+                        android:text="No disponible"
+                        android:textColor="@color/accent_color" />
 
                     <ProgressBar
                         android:id="@+id/progressLoad"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center" />
 
                 </FrameLayout>
 
                 <com.gc.materialdesign.views.ButtonRectangle
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
                     android:id="@+id/btnSendZmess"
-                    android:scaleType="fitCenter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
                     android:layout_gravity="center_vertical"
-                    android:text="@string/lblSend"
-                    android:background="@color/default_primary_color"/>
+                    android:background="@color/default_primary_color"
+                    android:text="@string/lblSend" />
 
             </LinearLayout>
 

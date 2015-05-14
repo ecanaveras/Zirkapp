@@ -17,16 +17,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
  */
 public class LocationReceiver extends BroadcastReceiver {
 
-    private UsersOnlineFragment usersOnlineFragment;
-    private ZimessFragment zimessFragment;
-    private GlobalApplication globalApplication;
-
-    public LocationReceiver(UsersOnlineFragment usersOnlineFragment) {
-        this.usersOnlineFragment = usersOnlineFragment;
-    }
-
-    public LocationReceiver(ZimessFragment zimessFragment) {
-        this.zimessFragment = zimessFragment;
+    public LocationReceiver() {
     }
 
     @Override
@@ -38,7 +29,8 @@ public class LocationReceiver extends BroadcastReceiver {
         Location location = new Location(latitud, longitud);
         if (locationUpdate) {
             //actualizar lista de usuarios en el chat y posicion
-            if (usersOnlineFragment != null) {
+            if (UsersOnlineFragment.isRunning()) {
+                UsersOnlineFragment usersOnlineFragment = UsersOnlineFragment.getInstance();
                 if (usersOnlineFragment.isConnectedUser) {
                     usersOnlineFragment.conectarChat(location);
                 }
@@ -46,8 +38,9 @@ public class LocationReceiver extends BroadcastReceiver {
             }
 
             //actualizar lista de Zimess en la nueva posision
-            if (zimessFragment != null) {
-                globalApplication = (GlobalApplication) zimessFragment.getActivity().getApplicationContext();
+            if (ZimessFragment.isRunning()) {
+                ZimessFragment zimessFragment = ZimessFragment.getInstance();
+                GlobalApplication globalApplication = (GlobalApplication) zimessFragment.getActivity().getApplicationContext();
                 zimessFragment.findZimessAround(location, globalApplication.getSortZimess());
                 Log.i("zimess.location", "update");
             }

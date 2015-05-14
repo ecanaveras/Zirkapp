@@ -4,16 +4,13 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,7 +19,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
 import com.gc.materialdesign.views.ButtonRectangle;
@@ -33,10 +31,6 @@ import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
 
 /**
  * Created by Elder on 28/02/2015.
@@ -136,9 +130,8 @@ public class EditProfileActivity extends ActionBarActivity {
         progressDialog.dismiss();
         if (txtCiudad.getText() == null || txtCiudad.getText().toString().isEmpty()) { //Sugerir Ubicación
             //get Name Ubicacion
-            ManagerGPS managerGPS = new ManagerGPS(this, true);
-            if (managerGPS.getLatitud() != null) {
-                new RefreshDataAddressTask(managerGPS, txtCiudad, true).execute();
+            if (LocationService.isRunning()) {
+                new RefreshDataAddressTask(this, getCurrentLocation(), txtCiudad, true).execute();
             }
         }
     }
@@ -260,6 +253,21 @@ public class EditProfileActivity extends ActionBarActivity {
         }
     }
 
+
+    /**
+     * retorna la Ubicacion actual
+     *
+     * @return
+     */
+    private Location getCurrentLocation() {
+        Location location = null;
+        if (LocationService.isRunning()) {
+            LocationService locationService = LocationService.getInstance();
+            android.location.Location tmpLocation = locationService.getCurrentLocation(true);
+            location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+        }
+        return location;
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

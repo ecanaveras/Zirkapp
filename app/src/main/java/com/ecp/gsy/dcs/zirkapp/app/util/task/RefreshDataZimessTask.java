@@ -179,10 +179,14 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
 
         boolean zimessFound = zimessList.size() > 0;
 
-        if (zimessFound && layoudZimessNoFound != null) //Si hay Zimess
-            layoudZimessNoFound.setVisibility(View.GONE);
-        if (!zimessFound && layoudZimessNoFound != null)// No hay Zimess
-            layoudZimessNoFound.setVisibility(View.VISIBLE);
+        if (layoudZimessNoFound != null) {
+            if (zimessFound) {//Si hay Zimess
+                layoudZimessNoFound.setVisibility(View.GONE);
+            } else {// No hay Zimess
+                layoudZimessNoFound.setVisibility(View.VISIBLE);
+            }
+        }
+
 
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);

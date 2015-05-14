@@ -35,13 +35,11 @@ public class LocationService extends Service {
     private MyLocationListener listener;
     private Location currentBestLocation;
     private String TAG = MyLocationListener.class.getName();
-    private boolean isEnabledGPS;
-    private boolean isEnabledNetwork;
     private Intent intent;
 
 
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 500; // 500 metros
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 5; // 5 minutoS
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 15; // 15 minutoS
 
     private final Handler handler = new Handler();
 
@@ -62,8 +60,12 @@ public class LocationService extends Service {
     private final Runnable getLocation = new Runnable() {
         @Override
         public void run() {
-            if (intent == null) intent = new Intent("broadcast.gps.location_change");
-            getCurrentLocation();
+            //if (intent == null) intent = new Intent("broadcast.gps.location_change");
+            if (isOnline()) {
+                getCurrentLocation();
+            } else {
+                networkShowSettingsAlert();
+            }
         }
     };
 
@@ -91,8 +93,8 @@ public class LocationService extends Service {
             isAutomatic = !isManual;
             try {
                 locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-                isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                boolean isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                boolean isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
                 //Network
                 if (isEnabledNetwork) {
                     Log.d("provider.location", "network");
@@ -104,10 +106,10 @@ public class LocationService extends Service {
                     return getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 }
 
-                if (!isEnabledNetwork && !isEnabledGPS) {//Desabilitado GPS
-                    Log.d("provider.location", "disabled");
-                    gpsShowSettingsAlert();
-                }
+                //Desabilitado la RED y GPS
+                Log.d("provider.location", "disabled");
+                gpsShowSettingsAlert();
+
             } catch (Exception e) {
                 Log.e("Error : Location", "Impossible to connect to LocationManager", e);
             }
@@ -212,7 +214,7 @@ public class LocationService extends Service {
     }
 
     /**
-     * Detiene la peticion del servicio para ManagerGPS
+     * Detiene la peticion del servicio para LocationService
      */
     public void stopUsingGPS() {
         if (locationManager != null) {
@@ -230,7 +232,7 @@ public class LocationService extends Service {
                 intent.putExtra("latitud", location.getLatitude());
                 intent.putExtra("longitud", location.getLongitude());
                 intent.putExtra("provider", location.getProvider());
-                sendBroadcast(intent);//mContext.sendBroadcast(intent);
+                sendBroadcast(intent);
                 Log.i("intent.location.service", "update");
             }
         }

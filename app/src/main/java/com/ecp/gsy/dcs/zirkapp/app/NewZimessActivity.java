@@ -3,10 +3,10 @@ package com.ecp.gsy.dcs.zirkapp.app;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,18 +16,17 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
-import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
 import com.gc.materialdesign.views.ButtonRectangle;
@@ -40,7 +39,7 @@ import com.parse.SaveCallback;
 /**
  * Created by Elder on 23/02/2015.
  */
-public class NewZimessActivityParse extends ActionBarActivity {
+public class NewZimessActivity extends ActionBarActivity {
 
     private ParseUser currentUser;
 
@@ -50,7 +49,6 @@ public class NewZimessActivityParse extends ActionBarActivity {
     private TextView lblCurrentLocation;
 
     private GlobalApplication globalApplication;
-    private ManagerGPS managerGPS;
     private ProgressBar progressBar;
     private Activity activity;
     private Toolbar toolbar;
@@ -70,13 +68,9 @@ public class NewZimessActivityParse extends ActionBarActivity {
         currentUser = globalApplication.getCurrentUser();
 
         //Name Location
-        managerGPS = new ManagerGPS(this, true);
-        if (managerGPS.getLatitud() != null) {
-            new RefreshDataAddressTask(managerGPS, lblCurrentLocation, progressBar).execute();
+        if (LocationService.isRunning()) {
+            new RefreshDataAddressTask(this, getCurrentLocation(), lblCurrentLocation, progressBar).execute();
         }
-        /*else {
-            managerGPS.gpsShowSettingsAlert();
-        }*/
     }
 
 
@@ -142,12 +136,15 @@ public class NewZimessActivityParse extends ActionBarActivity {
             return;
         }
 
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMessage(getResources().getString(R.string.msgZimessSending));
+        dialog.show();
         btnSendZimess.setEnabled(false);
 
         //Tomar ubicacion
-        managerGPS = new ManagerGPS(this, true);
-        if (managerGPS.getLatitud() != null) {
-            ParseGeoPoint parseGeoPoint = new ParseGeoPoint(managerGPS.getLatitud(), managerGPS.getLongitud());
+        final Location currentLocation = getCurrentLocation();
+        if (currentLocation != null) {
+            ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
             ParseObject parseObject = new ParseObject("ParseZimess");
             parseObject.put("user", currentUser);
             parseObject.put("zimessText", zimessText);
@@ -156,18 +153,38 @@ public class NewZimessActivityParse extends ActionBarActivity {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        Intent intent = new Intent();
+                        if (ZimessFragment.isRunning()) {
+                            ZimessFragment zf = ZimessFragment.getInstance();
+                            zf.findZimessAround(currentLocation, globalApplication.getSortZimess());
+                        }
+                        /*Intent intent = new Intent();
                         intent.putExtra("newZimessOk", true);
-                        setResult(Activity.RESULT_OK, intent);
+                        setResult(Activity.RESULT_OK, intent);*/
                         finish();
                     } else {
                         showNotificacion(true, 0, null, getResources().getString(R.string.msgZimesFailed), zimessText);
                         Log.e("ZimessError:", "No es posible publicar el Zimess");
                         onBackPressed();
                     }
+                    dialog.dismiss();
                 }
             });
         }
+    }
+
+    /**
+     * retorna la Ubicacion actual
+     *
+     * @return
+     */
+    private Location getCurrentLocation() {
+        Location location = null;
+        if (LocationService.isRunning()) {
+            LocationService locationService = LocationService.getInstance();
+            android.location.Location tmpLocation = locationService.getCurrentLocation(true);
+            location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+        }
+        return location;
     }
 
     /**
@@ -193,10 +210,10 @@ public class NewZimessActivityParse extends ActionBarActivity {
                     .setAutoCancel(true)
                     .setWhen(System.currentTimeMillis());
             //Crear intent para manipular la noti en Zirkapp
-            Intent intent = new Intent(context, NewZimessActivityParse.class);
+            Intent intent = new Intent(context, NewZimessActivity.class);
             intent.putExtra("zimess_noti", zimessText);
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-            stackBuilder.addParentStack(NewZimessActivityParse.class);
+            stackBuilder.addParentStack(NewZimessActivity.class);
             stackBuilder.addNextIntent(intent);
             PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
             nBuilder.setContentIntent(pendingIntent);

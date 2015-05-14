@@ -3,7 +3,6 @@ package com.ecp.gsy.dcs.zirkapp.app;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,7 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
-import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
 import com.parse.ParseUser;
 
@@ -30,7 +29,6 @@ public class MyZimessActivity extends ActionBarActivity {
     private LinearLayout layoudZimessFinder;
     private ParseUser currentUser;
     private Toolbar toolbar;
-    private ManagerGPS managerGPS;
     public int requestCodeUpdateZimess = 105;
 
     @Override
@@ -71,11 +69,25 @@ public class MyZimessActivity extends ActionBarActivity {
      * Busca los Zimess del Usuario
      */
     private void findZimessCurrentUser() {
-        managerGPS = new ManagerGPS(this, true);
-        if (managerGPS.getLatitud() != null) {
-            Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
+        Location currentLocation = getCurrentLocation();
+        if (currentLocation != null) {
             new RefreshDataZimessTask(this, currentUser, currentLocation, recyclerView, layoudZimessNoFound, layoudZimessFinder).execute();
         }
+    }
+
+    /**
+     * retorna la Ubicacion actual
+     *
+     * @return
+     */
+    private Location getCurrentLocation() {
+        Location location = null;
+        if (LocationService.isRunning()) {
+            LocationService locationService = LocationService.getInstance();
+            android.location.Location tmpLocation = locationService.getCurrentLocation(true);
+            location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+        }
+        return location;
     }
 
     @Override

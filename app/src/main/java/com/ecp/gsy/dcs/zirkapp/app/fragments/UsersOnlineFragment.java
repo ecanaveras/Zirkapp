@@ -22,10 +22,9 @@ import com.ecp.gsy.dcs.zirkapp.app.ChatHistoryActivity;
 import com.ecp.gsy.dcs.zirkapp.app.MessagingActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.CountMessagesReceiver;
-import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.LocationReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.SinchConnectReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
-import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersOnline;
 import com.parse.ParseUser;
@@ -35,18 +34,18 @@ import com.parse.ParseUser;
  */
 public class UsersOnlineFragment extends Fragment {
 
+    private static UsersOnlineFragment instance = null;
+
     private ListView listViewUserOnline;
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout layoudUsersNoFound, layoudUsersFinder, layoudChatOffline, layoutInitService;
 
-    private ManagerGPS managerGPS;
     private ParseUser currentUser;
 
     private GlobalApplication globalApplication;
     private Menu menu;
 
     private CountMessagesReceiver countMessagesReceiver;
-    private LocationReceiver locationReceiver;
     private SinchConnectReceiver sinchConnectReceiver;
 
     public boolean isConnectedUser;
@@ -68,7 +67,17 @@ public class UsersOnlineFragment extends Fragment {
             layoudChatOffline.setVisibility(View.VISIBLE);
         }
 
+        instance = this;
+
         return view;
+    }
+
+    public static boolean isRunning() {
+        return instance != null;
+    }
+
+    public static UsersOnlineFragment getInstance() {
+        return instance;
     }
 
     private void inicializarCompUI(View view) {
@@ -93,7 +102,7 @@ public class UsersOnlineFragment extends Fragment {
             @Override
             public void onRefresh() {
                 if (isConnectedUser)
-                    conectarChat(getUpdateCurrentLocation());
+                    conectarChat(getCurrentLocation());
             }
         });
         swipeRefreshLayout.setEnabled(isConnectedUser);
@@ -165,15 +174,21 @@ public class UsersOnlineFragment extends Fragment {
 
 
     /**
-     * actualiza la Ubicacion actual
+     * retorna la Ubicacion actual
      *
      * @return
      */
-    private Location getUpdateCurrentLocation() {
-        //LocationReceiver se encarga de ejecutar las actualizaciones
-        managerGPS = new ManagerGPS(getActivity());
-        return new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
+    private Location getCurrentLocation() {
+        Location location = null;
+        if (LocationService.isRunning()) {
+            LocationService locationService = LocationService.getInstance();
+            android.location.Location tmpLocation = locationService.getCurrentLocation(true);
+            location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+        }
+        return location;
     }
+
+
 
     /*
     public void updateCantMessagesNoRead() {
@@ -232,15 +247,12 @@ public class UsersOnlineFragment extends Fragment {
     public void onResume() {
         //Comprobar el estado del servicio Sinch
         sinchConnectReceiver = new SinchConnectReceiver(layoutInitService, listViewUserOnline);
-        //actualiza la lista de usuarios al cambiar de ubicacion
-        locationReceiver = new LocationReceiver(this);
         //Contar los mensajes recibidos
         countMessagesReceiver = new CountMessagesReceiver(listViewUserOnline);
 
         //Registrar los Broadcast
         getActivity().registerReceiver(countMessagesReceiver, new IntentFilter("broadcast.cant_messages"));
         getActivity().registerReceiver(sinchConnectReceiver, new IntentFilter("app.fragments.UsersOnlineFragment"));
-        getActivity().registerReceiver(locationReceiver, new IntentFilter("broadcast.gps.location_change"));
         super.onResume();
     }
 
@@ -248,7 +260,6 @@ public class UsersOnlineFragment extends Fragment {
     public void onPause() {
         getActivity().unregisterReceiver(countMessagesReceiver);
         getActivity().unregisterReceiver(sinchConnectReceiver);
-        getActivity().unregisterReceiver(locationReceiver);
         super.onPause();
     }
 
@@ -264,7 +275,7 @@ public class UsersOnlineFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    conectarChat(getUpdateCurrentLocation());
+                    conectarChat(getCurrentLocation());
                 } else {
                     desconectarChat();
                 }

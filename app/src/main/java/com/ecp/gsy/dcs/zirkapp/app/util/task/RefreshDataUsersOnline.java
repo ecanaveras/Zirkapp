@@ -23,7 +23,7 @@ import java.util.Set;
  * Created by Elder on 18/03/2015.
  */
 public class RefreshDataUsersOnline extends AsyncTask<Integer, Void, List<ParseUser>> {
-    private Boolean searching;
+    private boolean searching;
     private ArrayList<String> userList;
     private Location currentLocation;
     private ParseUser currentUser;

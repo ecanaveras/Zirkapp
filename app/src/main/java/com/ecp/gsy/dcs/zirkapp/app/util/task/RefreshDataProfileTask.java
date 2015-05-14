@@ -17,7 +17,6 @@ import com.parse.ParseUser;
 public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser> {
 
     private ImageView avatar;
-    private byte[] byteImage;
     private ProgressDialog progressDialog;
     private Context context;
     private String messageDialog;

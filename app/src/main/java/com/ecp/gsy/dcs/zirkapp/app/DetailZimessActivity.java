@@ -1,7 +1,6 @@
 package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -16,7 +15,6 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -27,8 +25,7 @@ import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
-import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
-import com.ecp.gsy.dcs.zirkapp.app.util.services.ManagerGPS;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataCommentsTask;
@@ -38,7 +35,6 @@ import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -47,7 +43,6 @@ import java.util.HashMap;
 
 public class DetailZimessActivity extends ActionBarActivity {
 
-    private ManagerGPS managerGPS;
     private GlobalApplication globalApplication;
     private Zimess zimessDetail;
     private ParseUser currentUser, zimessUser;
@@ -188,10 +183,10 @@ public class DetailZimessActivity extends ActionBarActivity {
 
         //lblCreatedAt.setText(globalApplication.getDescFechaPublicacion(zimess.getCreateAt()));
 
+        //Todo verificar utilidad
         //Calcular distancia del Zimess remoto
-        managerGPS = new ManagerGPS(this, true);
-        if (managerGPS.getLatitud() != null) {
-            Location currentLocation = new Location(managerGPS.getLatitud(), managerGPS.getLongitud());
+        Location currentLocation = getCurrentLocation();
+        if (currentLocation != null) {
             Location zimessLocation = new Location(zimess.getLocation().getLatitude(), zimess.getLocation().getLongitude());
             ManagerDistance mDistance = new ManagerDistance(currentLocation, zimessLocation);
             lblDistance.setText(mDistance.getDistanciaToString());
@@ -293,7 +288,21 @@ public class DetailZimessActivity extends ActionBarActivity {
             }
         });
         alert.show();
+    }
 
+    /**
+     * retorna la Ubicacion actual
+     *
+     * @return
+     */
+    private Location getCurrentLocation() {
+        Location location = null;
+        if (LocationService.isRunning()) {
+            LocationService locationService = LocationService.getInstance();
+            android.location.Location tmpLocation = locationService.getCurrentLocation(true);
+            location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+        }
+        return location;
     }
 
     @Override

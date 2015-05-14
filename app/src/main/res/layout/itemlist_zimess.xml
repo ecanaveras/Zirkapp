@@ -98,11 +98,12 @@
             <!--Otros datos-->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="16dp">
+                android:layout_height="20dp"
+                android:gravity="center_vertical">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:src="@drawable/ic_icon_location"
                     android:gravity="center_vertical" />
 
@@ -117,8 +118,8 @@
 
                 <ImageView
                     android:id="@+id/imgComment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:src="@drawable/ic_icon_response"
                     android:gravity="center_vertical" />
 
@@ -132,8 +133,8 @@
                     style="@style/mini_text" />
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:src="@drawable/ic_icon_time"
                     android:gravity="center_vertical" />
 

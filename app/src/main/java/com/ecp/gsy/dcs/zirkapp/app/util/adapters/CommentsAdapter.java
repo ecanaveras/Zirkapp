@@ -62,8 +62,8 @@ public class CommentsAdapter extends BaseAdapter {
         TextView lblNumComment = (TextView) vista.findViewById(R.id.lblNumComment);
 
         //3. Asignar valores
-        lblCommentUser.setText(comment.getUserComment().getUsername().toString());
-        lblCommentText.setText(comment.getCommentText().toString());
+        lblCommentUser.setText(comment.getUserComment().getUsername());
+        lblCommentText.setText(comment.getCommentText());
         lblNumComment.setText(Integer.toString(i + 1));
 
         lblCommentName.setText(comment.getUserComment().getString("name"));

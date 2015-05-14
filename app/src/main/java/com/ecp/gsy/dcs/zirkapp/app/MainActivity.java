@@ -108,25 +108,6 @@ public class MainActivity extends ActionBarActivity {
                 }
             });
         }
-        /*// Check device for Play Services APK.
-        if (globalApplication.checkPlayServices(this) && currentUser != null) {
-            //GCM
-            gcm = GoogleCloudMessaging.getInstance(this);
-            regId = globalApplication.getRegistrationId(this);
-            if (regId.isEmpty()) {
-                //Register InBackground e iniciar MessageService
-                new RegisterGcmTask(gcm, this).execute();
-            } else {
-                //Iniciar servicio
-                Intent serviceIntent = new Intent(getApplicationContext(), MessageService.class);
-                serviceIntent.putExtra("regId", regId);
-                startService(serviceIntent);
-                waitSinchClientStarts();
-            }
-        } else {
-            Log.i("GCM", "No valid Google Play Services APK found.");
-        }*/
-
 
         //Manipulando Fragments
         FragmentManager fm = getFragmentManager();
@@ -286,11 +267,11 @@ public class MainActivity extends ActionBarActivity {
                 toolbar.setTitle(R.string.title_fragment_notifications);
                 showFragment(NOTI, false);
                 break;
-            case 4:
+            case 4: //Ajustes
                 Intent intent = new Intent(this, CustomSettingsActivity.class);
                 startActivity(intent);
                 break;
-            case 5:
+            case 5: //Calificar
                 //Log.i("package.name", this.getApplicationContext().getPackageName());
                 Uri uri = Uri.parse("market://details?id=" + this.getApplicationContext().getPackageName());
                 Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
@@ -300,7 +281,7 @@ public class MainActivity extends ActionBarActivity {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getResources().getString(R.string.urlPlayStore))));
                 }
                 break;
-            case 6:
+            case 6: //Compartir
                 String msg1 = getResources().getString(R.string.msgShareApp);
                 String urlPS = getResources().getString(R.string.urlPlayStore);
                 Intent sendIntent = new Intent();
@@ -326,15 +307,6 @@ public class MainActivity extends ActionBarActivity {
         for (int i = 0; i < fragments.length; i++) {
             if (i == indexFragment) {
                 ft.show(fragments[i]);
-                //Todo comprobar funcionamiento adecuado
-                /*if (indexFragment == 1) { //Actualizar listado de Zimess
-                    ZimessFragment zimessFragment = (ZimessFragment) fragments[i];
-                    zimessFragment.findZimessAround();
-                }
-                if (indexFragment == 2) { //Actualizar listado de usuarios en el chat
-                    UsersOnlineFragment usersOnlineFragment = (UsersOnlineFragment) fragments[i];
-                    usersOnlineFragment.findUsersOnline();
-                }*/
             } else {
                 ft.hide(fragments[i]);
             }

@@ -12,7 +12,6 @@ import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.CropOption;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Elder on 16/04/2015.
