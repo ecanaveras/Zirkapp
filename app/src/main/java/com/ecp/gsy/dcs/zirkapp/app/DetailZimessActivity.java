@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alertdialogpro.AlertDialogPro;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
@@ -190,8 +191,8 @@ public class DetailZimessActivity extends ActionBarActivity {
             Location zimessLocation = new Location(zimess.getLocation().getLatitude(), zimess.getLocation().getLongitude());
             ManagerDistance mDistance = new ManagerDistance(currentLocation, zimessLocation);
             lblDistance.setText(mDistance.getDistanciaToString());
-            lblMessage.setText(zimess.getZimessText());
         }
+        lblMessage.setText(zimess.getZimessText());
     }
 
     /**
@@ -213,6 +214,7 @@ public class DetailZimessActivity extends ActionBarActivity {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
+                    updateCantComments();
                     try {
                         String receptorId = zimessObject.fetchIfNeeded().getParseUser("user").getObjectId();
                         if (receptorId != null && !currentUser.getObjectId().equals(receptorId)) {
@@ -224,7 +226,6 @@ public class DetailZimessActivity extends ActionBarActivity {
                     }
                     isZimessUpdated = true;
                     txtComment.setText(null);
-                    updateCantComments();
                 } else {
                     Toast.makeText(getApplicationContext(),
                             "Error al enviar tu comentario, reintentalo!",
@@ -307,9 +308,12 @@ public class DetailZimessActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent();
-        intent.putExtra("updateZimessOk", isZimessUpdated);
-        setResult(Activity.RESULT_OK, intent);
+        if (isZimessUpdated) {
+            if (ZimessFragment.isRunning()) {
+                ZimessFragment zf = ZimessFragment.getInstance();
+                zf.findZimessAround(getCurrentLocation(), globalApplication.getSortZimess());
+            }
+        }
         super.onBackPressed();
     }
 
@@ -318,14 +322,14 @@ public class DetailZimessActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
-                break;
+                return true;
             case R.id.action_bar_delete_zimess:
                 deleteZimess();
-                break;
+                return true;
             default:
-                break;
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+
     }
 
     @Override

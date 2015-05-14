@@ -254,13 +254,13 @@ public class ZimessFragment extends Fragment {
         if (requestCode == requestCodeNewZimess && data != null) {
             boolean newZimessOk = data.getBooleanExtra("newZimessOk", false);
             if (resultCode == Activity.RESULT_OK && newZimessOk)
-                getCurrentLocation();
+                findZimessAround(getCurrentLocation(), globalApplication.getSortZimess());
         }
 
         if (requestCode == requestCodeUpdateZimess && data != null) {
             boolean updateZimessOk = data.getBooleanExtra("updateZimessOk", false);
             if (resultCode == Activity.RESULT_OK && updateZimessOk)
-                getCurrentLocation();
+                findZimessAround(getCurrentLocation(), globalApplication.getSortZimess());
         }
     }
 }

@@ -139,9 +139,11 @@
         <service android:name=".util.services.LocationService" />
 
         <!--Receivers-->
-        <receiver android:name=".util.broadcast.LocationReceiver">
+        <receiver
+            android:name=".util.broadcast.LocationReceiver"
+            android:exported="false">
             <intent-filter>
-                <action android:name="broadcast.gps.location_change"/>
+                <action android:name="broadcast.gps.location_change" />
             </intent-filter>
         </receiver>
 

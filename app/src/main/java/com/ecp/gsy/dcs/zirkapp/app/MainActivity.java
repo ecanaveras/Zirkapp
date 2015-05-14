@@ -413,6 +413,7 @@ public class MainActivity extends ActionBarActivity {
         globalApplication.setListeningNotifi(true);
         globalApplication.setCustomParseUser(null);
         stopService(new Intent(this, MessageService.class));
+        stopService(new Intent(this, LocationService.class));
         super.onDestroy();
     }
 
