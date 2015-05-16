@@ -1,4 +1,4 @@
-package com.ecp.gsy.dcs.zirkapp.app.util.task;
+package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
 import android.app.Application;
@@ -15,7 +15,7 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
 
-import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.facebook.FacebookSdk;
@@ -26,6 +26,7 @@ import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseFile;
 import com.parse.ParseInstallation;
+import com.parse.ParseTwitterUtils;
 import com.parse.ParseUser;
 import com.parse.PushService;
 
@@ -40,10 +41,9 @@ import java.util.TimeZone;
 public class GlobalApplication extends Application {
 
     //Key GCM
-    public static final String SENDER_ID = "323224512527"; //Key GCM
+    public final String SENDER_ID = "323224512527"; //Key GCM
     public static final String EXTRA_MESSAGE = "message";
     public static final String PROPERTY_REG_ID = "registration_id";
-    private static final String PROPERTY_APP_VERSION = "1.1.1";
     public static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     //Parse
@@ -71,12 +71,12 @@ public class GlobalApplication extends Application {
         Parse.enableLocalDatastore(this);
 
         //Iniciar Parse
-        Parse.initialize(this, "VDJEJIMbyuOiis9bwBHmrOIc7XDUqYHQ0TMhA23c", "9EJKzvp4LhRdnLqfH6jkHPaWd58IVXaBKAWdeItE");
-        PushService.setDefaultPushCallback(this, MainActivity.class);
+        Parse.initialize(this, getResources().getString(R.string.parse_api_id), getResources().getString(R.string.parse_api_key));
 
         //Facebook
-        FacebookSdk.sdkInitialize(this);
-        //ParseFacebookUtils.initialize(getResources().getString(R.string.facebook_app_id));
+        ParseFacebookUtils.initialize(this);
+        //Twitter
+        ParseTwitterUtils.initialize(getResources().getString(R.string.twitter_api_key), getResources().getString(R.string.twitter_api_secret));
     }
 
 
@@ -115,7 +115,7 @@ public class GlobalApplication extends Application {
         Log.i("GCM", "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PROPERTY_REG_ID, regId);
-        editor.putInt(PROPERTY_APP_VERSION, appVersion);
+        editor.putInt(getAppVersionName(context), appVersion);
         editor.commit();
     }
 
@@ -138,7 +138,7 @@ public class GlobalApplication extends Application {
         // Check if app was updated; if so, it must clear the registration ID
         // since the existing registration ID is not guaranteed to work with
         // the new app version.
-        int registeredVersion = preferences.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
+        int registeredVersion = preferences.getInt(getAppVersionName(context), Integer.MIN_VALUE);
         int currentVersion = getAppVersionCode(context);
         if (registeredVersion != currentVersion) {
             Log.i("GCM", "App version changed.");

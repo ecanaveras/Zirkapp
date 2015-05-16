@@ -1,19 +1,15 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments.welcome;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
-import com.ecp.gsy.dcs.zirkapp.app.ManagerLogin;
+import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerLogin;
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.gc.materialdesign.views.ButtonRectangle;
-import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
 /**
  * Created by Elder on 02/06/2014.

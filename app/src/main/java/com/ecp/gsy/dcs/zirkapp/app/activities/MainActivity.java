@@ -1,4 +1,4 @@
-package com.ecp.gsy.dcs.zirkapp.app;
+package com.ecp.gsy.dcs.zirkapp.app.activities;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -6,6 +6,9 @@ import android.app.FragmentTransaction;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.net.Uri;
@@ -14,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,21 +27,26 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.NotificationsFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RegisterGcmTask;
 import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParsePush;
 import com.parse.ParseUser;
+import com.parse.PushService;
 import com.parse.SaveCallback;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity {
@@ -87,6 +96,9 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //KeyHash
+        this.getKeyHash();
+
         //Iniciar servicio de ubicacion
         Intent intentService = new Intent(this, LocationService.class);
         startService(intentService);
@@ -108,6 +120,8 @@ public class MainActivity extends ActionBarActivity {
                 }
             });
         }
+
+        PushService.setDefaultPushCallback(this, MainActivity.class);
 
         //Manipulando Fragments
         FragmentManager fm = getFragmentManager();
@@ -426,18 +440,21 @@ public class MainActivity extends ActionBarActivity {
             selectItemDrawer(position);
         }
     }
+
+    private void getKeyHash() {
+        //Generar HashKey onCreate
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo("com.ecp.gsy.dcs.zirkapp", PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("KeyHashNameNotFound", e.getMessage());
+        } catch (NoSuchAlgorithmException e) {
+            Log.e("KeyHashNoSuchAlgorithm", e.getMessage());
+        }
+    }
 }
 
-//Generar HashKey onCreate
-//        try {
-//            PackageInfo info = getPackageManager().getPackageInfo("com.ecp.gsy.dcs.zirkapp", PackageManager.GET_SIGNATURES);
-//            for (Signature signature : info.signatures) {
-//                MessageDigest md = MessageDigest.getInstance("SHA");
-//                md.update(signature.toByteArray());
-//                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-//            }
-//        } catch (PackageManager.NameNotFoundException e) {
-//            Log.e("KeyHash NameNotFoundException",e.getMessage());
-//        } catch (NoSuchAlgorithmException e) {
-//            Log.e("KeyHash NoSuchAlgorithmException",e.getMessage());
-//        }

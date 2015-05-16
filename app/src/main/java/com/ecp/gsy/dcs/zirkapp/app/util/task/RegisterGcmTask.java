@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
@@ -33,7 +34,7 @@ public class RegisterGcmTask extends AsyncTask<Void, Void, String> {
 
         String msg = "";
         try {
-            String regId = gcm.register(GlobalApplication.SENDER_ID);
+            String regId = gcm.register(globalApplication.SENDER_ID);
             msg = regId;
 
             globalApplication.storeRegistrationId(context, regId);

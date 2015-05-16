@@ -3,14 +3,12 @@ package com.ecp.gsy.dcs.zirkapp.app.util.broadcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.location.LocationManager;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 
 /**
  * Created by Elder on 21/04/2015.

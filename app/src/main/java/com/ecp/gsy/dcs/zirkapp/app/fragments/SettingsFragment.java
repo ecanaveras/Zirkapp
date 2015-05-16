@@ -20,12 +20,12 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.AboutActivity;
-import com.ecp.gsy.dcs.zirkapp.app.ManagerLogin;
+import com.ecp.gsy.dcs.zirkapp.app.activities.AboutActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerLogin;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
-import com.parse.Parse;
+import com.parse.ParseSession;
 import com.parse.ParseUser;
 
 /**
@@ -135,12 +135,21 @@ public class SettingsFragment extends PreferenceFragment {
             public boolean onPreferenceClick(Preference preference) {
                 //Deteniendo los servicios Sinch
                 getActivity().stopService(new Intent(getActivity().getApplicationContext(), MessageService.class));
+                getActivity().stopService(new Intent(getActivity().getApplicationContext(), LocationService.class));
+                ParseUser currentUser = ParseUser.getCurrentUser();
+                currentUser.put("online", false);
+                currentUser.saveInBackground();
                 ParseUser.logOut();
+                if (ParseUser.getCurrentUser() != null) {
+                    ParseUser.logOutInBackground();
+                }
                 Intent intent = new Intent(getActivity(), ManagerLogin.class);
                 intent.putExtra("logout", true);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 Toast.makeText(getActivity(), getString(R.string.msgLogoutOk), Toast.LENGTH_SHORT).show();
-                //getActivity().moveTaskToBack(true)
+                getActivity().moveTaskToBack(false);
                 getActivity().finish();
                 return false;
             }

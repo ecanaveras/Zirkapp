@@ -1,4 +1,4 @@
-package com.ecp.gsy.dcs.zirkapp.app;
+package com.ecp.gsy.dcs.zirkapp.app.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -9,20 +9,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.alertdialogpro.AlertDialogPro;
+import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeFirstFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeSecondFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.viewpagerindicator.CirclePageIndicator;
-import com.viewpagerindicator.TitlePageIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,6 +122,8 @@ public class ManagerWelcome extends Activity {
             currentUser = ParseUser.getCurrentUser(); //Por bug en parse
             if (currentUser == null) {
                 Intent login = new Intent(this, ManagerLogin.class);
+                login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivityForResult(login, inputLoginRequestCode);
             } else {
                 Intent intent = new Intent(this, MainActivity.class);
@@ -130,6 +133,10 @@ public class ManagerWelcome extends Activity {
         }
     }
 
+
+    private void saveDataLoginFacebook() {
+
+    }
 
     @Override
     protected void onStart() {
@@ -143,7 +150,6 @@ public class ManagerWelcome extends Activity {
             OpenHelperManager.releaseHelper();
             databaseHelper = null;
         }
-        stopService(new Intent(this, MessageService.class));
         super.onDestroy();
     }
 

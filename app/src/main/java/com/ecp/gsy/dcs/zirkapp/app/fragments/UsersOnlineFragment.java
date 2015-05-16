@@ -18,14 +18,14 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-import com.ecp.gsy.dcs.zirkapp.app.ChatHistoryActivity;
-import com.ecp.gsy.dcs.zirkapp.app.MessagingActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.ChatHistoryActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.MessagingActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.CountMessagesReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.SinchConnectReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersOnline;
 import com.parse.ParseUser;
 
@@ -59,7 +59,7 @@ public class UsersOnlineFragment extends Fragment {
         currentUser = ParseUser.getCurrentUser();
 
         if (currentUser != null)
-            isConnectedUser = currentUser.getBoolean("online");
+            isConnectedUser = true;//currentUser.getBoolean("online");
 
         inicializarCompUI(view);
 

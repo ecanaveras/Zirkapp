@@ -17,10 +17,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemNotification;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataNotifiTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.FindCallback;
@@ -140,6 +140,11 @@ public class NotificationsFragment extends Fragment {
                         }
                     });
                 }
+            }
+
+            @Override
+            public void done(Object o, Throwable throwable) {
+
             }
         });
     }

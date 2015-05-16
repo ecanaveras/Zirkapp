@@ -5,27 +5,28 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.gc.materialdesign.views.ButtonRectangle;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -116,16 +117,18 @@ public class SignupFragment extends Fragment {
                 user.setUsername(username);
                 user.setPassword(password1);
                 user.setEmail(correo);
-                user.put("online", false);
+                //Conectar al chat
+                Location currentLocation = getCurrentLocation();
+                if (currentLocation != null) {
+                    user.put("location", new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud()));
+                    user.put("online", true);
+                }
 
                 user.signUpInBackground(new SignUpCallback() {
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            Welcomedb wdb = new Welcomedb("SI");
-                            RuntimeExceptionDao<Welcomedb, Integer> dao = databaseHelper.getWelcomedbRuntimeDao();
-                            dao.create(wdb);
-                            activity.finish();
+                            saveInfoWelcome();
                         } else {
                             Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
                         }
@@ -136,6 +139,47 @@ public class SignupFragment extends Fragment {
 
             }
         });
+    }
+
+
+    /**
+     * retorna la Ubicacion actual
+     *
+     * @return
+     */
+    private Location getCurrentLocation() {
+        Location location = null;
+        if (LocationService.isRunning()) {
+            LocationService locationService = LocationService.getInstance();
+            android.location.Location tmpLocation = locationService.getCurrentLocation(true);
+            location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+        }
+        return location;
+    }
+
+    private void saveInfoWelcome() {
+//        Intent intent = new Intent();
+//        intent.putExtra("loginOk", true);
+//        activity.setResult(Activity.RESULT_OK, intent);
+
+        List<Welcomedb> listWdb = new ArrayList<Welcomedb>();
+
+        RuntimeExceptionDao<Welcomedb, Integer> dao = databaseHelper.getWelcomedbRuntimeDao();
+        listWdb = dao.queryForAll();
+
+        boolean guardar = true;
+
+        //Si existe un registro de welcolme, no guardar otro mas
+        for (Welcomedb w : listWdb) {
+            guardar = false;
+            break;
+        }
+
+        if (guardar) {
+            Welcomedb wdb = new Welcomedb("SI");
+            dao.create(wdb);
+        }
+        activity.finish();
     }
 
     @Override

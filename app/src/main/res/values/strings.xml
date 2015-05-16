@@ -4,6 +4,10 @@
     <string name="app_name">Zirkapp</string>
     <string name="gcm_sender_id">323224512527</string>
     <string name="facebook_app_id">2009083782565906</string>
+    <string name="twitter_api_key">HKNgH8O9c7QSXTIOaWxuBvBEW</string>
+    <string name="twitter_api_secret">5co4OWxU9F51rxJ1QJIoIMPrz2B0Pzh8hWauZPnWluEoGeGXbl</string>
+    <string name="parse_api_id">VDJEJIMbyuOiis9bwBHmrOIc7XDUqYHQ0TMhA23c</string>
+    <string name="parse_api_key">9EJKzvp4LhRdnLqfH6jkHPaWd58IVXaBKAWdeItE</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
@@ -107,7 +111,7 @@
     <string name="msgEmailInvalid">Escribe una dirección de correo válida</string>
     <string name="msgProfileUpdate">Tus datos han sido actualizados!</string>
     <string name="msgProfileUpdateError">Hay problemas al guardar tus datos, intenta luego!</string>
-    <string name="msgLogoutOk">Tu sesión se ha cerrado, bye...</string>
+    <string name="msgLogoutOk">Tu sesión se ha cerrado, regresa pronto...</string>
     <string name="msgAbout">Acerca de...</string>
     <string name="msgCopyRights">© 2015 Zirkapp.</string>
     <string name="msgCopyRights2">All rights reserved.</string>
@@ -131,6 +135,8 @@
     <string name="urlPlayStore">https://play.google.com/store/apps/details?id=com.ecp.gsy.dcs.zirkapp</string>
     <string name="msgShareTo">Compartir usando...</string>
     <string name="msgZimessSending">Publicando Zimess...</string>
+    <string name="msgNoLoginFacebook">No fue posible conectarse a Facebook.</string>
+    <string name="msgNoLoginTwitter">No fue posible conectarse a Twitter.</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

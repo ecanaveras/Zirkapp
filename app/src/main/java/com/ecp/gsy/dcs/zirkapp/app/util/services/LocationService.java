@@ -60,7 +60,7 @@ public class LocationService extends Service {
     private final Runnable getLocation = new Runnable() {
         @Override
         public void run() {
-            //if (intent == null) intent = new Intent("broadcast.gps.location_change");
+            if (intent == null) intent = new Intent("broadcast.gps.location_change");
             if (isOnline()) {
                 getCurrentLocation();
             } else {
