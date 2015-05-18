@@ -18,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.activities.AboutActivity;
@@ -148,7 +149,9 @@ public class SettingsFragment extends PreferenceFragment {
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                Toast.makeText(getActivity(), getString(R.string.msgLogoutOk), Toast.LENGTH_SHORT).show();
+                Toast toast = Toast.makeText(getActivity(), getResources().getString(R.string.msgLogoutOk), Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 10, 0);
+                toast.show();
                 getActivity().moveTaskToBack(false);
                 getActivity().finish();
                 return false;

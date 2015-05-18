@@ -54,9 +54,11 @@ public class RegisterGcmTask extends AsyncTask<Void, Void, String> {
     protected void onPostExecute(String _msg) {
         if (context != null) {
             //Iniciar SINCH
-            Intent serviceIntent = new Intent(context.getApplicationContext(), MessageService.class);
-            serviceIntent.putExtra("regId", _msg);
-            context.startService(serviceIntent);
+            if (GlobalApplication.isChatEnabled()) {
+                Intent serviceIntent = new Intent(context.getApplicationContext(), MessageService.class);
+                serviceIntent.putExtra("regId", _msg);
+                context.startService(serviceIntent);//TODO disable sinch
+            }
         }
     }
 }

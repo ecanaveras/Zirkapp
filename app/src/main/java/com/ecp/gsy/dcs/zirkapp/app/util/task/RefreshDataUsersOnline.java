@@ -76,11 +76,7 @@ public class RefreshDataUsersOnline extends AsyncTask<Integer, Void, List<ParseU
         ParseUser parseUser = currentUser;
         parseUser.put("location", parseGeoPoint);
         parseUser.put("online", true);
-        try {
-            parseUser.save();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        parseUser.saveInBackground();
         return DataParseHelper.findUsersLocation(currentUser, currentLocation, integers[0]);
     }
 

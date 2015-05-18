@@ -46,6 +46,9 @@ public class GlobalApplication extends Application {
     public static final String PROPERTY_REG_ID = "registration_id";
     public static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
+    //Controla si el chat esta habilidado
+    private static boolean chatEnabled = false;
+
     //Parse
     private ParseUser currentUser;
     private ParseUser customParseUser;
@@ -60,6 +63,7 @@ public class GlobalApplication extends Application {
     //Order Zimess
     private int sortZimess;
     private boolean listeningNotifi;
+
 
     @Override
     public void onCreate() {
@@ -424,5 +428,13 @@ public class GlobalApplication extends Application {
 
     public void setListeningNotifi(boolean listeningNotifi) {
         this.listeningNotifi = listeningNotifi;
+    }
+
+    public static boolean isChatEnabled() {
+        return chatEnabled;
+    }
+
+    public static void setChatEnabled(boolean chatEnabled) {
+        GlobalApplication.chatEnabled = chatEnabled;
     }
 }

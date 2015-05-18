@@ -6,6 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.parse.ParseUser;
 import com.sinch.android.rtc.ClientRegistration;
 import com.sinch.android.rtc.Sinch;
@@ -37,8 +38,8 @@ public class MessageService extends Service implements SinchClientListener {
         //Tomar el UserId de Parse
         currentUser = ParseUser.getCurrentUser();
         if (currentUser != null && !isSinchClientStarted()) {
-            //TODO MENSAJERIA DISABLED
-            startSinchClient(currentUser.getObjectId());
+            if (GlobalApplication.isChatEnabled())
+                startSinchClient(currentUser.getObjectId());
         }
 
         return super.onStartCommand(intent, flags, startId);

@@ -3,10 +3,13 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.AsyncQueryHandler;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,21 +34,27 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseFile;
 import com.parse.ParseTwitterUtils;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 import com.parse.twitter.Twitter;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.BufferedHttpEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Created by Elder on 18/02/2015.
@@ -58,6 +67,8 @@ public class LoginFragment extends Fragment {
     private DatabaseHelper databaseHelper;
     private EditText txtUser;
     private EditText txtPassword;
+    private ProgressDialog progressDialog;
+    private ParseUser userLogin;
 
 
     @Override
@@ -146,7 +157,7 @@ public class LoginFragment extends Fragment {
             return;
         }
 
-        final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+        progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("Ingresando...");
         progressDialog.show();
 
@@ -155,7 +166,9 @@ public class LoginFragment extends Fragment {
             public void done(ParseUser user, ParseException e) {
                 if (user != null) {
                     //Conectar al chat
-                    initChatAndSave(user);
+                    user.put("online", true);
+                    user.saveInBackground();
+                    saveInfoWelcome();
                 } else {
                     //TODO manejar excepciones de login
                     Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
@@ -176,24 +189,11 @@ public class LoginFragment extends Fragment {
             @Override
             public void done(ParseUser parseUser, ParseException e) {
                 if (parseUser == null) {
-                    Toast.makeText(getActivity(), getResources().getString(R.string.msgNoLoginFacebook), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getResources().getString(R.string.msgNoLoginFacebook), Toast.LENGTH_SHORT).show();
                 } else if (parseUser.isNew()) {
-                    GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
-                            new GraphRequest.GraphJSONObjectCallback() {
-
-                                @Override
-                                public void onCompleted(JSONObject fbUser, GraphResponse response) {
-                                    ParseUser user = ParseUser.getCurrentUser();
-                                    if (fbUser != null && user != null && fbUser.optString("name").length() > 0) {
-                                        user.setUsername(fbUser.optString("first_name"));
-                                        user.put("name", fbUser.optString("name"));
-                                        user.setEmail(fbUser.optString("email"));
-                                        getAvatarFacebook(user, fbUser.optString("id"));
-                                    }
-                                }
-                            }).executeAsync();
+                    getDataFacebook(true);
                 } else {
-                    initChatAndSave(parseUser);
+                    getDataFacebook(false);
                 }
             }
         });
@@ -207,64 +207,177 @@ public class LoginFragment extends Fragment {
             @Override
             public void done(ParseUser parseUser, ParseException e) {
                 if (parseUser == null) {
-                    Toast.makeText(getActivity(), getResources().getString(R.string.msgNoLoginTwitter), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getResources().getString(R.string.msgNoLoginTwitter), Toast.LENGTH_SHORT).show();
                 } else if (parseUser.isNew()) {
+                    userLogin = parseUser;
                     Twitter twitterUser = ParseTwitterUtils.getTwitter();
-                    if (twitterUser != null && twitterUser.getScreenName().length() > 0) {
-                        parseUser.put("name", twitterUser.getScreenName());
-                        parseUser.setUsername(twitterUser.getScreenName());
-                        initChatAndSave(parseUser);
+                    if (twitterUser != null) {
+                        getDataTwitter(twitterUser);
                     }
                 } else {
-                    initChatAndSave(parseUser);
+                    userLogin = parseUser;
+                    Twitter twitterUser = ParseTwitterUtils.getTwitter();
+                    if (twitterUser != null) {
+                        getDataTwitter(twitterUser);
+                    }
                 }
             }
         });
     }
 
-    private void getAvatarFacebook(final ParseUser user, final String id) {
-        AsyncTask<Void, Void, Bitmap> task = new AsyncTask<Void, Void, Bitmap>() {
+    private void getDataFacebook(final boolean isNew) {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("Ingresando...");
+        progressDialog.show();
+        //Obtener info de facebook
+        GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
+                new GraphRequest.GraphJSONObjectCallback() {
 
-            ProgressDialog progressDialog;
+                    @Override
+                    public void onCompleted(JSONObject fbUser, GraphResponse response) {
+                        userLogin = ParseUser.getCurrentUser();
+                        if (fbUser != null && userLogin != null && fbUser.optString("name").length() > 0) {
+                            if (isNew)
+                                userLogin.setUsername(fbUser.optString("first_name"));
+                            userLogin.put("name", fbUser.optString("name"));
+                            userLogin.setEmail(fbUser.optString("email"));
+                            userLogin.put("emailVerified", fbUser.optBoolean("verified"));
+                            Log.i("verified", String.valueOf(fbUser.optBoolean("verified")));
+                            getAvatarFacebook(fbUser.optString("id"));
+                        }
+                    }
+                }).executeAsync();
+    }
 
-            @Override
-            protected void onPreExecute() {
-                progressDialog = new ProgressDialog(getActivity());
-                progressDialog.setMessage("Ingresando...");
-                progressDialog.show();
+    private void getDataTwitter(Twitter twitter) {
+        if (userLogin != null && twitter.getScreenName().length() > 0) {
+            if (userLogin.isNew()) {
+                userLogin.put("name", twitter.getScreenName());
+                userLogin.setUsername(twitter.getScreenName());
             }
+            getAvatarTwitter(twitter);
+        }
+    }
+
+    private void getAvatarTwitter(Twitter twitter) {
+
+        //Obtener info de Twitter
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("Ingresando...");
+        progressDialog.show();
+
+        AsyncTask<Twitter, Void, Bitmap> task = new AsyncTask<Twitter, Void, Bitmap>() {
 
             @Override
-            protected Bitmap doInBackground(Void... params) {
+            protected Bitmap doInBackground(Twitter... twitters) {
+                String urlTwitterFormat = "https://api.twitter.com/1.1/users/show.json?screen_name=%s";
+                //HttpClient client = new DefaultHttpClient();
+                AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
+                HttpGet verifyGet = new HttpGet(URI.create(String.format(urlTwitterFormat, twitters[0].getScreenName())));
+                twitters[0].signRequest(verifyGet);
                 Bitmap bitmap = null;
                 try {
-                    URL url = new URL("http://graph.facebook.com/" + id + "/picture?type=large");
+                    HttpResponse response = client.execute(verifyGet);
+                    HttpEntity entity = response.getEntity();
+                    InputStream inputStream = entity.getContent();
+                    JSONObject jsonObject = new JSONObject(convertStreamToString(inputStream));
+                    if (userLogin != null) {
+                        userLogin.put("name", jsonObject.getString("name"));
+                        userLogin.put("city", jsonObject.getString("location"));
+                    }
+                    String urlImage = jsonObject.getString("profile_image_url");
+                    urlImage = urlImage.replace("_normal", "");
+                    //Log.i("profile_image_url", urlImage);
+                    URL url = new URL(urlImage);
                     URLConnection urlConnection = url.openConnection();
                     urlConnection.setUseCaches(true);
                     urlConnection.connect();
-                    InputStream inputStream = urlConnection.getInputStream();
-                    BufferedInputStream buffer = new BufferedInputStream(inputStream);
-                    bitmap = BitmapFactory.decodeStream(buffer);
-                    buffer.close();
-                    inputStream.close();
-                } catch (IOException e) {
+                    InputStream is = urlConnection.getInputStream();
+                    bitmap = BitmapFactory.decodeStream(is);
+                    is.close();
+                } catch (Exception e) {
                     e.printStackTrace();
+                } finally {
+                    if (verifyGet != null) {
+                        verifyGet.abort();
+                    }
+                    if (client != null) {
+                        client.close();
+                    }
                 }
                 return bitmap;
             }
 
             @Override
             protected void onPostExecute(Bitmap bitmap) {
-                if (bitmap != null && user != null) {
+                if (bitmap != null && userLogin != null) {
                     ParseFile parseFile = new ParseFile("ParseZAvatar", getByteAvatar(bitmap));
                     parseFile.saveInBackground();
-                    user.put("avatar", parseFile);
-                    initChatAndSave(user);
-                } else if (user != null) {
-                    initChatAndSave(user);
+                    userLogin.put("avatar", parseFile);
                 }
+                if (userLogin != null) {
+                    //Guardar informacion de usuario
+                    userLogin.put("online", true);
+                    userLogin.saveInBackground();
+                }
+                //Guardar informacion del welcome
+                saveInfoWelcome();
 
-                progressDialog.dismiss();
+                if (progressDialog != null)
+                    progressDialog.dismiss();
+            }
+
+        }.execute(twitter);
+    }
+
+    private void getAvatarFacebook(final String facebookId) {
+        AsyncTask<Void, Void, Bitmap> task = new AsyncTask<Void, Void, Bitmap>() {
+
+            @Override
+            protected Bitmap doInBackground(Void... params) {
+                Bitmap bitmap = null;
+                if (facebookId != null) {
+                    Log.i("run.facebook.id", facebookId);
+                    String urlFacebookFormat = "http://graph.facebook.com/%s/picture?type=large";
+                    try {
+                        URL url = new URL(String.format(urlFacebookFormat, facebookId));
+                        URLConnection urlConnection = url.openConnection();
+                        urlConnection.setUseCaches(true);
+                        urlConnection.connect();
+                        InputStream is = urlConnection.getInputStream();
+//                        JSONObject jsonObject = new JSONObject(convertStreamToString(is));
+//                        Log.i("profile_facebook", jsonObject.toString());
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inJustDecodeBounds = true;
+                        bitmap = BitmapFactory.decodeStream(is, null, options);
+                        is.reset();
+                        options.inJustDecodeBounds = false;
+                        bitmap = BitmapFactory.decodeStream(urlConnection.getInputStream(), null, options);
+                        is.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                return bitmap;
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                if (bitmap != null && userLogin != null) {
+                    ParseFile parseFile = new ParseFile("ParseZAvatar", getByteAvatar(bitmap));
+                    parseFile.saveInBackground();
+                    userLogin.put("avatar", parseFile);
+                }
+                if (userLogin != null) {
+                    //Guardar informacion de usuario
+                    userLogin.put("online", true);
+                    userLogin.saveInBackground();
+                }
+                //Guardar informacion del welcome
+                saveInfoWelcome();
+
+                if (progressDialog != null)
+                    progressDialog.dismiss();
             }
         };
         task.execute();
@@ -278,21 +391,6 @@ public class LoginFragment extends Fragment {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         photo.compress(Bitmap.CompressFormat.JPEG, 80, stream);
         return stream.toByteArray();
-    }
-
-    /**
-     * Conecta al usuario al chat
-     *
-     * @param user
-     */
-    private void initChatAndSave(ParseUser user) {
-
-        if (user == null) {
-            return;
-        }
-        user.put("online", true);
-        user.saveInBackground();
-        saveInfoWelcome();
     }
 
 
@@ -317,6 +415,11 @@ public class LoginFragment extends Fragment {
         activity.finish();
     }
 
+
+    public static String convertStreamToString(InputStream is) {
+        Scanner s = new Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
+    }
 
     @Override
     public void onDestroyView() {

@@ -115,6 +115,7 @@ public class ManagerWelcome extends Activity {
         //Si existe un registro de welcolme, no se mostrará la pantalla de bienvenida
         for (Welcomedb w : listWdb) {
             runWelcome = false;
+            break;
         }
         if (!runWelcome) {
             currentUser = ParseUser.getCurrentUser();
@@ -127,6 +128,8 @@ public class ManagerWelcome extends Activity {
                 startActivityForResult(login, inputLoginRequestCode);
             } else {
                 Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
             }

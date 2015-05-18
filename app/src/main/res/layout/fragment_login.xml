@@ -42,8 +42,8 @@
                 android:layout_marginRight="16dp"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:orientation="vertical"
-                android:minHeight="250dp">
+                android:minHeight="250dp"
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -76,10 +76,10 @@
                     android:id="@+id/btnLogin"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-
                     android:background="@color/default_primary_color"
                     android:imeOptions="actionSend"
-                    android:text="@string/lblLogin" />
+                    android:text="@string/lblLogin"
+                    android:textAllCaps="true"/>
 
 
                 <TextView
@@ -126,7 +126,8 @@
                     android:text="@string/com_facebook_loginview_log_in_button"
                     android:textColor="@color/com_facebook_share_button_text_color"
                     android:textSize="@dimen/com_facebook_likeview_text_size"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textAllCaps="true"/>
 
                 <!--Twitter-->
                 <Button
@@ -142,7 +143,7 @@
                     android:textColor="@color/com_facebook_share_button_text_color"
                     android:textSize="@dimen/com_facebook_likeview_text_size"
                     android:textStyle="bold"
-                    android:visibility="visible" />
+                    android:textAllCaps="true"/>
 
             </LinearLayout>
         </LinearLayout>

@@ -59,7 +59,7 @@ public class UsersOnlineFragment extends Fragment {
         currentUser = ParseUser.getCurrentUser();
 
         if (currentUser != null)
-            isConnectedUser = true;//currentUser.getBoolean("online");
+            isConnectedUser = currentUser.getBoolean("online");
 
         inicializarCompUI(view);
 
@@ -137,8 +137,8 @@ public class UsersOnlineFragment extends Fragment {
      */
     public void conectarChat(Location currentLocation) {
         if (currentUser != null) {
-            findUsersOnline(currentLocation);
             isConnectedUser = true;
+            findUsersOnline(currentLocation);
             layoudChatOffline.setVisibility(View.GONE);
             swipeRefreshLayout.setEnabled(true);
         }
