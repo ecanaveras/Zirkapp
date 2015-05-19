@@ -39,7 +39,7 @@ public class LocationService extends Service {
 
 
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; // 500 metros
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 2; // 15 minutoS
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 5; // 15 minutoS
 
     private final Handler handler = new Handler();
 

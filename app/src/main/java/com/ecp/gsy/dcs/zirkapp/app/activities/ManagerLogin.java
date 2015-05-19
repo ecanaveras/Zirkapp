@@ -58,19 +58,28 @@ public class ManagerLogin extends Activity {
     @Override
     public void onBackPressed() {
         invalidateOptionsMenu();
-        if (isLogout) {
-            moveTaskToBack(false);
-            android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(1);
+        if (isLogout || ParseUser.getCurrentUser() == null) {
+            if (MainActivity.instance != null) {
+                MainActivity activity = MainActivity.instance;
+                activity.finish();
+            }
+            finish();
+            moveTaskToBack(true);
+            System.exit(0);
         }
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.runFinalization();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
-        Log.i("facebook.callback", data.getExtras().toString());
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

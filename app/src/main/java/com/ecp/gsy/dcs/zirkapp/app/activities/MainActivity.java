@@ -57,6 +57,8 @@ public class MainActivity extends ActionBarActivity {
     private static final int CHAT = 1;
     private static final int NOTI = 2;
 
+    public static MainActivity instance = null;
+
     //TOTAL FRAGMENTS
     private static final int FRAGMENT_COUNT = 3;
 
@@ -151,6 +153,8 @@ public class MainActivity extends ActionBarActivity {
 
         if (currentUser != null)
             refreshDatosDrawer();
+
+        instance = this;
     }
 
 

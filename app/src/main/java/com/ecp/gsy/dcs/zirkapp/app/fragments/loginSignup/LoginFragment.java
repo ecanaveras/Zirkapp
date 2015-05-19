@@ -3,7 +3,6 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.AsyncQueryHandler;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.http.AndroidHttpClient;
@@ -18,9 +17,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerLogin;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.facebook.AccessToken;
@@ -39,15 +38,11 @@ import com.parse.twitter.Twitter;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -57,8 +52,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-
-import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by Elder on 18/02/2015.
@@ -173,6 +166,8 @@ public class LoginFragment extends Fragment {
                     user.put("online", true);
                     user.saveInBackground();
                     saveInfoWelcome();
+                    //Guardar en db una session activa
+                    saveSessionActive(true);
                 } else {
                     //TODO manejar excepciones de login
                     Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
@@ -331,6 +326,8 @@ public class LoginFragment extends Fragment {
                 }
                 //Guardar informacion del welcome
                 saveInfoWelcome();
+                //Guardar en db una session activa
+                saveSessionActive(true);
 
                 if (progressDialog != null)
                     progressDialog.dismiss();
@@ -384,6 +381,8 @@ public class LoginFragment extends Fragment {
                 }
                 //Guardar informacion del welcome
                 saveInfoWelcome();
+                //Guardar en db una session activa
+                saveSessionActive(true);
 
                 if (progressDialog != null)
                     progressDialog.dismiss();
@@ -422,6 +421,29 @@ public class LoginFragment extends Fragment {
             dao.create(wdb);
         }
         activity.finish();
+    }
+
+    private void saveSessionActive(boolean sessionActive) {
+        List<HandlerLogindb> listHldb = new ArrayList<>();
+
+        RuntimeExceptionDao<HandlerLogindb, Integer> dao = databaseHelper.getHandlerLogindbRuntimeDao();
+        listHldb = dao.queryForAll();
+
+        boolean guardar = true;
+
+        //Si existe un registro se actualiza y no se crea uno nuevo
+        for (HandlerLogindb row : listHldb) {
+            row.setSessionActive(sessionActive);
+            dao.update(row);
+            guardar = false;
+            break;
+        }
+
+        //Guardar si no existen registro
+        if (guardar) {
+            HandlerLogindb ldb = new HandlerLogindb(sessionActive);
+            dao.create(ldb);
+        }
     }
 
 

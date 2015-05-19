@@ -128,6 +128,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                     break;
 
                 default:
+                    typeNotiString = "[Gral]";
                     itemNotifi = null;
                     break;
             }

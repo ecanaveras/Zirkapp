@@ -13,16 +13,14 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.alertdialogpro.AlertDialogPro;
-import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeFirstFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeSecondFragment;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
-import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
-import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.viewpagerindicator.CirclePageIndicator;
 
@@ -107,26 +105,38 @@ public class ManagerWelcome extends Activity {
     /**
      * Comprueba si existen datos en Welcomedb
      */
-    private void findDataWelcome() {
+    private void findDataLocalDb() {
         List<Welcomedb> listWdb = new ArrayList<Welcomedb>();
+        List<HandlerLogindb> listHldb = new ArrayList<>();
 
         RuntimeExceptionDao<Welcomedb, Integer> dao = databaseHelper.getWelcomedbRuntimeDao();
         listWdb = dao.queryForAll();
+
+        RuntimeExceptionDao<HandlerLogindb, Integer> daoL = databaseHelper.getHandlerLogindbRuntimeDao();
+        listHldb = daoL.queryForAll();
 
         //Si existe un registro de welcolme, no se mostrará la pantalla de bienvenida
         for (Welcomedb w : listWdb) {
             runWelcome = false;
             break;
         }
+
+        //Se verifica si la session está activa
+        boolean isSessionActive = false;
+        for (HandlerLogindb row : listHldb) {
+            isSessionActive = row.isSessionActive();
+            Log.i("session.state.db", String.valueOf(row.isSessionActive()));
+            break;
+        }
         if (!runWelcome) {
             currentUser = ParseUser.getCurrentUser();
-            if (currentUser != null && !currentUser.getUsername().isEmpty()) {
+            if (currentUser != null && isSessionActive) {
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
-            } else {
+            } else if (!isSessionActive) {
                 Intent login = new Intent(this, ManagerLogin.class);
                 login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -137,7 +147,7 @@ public class ManagerWelcome extends Activity {
 
     @Override
     protected void onStart() {
-        findDataWelcome();
+        findDataLocalDb();
         super.onStart();
     }
 
