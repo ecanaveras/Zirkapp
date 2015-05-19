@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.activities.AboutActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerLogin;
 import com.ecp.gsy.dcs.zirkapp.app.R;
@@ -141,9 +142,6 @@ public class SettingsFragment extends PreferenceFragment {
                 currentUser.put("online", false);
                 currentUser.saveInBackground();
                 ParseUser.logOut();
-                if (ParseUser.getCurrentUser() != null) {
-                    ParseUser.logOutInBackground();
-                }
                 Intent intent = new Intent(getActivity(), ManagerLogin.class);
                 intent.putExtra("logout", true);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

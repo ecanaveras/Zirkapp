@@ -58,8 +58,8 @@ public class ManagerLogin extends Activity {
     @Override
     public void onBackPressed() {
         invalidateOptionsMenu();
-        if (isLogout && ParseUser.getCurrentUser() == null) {
-            moveTaskToBack(true);
+        if (isLogout) {
+            moveTaskToBack(false);
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(1);
         }

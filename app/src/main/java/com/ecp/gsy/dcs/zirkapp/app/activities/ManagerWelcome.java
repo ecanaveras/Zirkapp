@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.alertdialogpro.AlertDialogPro;
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeFirstFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeSecondFragment;
@@ -119,26 +120,19 @@ public class ManagerWelcome extends Activity {
         }
         if (!runWelcome) {
             currentUser = ParseUser.getCurrentUser();
-            currentUser = null; //Por bug en parse
-            currentUser = ParseUser.getCurrentUser(); //Por bug en parse
-            if (currentUser == null) {
-                Intent login = new Intent(this, ManagerLogin.class);
-                login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivityForResult(login, inputLoginRequestCode);
-            } else {
+            if (currentUser != null && !currentUser.getUsername().isEmpty()) {
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
+            } else {
+                Intent login = new Intent(this, ManagerLogin.class);
+                login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivityForResult(login, inputLoginRequestCode);
             }
         }
-    }
-
-
-    private void saveDataLoginFacebook() {
-
     }
 
     @Override

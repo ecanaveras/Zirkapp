@@ -47,7 +47,7 @@ public class GlobalApplication extends Application {
     public static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     //Controla si el chat esta habilidado
-    private static boolean chatEnabled = false;
+    private static boolean chatEnabled = true;
 
     //Parse
     private ParseUser currentUser;

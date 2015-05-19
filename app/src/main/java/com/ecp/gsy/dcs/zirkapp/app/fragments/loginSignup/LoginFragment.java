@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerLogin;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
@@ -48,6 +49,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
@@ -55,6 +57,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by Elder on 18/02/2015.
@@ -242,7 +246,7 @@ public class LoginFragment extends Fragment {
                             userLogin.put("name", fbUser.optString("name"));
                             userLogin.setEmail(fbUser.optString("email"));
                             userLogin.put("emailVerified", fbUser.optBoolean("verified"));
-                            Log.i("verified", String.valueOf(fbUser.optBoolean("verified")));
+                            //Log.i("verified", String.valueOf(fbUser.optBoolean("verified")));
                             getAvatarFacebook(fbUser.optString("id"));
                         }
                     }
@@ -259,6 +263,11 @@ public class LoginFragment extends Fragment {
         }
     }
 
+    /**
+     * GET Avatar de la API de TWITTER
+     *
+     * @param twitter
+     */
     private void getAvatarTwitter(Twitter twitter) {
 
         //Obtener info de Twitter
@@ -330,6 +339,12 @@ public class LoginFragment extends Fragment {
         }.execute(twitter);
     }
 
+
+    /**
+     * GET Avatar de la API de FACEBOOK
+     *
+     * @param facebookId
+     */
     private void getAvatarFacebook(final String facebookId) {
         AsyncTask<Void, Void, Bitmap> task = new AsyncTask<Void, Void, Bitmap>() {
 
@@ -338,21 +353,15 @@ public class LoginFragment extends Fragment {
                 Bitmap bitmap = null;
                 if (facebookId != null) {
                     Log.i("run.facebook.id", facebookId);
-                    String urlFacebookFormat = "http://graph.facebook.com/%s/picture?type=large";
+                    String urlFacebookFormat = "https://graph.facebook.com/%s/picture?type=large";
                     try {
                         URL url = new URL(String.format(urlFacebookFormat, facebookId));
-                        URLConnection urlConnection = url.openConnection();
-                        urlConnection.setUseCaches(true);
-                        urlConnection.connect();
-                        InputStream is = urlConnection.getInputStream();
-//                        JSONObject jsonObject = new JSONObject(convertStreamToString(is));
-//                        Log.i("profile_facebook", jsonObject.toString());
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inJustDecodeBounds = true;
-                        bitmap = BitmapFactory.decodeStream(is, null, options);
-                        is.reset();
-                        options.inJustDecodeBounds = false;
-                        bitmap = BitmapFactory.decodeStream(urlConnection.getInputStream(), null, options);
+                        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                        httpURLConnection.setDoInput(true);
+                        httpURLConnection.setInstanceFollowRedirects(true);
+                        httpURLConnection.connect();
+                        InputStream is = new BufferedInputStream(httpURLConnection.getInputStream());
+                        bitmap = BitmapFactory.decodeStream(is);
                         is.close();
                     } catch (Exception e) {
                         e.printStackTrace();

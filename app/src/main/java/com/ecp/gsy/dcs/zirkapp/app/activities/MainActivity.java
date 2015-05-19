@@ -97,7 +97,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         //KeyHash
-        this.getKeyHash();
+        //this.getKeyHash();
 
         //Iniciar servicio de ubicacion
         Intent intentService = new Intent(this, LocationService.class);
@@ -113,7 +113,7 @@ public class MainActivity extends ActionBarActivity {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+                        //Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
                     } else {
                         Log.e("com.parse.push", "failed to subscribe for push", e);
                     }
