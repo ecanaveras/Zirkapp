@@ -9,15 +9,14 @@ import android.view.ViewGroup;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 
 /**
- * Created by Elder on 02/06/2014.
+ * Created by Elder on 23/05/2015.
  */
-public class WelcomeSecondFragment extends Fragment {
+public class WelcomeThirdFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_welcome_second, container, false);
+        View view = inflater.inflate(R.layout.fragment_welcome_third, container, false);
         return view;
     }
-
 
 }

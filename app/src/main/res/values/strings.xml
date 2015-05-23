@@ -16,7 +16,7 @@
     <string name="lblWelcomeMsg">Estas apunto de ser parte del mundo Zirkapp, todo lo que quieras cerca de ti!</string>
     <string name="lblWelcomeMsg1">Comunicate con los que te rodean!</string>
     <string name="lblWelcomeMsg2">Dile a todos lo que está pasando cerca de ti!</string>
-    <string name="lblWelcomeMsg3">Encuentra amigos donde quiera que vallas!</string>
+    <string name="lblWelcomeMsg3">Encuentra amigos donde quiera que vayas!</string>
 
     <!-- Login Y SingUp -->
     <string name="lblWelcomeLogin">Ingresa con tu cuenta favorita</string>
@@ -137,6 +137,11 @@
     <string name="msgZimessSending">Publicando Zimess...</string>
     <string name="msgNoLoginFacebook">No fue posible conectarse a Facebook.</string>
     <string name="msgNoLoginTwitter">No fue posible conectarse a Twitter.</string>
+    <string name="msgHelpMenuDrawer">Edita tu perfil tocando la parte superior del menú, mira la cantidad de Zimess, Usuarios Online, y Notificaciones, Toca una de las opciones para navegar, tambien puedes ir a los Ajustes, Calificar y Compartir Zirkapp</string>
+    <string name="msgHelpIconMenu">Despliega y oculta el menu lateral, usando el icono de tres lineas, tambien puedes hacerlo deslizando tu dedo hacia la derecha e izquierda.</string>
+    <string name="titleHelpNavigation">Navegar en Zirkapp</string>
+    <string name="msgHelpNewZimess">Crea nuevos Zimess usando el icono resaltado en la imagén, Un Zimess es público y pueden verlo los usuarios que estan cerca. Tambien puedes ver todos tus Zimess entrando en el menú "Mis Zimess".</string>
+    <string name="msgHelpUpdateZimess">Cuando estes viendo Zimess o en el Chat, sobre la pantalla, desliza tu debo hacia abajo para actualizar. Toca una foto para ir a el perfil de usuario, o cualquier parte del Zimess para ver sus detalles, y demás.</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

@@ -15,7 +15,9 @@ import android.widget.Toast;
 import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeFirstFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeFourFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeSecondFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeThirdFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
@@ -81,7 +83,7 @@ public class ManagerWelcome extends Activity {
 
     private void showMessageExitApp() {
         AlertDialogPro.Builder alertDialogBuilder = new AlertDialogPro.Builder(this);
-        alertDialogBuilder.setTitle(R.string.msgExitApp);
+        alertDialogBuilder.setTitle(getResources().getString(R.string.msgExitApp));
         alertDialogBuilder
                 .setCancelable(false)
                 .setPositiveButton(R.string.msgYes, new DialogInterface.OnClickListener() {
@@ -92,7 +94,7 @@ public class ManagerWelcome extends Activity {
                         System.exit(1);
                     }
                 })
-                .setNegativeButton(R.string.msgNo, new DialogInterface.OnClickListener() {
+                .setNegativeButton(getResources().getString(R.string.msgNo), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.cancel();
@@ -190,25 +192,27 @@ public class ManagerWelcome extends Activity {
                     return new WelcomeFirstFragment();
                 case 1:
                     return new WelcomeSecondFragment();
+                case 2:
+                    return new WelcomeThirdFragment();
+                case 3:
+                    return new WelcomeFourFragment();
+
             }
             return null;
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 2;
+            // Show 4 total pages.
+            return 4;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
-                case 0:
-                    return "W1";
-                case 1:
-                    return "W2";
+                default:
+                    return "Zirkapp W" + String.valueOf(position);
             }
-            return null;
         }
     }
 }
