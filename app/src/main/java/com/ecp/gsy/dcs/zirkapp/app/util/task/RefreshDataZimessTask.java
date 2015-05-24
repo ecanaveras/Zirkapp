@@ -9,7 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessReciclerAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
@@ -179,10 +180,14 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
 
         boolean zimessFound = zimessList.size() > 0;
 
-        if (zimessFound && layoudZimessNoFound != null) //Si hay Zimess
-            layoudZimessNoFound.setVisibility(View.GONE);
-        if (!zimessFound && layoudZimessNoFound != null)// No hay Zimess
-            layoudZimessNoFound.setVisibility(View.VISIBLE);
+        if (layoudZimessNoFound != null) {
+            if (zimessFound) {//Si hay Zimess
+                layoudZimessNoFound.setVisibility(View.GONE);
+            } else {// No hay Zimess
+                layoudZimessNoFound.setVisibility(View.VISIBLE);
+            }
+        }
+
 
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);

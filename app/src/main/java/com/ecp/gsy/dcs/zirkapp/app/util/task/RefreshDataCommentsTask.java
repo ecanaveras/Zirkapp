@@ -24,7 +24,6 @@ public class RefreshDataCommentsTask extends AsyncTask<String, Void, ArrayList<Z
     private ListView listViewComment;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Context context;
-    private CommentsAdapter adapterComment;
     private TextView lblCantComments;
 
     public RefreshDataCommentsTask(Context context, ProgressBar progressBar, ListView listComment, SwipeRefreshLayout swipeRefreshLayout) {
@@ -70,7 +69,7 @@ public class RefreshDataCommentsTask extends AsyncTask<String, Void, ArrayList<Z
 
     @Override
     protected void onPostExecute(ArrayList<ZimessComment> arrayListComment) {
-        adapterComment = new CommentsAdapter(context, arrayListComment);
+        CommentsAdapter adapterComment = new CommentsAdapter(context, arrayListComment);
         listViewComment.setAdapter(adapterComment);
 
         if (lblCantComments != null)

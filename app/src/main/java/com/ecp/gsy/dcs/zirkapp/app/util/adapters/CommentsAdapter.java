@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessComment;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 
 import java.util.ArrayList;
 
@@ -62,13 +62,13 @@ public class CommentsAdapter extends BaseAdapter {
         TextView lblNumComment = (TextView) vista.findViewById(R.id.lblNumComment);
 
         //3. Asignar valores
-        lblCommentUser.setText(comment.getUserComment().getUsername().toString());
-        lblCommentText.setText(comment.getCommentText().toString());
+        lblCommentUser.setText(comment.getUserComment().getUsername());
+        lblCommentText.setText(comment.getCommentText());
         lblNumComment.setText(Integer.toString(i + 1));
 
         lblCommentName.setText(comment.getUserComment().getString("name"));
         //Estableciendo Imagen;
-        imgAvatar.setImageBitmap(comment.getAvatar());
+        imgAvatar.setImageDrawable(comment.getAvatar());
 
         //Manejando tiempos transcurridos
         String tiempoTranscurrido = globalApplication.getTimepass(comment.getCreateAt());

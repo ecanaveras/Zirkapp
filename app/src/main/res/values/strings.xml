@@ -2,7 +2,12 @@
 <resources>
 
     <string name="app_name">Zirkapp</string>
+    <string name="gcm_sender_id">323224512527</string>
     <string name="facebook_app_id">2009083782565906</string>
+    <string name="twitter_api_key">HKNgH8O9c7QSXTIOaWxuBvBEW</string>
+    <string name="twitter_api_secret">5co4OWxU9F51rxJ1QJIoIMPrz2B0Pzh8hWauZPnWluEoGeGXbl</string>
+    <string name="parse_api_id">VDJEJIMbyuOiis9bwBHmrOIc7XDUqYHQ0TMhA23c</string>
+    <string name="parse_api_key">9EJKzvp4LhRdnLqfH6jkHPaWd58IVXaBKAWdeItE</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
@@ -11,7 +16,7 @@
     <string name="lblWelcomeMsg">Estas apunto de ser parte del mundo Zirkapp, todo lo que quieras cerca de ti!</string>
     <string name="lblWelcomeMsg1">Comunicate con los que te rodean!</string>
     <string name="lblWelcomeMsg2">Dile a todos lo que está pasando cerca de ti!</string>
-    <string name="lblWelcomeMsg3">Encuentra amigos donde quiera que vallas!</string>
+    <string name="lblWelcomeMsg3">Encuentra amigos donde quiera que vayas!</string>
 
     <!-- Login Y SingUp -->
     <string name="lblWelcomeLogin">Ingresa con tu cuenta favorita</string>
@@ -58,6 +63,21 @@
     <string name="lblConfigDistance">Distancia de Zimess</string>
     <string name="lblVisitas">Visitas</string>
     <string name="lblUsersOnline">Usuarios Online</string>
+    <string name="lblComments">Comentarios</string>
+    <string name="lblSave">Guardar</string>
+    <string name="lblResponse">Respuestas</string>
+    <string name="lblSearching">Buscando Zimess...</string>
+    <string name="lblSearchingUsers">Buscando usuarios online...</string>
+    <string name="lblStart">Empecemos..</string>
+    <string name="lblZimessNoFound">No hay Zimess, empieza tu!</string>
+    <string name="lblMyZimessNoFound">No hay Zimess... animate, empieza ya!</string>
+    <string name="lblMyZimess">Mis Zimess</string>
+    <string name="lblDetailZimess">Det. del Zimess</string>
+    <string name="lblSearchingChats">Buscando conversaciones...</string>
+    <string name="lblVersion">Versión</string>
+    <string name="lblEstado">Tu estado</string>
+    <string name="lblName">Nombres</string>
+    <string name="lblCity">Ciudad</string>
 
     <!-- Custom Msg -->
     <string name="msgNoAmygos">No tienes amygos</string>
@@ -78,51 +98,50 @@
     <string name="msgNoLoadZimess">No hay zimess cerca a tu posición! Animate, empieza tu!</string>
     <string name="msgReply">Dile algo a</string>
     <string name="msgUserIgnorado">Usuario Ignorado</string>
-
-    <!-- Titles -->
-    <string name="title_activity_detail_anonimo">DetailAnonimoActivity</string>
-    <string name="title_activity_detail_whiz">WhizDetailActivity</string>
-    <string name="title_activity_manager_welcome">Welcome Zirkapp</string>
-    <string name="title_activity_detail_zimess">DetailZimessActivity</string>
+    <string name="msgZimessDeleteOk">Zimess eliminado!</string>
+    <string name="msgZimessDeleteFailed">No es posible borrar tu Zimess, intenta mas tarde.</string>
+    <string name="msgDeleting">Eliminando, espere...</string>
+    <string name="msgByeZimess">Despidete de tu Zimess...</string>
+    <string name="msgMessageEmpty">Debes escribir algo!</string>
     <string name="msgLocationUnknown">Ubicación no disponible...</string>
-    <string name="lblEstado">Tu estado</string>
     <string name="msgHelpAvatar">Mantén presionada la imagen para cambiarla!</string>
-    <string name="lblName">Nombres</string>
-    <string name="lblCity">Ciudad</string>
     <string name="msgSaving">Guardando, por favor espere...</string>
     <string name="msgLoading">Cargando, por favor espere...</string>
     <string name="msgProfiNameEmty">Tu nombre es necesario...</string>
     <string name="msgEmailInvalid">Escribe una dirección de correo válida</string>
     <string name="msgProfileUpdate">Tus datos han sido actualizados!</string>
     <string name="msgProfileUpdateError">Hay problemas al guardar tus datos, intenta luego!</string>
-    <string name="lblComments">Comentarios</string>
-    <string name="lblSave">Guardar</string>
-    <string name="lblResponse">Respuestas</string>
-    <string name="lblSearching">Buscando Zimess...</string>
-    <string name="lblSearchingUsers">Buscando usuarios online...</string>
-    <string name="lblStart">Empecemos..</string>
-    <string name="action_delete_zimess">Eliminar Zimess</string>
-    <string name="action_bar_my_zimess">Mis Zimess</string>
-    <string name="action_bar_new_zimess">Nuevo Zimess</string>
-    <string name="lblZimessNoFound">No hay Zimess, empieza tu!</string>
-    <string name="lblMyZimessNoFound">No hay Zimess... animate, empieza ya!</string>
-    <string name="lblMyZimess">Mis Zimess</string>
-    <string name="lblDetailZimess">Det. del Zimess</string>
-    <string name="msgZimessDeleteOk">Zimess eliminado!</string>
-    <string name="msgZimessDeleteFailed">No es posible borrar tu Zimess, intenta mas tarde.</string>
-    <string name="msgDeleting">Eliminando, espere...</string>
-    <string name="msgByeZimess">Despidete de tu Zimess...</string>
-    <string name="msgMessageEmpty">Debes escribir algo!</string>
+    <string name="msgLogoutOk">Tu sesión se ha cerrado, regresa pronto...</string>
+    <string name="msgAbout">Acerca de...</string>
+    <string name="msgCopyRights">© 2015 Zirkapp.</string>
+    <string name="msgCopyRights2">All rights reserved.</string>
+    <string name="mgsNewChat">Nuevo chat</string>
+    <string name="mgsNotiNotFound">No tienes notificaciones</string>
+
+    <!-- Titles -->
     <string name="title_fragment_zimess">Zimess</string>
     <string name="title_fragment_notifications">Notificaciones</string>
     <string name="title_fragment_chat">Chat</string>
-    <string name="action_bar_sort_zimess">Ordenar...</string>
-    <string name="msgLogoutOk">Tu sesión se ha cerrado, bye...</string>
-    <string name="msgAbout">Acerca de...</string>
-    <string name="lblSearchingChats">Buscando conversaciones...</string>
-    <string name="action_bar_history">Historial</string>
     <string name="title_activity_chat_history">Historial del Chat</string>
+    <string name="title_activity_about">Acerca de...</string>
 
+    <!--Actions Menu-->
+    <string name="action_bar_history">Historial</string>
+    <string name="action_bar_sort_zimess">Ordenar...</string>
+    <string name="action_delete_zimess">Eliminar Zimess</string>
+    <string name="action_bar_my_zimess">Mis Zimess</string>
+    <string name="action_bar_new_zimess">Nuevo Zimess</string>
+    <string name="msgShareApp">Hola, te invito a probar Zirkapp</string>
+    <string name="urlPlayStore">https://play.google.com/store/apps/details?id=com.ecp.gsy.dcs.zirkapp</string>
+    <string name="msgShareTo">Compartir usando...</string>
+    <string name="msgZimessSending">Publicando Zimess...</string>
+    <string name="msgNoLoginFacebook">No fue posible conectarse a Facebook.</string>
+    <string name="msgNoLoginTwitter">No fue posible conectarse a Twitter.</string>
+    <string name="msgHelpMenuDrawer">Edita tu perfil tocando la parte superior del menú, mira la cantidad de Zimess, Usuarios Online, y Notificaciones, Toca una de las opciones para navegar, tambien puedes ir a los Ajustes, Calificar y Compartir Zirkapp</string>
+    <string name="msgHelpIconMenu">Despliega y oculta el menu lateral, usando el icono de tres lineas, tambien puedes hacerlo deslizando tu dedo hacia la derecha e izquierda.</string>
+    <string name="titleHelpNavigation">Navegar en Zirkapp</string>
+    <string name="msgHelpNewZimess">Crea nuevos Zimess usando el icono resaltado en la imagén, Un Zimess es público y pueden verlo los usuarios que estan cerca. Tambien puedes ver todos tus Zimess entrando en el menú "Mis Zimess".</string>
+    <string name="msgHelpUpdateZimess">Cuando estes viendo Zimess o en el Chat, sobre la pantalla, desliza tu debo hacia abajo para actualizar. Toca una foto para ir a el perfil de usuario, o cualquier parte del Zimess para ver sus detalles, y demás.</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>
@@ -141,7 +160,5 @@
         <item>@drawable/ic_icon_star</item>
         <item>@drawable/ic_icon_share</item>
     </array>
-
-
 
 </resources>

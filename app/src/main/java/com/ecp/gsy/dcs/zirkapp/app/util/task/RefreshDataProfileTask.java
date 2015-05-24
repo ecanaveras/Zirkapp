@@ -2,13 +2,12 @@ package com.ecp.gsy.dcs.zirkapp.app.util.task;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.parse.ParseUser;
 
 /**
@@ -17,7 +16,6 @@ import com.parse.ParseUser;
 public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser> {
 
     private ImageView avatar;
-    private byte[] byteImage;
     private ProgressDialog progressDialog;
     private Context context;
     private String messageDialog;
@@ -67,13 +65,8 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser
                 txtNombres.setText(user.getString("name"));
                 txtNombres.setVisibility(View.VISIBLE);
             }
-            Bitmap bitmapAvatar = GlobalApplication.getAvatar(user);
-            if (bitmapAvatar != null) {
-                avatar.setImageBitmap(bitmapAvatar);
-            } else {
-                avatar.setImageResource(R.drawable.ic_user_male);
-            }
 
+            avatar.setImageDrawable(GlobalApplication.getAvatar(user));
         }
         if (context != null)
             progressDialog.dismiss();

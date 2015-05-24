@@ -1,6 +1,5 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.services;
 
-import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,15 +27,18 @@ import java.util.Locale;
 /**
  * Created by Elder on 02/06/2014.
  */
-public class ManagerGPS extends Service implements LocationListener {
+public class ManagerGPS extends Service {
 
     private Context mContext;
     private boolean isEnabledGPS = false;
     private boolean isEnabledNetwork = false;
-    private boolean enableGetLocation = false;
+    private MyLocationListener listener;
+    private String TAG = MyLocationListener.class.getName();
     private Location location;
+    private Location currentBestLocation;
     private Double latitud;
     private Double longitud;
+    private Intent intent;
 
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 15; // 15 metros
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 5; // 5 minutoS
@@ -50,7 +52,27 @@ public class ManagerGPS extends Service implements LocationListener {
      */
     public ManagerGPS(Context mContext) {
         this.mContext = mContext;
-        this.obtenertUbicacion();
+        intent = new Intent("broadcast.gps.location_change");
+        if (isOnline()) {
+            location = this.getCurrentLocation();
+        } else {
+            networkShowSettingsAlert();
+        }
+
+    }
+
+    /**
+     * Establece comunicacion con los servicios de Android para hallar la ubicacion bajo demanda
+     *
+     * @param mContext
+     */
+    public ManagerGPS(Context mContext, boolean isOnDemand) {
+        this.mContext = mContext;
+        if (isOnline()) {
+            location = this.getCurrentLocation();
+        } else {
+            networkShowSettingsAlert();
+        }
     }
 
     /**
@@ -58,55 +80,102 @@ public class ManagerGPS extends Service implements LocationListener {
      *
      * @return
      */
-    public Location obtenertUbicacion() {
+    private Location getCurrentLocation() {
         try {
-            locationManager = (LocationManager) mContext.getSystemService(mContext.LOCATION_SERVICE);
+            locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
             isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            if (!isEnabledGPS && !isEnabledNetwork) {//Desabilitados
-                this.enableGetLocation = false;
-            } else { //Habilitados
-                this.enableGetLocation = true;
-                if (isEnabledNetwork) {
-                    this.establecerUbicacion(LocationManager.NETWORK_PROVIDER);
-                    Log.d("Network", "Network");
-                }
-                if (isEnabledGPS) {
-                    if (location == null) {
-                        this.establecerUbicacion(LocationManager.GPS_PROVIDER);
-                        Log.d("GPS Enabled", "GPS Enabled");
-                    }
-                }
+            //Network
+            if (isEnabledNetwork) {
+                Log.d("provider.location", "network");
+                return getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            }
+            //Gps
+            if (isEnabledGPS) {
+                Log.d("provider.location", "gps");
+                return getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            }
+
+            if (!isEnabledNetwork && !isEnabledGPS) {//Desabilitado GPS
+                Log.d("provider.location", "disabled");
+                gpsShowSettingsAlert();
             }
         } catch (Exception e) {
             Log.e("Error : Location", "Impossible to connect to LocationManager", e);
         }
 
-        return location;
+        return null;
     }
 
     /**
-     * Establece la ubicacion
+     * Obtiene una nueva ubicacion
      *
      * @param provider
      */
-    private void establecerUbicacion(String provider) {
-        locationManager.requestLocationUpdates(provider, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-        //Log.d(provider, provider);
-        if (locationManager != null) {
-            location = locationManager.getLastKnownLocation(provider);
-            updateGPSCoordenadas();
-        }
+    private Location getLastKnownLocation(String provider) {
+        listener = new MyLocationListener();
+        locationManager.requestLocationUpdates(provider, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, listener);
+        return locationManager.getLastKnownLocation(provider);
     }
 
     /**
-     * Actualiza las coordenadas
+     * Determinar la mejor ubicacion
+     *
+     * @param location
+     * @param currentBestLocation
+     * @return
      */
-    private void updateGPSCoordenadas() {
-        if (location != null) {
-            latitud = location.getLatitude();
-            longitud = location.getLongitude();
+    protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+        if (currentBestLocation == null) {
+            return true;
         }
+
+        //Chequear cual ubicacion es mas nueva;
+        long timeDelta = location.getTime() - currentBestLocation.getTime();
+        boolean isSignificantlyNewer = timeDelta > MIN_TIME_BW_UPDATES;
+        boolean isSignificantlyOlder = timeDelta < -MIN_TIME_BW_UPDATES;
+        boolean isNewer = timeDelta > 0;
+
+        //Si ha pasado mas del tiempo minimo, se debe usar una nueva ubicacion
+        if (isSignificantlyNewer) {
+            return true;
+        } else if (isSignificantlyOlder) {
+            return false;
+        }
+
+        //Chequear si la nueva ubicacion es mas o menos exacta
+        int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+        boolean isLessAccurate = accuracyDelta > 0;
+        boolean isMoreAccurate = accuracyDelta < 0;
+        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+        //Verificar si es el mismo provider
+        boolean isFromSameProvider = isSameProvider(location.getProvider(), currentBestLocation.getProvider());
+
+        //Determinar la calidad de ubicacion, usando la combinacion de tiempo y exactitud
+        if (isMoreAccurate) {
+            return true;
+        } else if (isNewer && !isLessAccurate) {
+            return true;
+        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Verifica si 2 provider son iguales
+     *
+     * @param provider1
+     * @param provider2
+     * @return
+     */
+    private boolean isSameProvider(String provider1, String provider2) {
+        if (provider1 == null) {
+            return provider2 == null;
+        }
+        return provider1.equals(provider2);
     }
 
     /**
@@ -114,7 +183,7 @@ public class ManagerGPS extends Service implements LocationListener {
      */
     public void stopUsingGPS() {
         if (locationManager != null) {
-            locationManager.removeUpdates(ManagerGPS.this);
+            locationManager.removeUpdates(listener);
         }
     }
 
@@ -129,7 +198,7 @@ public class ManagerGPS extends Service implements LocationListener {
             Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
             try {
                 if (geocoder != null) {
-                    List<Address> addressList = geocoder.getFromLocation(latitud, longitud, 1);
+                    List<Address> addressList = geocoder.getFromLocation(getLatitud(), getLongitud(), 1);
                     return addressList;
                 }
             } catch (IOException e) {
@@ -139,26 +208,6 @@ public class ManagerGPS extends Service implements LocationListener {
         return null;
     }
 
-    /**
-     * Retorna la direccion resumida del dispositivo
-     *
-     * @return
-     */
-    public String getAddressLine() {
-        return getDataAddress(1);
-    }
-
-    public String getLocality() {
-        return getDataAddress(2);
-    }
-
-    public String getPostalCode() {
-        return getDataAddress(3);
-    }
-
-    public String getCountryName() {
-        return getDataAddress(4);
-    }
 
     /**
      * Retorna los datos de la direccion, segun el TypeAddres
@@ -189,26 +238,7 @@ public class ManagerGPS extends Service implements LocationListener {
                     return null;
             }
         }
-
         return null;
-    }
-
-    public Double getLatitud() {
-        if (location != null) {
-            latitud = location.getLatitude();
-        }
-        return latitud;
-    }
-
-    public Double getLongitud() {
-        if (location != null) {
-            longitud = location.getLongitude();
-        }
-        return longitud;
-    }
-
-    public boolean isEnableGetLocation() {
-        return enableGetLocation;
     }
 
     /**
@@ -217,11 +247,61 @@ public class ManagerGPS extends Service implements LocationListener {
      * @return
      */
     public boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(mContext.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.v("stop.managerGsp", "done");
+        stopUsingGPS();
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    //LISTENER
+    public class MyLocationListener implements LocationListener {
+
+        @Override
+        public void onLocationChanged(Location location) {
+            //Nueva Ubicacion
+            if (currentBestLocation != null) {
+                if (isBetterLocation(location, currentBestLocation)) {
+                    currentBestLocation = location;
+                }
+            } else {
+                currentBestLocation = location;
+            }
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            Log.d(TAG, "The status of the provider " + provider + " has changed");
+            if (status == 0) {
+                Log.d(TAG, provider + " is OUT OF SERVICE");
+            } else if (status == 1) {
+                Log.d(TAG, provider + " is TEMPORARILY_UNAVAILABLE");
+            } else {
+                Log.d(TAG, provider + " is AVAILABLE");
+            }
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+            stopUsingGPS();
+        }
+    }
+
+    //ALERTAS
 
     /**
      * Muestra una alerta en caso que esten desabilitados los accesorios de ubicacion
@@ -273,30 +353,41 @@ public class ManagerGPS extends Service implements LocationListener {
         alert.show();
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        //Nueva Ubicacion
-        this.getLatitud();
-        this.getLongitud();
-//        Log.d("GPS.latitud", getLatitud().toString());
-//        Log.d("GPS.longitud", getLongitud().toString());
+
+    //GETTERS AND SETTERS
+
+    /**
+     * Retorna la direccion resumida del dispositivo
+     *
+     * @return
+     */
+    public String getAddressLine() {
+        return getDataAddress(1);
     }
 
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
+    public String getLocality() {
+        return getDataAddress(2);
     }
 
-    @Override
-    public void onProviderEnabled(String s) {
+    public String getPostalCode() {
+        return getDataAddress(3);
     }
 
-    @Override
-    public void onProviderDisabled(String s) {
-        stopUsingGPS();
+    public String getCountryName() {
+        return getDataAddress(4);
     }
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    public Double getLatitud() {
+        if (location != null) {
+            latitud = location.getLatitude();
+        }
+        return latitud;
+    }
+
+    public Double getLongitud() {
+        if (location != null) {
+            longitud = location.getLongitude();
+        }
+        return longitud;
     }
 }

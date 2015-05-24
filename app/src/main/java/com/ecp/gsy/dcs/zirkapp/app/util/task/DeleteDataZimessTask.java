@@ -1,12 +1,11 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.task;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.DetailZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 

@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
@@ -20,11 +21,13 @@ import java.sql.SQLException;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     public static final String DATABASE_NAME = "zirkapp.db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     //Objetos DAO para acceder a las tablas db
     private Dao<Welcomedb, Integer> welcomedbDao = null;
+    private Dao<HandlerLogindb, Integer> handlerLogindbDao = null;
     private RuntimeExceptionDao<Welcomedb, Integer> welcomedbRuntimeDao = null;
+    private RuntimeExceptionDao<HandlerLogindb, Integer> handlerLogindbRuntimeDao = null;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
@@ -42,6 +45,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try {
             Log.i(DatabaseHelper.class.getSimpleName(), "onCreate()");
             TableUtils.createTable(dbSource, Welcomedb.class);
+            TableUtils.createTable(dbSource, HandlerLogindb.class);
         } catch (SQLException e) {
             Log.e(DatabaseHelper.class.getSimpleName(), "Imposible crear la base de datos", e);
             throw new RuntimeException(e);
@@ -63,6 +67,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try {
             Log.i(DatabaseHelper.class.getSimpleName(), "onUpgrade()");
             TableUtils.dropTable(dbSource, Welcomedb.class, true);
+            TableUtils.dropTable(dbSource, HandlerLogindb.class, true);
             //Creamos nuevamente las tablas
             onCreate(db, dbSource);
         } catch (SQLException e) {
@@ -71,20 +76,34 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         }
     }
 
-    public Dao<Welcomedb, Integer> getWelcomedbDao() throws SQLException {
-        if(welcomedbDao == null) welcomedbDao = getDao(Welcomedb.class);
-        return welcomedbDao;
-    }
-
-    public RuntimeExceptionDao<Welcomedb, Integer> getWelcomedbRuntimeDao() {
-        if(welcomedbRuntimeDao == null) welcomedbRuntimeDao = getRuntimeExceptionDao(Welcomedb.class);
-        return welcomedbRuntimeDao;
-    }
-
     @Override
     public void close() {
         super.close();
         welcomedbDao = null;
         welcomedbRuntimeDao = null;
+        handlerLogindbDao = null;
+        handlerLogindbRuntimeDao = null;
+    }
+
+    public Dao<Welcomedb, Integer> getWelcomedbDao() throws SQLException {
+        if (welcomedbDao == null) welcomedbDao = getDao(Welcomedb.class);
+        return welcomedbDao;
+    }
+
+    public RuntimeExceptionDao<Welcomedb, Integer> getWelcomedbRuntimeDao() {
+        if (welcomedbRuntimeDao == null)
+            welcomedbRuntimeDao = getRuntimeExceptionDao(Welcomedb.class);
+        return welcomedbRuntimeDao;
+    }
+
+    public Dao<HandlerLogindb, Integer> getHandlerLogindbDao() throws SQLException {
+        if (handlerLogindbDao == null) handlerLogindbDao = getDao(HandlerLogindb.class);
+        return handlerLogindbDao;
+    }
+
+    public RuntimeExceptionDao<HandlerLogindb, Integer> getHandlerLogindbRuntimeDao() {
+        if (handlerLogindbRuntimeDao == null)
+            handlerLogindbRuntimeDao = getRuntimeExceptionDao(HandlerLogindb.class);
+        return handlerLogindbRuntimeDao;
     }
 }

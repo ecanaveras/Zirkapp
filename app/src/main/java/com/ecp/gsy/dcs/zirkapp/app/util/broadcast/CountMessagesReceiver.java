@@ -3,6 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util.broadcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -46,6 +47,7 @@ public class CountMessagesReceiver extends BroadcastReceiver {
      * Actualiza un elemento de la lista de usuarios online
      */
     private void updateCantMessages() {
+        Log.d("broadcast.messages", "update");
         for (int i = 0; i < listUsers.getChildCount(); i++) {
             View v = listUsers.getChildAt(i - listUsers.getFirstVisiblePosition());
             if (v != null) {
@@ -57,7 +59,7 @@ public class CountMessagesReceiver extends BroadcastReceiver {
             }
         }
 
-        if (lblCantMessages != null) return;
+        if (lblCantMessages == null) return;
 
         //Buscar chats.
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
@@ -69,8 +71,11 @@ public class CountMessagesReceiver extends BroadcastReceiver {
             @Override
             public void done(int count, ParseException e) {
                 if (e == null) {
-                    if (count > 0)
+                    if (count > 0) {
                         lblCantMessages.setText(String.valueOf(count));
+                    }else{
+                        lblCantMessages.setText(null);
+                    }
                 }
             }
         });

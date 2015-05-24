@@ -3,6 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util.parse;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -20,26 +21,6 @@ import java.util.Set;
 public class DataParseHelper {
 
     private static boolean deleteOk;
-
-    /**
-     * Busca el perfil del usuario
-     *
-     * @param parseUser
-     * @return
-     */
-    public static ParseObject findProfile(ParseUser parseUser) {
-        //Buscar perfil del comentario
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZProfile");
-        query.whereEqualTo("user", parseUser);
-        List<ParseObject> listProfile = new ArrayList<ParseObject>();
-        try {
-            listProfile = query.find();
-        } catch (ParseException e) {
-            Log.e("Parse.Profile", e.getMessage());
-        }
-
-        return listProfile.size() > 0 ? listProfile.get(0) : null;
-    }
 
     /**
      * Busca Usuarios de acuerdo a la posicion
@@ -111,6 +92,30 @@ public class DataParseHelper {
     }
 
     /**
+     * Busca notificaciones
+     *
+     * @param receptorUser
+     * @return
+     */
+    public static List<ParseObject> findNotifications(ParseUser receptorUser) {
+        List<ParseObject> parseObjects = new ArrayList<>();
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZNotifi");
+        query.whereEqualTo("receptorUser", receptorUser);
+        query.include("senderUser");
+        query.include("userTarget");
+        query.include("zimessTarget");
+        query.orderByDescending("createdAt");
+        query.setLimit(30);
+        try {
+            parseObjects = query.find();
+        } catch (ParseException e) {
+            Log.e("Parse.Notifi", e.getMessage());
+        }
+
+        return parseObjects;
+    }
+
+    /**
      * Busca Zimess de acuerdo a la posicion
      *
      * @param currentLocation
@@ -132,7 +137,7 @@ public class DataParseHelper {
             if (cantMinKmAround == 0) {
                 innerQuery.whereWithinKilometers("location", parseGeoPoint, 0.5);
             } else {
-                //1000 Metros
+                //1000 Metros en adelante
                 innerQuery.whereWithinKilometers("location", parseGeoPoint, cantMaxKmAround);
             }
             query.whereDoesNotMatchKeyInQuery("objectId", "objectId", innerQuery);
@@ -240,6 +245,27 @@ public class DataParseHelper {
         }
 
         return listVisita.size() > 0 ? listVisita.get(0) : null;
+    }
+
+
+    /**
+     * Busca un usuarios de acuerdo a su objectId
+     *
+     * @param userId
+     * @return
+     */
+    public static ParseUser findUser(String userId) {
+        List<ParseUser> parseUsers = new ArrayList<>();
+        //Buscar Usuario
+        ParseQuery query = ParseUser.getQuery();
+        query.whereEqualTo("objectId", userId);
+        try {
+            parseUsers = query.find();
+        } catch (ParseException e) {
+            Log.e("Parse.Users", e.getMessage());
+        }
+
+        return parseUsers.size() > 0 ? parseUsers.get(0) : null;
     }
 
     //##############################################################

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
 /**
@@ -14,9 +15,15 @@ import android.widget.Toast;
 public class SinchConnectReceiver extends BroadcastReceiver {
 
     private LinearLayout layoutInfo;
+    private ListView listUsers;
 
     public SinchConnectReceiver(LinearLayout layoutInfo) {
         this.layoutInfo = layoutInfo;
+    }
+
+    public SinchConnectReceiver(LinearLayout layoutInfo, ListView listUsers) {
+        this.layoutInfo = layoutInfo;
+        this.listUsers = listUsers;
     }
 
     /**
@@ -31,11 +38,13 @@ public class SinchConnectReceiver extends BroadcastReceiver {
         if (!succes) {
             Toast.makeText(context.getApplicationContext(), "Messaging service failed to start", Toast.LENGTH_LONG).show();
             Log.e("Sinch.service.state", "Failed...");
+            if (layoutInfo != null) layoutInfo.setVisibility(View.VISIBLE);
+            if (listUsers != null) listUsers.setEnabled(false);
         } else {
-            Log.i("Sinch.service.state", "Starting...");
-            if (layoutInfo != null) {
-                layoutInfo.setVisibility(View.GONE);
-            }
+            Log.i("Sinch.service.state", "Started...");
+            if (layoutInfo != null) layoutInfo.setVisibility(View.GONE);
+            if (listUsers != null) listUsers.setEnabled(true);
+
         }
     }
 }

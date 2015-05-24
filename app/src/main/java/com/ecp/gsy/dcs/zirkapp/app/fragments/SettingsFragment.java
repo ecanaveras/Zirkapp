@@ -18,14 +18,22 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.ManagerLogin;
+import com.ecp.gsy.dcs.zirkapp.app.activities.AboutActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerLogin;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
+import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
-import com.parse.Parse;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -47,11 +55,15 @@ public class SettingsFragment extends PreferenceFragment {
      */
     private static final boolean ALWAYS_SIMPLE_PREFS = false;
     private Toolbar toolbar;
+    private DatabaseHelper databaseHelper;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Database
+        databaseHelper = OpenHelperManager.getHelper(getActivity(), DatabaseHelper.class);
 
         setupSimplePreferencesScreen();
     }
@@ -104,6 +116,18 @@ public class SettingsFragment extends PreferenceFragment {
 
         //Acciones
 
+        //ABOUT
+        Preference pref_about = findPreference("about");
+        pref_about.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(getActivity(), AboutActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
+
+
         //USERS LOCK
         Preference pref_users_lock = findPreference("users_lock");
         pref_users_lock.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -122,12 +146,22 @@ public class SettingsFragment extends PreferenceFragment {
             public boolean onPreferenceClick(Preference preference) {
                 //Deteniendo los servicios Sinch
                 getActivity().stopService(new Intent(getActivity().getApplicationContext(), MessageService.class));
+                getActivity().stopService(new Intent(getActivity().getApplicationContext(), LocationService.class));
+                ParseUser currentUser = ParseUser.getCurrentUser();
+                currentUser.put("online", false);
+                currentUser.saveInBackground();
                 ParseUser.logOut();
+                //Guardar en db una session inactiva
+                saveSessionActive(false);
                 Intent intent = new Intent(getActivity(), ManagerLogin.class);
                 intent.putExtra("logout", true);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                Toast.makeText(getActivity(), getString(R.string.msgLogoutOk), Toast.LENGTH_SHORT).show();
-                //getActivity().moveTaskToBack(true)
+                Toast toast = Toast.makeText(getActivity(), getResources().getString(R.string.msgLogoutOk), Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 10, 0);
+                toast.show();
+                getActivity().moveTaskToBack(false);
                 getActivity().finish();
                 return false;
             }
@@ -340,5 +374,37 @@ public class SettingsFragment extends PreferenceFragment {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("sync_frequency"));
         }
+    }
+
+    private void saveSessionActive(boolean sessionActive) {
+        List<HandlerLogindb> listHldb = new ArrayList<>();
+
+        RuntimeExceptionDao<HandlerLogindb, Integer> dao = databaseHelper.getHandlerLogindbRuntimeDao();
+        listHldb = dao.queryForAll();
+
+        boolean guardar = true;
+
+        //Si existe un registro se actualiza y no se crea uno nuevo
+        for (HandlerLogindb row : listHldb) {
+            row.setSessionActive(sessionActive);
+            dao.update(row);
+            guardar = false;
+            break;
+        }
+
+        //Guardar si no existen registro
+        if (guardar) {
+            HandlerLogindb ldb = new HandlerLogindb(sessionActive);
+            dao.create(ldb);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (databaseHelper != null) {
+            OpenHelperManager.releaseHelper();
+            databaseHelper = null;
+        }
+        super.onDestroyView();
     }
 }

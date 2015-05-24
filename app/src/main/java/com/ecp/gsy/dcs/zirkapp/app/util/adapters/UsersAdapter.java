@@ -1,7 +1,6 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.parse.ParseUser;
 
 import java.util.List;
@@ -63,12 +62,7 @@ public class UsersAdapter extends BaseAdapter {
         lblCommentUser.setText(parseUser.getUsername());
         lblCommentName.setText(parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername());
         //Estableciendo Imagen;
-        Bitmap avatar = GlobalApplication.getAvatar(parseUser);
-        if (avatar != null) {
-            imgAvatar.setImageBitmap(avatar);
-        } else {
-            imgAvatar.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_user_male));
-        }
+        imgAvatar.setImageDrawable(GlobalApplication.getAvatar(parseUser));
         return vista;
     }
 

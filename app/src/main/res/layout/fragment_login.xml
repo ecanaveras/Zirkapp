@@ -3,135 +3,152 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.ecp.gsy.dcs.zirkapp.app.MainActivity$PlaceholderFragment">
+    tools:context="com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.LoginFragment">
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@color/default_primary_color">
+        android:background="@color/default_primary_color"
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/lblWelcomeLogin"
-            android:textStyle="italic"
-            android:typeface="sans"
             android:gravity="center_vertical|center_horizontal"
             android:padding="16dp"
-            android:textColor="@color/text_primary_color" />
+            android:text="@string/lblWelcomeLogin"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/text_primary_color"
+            android:textStyle="italic"
+            android:typeface="sans" />
     </LinearLayout>
 
-    <com.gc.materialdesign.views.ScrollView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <!--Login-->
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_weight="1"
-            android:layout_gravity="center">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
+            <!--Login-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginRight="16dp"
+                android:layout_gravity="center"
                 android:layout_marginLeft="16dp"
-                android:layout_gravity="center">
+                android:layout_marginRight="16dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:minHeight="250dp"
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/lblLoginZirkapp"
                     android:fontFamily="sans-serif-medium"
-                    android:textSize="18sp"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:text="@string/lblLoginZirkapp"
                     android:textColor="@color/accent_color"
-                    android:gravity="center_vertical|center_horizontal" />
+                    android:textSize="18sp" />
 
                 <EditText
                     android:id="@+id/txtUserLogin"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:hint="@string/lblUser"
-                    android:inputType="textVisiblePassword|textNoSuggestions"
-                    android:imeOptions="actionNext" />
+                    android:imeOptions="actionNext"
+                    android:inputType="textVisiblePassword|textNoSuggestions" />
 
                 <EditText
                     android:id="@+id/txtPassLogin"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:ems="10"
-                    android:inputType="textPassword"
                     android:hint="@string/lblPassword"
-                    android:imeOptions="actionNext" />
+                    android:imeOptions="actionNext"
+                    android:inputType="textPassword" />
 
-                <LinearLayout
+
+                <com.gc.materialdesign.views.ButtonRectangle
+                    android:id="@+id/btnLogin"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:layout_height="48dp"
+                    android:background="@color/default_primary_color"
+                    android:drawableLeft="@drawable/ic_zirkapp_noti"
+                    android:imeOptions="actionSend"
+                    android:text="@string/lblLogin"
+                    android:textAllCaps="true"/>
 
-                    <com.gc.materialdesign.views.ButtonRectangle
-                        android:id="@+id/btnLogin"
-                        android:layout_width="wrap_content"
-                        android:layout_height="48dp"
-                        android:layout_weight="1"
-                        android:text="@string/lblLogin"
-                        android:imeOptions="actionSend"
-                        android:background="@color/default_primary_color" />
-
-                </LinearLayout>
 
                 <TextView
                     android:id="@+id/lblCreateAccount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Crear mi cuenta Zirkapp"
                     android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
                     android:clickable="true"
-                    android:textSize="18sp"
-                    android:textColor="@color/link_text_material_dark" />
+                    android:text="Crear mi cuenta Zirkapp"
+                    android:textColor="@color/link_text_material_dark"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+
+            <!--Login de Terceros-->
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <!--Google+-->
+                <!--<Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="Google+" />-->
+
+                <!--Facebook-->
+                <Button
+                    android:id="@+id/btnLoginFacebook"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/com_facebook_button_background"
+                    android:drawableLeft="@drawable/com_facebook_button_icon"
+                    android:drawablePadding="@dimen/com_facebook_likeboxcountview_text_padding"
+                    android:text="@string/com_facebook_loginview_log_in_button"
+                    android:textColor="@color/com_facebook_share_button_text_color"
+                    android:textSize="@dimen/com_facebook_likeview_text_size"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"/>
+
+                <!--Twitter-->
+                <Button
+                    android:id="@+id/btnLoginTwitter"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="10dp"
+                    android:background="#2DAAE2"
+                    android:drawableLeft="@drawable/icon_twitter"
+                    android:text="INICIAR SESIÓN CON TWITTER"
+                    android:textColor="@color/com_facebook_share_button_text_color"
+                    android:textSize="@dimen/com_facebook_likeview_text_size"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"/>
+
             </LinearLayout>
         </LinearLayout>
 
-
-        <!--Login de Terceros-->
-        <!--<LinearLayout
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp"
-
-            >
-
-            &lt;!&ndash;Google+&ndash;&gt;
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Google+"
-                android:layout_gravity="center_vertical" />
-
-            &lt;!&ndash;Facebook&ndash;&gt;
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Facebook"
-                android:layout_gravity="center_vertical" />
-
-            &lt;!&ndash;Twitter&ndash;&gt;
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Twitter"
-                android:layout_gravity="center_vertical" />
-
-        </LinearLayout>-->
-
-    </com.gc.materialdesign.views.ScrollView>
+    </ScrollView>
 
 </LinearLayout>

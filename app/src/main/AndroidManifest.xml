@@ -14,23 +14,27 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <permission android:name="com.ecp.gsy.dcs.zirkapp.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+
+    <permission
+        android:name="com.ecp.gsy.dcs.zirkapp.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
     <uses-permission android:name="com.ecp.gsy.dcs.zirkapp.permission.C2D_MESSAGE" />
 
     <application
-        android:name=".util.task.GlobalApplication"
+        android:name=".GlobalApplication"
         android:allowBackup="true"
-        android:icon="@drawable/ic_main"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ManagerWelcome"
+            android:name=".activities.ManagerWelcome"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -41,76 +45,88 @@
             android:label="@string/title_activity_manager_welcome" />
         -->
 
+        <!-- android:launchMode="singleTop" -->
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ManagerLogin"
-            android:label="@string/lblLogin" />
-        <activity android:name=".MessagingActivity">
+            android:name=".activities.ManagerLogin"
+            android:label="@string/lblLogin"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity android:name=".activities.MessagingActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".NewZimessActivityParse"
+            android:name=".activities.NewZimessActivity"
             android:label="@string/lblAddZmess"
             android:windowSoftInputMode="stateVisible|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".DetailZimessActivity"
+            android:name=".activities.DetailZimessActivity"
             android:label="@string/lblDetailZimess"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".UserProfileActivity"
+            android:name=".activities.UserProfileActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".EditProfileActivity"
+            android:name=".activities.EditProfileActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".activities.MainActivity" />
             <intent-filter>
                 <action android:name="action.EDIT_PROFILE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".MyZimessActivity"
+            android:name=".activities.MyZimessActivity"
             android:label="@string/lblMyZimess">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <activity
-            android:name=".ChatHistoryActivity"
+            android:name=".activities.ChatHistoryActivity"
             android:label="@string/title_activity_chat_history">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
+
         <activity
-            android:name=".CustomSettingsActivity"
+            android:name=".activities.AboutActivity"
+            android:label="@string/title_activity_about"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".activities.CustomSettingsActivity"
             android:label="@string/title_activity_settings">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
 
         <!-- Fcebook -->
@@ -120,52 +136,42 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
+        <!--Servicios-->
         <service android:name=".util.services.MessageService" />
+        <service android:name=".util.services.LocationService" />
 
-        <!-- GCM -->
-        <service
-            android:name=".util.services.GcmIntentService"
-            android:enabled="true" />
-        <!-- GCM Version -->
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
+        <!--Receivers-->
         <receiver
-            android:name=".util.services.GcmBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter ><!--android:priority="2"-->
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <!-- <action android:name="com.ecp.gsy.dcs.zirkapp.GCM_NOTIFICATION_ACTION" /> -->
-                <!--                   IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name. -->
-                <category android:name="com.ecp.gsy.dcs.zirkapp" />
+            android:name=".util.broadcast.LocationReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="broadcast.gps.location_change" />
             </intent-filter>
         </receiver>
-        <!-- FIN GCM -->
-
 
         <!-- PARSE -->
-        <!--<service android:name="com.parse.PushService" />
+        <service android:name="com.parse.PushService" />
 
         <receiver android:name="com.parse.ParseBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.USER_PRESENT" />
-                &lt;!&ndash; <action android:name="com.ecp.gsy.dcs.zirkapp.PARSE_NOTIFICATION_ACTION" /> &ndash;&gt;
+                <!-- <action android:name="com.ecp.gsy.dcs.zirkapp.PARSE_NOTIFICATION_ACTION" /> -->
             </intent-filter>
         </receiver>
         <receiver
             android:name="com.parse.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter android:priority="1">
+            <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                &lt;!&ndash;                   IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name. &ndash;&gt;
+                <!-- IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name. -->
                 <category android:name="com.ecp.gsy.dcs.zirkapp" />
             </intent-filter>
         </receiver>
+        <!--android:name="com.parse.ParsePushBroadcastReceiver"-->
         <receiver
-            android:name="com.parse.ParsePushBroadcastReceiver"
+            android:name=".util.broadcast.ParsePushReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />
@@ -174,17 +180,24 @@
             </intent-filter>
         </receiver>
 
-        &lt;!&ndash; replace @drawable/push_icon with your push icon identifier &ndash;&gt;
+        <!-- replace @drawable/push_icon with your push icon identifier -->
         <meta-data
             android:name="com.parse.push.notification_icon"
-            android:resource="@android:drawable/ic_menu_mylocation" />
-        &lt;!&ndash; FIN PARSE &ndash;&gt;-->
+            android:resource="@drawable/ic_zirkapp_noti" />
 
+        <meta-data
+            android:name="com.parse.push.gcm_sender_id"
+            android:value="id:323224512527" />;
+        <!-- FIN PARSE -->
 
         <!-- Facebook -->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
     </application>
 

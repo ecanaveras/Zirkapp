@@ -1,13 +1,9 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.beans;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 
-import com.ecp.gsy.dcs.zirkapp.app.util.task.GlobalApplication;
-import com.parse.ParseException;
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import java.io.Serializable;
@@ -32,7 +28,7 @@ public class Zimess implements Serializable {
      *
      * @return
      */
-    public Bitmap getAvatar() {
+    public RoundedBitmapDrawable getAvatar() {
         return GlobalApplication.getAvatar(user);
     }
 
