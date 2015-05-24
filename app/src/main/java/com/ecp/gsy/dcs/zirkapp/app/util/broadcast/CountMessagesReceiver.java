@@ -59,7 +59,7 @@ public class CountMessagesReceiver extends BroadcastReceiver {
             }
         }
 
-        if (lblCantMessages != null) return;
+        if (lblCantMessages == null) return;
 
         //Buscar chats.
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
@@ -71,8 +71,11 @@ public class CountMessagesReceiver extends BroadcastReceiver {
             @Override
             public void done(int count, ParseException e) {
                 if (e == null) {
-                    if (count > 0)
+                    if (count > 0) {
                         lblCantMessages.setText(String.valueOf(count));
+                    }else{
+                        lblCantMessages.setText(null);
+                    }
                 }
             }
         });
