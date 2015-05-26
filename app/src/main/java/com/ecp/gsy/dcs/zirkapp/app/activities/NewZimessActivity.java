@@ -170,7 +170,10 @@ public class NewZimessActivity extends ActionBarActivity {
                     dialog.dismiss();
                 }
             });
+        } else {
+            btnSendZimess.setEnabled(true);
         }
+
     }
 
     /**

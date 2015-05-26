@@ -8,7 +8,13 @@
     <string name="twitter_api_secret">5co4OWxU9F51rxJ1QJIoIMPrz2B0Pzh8hWauZPnWluEoGeGXbl</string>
     <string name="parse_api_id">VDJEJIMbyuOiis9bwBHmrOIc7XDUqYHQ0TMhA23c</string>
     <string name="parse_api_key">9EJKzvp4LhRdnLqfH6jkHPaWd58IVXaBKAWdeItE</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="sinch_prod_key">e4287600-6187-4659-90c8-da1bef616489</string>
+    <string name="sinch_prod_secret">GGOGQzBGX0qHMyl4UrIrEQ==</string>
+    <string name="sinch_prod_environment">clientapi.sinch.com</string>
+    <string name="sinch_dev_key">308f3e50-dfb0-4855-9935-08b75028c06e</string>
+    <string name="sinch_dev_secret">UQmDdJm8nkSBUFntG4GPYQ==</string>
+    <string name="sinch_dev_environment">sandbox.sinch.com</string>
+
     <string name="action_settings">Settings</string>
 
     <!-- Welcome -->
@@ -142,6 +148,12 @@
     <string name="titleHelpNavigation">Navegar en Zirkapp</string>
     <string name="msgHelpNewZimess">Crea nuevos Zimess usando el icono resaltado en la imagén, Un Zimess es público y pueden verlo los usuarios que estan cerca. Tambien puedes ver todos tus Zimess entrando en el menú "Mis Zimess".</string>
     <string name="msgHelpUpdateZimess">Cuando estes viendo Zimess o en el Chat, sobre la pantalla, desliza tu debo hacia abajo para actualizar. Toca una foto para ir a el perfil de usuario, o cualquier parte del Zimess para ver sus detalles, y demás.</string>
+    <string name="imgNameTransition">imgAvatar</string>
+    <string name="msgMoreRecents">Mas Recientes</string>
+    <string name="mgsMoreNear">Mas Cerca</string>
+    <string name="msgInternetOff">No estas conectado a Internet</string>
+    <string name="msgZimessNull">Problemas con el Zimess, intenta mas tarde!</string>
+    <string name="msgCommentError">Error al enviar tu comentario, reintentalo!</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

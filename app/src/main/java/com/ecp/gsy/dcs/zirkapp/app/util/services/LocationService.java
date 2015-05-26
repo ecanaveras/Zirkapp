@@ -1,24 +1,21 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.services;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.util.Log;
 
-import com.alertdialogpro.AlertDialogPro;
-import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 
 
 /**
@@ -30,13 +27,11 @@ public class LocationService extends Service {
     boolean isLocationEnabled = false;
     private boolean isAutomatic = false;
 
-    //private Context mContext;
-
     private MyLocationListener listener;
     private Location currentBestLocation;
     private String TAG = MyLocationListener.class.getName();
     private Intent intent;
-
+    private GlobalApplication globalApplication;
 
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; // 500 metros
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 5; // 15 minutoS
@@ -49,6 +44,7 @@ public class LocationService extends Service {
     public void onCreate() {
         instance = this;
         this.intent = new Intent("broadcast.gps.location_change");
+        globalApplication = (GlobalApplication) this.getApplicationContext();
     }
 
     @Override
@@ -61,11 +57,8 @@ public class LocationService extends Service {
         @Override
         public void run() {
             if (intent == null) intent = new Intent("broadcast.gps.location_change");
-            if (isOnline()) {
-                getCurrentLocation();
-            } else {
-                networkShowSettingsAlert();
-            }
+            getCurrentLocation();
+
         }
     };
 
@@ -84,38 +77,42 @@ public class LocationService extends Service {
      * @return
      */
     public Location getCurrentLocation(boolean isManual) {
-        if (isLocationEnabled) {
-            isLocationEnabled = false;
-            stopUsingGPS();
-        }
-        if (!isLocationEnabled) {
-            isLocationEnabled = true;
-            isAutomatic = !isManual;
-            try {
-                locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                boolean isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-                boolean isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-                //Network
-                if (isEnabledNetwork) {
-                    Log.d("provider.location", "network");
-                    return getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                }
-                //Gps
-                if (isEnabledGPS) {
-                    Log.d("provider.location", "gps");
-                    return getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                }
-
-                //Desabilitado la RED y GPS
-                Log.d("provider.location", "disabled");
-                gpsShowSettingsAlert();
-
-            } catch (Exception e) {
-                Log.e("Error : Location", "Impossible to connect to LocationManager", e);
+        if (globalApplication.isConectedToInternet()) {
+            if (isLocationEnabled) {
+                isLocationEnabled = false;
+                stopUsingGPS();
             }
-        }
+            if (!isLocationEnabled) {
+                isLocationEnabled = true;
+                isAutomatic = !isManual;
+                try {
+                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    boolean isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                    boolean isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                    //Network
+                    if (isEnabledNetwork) {
+                        Log.d("provider.location", "network");
+                        return getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    }
+                    //Gps
+                    if (isEnabledGPS) {
+                        Log.d("provider.location", "gps");
+                        return getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    }
 
-        handler.postDelayed(getLocation, MIN_TIME_BW_UPDATES);
+                    //Desabilitado la RED y GPS
+                    Log.d("provider.location", "disabled");
+                    globalApplication.gpsShowSettingsAlert();
+
+                } catch (Exception e) {
+                    Log.e("Error : Location", "Impossible to connect to LocationManager", e);
+                }
+            }
+
+            handler.postDelayed(getLocation, MIN_TIME_BW_UPDATES);
+        } else {
+            globalApplication.networkShowSettingsAlert();
+        }
         return null;
     }
 
@@ -189,17 +186,6 @@ public class LocationService extends Service {
             return provider2 == null;
         }
         return provider1.equals(provider2);
-    }
-
-    /**
-     * Indica si estamos conectados a Internet
-     *
-     * @return
-     */
-    public boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     @Override
@@ -281,58 +267,4 @@ public class LocationService extends Service {
             return LocationService.this;
         }
     }
-
-    //ALERTAS
-
-    /**
-     * Muestra una alerta en caso que esten desabilitados los accesorios de ubicacion
-     */
-    public void gpsShowSettingsAlert() {
-        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(this.getApplicationContext());
-
-        alert.setTitle(R.string.lblSettingGPS);
-        alert.setMessage(R.string.msgGPSdisabled);
-        alert.setPositiveButton(R.string.lblOk, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
-            }
-        });
-
-        alert.setNegativeButton(R.string.lblCancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();
-            }
-        });
-        alert.show();
-    }
-
-    /**
-     * Muestra una alerta en caso que esten desabilitados los datos (wifi, movil)
-     */
-    public void networkShowSettingsAlert() {
-        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(this.getApplicationContext());
-
-        alert.setTitle(R.string.lblSettingNetwork);
-        alert.setMessage(R.string.msgNetworkDisabled);
-        alert.setPositiveButton(R.string.lblOk, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Intent intent = new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK);
-                startActivity(intent);
-            }
-        });
-
-        alert.setNegativeButton(R.string.lblCancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();
-            }
-        });
-        alert.show();
-    }
-
-
 }

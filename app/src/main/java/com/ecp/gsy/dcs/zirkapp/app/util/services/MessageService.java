@@ -1,12 +1,14 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.services;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.parse.ParseUser;
 import com.sinch.android.rtc.ClientRegistration;
 import com.sinch.android.rtc.Sinch;
@@ -19,9 +21,6 @@ import com.sinch.android.rtc.messaging.WritableMessage;
 
 public class MessageService extends Service implements SinchClientListener {
 
-    private static final String APP_KEY = "308f3e50-dfb0-4855-9935-08b75028c06e";
-    private static final String APP_SECRET = "UQmDdJm8nkSBUFntG4GPYQ==";
-    private static final String ENVIRONMENT = "sandbox.sinch.com";
     private final MessageServiceInterface serviceInterface = new MessageServiceInterface();
     private SinchClient sinchClient = null;
     private MessageClient messageClient = null;
@@ -46,12 +45,13 @@ public class MessageService extends Service implements SinchClientListener {
     }
 
     private void startSinchClient(String username) {
+        Context context = getApplicationContext();
         sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
                 .userId(username)
-                .applicationKey(APP_KEY)
-                .applicationSecret(APP_SECRET)
-                .environmentHost(ENVIRONMENT)
+                .applicationKey(context.getResources().getString(R.string.sinch_prod_key))
+                .applicationSecret(context.getResources().getString(R.string.sinch_prod_secret))
+                .environmentHost(context.getResources().getString(R.string.sinch_prod_environment))
                 .build();
 
         sinchClient.addSinchClientListener(this);

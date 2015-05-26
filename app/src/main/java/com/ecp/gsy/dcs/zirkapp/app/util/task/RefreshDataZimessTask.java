@@ -1,7 +1,5 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.task;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,6 +9,8 @@ import android.widget.LinearLayout;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.MyZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessReciclerAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
@@ -30,58 +30,69 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
     public static final int CERCA = 1;
     public static final int LEJOS = 2;
 
-    private RecyclerView recyclerView;
     private Context context;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private LinearLayout layoudZimessNoFound;
-    private LinearLayout layoudZimessFinder;
+
     private Location currentLocation;
     private boolean findUniqueZimess = false;
     private Zimess zimessDetail;
     private DetailZimessActivity detailZimessActivity;
-    private boolean findForUser;
+    private boolean findForUser = false;
     private ParseUser parseUser;
     private int sortZimess;
 
+    private RecyclerView recyclerView;
+    private ZimessReciclerAdapter zReciclerAdapter;
+
+    //layout
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private LinearLayout layoutZimessNoFound;
+    private LinearLayout layoutZimessFinder;
+
     /**
-     * Busca los Zimess cerca
+     * Busca los Zimes Cerca
      *
-     * @param fragment
+     * @param context
      * @param currentLocation
-     * @param recyclerView
-     * @param layoudZimessNoFound
-     * @param layoudZimessFinder
-     * @param swipeRefreshLayout
+     * @param adapter
      */
-    public RefreshDataZimessTask(Fragment fragment, Location currentLocation, RecyclerView recyclerView, LinearLayout layoudZimessNoFound, LinearLayout layoudZimessFinder, SwipeRefreshLayout swipeRefreshLayout) {
+    public RefreshDataZimessTask(Context context, Location currentLocation, RecyclerView recyclerView, ZimessReciclerAdapter adapter) {
+        this.context = context;
         this.currentLocation = currentLocation;
-        this.context = fragment.getActivity();
-        this.layoudZimessNoFound = layoudZimessNoFound;
-        this.swipeRefreshLayout = swipeRefreshLayout;
+        this.zReciclerAdapter = adapter;
         this.recyclerView = recyclerView;
-        this.layoudZimessFinder = layoudZimessFinder;
     }
 
     /**
-     * Busca los Zimess cerca
+     * Busca los Zimes Cerca y ordena
      *
-     * @param fragment
+     * @param context
      * @param currentLocation
-     * @param recyclerView
-     * @param layoudZimessNoFound
-     * @param layoudZimessFinder
-     * @param swipeRefreshLayout
+     * @param adapter
      */
-    public RefreshDataZimessTask(Fragment fragment, Location currentLocation, RecyclerView recyclerView, LinearLayout layoudZimessNoFound, LinearLayout layoudZimessFinder, SwipeRefreshLayout swipeRefreshLayout, int sort) {
+    public RefreshDataZimessTask(Context context, Location currentLocation, RecyclerView recyclerView, ZimessReciclerAdapter adapter, int sortZimess) {
+        this.context = context;
         this.currentLocation = currentLocation;
-        this.context = fragment.getActivity();
-        this.layoudZimessNoFound = layoudZimessNoFound;
-        this.swipeRefreshLayout = swipeRefreshLayout;
+        this.zReciclerAdapter = adapter;
         this.recyclerView = recyclerView;
-        this.layoudZimessFinder = layoudZimessFinder;
-        this.sortZimess = sort;
+        this.sortZimess = sortZimess;
     }
 
+    /**
+     * Busca los Zimess de un Usuario.
+     *
+     * @param context
+     * @param currentLocation
+     * @param adapter
+     * @param parseUser
+     */
+    public RefreshDataZimessTask(Context context, ParseUser parseUser, Location currentLocation, RecyclerView recyclerView, ZimessReciclerAdapter adapter) {
+        this.context = context;
+        this.currentLocation = currentLocation;
+        this.zReciclerAdapter = adapter;
+        this.recyclerView = recyclerView;
+        this.parseUser = parseUser;
+        findForUser = this.parseUser != null;
+    }
 
     /**
      * Busca un unico Zimess (Detail)
@@ -95,53 +106,31 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
         this.findUniqueZimess = this.zimessDetail != null;
     }
 
-
-    /**
-     * Busca los Zimess de un usuario
-     *
-     * @param activity
-     * @param parseUser
-     * @param currentLocation
-     * @param recyclerView
-     * @param layoudZimessNoFound
-     * @param layoudZimessFinder
-     */
-    public RefreshDataZimessTask(Activity activity, ParseUser parseUser, Location currentLocation, RecyclerView recyclerView, LinearLayout layoudZimessNoFound, LinearLayout layoudZimessFinder) {
-        this.currentLocation = currentLocation;
-        this.context = activity;
-        this.layoudZimessNoFound = layoudZimessNoFound;
-        this.recyclerView = recyclerView;
-        this.layoudZimessFinder = layoudZimessFinder;
-        this.parseUser = parseUser;
-        findForUser = this.parseUser != null;
-    }
-
-
     @Override
     protected void onPreExecute() {
-        if (layoudZimessFinder != null)
-            layoudZimessFinder.setVisibility(View.VISIBLE);
-        if (layoudZimessNoFound != null)
-            layoudZimessNoFound.setVisibility(View.GONE);
+        if (layoutZimessFinder != null)
+            layoutZimessFinder.setVisibility(View.VISIBLE);
+        if (layoutZimessNoFound != null)
+            layoutZimessNoFound.setVisibility(View.GONE);
 
     }
 
     @Override
     protected List<Zimess> doInBackground(Integer... integers) {
-        List<Zimess> zimessList = new ArrayList<Zimess>();
+        List<Zimess> zimessResult = new ArrayList<Zimess>();
         //Buscar por ubicacion
         if (currentLocation != null && !findForUser && !findUniqueZimess) {
             for (ParseObject parseZimess : DataParseHelper.findZimessLocation(currentLocation, integers[0], integers[1], sortZimess)) {
-                zimessList.add(getZimess(parseZimess));
+                zimessResult.add(getZimess(parseZimess));
             }
             //Cant de Zimess en el Drawer
-            GlobalApplication.setCantZimess(zimessList.size());
+            GlobalApplication.setCantZimess(zimessResult.size());
         }
 
         //Buscar por Usuario
         if (findForUser) {
             for (ParseObject parseZimess : DataParseHelper.findZimess(parseUser)) {
-                zimessList.add(getZimess(parseZimess));
+                zimessResult.add(getZimess(parseZimess));
             }
         }
 
@@ -149,22 +138,26 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
         if (findUniqueZimess) {
             ParseObject parseZimess = DataParseHelper.findZimess(zimessDetail.getZimessId());
             if (parseZimess != null)
-                zimessList.add(getZimess(parseZimess));
+                zimessResult.add(getZimess(parseZimess));
         }
 
-        return zimessList;
+        return zimessResult;
     }
-
 
     @Override
     protected void onPostExecute(List<Zimess> zimessList) {
         if (!findUniqueZimess) {
-            ZimessReciclerAdapter zimessReciclerAdapter = new ZimessReciclerAdapter(zimessList, context, currentLocation);
-            if (recyclerView != null) {
-                recyclerView.setAdapter(zimessReciclerAdapter);
-                //recyclerView.setHasFixedSize(true);
+            if (ZimessFragment.isRunning() && !findForUser) {
+                ZimessFragment zimessFragment = ZimessFragment.getInstance();
+                zimessFragment.zimessList = (ArrayList<Zimess>) zimessList;
             }
-            zimessReciclerAdapter.notifyDataSetChanged();
+            if (findForUser) {
+                MyZimessActivity activity = (MyZimessActivity) context;
+                activity.zimessList = (ArrayList<Zimess>) zimessList;
+            }
+            zReciclerAdapter = new ZimessReciclerAdapter(zimessList, currentLocation);
+            recyclerView.setAdapter(zReciclerAdapter);
+            zReciclerAdapter.notifyDataSetChanged();
         } else {
             if (zimessList.size() > 0)
                 zimessDetail = zimessList.get(0);
@@ -174,20 +167,19 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
             }
         }
 
-        if (layoudZimessFinder != null) {
-            layoudZimessFinder.setVisibility(View.GONE);
+        if (layoutZimessFinder != null) {
+            layoutZimessFinder.setVisibility(View.GONE);
         }
 
         boolean zimessFound = zimessList.size() > 0;
 
-        if (layoudZimessNoFound != null) {
+        if (layoutZimessNoFound != null) {
             if (zimessFound) {//Si hay Zimess
-                layoudZimessNoFound.setVisibility(View.GONE);
+                layoutZimessNoFound.setVisibility(View.GONE);
             } else {// No hay Zimess
-                layoudZimessNoFound.setVisibility(View.VISIBLE);
+                layoutZimessNoFound.setVisibility(View.VISIBLE);
             }
         }
-
 
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);
@@ -211,5 +203,17 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
             return zimessNew;
         }
         return null;
+    }
+
+    public void setSwipeRefreshLayout(SwipeRefreshLayout swipeRefreshLayout) {
+        this.swipeRefreshLayout = swipeRefreshLayout;
+    }
+
+    public void setLayoutZimessNoFound(LinearLayout layoutZimessNoFound) {
+        this.layoutZimessNoFound = layoutZimessNoFound;
+    }
+
+    public void setLayoutZimessFinder(LinearLayout layoutZimessFinder) {
+        this.layoutZimessFinder = layoutZimessFinder;
     }
 }

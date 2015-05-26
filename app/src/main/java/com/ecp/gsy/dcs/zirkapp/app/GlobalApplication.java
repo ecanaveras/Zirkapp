@@ -3,6 +3,8 @@ package com.ecp.gsy.dcs.zirkapp.app;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -11,10 +13,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.provider.Settings;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
 
+import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
@@ -42,9 +46,10 @@ public class GlobalApplication extends Application {
 
     //Key GCM
     public final String SENDER_ID = "323224512527"; //Key GCM
-    public static final String EXTRA_MESSAGE = "message";
     public static final String PROPERTY_REG_ID = "registration_id";
     public static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
+    private Context context;
 
     //Controla si el chat esta habilidado
     private static boolean chatEnabled = true;
@@ -84,28 +89,6 @@ public class GlobalApplication extends Application {
     }
 
 
-    //GCM
-
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-    public boolean checkPlayServices(Activity activity) {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, activity,
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            } else {
-                Log.i("Error.GooglePlaySer", "This device is not supported.");
-            }
-            return false;
-        }
-        return true;
-    }
-
-
     /**
      * Stores the registration ID and app versionCode in the application's
      * {@code SharedPreferences}.
@@ -121,34 +104,6 @@ public class GlobalApplication extends Application {
         editor.putString(PROPERTY_REG_ID, regId);
         editor.putInt(getAppVersionName(context), appVersion);
         editor.commit();
-    }
-
-    /**
-     * Gets the current registration ID for application on GCM service.
-     * <p/>
-     * If result is empty, the app needs to register.
-     *
-     * @return registration ID, or empty string if there is no existing
-     * registration ID.
-     */
-    public String getRegistrationId(Context context) {
-        SharedPreferences preferences = getGCMPreferences();
-        String registrationId = preferences.getString(PROPERTY_REG_ID, "");
-        if (registrationId.isEmpty()) {
-            Log.i("GCM", "Registration not found.");
-            return "";
-        }
-
-        // Check if app was updated; if so, it must clear the registration ID
-        // since the existing registration ID is not guaranteed to work with
-        // the new app version.
-        int registeredVersion = preferences.getInt(getAppVersionName(context), Integer.MIN_VALUE);
-        int currentVersion = getAppVersionCode(context);
-        if (registeredVersion != currentVersion) {
-            Log.i("GCM", "App version changed.");
-            return "";
-        }
-        return registrationId;
     }
 
     /**
@@ -184,15 +139,6 @@ public class GlobalApplication extends Application {
      */
     private SharedPreferences getGCMPreferences() {
         return getSharedPreferences(MainActivity.class.getSimpleName(), Context.MODE_PRIVATE);
-    }
-
-
-    public void storeParseInstallation(final String androidId) {
-        final ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
-        //final String androidId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        parseInstallation.put("GCMSenderId", SENDER_ID);
-        parseInstallation.put("user", ParseUser.getCurrentUser());
-        parseInstallation.saveInBackground();
     }
 
     public void storeParseInstallation() {
@@ -388,7 +334,7 @@ public class GlobalApplication extends Application {
      * @param createAt
      * @return
      */
-    public String getTimepass(Date createAt) {
+    public static String getTimepass(Date createAt) {
         long MILLSECS_PER_MINUTES = 60 * 1000; //Minutos
         long MILLSECS_PER_HOUR = 60 * 60 * 1000; //Horas
         long MILLSECS_PER_DAY = 24 * 60 * 60 * 1000; //Milisegundos al dia
@@ -413,13 +359,72 @@ public class GlobalApplication extends Application {
 
 
     //Verificar si hay conexion a Internet
-    public boolean isConected() {
+    public boolean isConectedToInternet() {
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             return true;
         }
         return false;
+    }
+
+
+    //ALERTAS
+
+    /**
+     * Muestra una alerta en caso que esten desabilitados los accesorios de ubicacion
+     */
+    public void gpsShowSettingsAlert() {
+        if (context == null) {
+            return;
+        }
+        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(context);
+
+        alert.setTitle(getResources().getString(R.string.lblSettingGPS));
+        alert.setMessage(getResources().getString(R.string.msgGPSdisabled));
+        alert.setPositiveButton(getResources().getString(R.string.lblOk), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                context.startActivity(intent);
+            }
+        });
+
+        alert.setNegativeButton(getResources().getString(R.string.lblCancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        alert.show();
+    }
+
+    /**
+     * Muestra una alerta en caso que esten desabilitados los datos (wifi, movil)
+     */
+    public void networkShowSettingsAlert() {
+        if (context == null) {
+            return;
+        }
+        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(context);
+
+        alert.setTitle(getResources().getString(R.string.lblSettingNetwork));
+        alert.setMessage(getResources().getString(R.string.msgNetworkDisabled));
+        alert.setPositiveButton(getResources().getString(R.string.lblOk), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                context.startActivity(intent);
+            }
+        });
+
+        alert.setNegativeButton(getResources().getString(R.string.lblCancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        alert.show();
     }
 
     public boolean isListeningNotifi() {
@@ -436,5 +441,13 @@ public class GlobalApplication extends Application {
 
     public static void setChatEnabled(boolean chatEnabled) {
         GlobalApplication.chatEnabled = chatEnabled;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 }

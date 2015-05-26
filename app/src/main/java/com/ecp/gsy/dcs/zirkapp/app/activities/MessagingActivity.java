@@ -321,10 +321,10 @@ public class MessagingActivity extends ActionBarActivity {
         public void onShouldSendPushData(MessageClient messageClient, final Message message, final List<PushPair> pushPairs) {
 
             //Enviar notificacion.
-            if (receptorId != null && pushPairs.size() > 0 && message != null) {
-                String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
-                new SendPushTask(currentUser.getObjectId(), receptorId, currentUser.getObjectId(), name, message.getTextBody(), pushPairs, SendPushTask.PUSH_CHAT).execute();
-            }
+//            if (receptorId != null && pushPairs.size() > 0 && message != null) {
+//                String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+//                new SendPushTask(currentUser.getObjectId(), receptorId, currentUser.getObjectId(), name, message.getTextBody(), pushPairs, SendPushTask.PUSH_CHAT).execute();
+//            }
 
         }
     }

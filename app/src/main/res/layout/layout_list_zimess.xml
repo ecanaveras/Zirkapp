@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/layoudZimessNoFound"
+        android:id="@+id/layoutZimessNoFound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -41,12 +41,12 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layoudZimessFinder"
+        android:id="@+id/layoutZimessFinder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ProgressBar
             android:layout_width="wrap_content"
@@ -57,6 +57,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/lblSearching" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutInternetOff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_icon_cloud_off"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/msgInternetOff" />
 
     </LinearLayout>
 

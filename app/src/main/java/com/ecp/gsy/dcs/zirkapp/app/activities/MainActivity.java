@@ -101,11 +101,13 @@ public class MainActivity extends ActionBarActivity {
         //KeyHash
         //this.getKeyHash();
 
+        globalApplication = (GlobalApplication) getApplicationContext();
+        globalApplication.setContext(this);
+
         //Iniciar servicio de ubicacion
         Intent intentService = new Intent(this, LocationService.class);
         startService(intentService);
 
-        globalApplication = (GlobalApplication) getApplicationContext();
 
         //User Parse
         currentUser = ParseUser.getCurrentUser();

@@ -39,21 +39,17 @@
             </intent-filter>
         </activity>
 
-        <!--
-            <activity
-            android:name=".ManagerWelcome"
-            android:label="@string/title_activity_manager_welcome" />
-        -->
-
         <!-- android:launchMode="singleTop" -->
         <activity
             android:name=".activities.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.ManagerLogin"
             android:label="@string/lblLogin"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity android:name=".activities.MessagingActivity">
             <meta-data
@@ -146,6 +142,12 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="broadcast.gps.location_change" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".util.broadcast.NetworkChangeReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
         </receiver>
 

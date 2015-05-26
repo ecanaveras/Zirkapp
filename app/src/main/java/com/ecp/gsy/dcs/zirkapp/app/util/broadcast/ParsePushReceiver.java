@@ -90,7 +90,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
         //Notificacion
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent intent = new Intent(context, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.setFlags(0);//Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         String titleNoti = "%s de %s";
         String bodyNoti = "%s %s";
         String summary = null, senderName = null, typeNotiString = null;

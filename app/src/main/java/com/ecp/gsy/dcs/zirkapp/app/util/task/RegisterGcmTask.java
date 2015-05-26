@@ -39,8 +39,8 @@ public class RegisterGcmTask extends AsyncTask<Void, Void, String> {
 
             globalApplication.storeRegistrationId(context, regId);
             if (regId != null) {
-                globalApplication.storeParseInstallation(regId);
-            } else globalApplication.storeParseInstallation();
+                globalApplication.storeParseInstallation();
+            }
 
         } catch (IOException e) {
             msg = "Error :" + e.getMessage();
@@ -57,7 +57,7 @@ public class RegisterGcmTask extends AsyncTask<Void, Void, String> {
             if (GlobalApplication.isChatEnabled()) {
                 Intent serviceIntent = new Intent(context.getApplicationContext(), MessageService.class);
                 serviceIntent.putExtra("regId", _msg);
-                context.startService(serviceIntent);//TODO disable sinch
+                context.startService(serviceIntent);
             }
         }
     }

@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -142,10 +144,11 @@ public class DetailZimessActivity extends ActionBarActivity {
         imgAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                view.startAnimation(AnimationUtils.loadAnimation(view.getContext(), R.anim.anim_image_click));
+                String transitionName = getResources().getString(R.string.imgNameTransition);
+                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(DetailZimessActivity.this, view, transitionName);
                 Intent intent = new Intent(view.getContext(), UserProfileActivity.class);
                 globalApplication.setCustomParseUser(zimessDetail.getUser());
-                startActivity(intent);
+                ActivityCompat.startActivity(DetailZimessActivity.this, intent, optionsCompat.toBundle());
             }
         });
 
@@ -203,7 +206,7 @@ public class DetailZimessActivity extends ActionBarActivity {
      */
     private void sendZimessComment(final String commentText) {
         if (zimessDetail == null || currentUser == null) {
-            Toast.makeText(this, "Problemas con le Zimess, intenta mas tarde!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.msgZimessNull), Toast.LENGTH_SHORT).show();
             return;
         }
         final ParseObject zimessObject = ParseObject.createWithoutData("ParseZimess", zimessDetail.getZimessId());
@@ -228,9 +231,7 @@ public class DetailZimessActivity extends ActionBarActivity {
                     isZimessUpdated = true;
                     txtComment.setText(null);
                 } else {
-                    Toast.makeText(getApplicationContext(),
-                            "Error al enviar tu comentario, reintentalo!",
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DetailZimessActivity.this, getResources().getString(R.string.msgCommentError), Toast.LENGTH_SHORT).show();
                     Log.e("Parse.Zimess.Comment", e.getMessage());
                 }
                 btnSendComment.setEnabled(true);

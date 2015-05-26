@@ -17,6 +17,8 @@ import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.activities.ChatHistoryActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MessagingActivity;
@@ -38,7 +40,7 @@ public class UsersOnlineFragment extends Fragment {
 
     private ListView listViewUserOnline;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private LinearLayout layoudUsersNoFound, layoudUsersFinder, layoudChatOffline, layoutInitService;
+    private LinearLayout layoutUsersNoFound, layoutUsersFinder, layoutChatOffline, layoutInitService;
 
     private ParseUser currentUser;
 
@@ -49,6 +51,7 @@ public class UsersOnlineFragment extends Fragment {
     private SinchConnectReceiver sinchConnectReceiver;
 
     public boolean isConnectedUser;
+    private TextView lblInfoChat;
 
 
     @Override
@@ -56,16 +59,14 @@ public class UsersOnlineFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_users_online, container, false);
         setHasOptionsMenu(true);
 
+        globalApplication = (GlobalApplication) getActivity().getApplicationContext();
+
         currentUser = ParseUser.getCurrentUser();
 
         if (currentUser != null)
             isConnectedUser = currentUser.getBoolean("online");
 
         inicializarCompUI(view);
-
-        if (!isConnectedUser) {
-            layoudChatOffline.setVisibility(View.VISIBLE);
-        }
 
         instance = this;
 
@@ -82,10 +83,13 @@ public class UsersOnlineFragment extends Fragment {
 
     private void inicializarCompUI(View view) {
         //Layout
-        layoudUsersNoFound = (LinearLayout) view.findViewById(R.id.layoudUsersNoFound);
-        layoudUsersFinder = (LinearLayout) view.findViewById(R.id.layoudUsersFinder);
-        layoudChatOffline = (LinearLayout) view.findViewById(R.id.layoudChatOffline);
+        layoutUsersNoFound = (LinearLayout) view.findViewById(R.id.layoudUsersNoFound);
+        layoutUsersFinder = (LinearLayout) view.findViewById(R.id.layoudUsersFinder);
+        layoutChatOffline = (LinearLayout) view.findViewById(R.id.layoudChatOffline);
         layoutInitService = (LinearLayout) view.findViewById(R.id.layoutInitService);
+
+        lblInfoChat = (TextView) view.findViewById(R.id.lblInfoChat);
+
         //ListView
         listViewUserOnline = (ListView) view.findViewById(R.id.usersListView);
         listViewUserOnline.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -118,6 +122,15 @@ public class UsersOnlineFragment extends Fragment {
                 swipeRefreshLayout.setEnabled(firstVisibleItem == 0 && topRowVerticalPosition >= 0);
             }
         });
+
+        if (globalApplication.isConectedToInternet()) {
+            if (isConnectedUser)
+                layoutUsersFinder.setVisibility(View.VISIBLE);
+        } else {
+            layoutUsersFinder.setVisibility(View.GONE);
+            layoutChatOffline.setVisibility(View.VISIBLE);
+            lblInfoChat.setText(getResources().getString(R.string.msgInternetOff));
+        }
     }
 
     /**
@@ -125,10 +138,20 @@ public class UsersOnlineFragment extends Fragment {
      */
     public void findUsersOnline(Location currentLocation) {
         if (isConnectedUser && currentLocation != null) {
-            new RefreshDataUsersOnline(getActivity(), currentUser, currentLocation, listViewUserOnline, swipeRefreshLayout, layoudUsersNoFound, layoudUsersFinder).execute(5);
+            layoutChatOffline.setVisibility(View.GONE);
+            new RefreshDataUsersOnline(getActivity(), currentUser, currentLocation, listViewUserOnline, swipeRefreshLayout, layoutUsersNoFound, layoutUsersFinder).execute(5);
         } else {
-            //Toast.makeText(getActivity(), "No estas conectado...", Toast.LENGTH_SHORT).show();
-            swipeRefreshLayout.setEnabled(false);
+            layoutUsersNoFound.setVisibility(View.GONE);
+            layoutUsersFinder.setVisibility(View.GONE);
+            layoutChatOffline.setVisibility(View.VISIBLE);
+            if (globalApplication.isConectedToInternet()) {
+                if (!isConnectedUser) {
+                    lblInfoChat.setText("Chat Offline");
+                }
+            } else {
+                lblInfoChat.setText(getResources().getString(R.string.msgInternetOff));
+            }
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -136,11 +159,14 @@ public class UsersOnlineFragment extends Fragment {
      * Conecta el usuario al chat
      */
     public void conectarChat(Location currentLocation) {
-        if (currentUser != null) {
+        if (currentUser != null && currentLocation != null) {
             isConnectedUser = true;
-            findUsersOnline(currentLocation);
-            layoudChatOffline.setVisibility(View.GONE);
-            swipeRefreshLayout.setEnabled(true);
+            layoutChatOffline.setVisibility(View.GONE);
+            if (globalApplication.isConectedToInternet())
+                findUsersOnline(currentLocation);
+            else {
+                swipeRefreshLayout.setRefreshing(false);
+            }
         }
     }
 
@@ -148,15 +174,20 @@ public class UsersOnlineFragment extends Fragment {
      * Desconectado al usuario del chat
      */
     private void desconectarChat() {
-        if (currentUser != null) {
+        if (currentUser == null) {
+            return;
+        }
+        if (globalApplication.isConectedToInternet()) {
             ParseUser parseUser = currentUser;
             parseUser.put("online", false);
             parseUser.saveInBackground();
             isConnectedUser = false;
-            swipeRefreshLayout.setEnabled(false);
             listViewUserOnline.setAdapter(null);
-            layoudChatOffline.setVisibility(View.VISIBLE);
-            layoudUsersNoFound.setVisibility(View.GONE);
+            layoutChatOffline.setVisibility(View.VISIBLE);
+            lblInfoChat.setText("Chat Offline");
+            layoutUsersNoFound.setVisibility(View.GONE);
+        } else {
+            Toast.makeText(getActivity(), getResources().getString(R.string.msgInternetOff), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -182,8 +213,11 @@ public class UsersOnlineFragment extends Fragment {
         Location location = null;
         if (LocationService.isRunning()) {
             LocationService locationService = LocationService.getInstance();
-            android.location.Location tmpLocation = locationService.getCurrentLocation(true);
-            location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+            if (locationService != null && locationService.getCurrentLocation(true) != null) {
+                android.location.Location tmpLocation = locationService.getCurrentLocation(true);
+                if (tmpLocation != null)
+                    location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+            }
         }
         return location;
     }
@@ -269,14 +303,16 @@ public class UsersOnlineFragment extends Fragment {
         this.menu = menu;
         MenuItem item = menu.findItem(R.id.switchUsersOnline);
         item.setActionView(R.layout.component_switch);
-        SwitchCompat switchConected = (SwitchCompat) item.getActionView().findViewById(R.id.switch_on_off);
+        final SwitchCompat switchConected = (SwitchCompat) item.getActionView().findViewById(R.id.switch_on_off);
         switchConected.setChecked(isConnectedUser);
         switchConected.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    swipeRefreshLayout.setEnabled(true);
                     conectarChat(getCurrentLocation());
                 } else {
+                    swipeRefreshLayout.setEnabled(false);
                     desconectarChat();
                 }
             }

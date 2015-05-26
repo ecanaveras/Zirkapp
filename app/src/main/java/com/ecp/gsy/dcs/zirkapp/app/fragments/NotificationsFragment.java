@@ -125,11 +125,11 @@ public class NotificationsFragment extends Fragment {
     private void saveReadNotificacion(ItemNotification item) {
         ParseQuery query = new ParseQuery("ParseZNotifi");
         query.whereEqualTo("objectId", item.getNotiId());
-        query.findInBackground(new FindCallback() {
+        query.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(List list, ParseException e) {
-                if (list != null && list.size() > 0) {
-                    ParseObject notifi = (ParseObject) list.get(0);
+            public void done(List<ParseObject> list, ParseException e) {
+                if (e == null && list.size() > 0) {
+                    ParseObject notifi = list.get(0);
                     notifi.put("readNoti", true);
                     notifi.saveInBackground(new SaveCallback() {
                         @Override
@@ -140,11 +140,6 @@ public class NotificationsFragment extends Fragment {
                         }
                     });
                 }
-            }
-
-            @Override
-            public void done(Object o, Throwable throwable) {
-
             }
         });
     }
