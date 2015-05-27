@@ -236,13 +236,17 @@ public class LoginFragment extends Fragment {
                     public void onCompleted(JSONObject fbUser, GraphResponse response) {
                         userLogin = ParseUser.getCurrentUser();
                         if (fbUser != null && userLogin != null && fbUser.optString("name").length() > 0) {
-                            if (isNew)
-                                userLogin.setUsername(fbUser.optString("first_name"));
+                            //if (isNew)
+                            userLogin.setUsername(fbUser.optString("first_name"));
                             userLogin.put("name", fbUser.optString("name"));
                             userLogin.setEmail(fbUser.optString("email"));
                             userLogin.put("emailVerified", fbUser.optBoolean("verified"));
                             //Log.i("verified", String.valueOf(fbUser.optBoolean("verified")));
                             getAvatarFacebook(fbUser.optString("id"));
+                            //Guardar informacion del welcome
+                            saveInfoWelcome();
+                            //Guardar en db una session activa
+                            saveSessionActive(true);
                         }
                     }
                 }).executeAsync();
@@ -255,6 +259,10 @@ public class LoginFragment extends Fragment {
                 userLogin.setUsername(twitter.getScreenName());
             }
             getAvatarTwitter(twitter);
+            //Guardar informacion del welcome
+            saveInfoWelcome();
+            //Guardar en db una session activa
+            saveSessionActive(true);
         }
     }
 
@@ -324,10 +332,6 @@ public class LoginFragment extends Fragment {
                     userLogin.put("online", true);
                     userLogin.saveInBackground();
                 }
-                //Guardar informacion del welcome
-                saveInfoWelcome();
-                //Guardar en db una session activa
-                saveSessionActive(true);
 
                 if (progressDialog != null)
                     progressDialog.dismiss();
@@ -379,10 +383,6 @@ public class LoginFragment extends Fragment {
                     userLogin.put("online", true);
                     userLogin.saveInBackground();
                 }
-                //Guardar informacion del welcome
-                saveInfoWelcome();
-                //Guardar en db una session activa
-                saveSessionActive(true);
 
                 if (progressDialog != null)
                     progressDialog.dismiss();
@@ -445,7 +445,6 @@ public class LoginFragment extends Fragment {
             dao.create(ldb);
         }
     }
-
 
     public static String convertStreamToString(InputStream is) {
         Scanner s = new Scanner(is).useDelimiter("\\A");

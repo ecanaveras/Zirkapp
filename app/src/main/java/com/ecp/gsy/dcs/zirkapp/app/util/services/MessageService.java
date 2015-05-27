@@ -25,7 +25,7 @@ public class MessageService extends Service implements SinchClientListener {
     private SinchClient sinchClient = null;
     private MessageClient messageClient = null;
     private ParseUser currentUser = null;
-    private Intent broadcastIntent = new Intent("app.fragments.UsersOnlineFragment");
+    private Intent broadcastIntent = new Intent("app.fragments.UsersFragment");
 
     private String regId;
 

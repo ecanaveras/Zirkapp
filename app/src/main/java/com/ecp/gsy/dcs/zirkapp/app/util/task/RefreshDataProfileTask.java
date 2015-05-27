@@ -3,11 +3,13 @@ package com.ecp.gsy.dcs.zirkapp.app.util.task;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.parse.ParseUser;
 
 /**
@@ -21,6 +23,7 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser
     private String messageDialog;
     private TextView txtWall;
     private TextView txtNombres;
+    private RoundedBitmapDrawable imgDrawable;
 
     public RefreshDataProfileTask(ImageView avatar) {
         this.avatar = avatar;
@@ -50,12 +53,16 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser
 
     @Override
     protected ParseUser doInBackground(ParseUser... parseUsers) {
-        //Buscar perfil
+        //Obtener Imagen
+        imgDrawable = (GlobalApplication.getAvatar(parseUsers[0]));
         return parseUsers[0];
     }
 
     @Override
     protected void onPostExecute(ParseUser user) {
+        //Set Imagen
+        avatar.setImageDrawable(imgDrawable);
+
         if (user != null) {
             //Podemos obtener todos los datos del profile
             if (txtWall != null) {
@@ -65,9 +72,8 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser
                 txtNombres.setText(user.getString("name"));
                 txtNombres.setVisibility(View.VISIBLE);
             }
-
-            avatar.setImageDrawable(GlobalApplication.getAvatar(user));
         }
+
         if (context != null)
             progressDialog.dismiss();
 

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
@@ -27,10 +27,10 @@ public class LocationReceiver extends BroadcastReceiver {
         Location location = new Location(latitud, longitud);
         if (locationUpdate) {
             //actualizar lista de usuarios en el chat y posicion
-            if (UsersOnlineFragment.isRunning()) {
-                UsersOnlineFragment usersOnlineFragment = UsersOnlineFragment.getInstance();
-                if (usersOnlineFragment.isConnectedUser) {
-                    usersOnlineFragment.conectarChat(location);
+            if (UsersFragment.isRunning()) {
+                UsersFragment usersFragment = UsersFragment.getInstance();
+                if (usersFragment.isConnectedUser) {
+                    usersFragment.conectarChat(location);
                 }
                 Log.i("chat.location", "update");
             }

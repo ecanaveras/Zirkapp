@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -104,11 +105,6 @@ public class MainActivity extends ActionBarActivity {
         globalApplication = (GlobalApplication) getApplicationContext();
         globalApplication.setContext(this);
 
-        //Iniciar servicio de ubicacion
-        Intent intentService = new Intent(this, LocationService.class);
-        startService(intentService);
-
-
         //User Parse
         currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
@@ -155,6 +151,14 @@ public class MainActivity extends ActionBarActivity {
 
         if (currentUser != null)
             refreshDatosDrawer();
+
+        //Iniciar servicio de ubicacion
+        if (globalApplication.isConectedToInternet()) {
+            Intent intentService = new Intent(this, LocationService.class);
+            startService(intentService);
+        } else {
+            globalApplication.networkShowSettingsAlert();
+        }
 
         instance = this;
     }
@@ -204,7 +208,7 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-                if (slideOffset < 0.6)
+                if (slideOffset < 0.3)
                     toolbar.setAlpha(1 - slideOffset);
             }
         };
@@ -250,7 +254,7 @@ public class MainActivity extends ActionBarActivity {
         lblUsername.setText(currentUser.getUsername());
         lblUsermail.setText(currentUser.getEmail());
         lblNombreUsuario.setText(currentUser.getString("name"));
-        avatar.setImageDrawable(GlobalApplication.getAvatar(currentUser));
+        //avatar.setImageDrawable(GlobalApplication.getAvatar(currentUser));
         //Buscar en segundo plano
         new RefreshDataProfileTask(avatar, lblNombreUsuario).execute(currentUser); //TODO psoiblemente no necesario
     }

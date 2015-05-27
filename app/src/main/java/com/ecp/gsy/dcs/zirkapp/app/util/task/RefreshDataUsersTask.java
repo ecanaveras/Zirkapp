@@ -12,7 +12,6 @@ import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.UsersAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
-import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
@@ -22,12 +21,12 @@ import java.util.List;
 /**
  * Created by Elder on 18/03/2015.
  */
-public class RefreshDataUsersOnline extends AsyncTask<Integer, Void, List<ParseUser>> {
+public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUser>> {
     private boolean searching;
     private ArrayList<String> userList;
     private Location currentLocation;
     private ParseUser currentUser;
-    private LinearLayout layoudUsersNoFound, layoudUsersFinder;
+    private LinearLayout layoutUsersNoFound, layoutUsersFinder;
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView listUsersOnline;
@@ -35,17 +34,22 @@ public class RefreshDataUsersOnline extends AsyncTask<Integer, Void, List<ParseU
     private boolean isSearchHistory;
     private TextView lblChatNoFound;
 
-    public RefreshDataUsersOnline(Context context, ParseUser currentUser, Location currentLocation, ListView listUsersOnline, SwipeRefreshLayout swipeRefreshLayout, LinearLayout layoudUsersNoFound, LinearLayout layoudUsersFinder) {
+    /**
+     * Busca los usuarios que esten cerca y online
+     *
+     * @param context
+     * @param currentUser
+     * @param currentLocation
+     * @param listUsersOnline
+     */
+    public RefreshDataUsersTask(Context context, ParseUser currentUser, Location currentLocation, ListView listUsersOnline) {
         this.context = context;
         this.currentUser = currentUser;
         this.currentLocation = currentLocation;
-        this.layoudUsersNoFound = layoudUsersNoFound;
-        this.layoudUsersFinder = layoudUsersFinder;
         this.listUsersOnline = listUsersOnline;
-        this.swipeRefreshLayout = swipeRefreshLayout;
     }
 
-    public RefreshDataUsersOnline(Context context, ParseUser currentUser, ArrayList<String> userList, ListView listHistory, TextView lblChatNoFound, LinearLayout layoudUsersFinder, boolean searching) {
+    public RefreshDataUsersTask(Context context, ParseUser currentUser, ArrayList<String> userList, ListView listHistory, TextView lblChatNoFound, boolean searching) {
         this.context = context;
         this.currentUser = currentUser;
         this.isSearchHistory = true;
@@ -53,15 +57,14 @@ public class RefreshDataUsersOnline extends AsyncTask<Integer, Void, List<ParseU
         this.listUsersOnline = listHistory;
         this.lblChatNoFound = lblChatNoFound;
         this.searching = searching;
-        this.layoudUsersFinder = layoudUsersFinder;
     }
 
     @Override
     protected void onPreExecute() {
-        if (layoudUsersFinder != null)
-            layoudUsersFinder.setVisibility(View.VISIBLE);
-        if (layoudUsersNoFound != null)
-            layoudUsersNoFound.setVisibility(View.GONE);
+        if (layoutUsersFinder != null)
+            layoutUsersFinder.setVisibility(View.VISIBLE);
+        if (layoutUsersNoFound != null)
+            layoutUsersNoFound.setVisibility(View.GONE);
         searching = true;
 
     }
@@ -95,21 +98,38 @@ public class RefreshDataUsersOnline extends AsyncTask<Integer, Void, List<ParseU
 
         boolean usersFound = parseUsers.size() > 0;
 
-        if (layoudUsersFinder != null)
-            layoudUsersFinder.setVisibility(View.GONE);
+        if (layoutUsersFinder != null)
+            layoutUsersFinder.setVisibility(View.GONE);
 
-        if (!usersFound && lblChatNoFound != null) {
-            lblChatNoFound.setVisibility(View.VISIBLE);
-        } else if (lblChatNoFound != null) {
-            lblChatNoFound.setVisibility(View.GONE);
+        if (lblChatNoFound != null) {
+            if (!usersFound) {
+                lblChatNoFound.setVisibility(View.VISIBLE);
+            } else {
+                lblChatNoFound.setVisibility(View.GONE);
+            }
         }
 
-        if (usersFound && layoudUsersNoFound != null) //Si hay Usuarios
-            layoudUsersNoFound.setVisibility(View.GONE);
-        if (!usersFound && layoudUsersNoFound != null)// No hay Usuarios
-            layoudUsersNoFound.setVisibility(View.VISIBLE);
+        if (layoutUsersNoFound != null) {
+            if (usersFound) { //Si hay Usuarios
+                layoutUsersNoFound.setVisibility(View.GONE);
+            } else { // No hay Usuarios
+                layoutUsersNoFound.setVisibility(View.VISIBLE);
+            }
+        }
 
         searching = false;
 
+    }
+
+    public void setLayoutUsersNoFound(LinearLayout layoutUsersNoFound) {
+        this.layoutUsersNoFound = layoutUsersNoFound;
+    }
+
+    public void setLayoutUsersFinder(LinearLayout layoutUsersFinder) {
+        this.layoutUsersFinder = layoutUsersFinder;
+    }
+
+    public void setSwipeRefreshLayout(SwipeRefreshLayout swipeRefreshLayout) {
+        this.swipeRefreshLayout = swipeRefreshLayout;
     }
 }

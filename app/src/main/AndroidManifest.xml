@@ -144,10 +144,15 @@
                 <action android:name="broadcast.gps.location_change" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".util.broadcast.NetworkChangeReceiver" >
+        <receiver android:name=".util.broadcast.NetworkChangeReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".util.broadcast.GpsChangeReceiver">
+            <intent-filter>
+                <action android:name="android.location.PROVIDERS_CHANGED" />
             </intent-filter>
         </receiver>
 

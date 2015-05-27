@@ -8,7 +8,11 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.NotificationsFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
+import com.parse.ParseUser;
 
 /**
  * Created by Elder on 25/05/2015.
@@ -18,17 +22,43 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-//        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-//        NetworkInfo wifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-//        NetworkInfo mobile = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-//        if (wifi.isAvailable() || mobile.isAvailable()) {
-        Log.d("NetworkChangeReceiver", "started...");
+        //Log.d("NetworkChangeReceiver", "started...");
         GlobalApplication globalApplication = (GlobalApplication) context.getApplicationContext();
-        if (globalApplication.isConectedToInternet())
+        if (globalApplication.isConectedToInternet()) {
             if (LocationService.isRunning()) {
                 LocationService locationService = LocationService.getInstance();
                 locationService.getCurrentLocation(false);
+            } else {
+                //Iniciamos el servicio
+                Intent intentService = new Intent(context, LocationService.class);
+                context.startService(intentService);
             }
+            if (!globalApplication.isEnabledGetLocation()) {
+                changeLayoutFragments();
+            }
+
+            //Actualizar listado notificaciones
+            if (NotificationsFragment.isRunning()) {
+                NotificationsFragment fragment = NotificationsFragment.getInstance();
+                fragment.findNotifications(ParseUser.getCurrentUser());
+            }
+        } else {
+            changeLayoutFragments();
+        }
+    }
+
+    /**
+     * Actualiza Layout para indicar que el Internet o GPS esta apagado
+     */
+    private void changeLayoutFragments() {
+        if (ZimessFragment.isRunning()) {
+            ZimessFragment zimessFragment = ZimessFragment.getInstance();
+            zimessFragment.findZimessAround(null, 0);
+        }
+        if (UsersFragment.isRunning()) {
+            UsersFragment usersFragment = UsersFragment.getInstance();
+            usersFragment.findUsersOnline(null);
+        }
     }
 
 }

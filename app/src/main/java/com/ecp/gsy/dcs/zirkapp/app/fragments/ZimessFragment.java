@@ -54,7 +54,7 @@ public class ZimessFragment extends Fragment {
     public ArrayList<Zimess> zimessList = new ArrayList<Zimess>();
 
     private Menu menuList;
-    private LinearLayout layoutZimessNoFound, layoutInternetOff, layoutZimessFinder;
+    private LinearLayout layoutZimessNoFound, layoutInternetOff, layoutZimessFinder, layoutGpsOff;
     private GlobalApplication globalApplication;
 
     private AlertDialogPro sortDialog;
@@ -89,6 +89,7 @@ public class ZimessFragment extends Fragment {
         layoutZimessNoFound = (LinearLayout) view.findViewById(R.id.layoutZimessNoFound);
         layoutZimessFinder = (LinearLayout) view.findViewById(R.id.layoutZimessFinder);
         layoutInternetOff = (LinearLayout) view.findViewById(R.id.layoutInternetOff);
+        layoutGpsOff = (LinearLayout) view.findViewById(R.id.layoutGpsOff);
 
         lblRangoZimess = (TextView) view.findViewById(R.id.lblInfoRango);
 
@@ -100,19 +101,27 @@ public class ZimessFragment extends Fragment {
             @Override
             public void onItemClick(View view, int position) {
                 if (zimessList.size() > 0) {
-                    Zimess zimess = zimessList.get(position);
-                    if (view instanceof ImageView) {
-                        View avatar = view.findViewById(R.id.imgAvatarItem);
-                        String transitionName = getResources().getString(R.string.imgNameTransition);
-                        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), avatar, transitionName);
-                        Intent intent = new Intent(getActivity(), UserProfileActivity.class);
-                        globalApplication.setCustomParseUser(zimess.getUser());
-                        ActivityCompat.startActivity(getActivity(), intent, optionsCompat.toBundle());
-                    } else {
-                        globalApplication.setTempZimess(zimess);
-                        Intent intent = new Intent(getActivity(), DetailZimessActivity.class);
-                        startActivity(intent);
-                    }
+                    final Zimess zimess = zimessList.get(position);
+
+                    final View avatar = view.findViewById(R.id.imgAvatarItem);
+                    avatar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //ir la perfil de usuario
+                            String transitionName = getResources().getString(R.string.imgNameTransition);
+                            ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), avatar, transitionName);
+                            Intent intent = new Intent(getActivity(), UserProfileActivity.class);
+                            globalApplication.setCustomParseUser(zimess.getUser());
+                            ActivityCompat.startActivity(getActivity(), intent, optionsCompat.toBundle());
+                            return;
+                        }
+                    });
+
+                    //Ir al detalle del Zimess
+                    globalApplication.setTempZimess(zimess);
+                    Intent intent = new Intent(getActivity(), DetailZimessActivity.class);
+                    startActivity(intent);
+
                 } else {
                     Log.d("zimessList", "empty");
                 }
@@ -120,11 +129,7 @@ public class ZimessFragment extends Fragment {
         }));
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.zimess_refresh_layout);
-        swipeRefreshLayout.setColorScheme(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
+        swipeRefreshLayout.setColorScheme(R.color.primary_text_color, R.color.default_primary_color, R.color.primary_text_color, R.color.default_primary_color);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -142,9 +147,12 @@ public class ZimessFragment extends Fragment {
         });
 
         if (globalApplication.isConectedToInternet()) {
-            layoutZimessFinder.setVisibility(View.VISIBLE);
+            if (globalApplication.isEnabledGetLocation()) {
+                layoutZimessFinder.setVisibility(View.VISIBLE);
+            } else {
+                layoutGpsOff.setVisibility(View.VISIBLE);
+            }
         } else {
-            layoutZimessFinder.setVisibility(View.GONE);
             layoutInternetOff.setVisibility(View.VISIBLE);
         }
     }
@@ -155,6 +163,7 @@ public class ZimessFragment extends Fragment {
     public void findZimessAround(Location currentLocation, Integer sortZimess) {
         if (currentLocation != null && sortZimess != null) {
             layoutInternetOff.setVisibility(View.GONE);
+            layoutGpsOff.setVisibility(View.GONE);
             //Tomar valores de las preferencias de usuarios
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             int dist_min = Integer.parseInt(preferences.getString("min_dist_list", "-1"));
@@ -168,13 +177,19 @@ public class ZimessFragment extends Fragment {
 
             lblRangoZimess.setText("Rango actual de Zimess: " + getHomoMinDistance(dist_min) + " a " + getHomoMaxDistance(dist_max) + " metros");
         } else {
+            //1. Layouts Invisibles
+            layoutZimessFinder.setVisibility(View.GONE);
+            layoutInternetOff.setVisibility(View.GONE);
+            layoutZimessNoFound.setVisibility(View.GONE);
+            layoutGpsOff.setVisibility(View.GONE);
+            //2. Mostrar Layout correspondiente
             if (globalApplication.isConectedToInternet()) {
-                layoutZimessFinder.setVisibility(View.GONE);
-                layoutInternetOff.setVisibility(View.GONE);
-                layoutZimessNoFound.setVisibility(View.VISIBLE);
+                if (globalApplication.isEnabledGetLocation()) {
+                    layoutZimessNoFound.setVisibility(View.VISIBLE);
+                } else {
+                    layoutGpsOff.setVisibility(View.VISIBLE);
+                }
             } else {
-                layoutZimessFinder.setVisibility(View.GONE);
-                layoutZimessNoFound.setVisibility(View.GONE);
                 layoutInternetOff.setVisibility(View.VISIBLE);
             }
             swipeRefreshLayout.setRefreshing(false);
@@ -223,6 +238,8 @@ public class ZimessFragment extends Fragment {
                 if (tmpLocation != null)
                     location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
             }
+        } else if (!globalApplication.isConectedToInternet()) {
+            globalApplication.networkShowSettingsAlert();
         }
         return location;
     }

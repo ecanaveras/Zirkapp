@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -28,7 +26,7 @@ public class ChatFragment extends Fragment {
         final ArrayList<Fragment> fragmentArrayList = new ArrayList<>();
         final String[] titles = {"Usuarios", "Historial"};
 
-        fragmentArrayList.add(new UsersOnlineFragment());
+        fragmentArrayList.add(new UsersFragment());
         fragmentArrayList.add(new ChatHistoryFragment());
 
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager);

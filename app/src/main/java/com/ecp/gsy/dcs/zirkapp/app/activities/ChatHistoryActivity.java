@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersOnline;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersTask;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -96,7 +96,7 @@ public class ChatHistoryActivity extends ActionBarActivity {
                         sendersId.add(parseObj.getString("senderId"));
                     }
                     Set<String> uniqueSenders = new HashSet<String>(sendersId);
-                    new RefreshDataUsersOnline(activity, currentUser, new ArrayList<String>(uniqueSenders), listViewHistory, lblChatNoFound, layoudHistoryFinder, searching).execute();
+                    new RefreshDataUsersTask(activity, currentUser, new ArrayList<String>(uniqueSenders), listViewHistory, lblChatNoFound, searching).execute();
                 } else {
                     Log.e("Parse.chat.history", e.getMessage());
                 }

@@ -2,6 +2,7 @@ package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -357,8 +358,11 @@ public class GlobalApplication extends Application {
         return result;
     }
 
-
-    //Verificar si hay conexion a Internet
+    /**
+     * Indica si hay conexion a Internet
+     *
+     * @return
+     */
     public boolean isConectedToInternet() {
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -368,6 +372,20 @@ public class GlobalApplication extends Application {
         return false;
     }
 
+    /**
+     * Indica si es posible se puede solicitar la ubicación
+     *
+     * @return
+     */
+    public boolean isEnabledGetLocation() {
+        ContentResolver contentResolver = getContentResolver();
+        //Buscar que modo esta habilitado
+        int mode = Settings.Secure.getInt(contentResolver, Settings.Secure.LOCATION_MODE, Settings.Secure.LOCATION_MODE_OFF);
+        if (mode != Settings.Secure.LOCATION_MODE_OFF) {
+            return true;
+        }
+        return false;
+    }
 
     //ALERTAS
 

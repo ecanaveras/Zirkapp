@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/f_usuariosOnline"
-            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment"
+            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment"
             tools:layout="@layout/fragment_users_online" />
 
         <fragment

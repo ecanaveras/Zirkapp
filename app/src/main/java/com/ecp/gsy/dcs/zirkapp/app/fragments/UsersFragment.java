@@ -28,19 +28,19 @@ import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.SinchConnectReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersOnline;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersTask;
 import com.parse.ParseUser;
 
 /**
  * Created by elcapi05 on 13/08/2014.
  */
-public class UsersOnlineFragment extends Fragment {
+public class UsersFragment extends Fragment {
 
-    private static UsersOnlineFragment instance = null;
+    private static UsersFragment instance = null;
 
     private ListView listViewUserOnline;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private LinearLayout layoutUsersNoFound, layoutUsersFinder, layoutChatOffline, layoutInitService;
+    private LinearLayout layoutUsersNoFound, layoutUsersFinder, layoutChatOffline, layoutInitService, layoutGpsOff;
 
     private ParseUser currentUser;
 
@@ -77,15 +77,16 @@ public class UsersOnlineFragment extends Fragment {
         return instance != null;
     }
 
-    public static UsersOnlineFragment getInstance() {
+    public static UsersFragment getInstance() {
         return instance;
     }
 
     private void inicializarCompUI(View view) {
         //Layout
-        layoutUsersNoFound = (LinearLayout) view.findViewById(R.id.layoudUsersNoFound);
-        layoutUsersFinder = (LinearLayout) view.findViewById(R.id.layoudUsersFinder);
-        layoutChatOffline = (LinearLayout) view.findViewById(R.id.layoudChatOffline);
+        layoutUsersNoFound = (LinearLayout) view.findViewById(R.id.layoutUsersNoFound);
+        layoutUsersFinder = (LinearLayout) view.findViewById(R.id.layoutUsersFinder);
+        layoutChatOffline = (LinearLayout) view.findViewById(R.id.layoutChatOffline);
+        layoutGpsOff = (LinearLayout) view.findViewById(R.id.layoutGpsOff);
         layoutInitService = (LinearLayout) view.findViewById(R.id.layoutInitService);
 
         lblInfoChat = (TextView) view.findViewById(R.id.lblInfoChat);
@@ -102,6 +103,8 @@ public class UsersOnlineFragment extends Fragment {
 
         //Swipe
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.user_refresh_layout);
+        swipeRefreshLayout.setColorScheme(R.color.primary_text_color, R.color.default_primary_color, R.color.primary_text_color, R.color.default_primary_color);
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -124,10 +127,13 @@ public class UsersOnlineFragment extends Fragment {
         });
 
         if (globalApplication.isConectedToInternet()) {
-            if (isConnectedUser)
-                layoutUsersFinder.setVisibility(View.VISIBLE);
+            if (globalApplication.isEnabledGetLocation()) {
+                if (isConnectedUser)
+                    layoutUsersFinder.setVisibility(View.VISIBLE);
+            } else {
+                layoutGpsOff.setVisibility(View.VISIBLE);
+            }
         } else {
-            layoutUsersFinder.setVisibility(View.GONE);
             layoutChatOffline.setVisibility(View.VISIBLE);
             lblInfoChat.setText(getResources().getString(R.string.msgInternetOff));
         }
@@ -139,16 +145,30 @@ public class UsersOnlineFragment extends Fragment {
     public void findUsersOnline(Location currentLocation) {
         if (isConnectedUser && currentLocation != null) {
             layoutChatOffline.setVisibility(View.GONE);
-            new RefreshDataUsersOnline(getActivity(), currentUser, currentLocation, listViewUserOnline, swipeRefreshLayout, layoutUsersNoFound, layoutUsersFinder).execute(5);
+            layoutGpsOff.setVisibility(View.GONE);
+            RefreshDataUsersTask refresDataTask = new RefreshDataUsersTask(getActivity(), currentUser, currentLocation, listViewUserOnline);
+            refresDataTask.setSwipeRefreshLayout(swipeRefreshLayout);
+            refresDataTask.setLayoutUsersFinder(layoutUsersFinder);
+            refresDataTask.setLayoutUsersNoFound(layoutUsersNoFound);
+            refresDataTask.execute(5);
         } else {
+            //1. Layouts Invisibles
             layoutUsersNoFound.setVisibility(View.GONE);
             layoutUsersFinder.setVisibility(View.GONE);
-            layoutChatOffline.setVisibility(View.VISIBLE);
+            layoutGpsOff.setVisibility(View.GONE);
+            layoutChatOffline.setVisibility(View.GONE);
+            //2. Mostrar Layout correspondiente
             if (globalApplication.isConectedToInternet()) {
-                if (!isConnectedUser) {
-                    lblInfoChat.setText("Chat Offline");
+                if (globalApplication.isEnabledGetLocation()) {
+                    if (!isConnectedUser) {
+                        layoutChatOffline.setVisibility(View.VISIBLE);
+                        lblInfoChat.setText("Chat Offline");
+                    }
+                } else {
+                    layoutGpsOff.setVisibility(View.VISIBLE);
                 }
             } else {
+                layoutChatOffline.setVisibility(View.VISIBLE);
                 lblInfoChat.setText(getResources().getString(R.string.msgInternetOff));
             }
             swipeRefreshLayout.setRefreshing(false);
@@ -159,14 +179,12 @@ public class UsersOnlineFragment extends Fragment {
      * Conecta el usuario al chat
      */
     public void conectarChat(Location currentLocation) {
-        if (currentUser != null && currentLocation != null) {
+        if (currentUser != null) {
             isConnectedUser = true;
             layoutChatOffline.setVisibility(View.GONE);
-            if (globalApplication.isConectedToInternet())
-                findUsersOnline(currentLocation);
-            else {
-                swipeRefreshLayout.setRefreshing(false);
-            }
+            findUsersOnline(currentLocation);
+        } else {
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -286,7 +304,7 @@ public class UsersOnlineFragment extends Fragment {
 
         //Registrar los Broadcast
         getActivity().registerReceiver(countMessagesReceiver, new IntentFilter("broadcast.cant_messages"));
-        getActivity().registerReceiver(sinchConnectReceiver, new IntentFilter("app.fragments.UsersOnlineFragment"));
+        getActivity().registerReceiver(sinchConnectReceiver, new IntentFilter("app.fragments.UsersFragment"));
         super.onResume();
     }
 

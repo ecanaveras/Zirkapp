@@ -37,6 +37,7 @@ import java.util.List;
  */
 public class NotificationsFragment extends Fragment {
 
+    private static NotificationsFragment instance = null;
     private ListView listNotifi;
     private ProgressBar progressBar;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -56,6 +57,14 @@ public class NotificationsFragment extends Fragment {
         inicializarCompUI(view);
         findNotifications(currentUser);
         return view;
+    }
+
+    public static boolean isRunning() {
+        return instance != null;
+    }
+
+    public static NotificationsFragment getInstance() {
+        return instance;
     }
 
     private void inicializarCompUI(View view) {

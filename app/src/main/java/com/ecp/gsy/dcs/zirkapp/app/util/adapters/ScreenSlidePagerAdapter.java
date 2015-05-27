@@ -5,7 +5,7 @@ import android.app.FragmentManager;
 import android.support.v13.app.FragmentPagerAdapter;
 
 import com.ecp.gsy.dcs.zirkapp.app.fragments.HomeFragment;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersOnlineFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 
 /**
@@ -31,7 +31,7 @@ public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
                 }
                 return fzimess;
             case 2:
-                return new UsersOnlineFragment();
+                return new UsersFragment();
         }
         return null;
     }

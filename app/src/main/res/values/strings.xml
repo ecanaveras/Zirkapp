@@ -137,7 +137,7 @@
     <string name="action_delete_zimess">Eliminar Zimess</string>
     <string name="action_bar_my_zimess">Mis Zimess</string>
     <string name="action_bar_new_zimess">Nuevo Zimess</string>
-    <string name="msgShareApp">Hola, te invito a probar Zirkapp</string>
+    <string name="msgShareApp">Te invito a probar Zirkapp, la app que te comunica con los que te rodean, descargala ya:</string>
     <string name="urlPlayStore">https://play.google.com/store/apps/details?id=com.ecp.gsy.dcs.zirkapp</string>
     <string name="msgShareTo">Compartir usando...</string>
     <string name="msgZimessSending">Publicando Zimess...</string>
@@ -154,6 +154,7 @@
     <string name="msgInternetOff">No estas conectado a Internet</string>
     <string name="msgZimessNull">Problemas con el Zimess, intenta mas tarde!</string>
     <string name="msgCommentError">Error al enviar tu comentario, reintentalo!</string>
+    <string name="msgGpsOff">Zirkapp no puede obtener tu ubicación, GPS off.</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

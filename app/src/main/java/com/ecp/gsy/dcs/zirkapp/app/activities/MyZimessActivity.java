@@ -81,19 +81,25 @@ public class MyZimessActivity extends ActionBarActivity {
             @Override
             public void onItemClick(View view, int position) {
                 if (zimessList.size() > 0) {
-                    Zimess zimess = zimessList.get(position);
-                    if (view instanceof ImageView) {
-                        View avatar = view.findViewById(R.id.imgAvatarItem);
-                        String transitionName = getResources().getString(R.string.imgNameTransition);
-                        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MyZimessActivity.this, avatar, transitionName);
-                        Intent intent = new Intent(MyZimessActivity.this, UserProfileActivity.class);
-                        globalApplication.setCustomParseUser(zimess.getUser());
-                        ActivityCompat.startActivity(MyZimessActivity.this, intent, optionsCompat.toBundle());
-                    } else {
-                        globalApplication.setTempZimess(zimess);
-                        Intent intent = new Intent(MyZimessActivity.this, DetailZimessActivity.class);
-                        startActivity(intent);
-                    }
+                    final Zimess zimess = zimessList.get(position);
+
+                    final View avatar = view.findViewById(R.id.imgAvatarItem);
+                    avatar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //ir la perfil de usuario
+                            String transitionName = getResources().getString(R.string.imgNameTransition);
+                            ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MyZimessActivity.this, avatar, transitionName);
+                            Intent intent = new Intent(MyZimessActivity.this, UserProfileActivity.class);
+                            globalApplication.setCustomParseUser(zimess.getUser());
+                            ActivityCompat.startActivity(MyZimessActivity.this, intent, optionsCompat.toBundle());
+                            return;
+                        }
+                    });
+
+                    globalApplication.setTempZimess(zimess);
+                    Intent intent = new Intent(MyZimessActivity.this, DetailZimessActivity.class);
+                    startActivity(intent);
                 } else {
                     Log.d("myZimessList", "empty");
                 }
