@@ -110,7 +110,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                     intent.putExtra("senderId", senderId);
                     //Manejar Noti
                     globalApplication = (GlobalApplication) context.getApplicationContext();
-                    if (!senderUser.equals(globalApplication.getCustomParseUser()) || globalApplication.isListeningNotifi()) {
+                    if (senderUser != null && !senderUser.equals(globalApplication.getCustomParseUser()) || globalApplication.isListeningNotifi()) {
                         globalApplication.setCustomParseUser(senderUser);
                     } else {
                         //No notificar

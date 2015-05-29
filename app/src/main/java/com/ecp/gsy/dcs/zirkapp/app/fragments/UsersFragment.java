@@ -1,11 +1,14 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.app.Fragment;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SwitchCompat;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.activities.ChatHistoryActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MessagingActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
@@ -29,7 +33,14 @@ import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersTask;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by elcapi05 on 13/08/2014.
@@ -52,6 +63,7 @@ public class UsersFragment extends Fragment {
 
     public boolean isConnectedUser;
     private TextView lblInfoChat;
+    private AlertDialogPro sortDialog;
 
 
     @Override
@@ -93,6 +105,7 @@ public class UsersFragment extends Fragment {
 
         //ListView
         listViewUserOnline = (ListView) view.findViewById(R.id.usersListView);
+        registerForContextMenu(listViewUserOnline);
         listViewUserOnline.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -100,6 +113,15 @@ public class UsersFragment extends Fragment {
                 abrirConversa(parseUser);
             }
         });
+
+//        listViewUserOnline.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+//                ParseUser parseUser = (ParseUser) adapterView.getAdapter().getItem(position);
+//                showOptionsDialog(parseUser.getObjectId());
+//                return true;
+//            }
+//        });
 
         //Swipe
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.user_refresh_layout);
@@ -221,6 +243,49 @@ public class UsersFragment extends Fragment {
         startActivity(intent);
     }
 
+    /**
+     * Busca y elimina la conversación del usuario selecionado
+     *
+     * @param userChat
+     */
+    private void deleteLocalMessageHistory(final ParseUser userChat) {
+        String formatMessage = "%s \"%s\"...";
+        String nameUser = userChat.getString("name") != null ? userChat.getString("name") : userChat.getUsername();
+        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(getActivity());
+        alert.setMessage(String.format(formatMessage, getResources().getString(R.string.msgByeChat2), nameUser));
+        alert.setPositiveButton(getString(R.string.lblDelete), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //Delete
+                final ProgressDialog dialog = new ProgressDialog(getActivity());
+                dialog.setMessage(getResources().getString(R.string.msgDeleting));
+                dialog.show();
+                String[] userIds = {currentUser.getObjectId(), userChat.getObjectId()};
+                ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
+                query.whereContainedIn("senderId", Arrays.asList(userIds));
+                query.whereContainedIn("recipientId", Arrays.asList(userIds));
+                query.fromLocalDatastore();
+                query.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> parseObjects, ParseException e) {
+                        if (e == null) {
+                            ParseObject.unpinAllInBackground(parseObjects);
+                        }
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
+
+        alert.setNegativeButton(getString(R.string.lblCancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        alert.show();
+
+    }
 
     /**
      * retorna la Ubicacion actual
@@ -231,7 +296,7 @@ public class UsersFragment extends Fragment {
         Location location = null;
         if (LocationService.isRunning()) {
             LocationService locationService = LocationService.getInstance();
-            if (locationService != null && locationService.getCurrentLocation(true) != null) {
+            if (locationService != null) {
                 android.location.Location tmpLocation = locationService.getCurrentLocation(true);
                 if (tmpLocation != null)
                     location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
@@ -239,8 +304,6 @@ public class UsersFragment extends Fragment {
         }
         return location;
     }
-
-
 
     /*
     public void updateCantMessagesNoRead() {
@@ -317,7 +380,7 @@ public class UsersFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_users_online_fragment, menu);
+        inflater.inflate(R.menu.menu_users_fragment, menu);
         this.menu = menu;
         MenuItem item = menu.findItem(R.id.switchUsersOnline);
         item.setActionView(R.layout.component_switch);
@@ -351,4 +414,29 @@ public class UsersFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        if (v.getId() == R.id.usersListView) {
+            AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        }
+        getActivity().getMenuInflater().inflate(R.menu.menu_contextual_users, menu);
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.ctx_delete_chat:
+                AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+                ParseUser parseUser = (ParseUser) listViewUserOnline.getAdapter().getItem(acmi.position);
+                if (parseUser != null)
+                    deleteLocalMessageHistory(parseUser);
+                return true;
+            case R.id.ctx_lock_user:
+                Toast.makeText(getActivity(), "Proximamente...", Toast.LENGTH_SHORT).show();
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
 }
+

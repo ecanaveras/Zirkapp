@@ -59,6 +59,7 @@ public class ZimessFragment extends Fragment {
 
     private AlertDialogPro sortDialog;
     private TextView lblRangoZimess;
+    private boolean gotoZimess;
 
 
     @Override
@@ -101,26 +102,29 @@ public class ZimessFragment extends Fragment {
             @Override
             public void onItemClick(View view, int position) {
                 if (zimessList.size() > 0) {
+                    gotoZimess = true;
                     final Zimess zimess = zimessList.get(position);
 
                     final View avatar = view.findViewById(R.id.imgAvatarItem);
                     avatar.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            gotoZimess = false;
                             //ir la perfil de usuario
                             String transitionName = getResources().getString(R.string.imgNameTransition);
                             ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), avatar, transitionName);
                             Intent intent = new Intent(getActivity(), UserProfileActivity.class);
                             globalApplication.setCustomParseUser(zimess.getUser());
                             ActivityCompat.startActivity(getActivity(), intent, optionsCompat.toBundle());
-                            return;
                         }
                     });
 
-                    //Ir al detalle del Zimess
-                    globalApplication.setTempZimess(zimess);
-                    Intent intent = new Intent(getActivity(), DetailZimessActivity.class);
-                    startActivity(intent);
+                    if (gotoZimess) {
+                        //Ir al detalle del Zimess
+                        globalApplication.setTempZimess(zimess);
+                        Intent intent = new Intent(getActivity(), DetailZimessActivity.class);
+                        startActivity(intent);
+                    }
 
                 } else {
                     Log.d("zimessList", "empty");
@@ -233,7 +237,7 @@ public class ZimessFragment extends Fragment {
         if (LocationService.isRunning()) {
             layoutInternetOff.setVisibility(View.GONE);
             LocationService locationService = LocationService.getInstance();
-            if (locationService != null && locationService.getCurrentLocation(true) != null) {
+            if (locationService != null) {
                 android.location.Location tmpLocation = locationService.getCurrentLocation(true);
                 if (tmpLocation != null)
                     location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());

@@ -270,7 +270,6 @@ public class DetailZimessActivity extends ActionBarActivity {
      * Elimina el Zimess Actual
      */
     private void deleteZimess() {
-        final Activity activity = this;
         AlertDialogPro.Builder alert = new AlertDialogPro.Builder(this);
         //alert.setTitle(getString(R.string.msgDeleting));
         alert.setMessage(getString(R.string.msgByeZimess));
@@ -279,7 +278,7 @@ public class DetailZimessActivity extends ActionBarActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (zimessDetail != null) {
                     //Delete
-                    new DeleteDataZimessTask(activity).execute(zimessDetail.getZimessId());
+                    new DeleteDataZimessTask(DetailZimessActivity.this).execute(zimessDetail.getZimessId());
                 }
             }
         });

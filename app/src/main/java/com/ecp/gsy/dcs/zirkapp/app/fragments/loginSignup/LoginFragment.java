@@ -189,10 +189,8 @@ public class LoginFragment extends Fragment {
             public void done(ParseUser parseUser, ParseException e) {
                 if (parseUser == null) {
                     Toast.makeText(getActivity(), getResources().getString(R.string.msgNoLoginFacebook), Toast.LENGTH_SHORT).show();
-                } else if (parseUser.isNew()) {
-                    getDataFacebook(true);
                 } else {
-                    getDataFacebook(false);
+                    getDataFacebook(true);
                 }
             }
         });
@@ -202,17 +200,12 @@ public class LoginFragment extends Fragment {
      * Realiza el logueo con TWITTER
      */
     private void loginWithTwitter() {
+        userLogin = null;
         ParseTwitterUtils.logIn(getActivity(), new LogInCallback() {
             @Override
             public void done(ParseUser parseUser, ParseException e) {
                 if (parseUser == null) {
                     Toast.makeText(getActivity(), getResources().getString(R.string.msgNoLoginTwitter), Toast.LENGTH_SHORT).show();
-                } else if (parseUser.isNew()) {
-                    userLogin = parseUser;
-                    Twitter twitterUser = ParseTwitterUtils.getTwitter();
-                    if (twitterUser != null) {
-                        getDataTwitter(twitterUser);
-                    }
                 } else {
                     userLogin = parseUser;
                     Twitter twitterUser = ParseTwitterUtils.getTwitter();
@@ -235,13 +228,15 @@ public class LoginFragment extends Fragment {
                     @Override
                     public void onCompleted(JSONObject fbUser, GraphResponse response) {
                         userLogin = ParseUser.getCurrentUser();
-                        if (fbUser != null && userLogin != null && fbUser.optString("name").length() > 0) {
+                        if (fbUser != null && userLogin != null) {
                             //if (isNew)
                             userLogin.setUsername(fbUser.optString("first_name"));
                             userLogin.put("name", fbUser.optString("name"));
                             userLogin.setEmail(fbUser.optString("email"));
-                            userLogin.put("emailVerified", fbUser.optBoolean("verified"));
-                            //Log.i("verified", String.valueOf(fbUser.optBoolean("verified")));
+                            //userLogin.put("emailVerified", fbUser.optBoolean("verified")); Only Read
+                            userLogin.put("online", true);
+                            userLogin.saveInBackground();
+                            //Buscar y guardar Avatar
                             getAvatarFacebook(fbUser.optString("id"));
                             //Guardar informacion del welcome
                             saveInfoWelcome();
@@ -255,9 +250,11 @@ public class LoginFragment extends Fragment {
     private void getDataTwitter(Twitter twitter) {
         if (userLogin != null && twitter.getScreenName().length() > 0) {
             if (userLogin.isNew()) {
-                userLogin.put("name", twitter.getScreenName());
                 userLogin.setUsername(twitter.getScreenName());
+                userLogin.put("online", true);
+                userLogin.saveInBackground();
             }
+            //Buscar y guardar Avatar
             getAvatarTwitter(twitter);
             //Guardar informacion del welcome
             saveInfoWelcome();
@@ -308,7 +305,7 @@ public class LoginFragment extends Fragment {
                     bitmap = BitmapFactory.decodeStream(is);
                     is.close();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e("get.avatar.twitter", e.getMessage());
                 } finally {
                     if (verifyGet != null) {
                         verifyGet.abort();
@@ -329,12 +326,12 @@ public class LoginFragment extends Fragment {
                 }
                 if (userLogin != null) {
                     //Guardar informacion de usuario
-                    userLogin.put("online", true);
                     userLogin.saveInBackground();
                 }
-
                 if (progressDialog != null)
                     progressDialog.dismiss();
+
+                activity.finish();
             }
 
         }.execute(twitter);
@@ -365,7 +362,7 @@ public class LoginFragment extends Fragment {
                         bitmap = BitmapFactory.decodeStream(is);
                         is.close();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Log.e("get.avatar.facebook", e.getMessage());
                     }
                 }
                 return bitmap;
@@ -377,15 +374,14 @@ public class LoginFragment extends Fragment {
                     ParseFile parseFile = new ParseFile("ParseZAvatar", getByteAvatar(bitmap));
                     parseFile.saveInBackground();
                     userLogin.put("avatar", parseFile);
-                }
-                if (userLogin != null) {
                     //Guardar informacion de usuario
-                    userLogin.put("online", true);
                     userLogin.saveInBackground();
                 }
 
                 if (progressDialog != null)
                     progressDialog.dismiss();
+
+                activity.finish();
             }
         };
         task.execute();
@@ -420,7 +416,6 @@ public class LoginFragment extends Fragment {
             Welcomedb wdb = new Welcomedb("SI");
             dao.create(wdb);
         }
-        activity.finish();
     }
 
     private void saveSessionActive(boolean sessionActive) {

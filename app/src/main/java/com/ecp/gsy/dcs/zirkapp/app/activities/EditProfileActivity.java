@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,10 +20,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
-import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
 import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.ParseException;
@@ -38,11 +39,8 @@ import java.io.File;
  */
 public class EditProfileActivity extends ActionBarActivity {
 
-    private String objectId;
     private ParseFile parseFile;
     private ParseUser currentUser;
-    private int avatarRequestCode = 1;
-    private String rutaImagen;
 
     //UI
     private ImageView imgAvatar;
@@ -169,11 +167,10 @@ public class EditProfileActivity extends ActionBarActivity {
                 byteImage = getByteAvatar((Bitmap) imgAvatar.getTag());
             }
 
-            parseFile = new ParseFile("ParseZAvatar", byteImage != null ? byteImage : new byte[0]);
-            parseFile.saveInBackground();
-
             ParseUser parseUser = currentUser;
             if (byteImage != null) {
+                parseFile = new ParseFile("ParseZAvatar", byteImage != null ? byteImage : new byte[0]);
+                parseFile.saveInBackground();
                 parseUser.put("avatar", parseFile);
             }
             parseUser.put("name", txtNombres.getText().toString());
@@ -185,15 +182,16 @@ public class EditProfileActivity extends ActionBarActivity {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        progressDialog.dismiss();
                         Intent intent = new Intent();
                         intent.putExtra("editprofileOk", true);
                         activity.setResult(Activity.RESULT_OK, intent);
                         activity.finish();
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.msgProfileUpdate), Toast.LENGTH_LONG).show();
                     } else {
+                        Log.e("save.data.profile", e.getMessage());
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.msgProfileUpdateError), Toast.LENGTH_LONG).show();
                     }
+                    progressDialog.dismiss();
                 }
             });
 

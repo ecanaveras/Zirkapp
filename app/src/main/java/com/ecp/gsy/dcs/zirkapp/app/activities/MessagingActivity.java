@@ -1,7 +1,9 @@
 package com.ecp.gsy.dcs.zirkapp.app.activities;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.drawable.ColorDrawable;
@@ -10,6 +12,8 @@ import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -21,10 +25,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -207,6 +213,7 @@ public class MessagingActivity extends ActionBarActivity {
         query.whereContainedIn("senderId", Arrays.asList(userIds));
         query.whereContainedIn("recipientId", Arrays.asList(userIds));
         query.orderByAscending("createdAt");
+        query.orderByAscending("createdAt");
         query.fromLocalDatastore();
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -228,6 +235,43 @@ public class MessagingActivity extends ActionBarActivity {
                 progressBar.setVisibility(View.GONE);
             }
         });
+    }
+
+    private void deleteLocalMessageHistory() {
+        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(this);
+        alert.setMessage(getString(R.string.msgByeChat));
+        alert.setPositiveButton(getString(R.string.lblDelete), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //Delete
+                final ProgressDialog dialog = new ProgressDialog(MessagingActivity.this);
+                dialog.setMessage(getResources().getString(R.string.msgDeleting));
+                dialog.show();
+                String[] userIds = {currentUser.getObjectId(), receptorId};
+                ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
+                query.whereContainedIn("senderId", Arrays.asList(userIds));
+                query.whereContainedIn("recipientId", Arrays.asList(userIds));
+                query.fromLocalDatastore();
+                query.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> parseObjects, ParseException e) {
+                        if (e == null) {
+                            ParseObject.unpinAllInBackground(parseObjects);
+                        }
+                        dialog.dismiss();
+                        onBackPressed();
+                    }
+                });
+            }
+        });
+
+        alert.setNegativeButton(getString(R.string.lblCancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        alert.show();
     }
 
     @Override
@@ -263,9 +307,19 @@ public class MessagingActivity extends ActionBarActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.action_bar_delete_chat:
+                deleteLocalMessageHistory();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_activity_messaging, menu);
+        return true;
     }
 
     private class MyServiceConnection implements ServiceConnection {
@@ -314,7 +368,7 @@ public class MessagingActivity extends ActionBarActivity {
 
         @Override
         public void onMessageDelivered(MessageClient messageClient, MessageDeliveryInfo messageDeliveryInfo) {
-            Toast.makeText(MessagingActivity.this, "Tu mensaje no fue entregado.", Toast.LENGTH_LONG).show();
+            //Entregado
         }
 
         @Override

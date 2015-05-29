@@ -76,7 +76,7 @@
     <string name="lblSearchingUsers">Buscando usuarios online...</string>
     <string name="lblStart">Empecemos..</string>
     <string name="lblZimessNoFound">No hay Zimess, empieza tu!</string>
-    <string name="lblMyZimessNoFound">No hay Zimess... animate, empieza ya!</string>
+    <string name="lblMyZimessNoFound">No has publicado Zimess... animate, empieza ya!</string>
     <string name="lblMyZimess">Mis Zimess</string>
     <string name="lblDetailZimess">Det. del Zimess</string>
     <string name="lblSearchingChats">Buscando conversaciones...</string>
@@ -155,6 +155,12 @@
     <string name="msgZimessNull">Problemas con el Zimess, intenta mas tarde!</string>
     <string name="msgCommentError">Error al enviar tu comentario, reintentalo!</string>
     <string name="msgGpsOff">Zirkapp no puede obtener tu ubicación, GPS off.</string>
+    <string name="lblDeleteChat">Borrar Conversación</string>
+    <string name="msgByeChat">Despidete del historial de este chat...</string>
+    <string name="msgByeChat2">Despidete de la charla con</string>
+    <string name="msgLockUser">Bloquear</string>
+    <string name="lblOptions">Opciones...</string>
+    <string name="msgDeleteChat">Borrar conversación</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

@@ -45,6 +45,7 @@ public class MyZimessActivity extends ActionBarActivity {
     private Toolbar toolbar;
     public int requestCodeUpdateZimess = 105;
     private GlobalApplication globalApplication;
+    private boolean gotoZimess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,37 +70,42 @@ public class MyZimessActivity extends ActionBarActivity {
 
         //Zimess no Found
         layoutZimessNoFound = (LinearLayout) findViewById(R.id.layoutZimessNoFound);
-        ImageView imageView = (ImageView) findViewById(R.id.imgIconZimessNoFound);
+        layoutZimessFinder = (LinearLayout) findViewById(R.id.layoutZimessFinder);
+
+        //Mensaje personalizado
         TextView textView = (TextView) findViewById(R.id.lblMyZimessNoFound);
         textView.setText(R.string.lblMyZimessNoFound);
 
-        layoutZimessFinder = (LinearLayout) findViewById(R.id.layoutZimessFinder);
         recyclerView = (RecyclerView) findViewById(R.id.listZMessages);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setHasFixedSize(true);
         recyclerView.addOnItemTouchListener(new RecyclerItemListener(this, new RecyclerItemListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 if (zimessList.size() > 0) {
+                    gotoZimess = true;
                     final Zimess zimess = zimessList.get(position);
 
                     final View avatar = view.findViewById(R.id.imgAvatarItem);
                     avatar.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            gotoZimess = false;
                             //ir la perfil de usuario
                             String transitionName = getResources().getString(R.string.imgNameTransition);
                             ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MyZimessActivity.this, avatar, transitionName);
                             Intent intent = new Intent(MyZimessActivity.this, UserProfileActivity.class);
                             globalApplication.setCustomParseUser(zimess.getUser());
                             ActivityCompat.startActivity(MyZimessActivity.this, intent, optionsCompat.toBundle());
-                            return;
                         }
                     });
 
-                    globalApplication.setTempZimess(zimess);
-                    Intent intent = new Intent(MyZimessActivity.this, DetailZimessActivity.class);
-                    startActivity(intent);
+                    if (gotoZimess) {
+                        globalApplication.setTempZimess(zimess);
+                        Intent intent = new Intent(MyZimessActivity.this, DetailZimessActivity.class);
+                        startActivity(intent);
+                    }
                 } else {
                     Log.d("myZimessList", "empty");
                 }
