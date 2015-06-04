@@ -3,9 +3,6 @@ package com.ecp.gsy.dcs.zirkapp.app.util.broadcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.NotificationsFragment;
@@ -27,7 +24,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         if (globalApplication.isConectedToInternet()) {
             if (LocationService.isRunning()) {
                 LocationService locationService = LocationService.getInstance();
-                locationService.getCurrentLocation(false);
+                locationService.startAutomaticLocation();
             } else {
                 //Iniciamos el servicio
                 Intent intentService = new Intent(context, LocationService.class);

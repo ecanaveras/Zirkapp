@@ -10,6 +10,10 @@ import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.parse.CountCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.List;
@@ -21,6 +25,7 @@ public class UsersAdapter extends BaseAdapter {
 
     private List<ParseUser> parseUserList;
     private Context context;
+    private int cantMessages;
 
     public UsersAdapter(Context context, List<ParseUser> parseUserList) {
         this.context = context;
@@ -53,17 +58,42 @@ public class UsersAdapter extends BaseAdapter {
         //1. Tomar usuario
         ParseUser parseUser = parseUserList.get(i);
         //2. Iniciar UI de la lista
+        TextView lblUserId = (TextView) vista.findViewById(R.id.lblUserId);
         ImageView imgAvatar = (ImageView) vista.findViewById(R.id.imgAvatar);
         TextView lblCommentUser = (TextView) vista.findViewById(R.id.lblUserName);
         TextView lblCommentName = (TextView) vista.findViewById(R.id.lblNombreUsuario);
         TextView lblCantMessages = (TextView) vista.findViewById(R.id.lblCantMessages);
 
+
         //3. Asignar valores
+        lblUserId.setText(parseUser.getObjectId());
         lblCommentUser.setText(parseUser.getUsername());
         lblCommentName.setText(parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername());
+        Integer cant = findCantLocalMessages(parseUser.getObjectId());
+        if (cant != null)
+            lblCantMessages.setText(String.valueOf(cant));
         //Estableciendo Imagen;
         imgAvatar.setImageDrawable(GlobalApplication.getAvatar(parseUser));
         return vista;
+    }
+
+    private Integer findCantLocalMessages(String senderId) {
+        cantMessages = 0;
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
+        query.whereEqualTo("senderId", senderId);
+        query.whereEqualTo("recipientId", currentUser.getObjectId());
+        query.whereEqualTo("messageRead", false);
+        query.fromLocalDatastore();
+        query.countInBackground(new CountCallback() {
+            @Override
+            public void done(int count, ParseException e) {
+                if (e == null && count > 0) {
+                    cantMessages = count;
+                }
+            }
+        });
+        return cantMessages != 0 ? cantMessages : null;
     }
 
 }

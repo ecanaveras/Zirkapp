@@ -14,13 +14,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessReciclerAdapter;
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessRecyclerAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.listener.RecyclerItemListener;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
@@ -36,16 +38,14 @@ import java.util.ArrayList;
 public class MyZimessActivity extends ActionBarActivity {
 
     private RecyclerView recyclerView;
-    private ZimessReciclerAdapter zReciclerAdapter;
+    private ZimessRecyclerAdapter zReciclerAdapter;
     public ArrayList<Zimess> zimessList = new ArrayList<Zimess>();
 
-    private LinearLayout layoutZimessNoFound;
-    private LinearLayout layoutZimessFinder;
+    private LinearLayout layoutZimessNoFound, layoutZimessFinder, layoutZimessDefault;
     private ParseUser currentUser;
     private Toolbar toolbar;
     public int requestCodeUpdateZimess = 105;
     private GlobalApplication globalApplication;
-    private boolean gotoZimess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +68,15 @@ public class MyZimessActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        //Zimess no Found
+        //Layouts
+        layoutZimessDefault = (LinearLayout) findViewById(R.id.layoutZimessDefault);
         layoutZimessNoFound = (LinearLayout) findViewById(R.id.layoutZimessNoFound);
         layoutZimessFinder = (LinearLayout) findViewById(R.id.layoutZimessFinder);
+
+        ImageView imageView = (ImageView) findViewById(R.id.imgLogoZirkapp);
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.fade);
+        animation.setRepeatCount(5);
+        imageView.startAnimation(animation);
 
         //Mensaje personalizado
         TextView textView = (TextView) findViewById(R.id.lblMyZimessNoFound);
@@ -79,40 +85,7 @@ public class MyZimessActivity extends ActionBarActivity {
         recyclerView = (RecyclerView) findViewById(R.id.listZMessages);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setHasFixedSize(true);
-        recyclerView.addOnItemTouchListener(new RecyclerItemListener(this, new RecyclerItemListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                if (zimessList.size() > 0) {
-                    gotoZimess = true;
-                    final Zimess zimess = zimessList.get(position);
-
-                    final View avatar = view.findViewById(R.id.imgAvatarItem);
-                    avatar.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            gotoZimess = false;
-                            //ir la perfil de usuario
-                            String transitionName = getResources().getString(R.string.imgNameTransition);
-                            ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MyZimessActivity.this, avatar, transitionName);
-                            Intent intent = new Intent(MyZimessActivity.this, UserProfileActivity.class);
-                            globalApplication.setCustomParseUser(zimess.getUser());
-                            ActivityCompat.startActivity(MyZimessActivity.this, intent, optionsCompat.toBundle());
-                        }
-                    });
-
-                    if (gotoZimess) {
-                        globalApplication.setTempZimess(zimess);
-                        Intent intent = new Intent(MyZimessActivity.this, DetailZimessActivity.class);
-                        startActivity(intent);
-                    }
-                } else {
-                    Log.d("myZimessList", "empty");
-                }
-            }
-        }));
-
-        layoutZimessFinder.setVisibility(View.GONE);
+        //recyclerView.setHasFixedSize(true);
     }
 
 
@@ -122,6 +95,7 @@ public class MyZimessActivity extends ActionBarActivity {
     private void findZimessCurrentUser() {
         Location currentLocation = getCurrentLocation();
         if (currentLocation != null) {
+            layoutZimessDefault.setVisibility(View.GONE);
             RefreshDataZimessTask dataZimessTask = new RefreshDataZimessTask(this, currentUser, currentLocation, recyclerView, zReciclerAdapter);
             dataZimessTask.setLayoutZimessNoFound(layoutZimessNoFound);
             dataZimessTask.setLayoutZimessFinder(layoutZimessFinder);

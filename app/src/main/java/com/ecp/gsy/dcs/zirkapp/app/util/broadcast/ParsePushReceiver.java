@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemNotification;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
@@ -99,22 +100,25 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
             switch (typeNotification) {
                 case SendPushTask.PUSH_CHAT:
                     //Receiver
-                    Intent broad = new Intent("broadcast.cant_messages");
+                    Intent broad = new Intent();
+                    broad.setAction(CountMessagesReceiver.ACTION_LISTENER);
                     broad.putExtra("senderId", senderId);
                     broad.putExtra("recipientId", receptorId);
-                    context.sendBroadcast(intent);
+                    context.sendBroadcast(broad);
 
                     intent.setAction("OPEN_FRAGMENT_USER"); //Notificacion desde chat
                     intent.putExtra("targetId", targetId);
                     intent.putExtra("receptorId", receptorId);
                     intent.putExtra("senderId", senderId);
                     //Manejar Noti
-                    globalApplication = (GlobalApplication) context.getApplicationContext();
-                    if (senderUser != null && !senderUser.equals(globalApplication.getCustomParseUser()) || globalApplication.isListeningNotifi()) {
-                        globalApplication.setCustomParseUser(senderUser);
-                    } else {
-                        //No notificar
-                        notificar = false;
+                    if (UsersFragment.isRunning()) {
+                        globalApplication = (GlobalApplication) context.getApplicationContext();
+                        if (senderUser != null && !senderUser.equals(globalApplication.getCustomParseUser()) || globalApplication.isListeningNotifi()) {
+                            globalApplication.setCustomParseUser(senderUser);
+                        } else {
+                            //No notificar
+                            notificar = false;
+                        }
                     }
                     typeNotiString = "[Chat]";
                     break;

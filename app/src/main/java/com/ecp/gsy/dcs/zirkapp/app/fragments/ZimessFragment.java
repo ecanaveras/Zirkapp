@@ -19,6 +19,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,7 +32,7 @@ import com.ecp.gsy.dcs.zirkapp.app.activities.MyZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.NewZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.UserProfileActivity;
-import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessReciclerAdapter;
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessRecyclerAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.listener.RecyclerItemListener;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
@@ -50,17 +52,16 @@ public class ZimessFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private RecyclerView recyclerView;
-    private ZimessReciclerAdapter zReciclerAdapter;
+    private ZimessRecyclerAdapter zReciclerAdapter;
     public ArrayList<Zimess> zimessList = new ArrayList<Zimess>();
 
     private Menu menuList;
-    private LinearLayout layoutZimessNoFound, layoutInternetOff, layoutZimessFinder, layoutGpsOff;
+    private LinearLayout layoutZimessNoFound, layoutInternetOff, layoutZimessFinder, layoutGpsOff, layoutZimessDefault;
     private GlobalApplication globalApplication;
 
     private AlertDialogPro sortDialog;
     private TextView lblRangoZimess;
-    private boolean gotoZimess;
-
+    private ImageView avatar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,6 +71,8 @@ public class ZimessFragment extends Fragment {
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
 
         inicializarCompUI(view);
+
+        findZimessAround(getCurrentLocation(false), globalApplication.getSortZimess());
 
         instance = this;
 
@@ -86,51 +89,24 @@ public class ZimessFragment extends Fragment {
 
 
     private void inicializarCompUI(View view) {
-        //UI Zimess no Found
+        //UI Zimess
+        layoutZimessDefault = (LinearLayout) view.findViewById(R.id.layoutZimessDefault);
         layoutZimessNoFound = (LinearLayout) view.findViewById(R.id.layoutZimessNoFound);
         layoutZimessFinder = (LinearLayout) view.findViewById(R.id.layoutZimessFinder);
         layoutInternetOff = (LinearLayout) view.findViewById(R.id.layoutInternetOff);
         layoutGpsOff = (LinearLayout) view.findViewById(R.id.layoutGpsOff);
+
+        ImageView imageView = (ImageView) view.findViewById(R.id.imgLogoZirkapp);
+        Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.fade);
+        animation.setRepeatCount(5);
+        imageView.startAnimation(animation);
 
         lblRangoZimess = (TextView) view.findViewById(R.id.lblInfoRango);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.listZMessages);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setHasFixedSize(true);
-        recyclerView.addOnItemTouchListener(new RecyclerItemListener(getActivity(), new RecyclerItemListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                if (zimessList.size() > 0) {
-                    gotoZimess = true;
-                    final Zimess zimess = zimessList.get(position);
-
-                    final View avatar = view.findViewById(R.id.imgAvatarItem);
-                    avatar.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            gotoZimess = false;
-                            //ir la perfil de usuario
-                            String transitionName = getResources().getString(R.string.imgNameTransition);
-                            ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), avatar, transitionName);
-                            Intent intent = new Intent(getActivity(), UserProfileActivity.class);
-                            globalApplication.setCustomParseUser(zimess.getUser());
-                            ActivityCompat.startActivity(getActivity(), intent, optionsCompat.toBundle());
-                        }
-                    });
-
-                    if (gotoZimess) {
-                        //Ir al detalle del Zimess
-                        globalApplication.setTempZimess(zimess);
-                        Intent intent = new Intent(getActivity(), DetailZimessActivity.class);
-                        startActivity(intent);
-                    }
-
-                } else {
-                    Log.d("zimessList", "empty");
-                }
-            }
-        }));
+        //recyclerView.setHasFixedSize(true);
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.zimess_refresh_layout);
         swipeRefreshLayout.setColorScheme(R.color.primary_text_color, R.color.default_primary_color, R.color.primary_text_color, R.color.default_primary_color);
@@ -141,7 +117,7 @@ public class ZimessFragment extends Fragment {
             }
         });
 
-        //Corregir bug de Swipe... [Permite el scroll sin problemas]
+        //Corrige bug de Swipe... [Permite el scroll sin problemas]
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int firstVisibleItem, int dy) {
@@ -152,7 +128,7 @@ public class ZimessFragment extends Fragment {
 
         if (globalApplication.isConectedToInternet()) {
             if (globalApplication.isEnabledGetLocation()) {
-                layoutZimessFinder.setVisibility(View.VISIBLE);
+                layoutZimessDefault.setVisibility(View.VISIBLE);
             } else {
                 layoutGpsOff.setVisibility(View.VISIBLE);
             }
@@ -168,6 +144,7 @@ public class ZimessFragment extends Fragment {
         if (currentLocation != null && sortZimess != null) {
             layoutInternetOff.setVisibility(View.GONE);
             layoutGpsOff.setVisibility(View.GONE);
+            layoutZimessDefault.setVisibility(View.GONE);
             //Tomar valores de las preferencias de usuarios
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             int dist_min = Integer.parseInt(preferences.getString("min_dist_list", "-1"));
@@ -186,10 +163,11 @@ public class ZimessFragment extends Fragment {
             layoutInternetOff.setVisibility(View.GONE);
             layoutZimessNoFound.setVisibility(View.GONE);
             layoutGpsOff.setVisibility(View.GONE);
+            layoutZimessDefault.setVisibility(View.GONE);
             //2. Mostrar Layout correspondiente
             if (globalApplication.isConectedToInternet()) {
                 if (globalApplication.isEnabledGetLocation()) {
-                    layoutZimessNoFound.setVisibility(View.VISIBLE);
+                    layoutZimessDefault.setVisibility(View.VISIBLE);
                 } else {
                     layoutGpsOff.setVisibility(View.VISIBLE);
                 }
@@ -227,22 +205,37 @@ public class ZimessFragment extends Fragment {
         sortDialog.show();
     }
 
+
     /**
      * retorna la Ubicacion actual
      *
      * @return
      */
     private Location getCurrentLocation() {
+        return getCurrentLocation(true);
+    }
+
+    /**
+     * retorna la Ubicacion actual
+     *
+     * @return
+     */
+    private Location getCurrentLocation(boolean isManual) {
         Location location = null;
-        if (LocationService.isRunning()) {
-            layoutInternetOff.setVisibility(View.GONE);
-            LocationService locationService = LocationService.getInstance();
-            if (locationService != null) {
-                android.location.Location tmpLocation = locationService.getCurrentLocation(true);
-                if (tmpLocation != null)
-                    location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+        if (globalApplication.isConectedToInternet()) {
+            if (LocationService.isRunning()) {
+                layoutInternetOff.setVisibility(View.GONE);
+                LocationService locationService = LocationService.getInstance();
+                if (locationService != null) {
+                    android.location.Location tmpLocation = locationService.getCurrentLocation(isManual);
+                    if (tmpLocation != null)
+                        location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+                }
+            } else {
+                Intent intent = new Intent(getActivity(), LocationService.class);
+                getActivity().startService(intent);
             }
-        } else if (!globalApplication.isConectedToInternet()) {
+        } else {
             globalApplication.networkShowSettingsAlert();
         }
         return location;
@@ -272,6 +265,14 @@ public class ZimessFragment extends Fragment {
                 break;
         }
         return maxD;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (zReciclerAdapter != null && zReciclerAdapter.getItemCount() == 0) {
+            findZimessAround(getCurrentLocation(false), globalApplication.getSortZimess());
+        }
     }
 
     @Override
@@ -306,7 +307,6 @@ public class ZimessFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-
     }
 
     private MenuItem getMenuItem(int id) {

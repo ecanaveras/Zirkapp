@@ -155,7 +155,7 @@ public class LoginFragment extends Fragment {
         }
 
         progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("Ingresando...");
+        progressDialog.setMessage(getResources().getString(R.string.mgsLoging));
         progressDialog.show();
 
         ParseUser.logInInBackground(username, password, new LogInCallback() {
@@ -168,6 +168,8 @@ public class LoginFragment extends Fragment {
                     saveInfoWelcome();
                     //Guardar en db una session activa
                     saveSessionActive(true);
+                    //finish
+                    activity.finish();
                 } else {
                     //TODO manejar excepciones de login
                     Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
@@ -219,7 +221,7 @@ public class LoginFragment extends Fragment {
 
     private void getDataFacebook(final boolean isNew) {
         progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("Ingresando...");
+        progressDialog.setMessage(getResources().getString(R.string.mgsLoging));
         progressDialog.show();
         //Obtener info de facebook
         GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
@@ -272,7 +274,7 @@ public class LoginFragment extends Fragment {
 
         //Obtener info de Twitter
         progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("Ingresando...");
+        progressDialog.setMessage(getResources().getString(R.string.mgsLoging));
         progressDialog.show();
 
         AsyncTask<Twitter, Void, Bitmap> task = new AsyncTask<Twitter, Void, Bitmap>() {

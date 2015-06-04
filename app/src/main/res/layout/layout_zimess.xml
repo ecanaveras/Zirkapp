@@ -4,6 +4,32 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/layoutZimessDefault"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="20dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/imgLogoZirkapp"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_gravity="center_horizontal"
+            android:adjustViewBounds="true"
+            android:src="@drawable/logo_zirkapp_circle" />
+
+        <!--<TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/msgStarting"
+            android:textColor="@color/default_primary_color" />-->
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/layoutZimessNoFound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -71,8 +97,8 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_icon_cloud_off"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_icon_cloud_off" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -92,8 +118,8 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_icon_gps_off"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_icon_gps_off" />
 
         <TextView
             android:layout_width="wrap_content"

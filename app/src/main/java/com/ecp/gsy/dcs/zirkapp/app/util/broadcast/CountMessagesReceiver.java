@@ -24,6 +24,8 @@ import java.util.List;
  */
 public class CountMessagesReceiver extends BroadcastReceiver {
 
+    public static final String ACTION_LISTENER = "broadcast.counter.messages";
+
     private ListView listUsers;
     private String senderId;
     private String recipientId;
@@ -51,8 +53,8 @@ public class CountMessagesReceiver extends BroadcastReceiver {
         for (int i = 0; i < listUsers.getChildCount(); i++) {
             View v = listUsers.getChildAt(i - listUsers.getFirstVisiblePosition());
             if (v != null) {
-                TextView lblCommentUser = (TextView) v.findViewById(R.id.lblUserName);
-                if (lblCommentUser.getText().toString().equals(senderId)) {
+                TextView lblUserId = (TextView) v.findViewById(R.id.lblUserId);
+                if (lblUserId != null && lblUserId.getText().toString().equals(senderId)) {
                     lblCantMessages = (TextView) v.findViewById(R.id.lblCantMessages);
                     break;
                 }
@@ -61,11 +63,12 @@ public class CountMessagesReceiver extends BroadcastReceiver {
 
         if (lblCantMessages == null) return;
 
+        lblCantMessages.setText("New");
         //Buscar chats.
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
+        /*ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
         query.whereEqualTo("senderId", senderId);
         query.whereEqualTo("recipientId", recipientId);
-        //query.whereEqualTo("messageRead", false);
+        query.whereEqualTo("messageRead", false);
         query.fromLocalDatastore();
         query.countInBackground(new CountCallback() {
             @Override
@@ -73,12 +76,12 @@ public class CountMessagesReceiver extends BroadcastReceiver {
                 if (e == null) {
                     if (count > 0) {
                         lblCantMessages.setText(String.valueOf(count));
-                    }else{
+                    } else {
                         lblCantMessages.setText(null);
                     }
                 }
             }
-        });
+        });*/
 
     }
 }

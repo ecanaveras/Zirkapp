@@ -15,6 +15,8 @@ import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
  */
 public class LocationReceiver extends BroadcastReceiver {
 
+    public static final String ACTION_LISTENER = "broadcast.gps.location.change";
+
     public LocationReceiver() {
     }
 

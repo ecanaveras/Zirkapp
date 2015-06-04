@@ -161,6 +161,9 @@
     <string name="msgLockUser">Bloquear</string>
     <string name="lblOptions">Opciones...</string>
     <string name="msgDeleteChat">Borrar conversación</string>
+    <string name="mgsLoging">Ingresando...</string>
+    <string name="msgLogout2">Quieres cerrar sesión?</string>
+    <string name="msgStarting">Iniciando servicios...</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

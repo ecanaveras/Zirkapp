@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 
 /**

@@ -1,9 +1,12 @@
 package com.ecp.gsy.dcs.zirkapp.app.activities;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.preference.PreferenceActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.SettingsFragment;
@@ -11,7 +14,13 @@ import com.ecp.gsy.dcs.zirkapp.app.fragments.SettingsFragment;
 /**
  * Created by Elder on 15/04/2015.
  */
-public class CustomSettingsActivity extends ActionBarActivity {
+public class CustomSettingsActivity extends PreferenceActivity {
+
+    /*@Override
+    public void onBuildHeaders(List<Header> target) {
+        super.onBuildHeaders(target);
+        loadHeadersFromResource(R.xml.pref_headers, target);
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,13 +28,29 @@ public class CustomSettingsActivity extends ActionBarActivity {
         setContentView(R.layout.activity_custom_settings);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        toolbar.setClickable(true);
+        toolbar.setTitle(R.string.title_activity_settings);
+        toolbar.setNavigationIcon(getResIdFromAttribute(this, R.attr.homeAsUpIndicator));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         getFragmentManager().beginTransaction().replace(R.id.content_frame, new SettingsFragment()).commit();
 
     }
+
+    private static int getResIdFromAttribute(final Activity activity, final int attr) {
+        if (attr == 0) {
+            return 0;
+        }
+        final TypedValue typedvalueattr = new TypedValue();
+        activity.getTheme().resolveAttribute(attr, typedvalueattr, true);
+        return typedvalueattr.resourceId;
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

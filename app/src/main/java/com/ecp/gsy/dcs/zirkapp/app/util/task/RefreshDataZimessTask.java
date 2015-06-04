@@ -11,7 +11,7 @@ import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MyZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
-import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessReciclerAdapter;
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessRecyclerAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
@@ -41,7 +41,7 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
     private int sortZimess;
 
     private RecyclerView recyclerView;
-    private ZimessReciclerAdapter zReciclerAdapter;
+    private ZimessRecyclerAdapter zReciclerAdapter;
 
     //layout
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -55,7 +55,7 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
      * @param currentLocation
      * @param adapter
      */
-    public RefreshDataZimessTask(Context context, Location currentLocation, RecyclerView recyclerView, ZimessReciclerAdapter adapter) {
+    public RefreshDataZimessTask(Context context, Location currentLocation, RecyclerView recyclerView, ZimessRecyclerAdapter adapter) {
         this.context = context;
         this.currentLocation = currentLocation;
         this.zReciclerAdapter = adapter;
@@ -69,7 +69,7 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
      * @param currentLocation
      * @param adapter
      */
-    public RefreshDataZimessTask(Context context, Location currentLocation, RecyclerView recyclerView, ZimessReciclerAdapter adapter, int sortZimess) {
+    public RefreshDataZimessTask(Context context, Location currentLocation, RecyclerView recyclerView, ZimessRecyclerAdapter adapter, int sortZimess) {
         this.context = context;
         this.currentLocation = currentLocation;
         this.zReciclerAdapter = adapter;
@@ -85,7 +85,7 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
      * @param adapter
      * @param parseUser
      */
-    public RefreshDataZimessTask(Context context, ParseUser parseUser, Location currentLocation, RecyclerView recyclerView, ZimessReciclerAdapter adapter) {
+    public RefreshDataZimessTask(Context context, ParseUser parseUser, Location currentLocation, RecyclerView recyclerView, ZimessRecyclerAdapter adapter) {
         this.context = context;
         this.currentLocation = currentLocation;
         this.zReciclerAdapter = adapter;
@@ -155,7 +155,7 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
                 MyZimessActivity activity = (MyZimessActivity) context;
                 activity.zimessList = (ArrayList<Zimess>) zimessList;
             }
-            zReciclerAdapter = new ZimessReciclerAdapter(zimessList, currentLocation);
+            zReciclerAdapter = new ZimessRecyclerAdapter(context, zimessList, currentLocation);
             recyclerView.setAdapter(zReciclerAdapter);
             zReciclerAdapter.notifyDataSetChanged();
         } else {

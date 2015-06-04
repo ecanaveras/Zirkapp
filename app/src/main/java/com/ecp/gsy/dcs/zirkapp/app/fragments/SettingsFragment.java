@@ -2,6 +2,7 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.Ringtone;
@@ -21,13 +22,16 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.Toast;
 
+import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.activities.AboutActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerLogin;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.parse.ParseUser;
@@ -145,24 +149,40 @@ public class SettingsFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 //Deteniendo los servicios Sinch
-                getActivity().stopService(new Intent(getActivity().getApplicationContext(), MessageService.class));
-                getActivity().stopService(new Intent(getActivity().getApplicationContext(), LocationService.class));
-                ParseUser currentUser = ParseUser.getCurrentUser();
-                currentUser.put("online", false);
-                currentUser.saveInBackground();
-                ParseUser.logOut();
-                //Guardar en db una session inactiva
-                saveSessionActive(false);
-                Intent intent = new Intent(getActivity(), ManagerLogin.class);
-                intent.putExtra("logout", true);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                Toast toast = Toast.makeText(getActivity(), getResources().getString(R.string.msgLogoutOk), Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 10, 0);
-                toast.show();
-                getActivity().moveTaskToBack(false);
-                getActivity().finish();
+                AlertDialogPro.Builder alert = new AlertDialogPro.Builder(getActivity());
+                alert.setMessage(getString(R.string.msgLogout2));
+                alert.setPositiveButton(getString(R.string.lblOk), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        getActivity().stopService(new Intent(getActivity(), MessageService.class));
+                        getActivity().stopService(new Intent(getActivity(), LocationService.class));
+                        ParseUser currentUser = ParseUser.getCurrentUser();
+                        if (currentUser != null) {
+                            currentUser.put("online", false);
+                            currentUser.saveInBackground();
+                        }
+                        ParseUser.logOut();
+                        //Guardar en db una session inactiva
+                        saveSessionActive(false);
+                        Toast toast = Toast.makeText(getActivity(), getResources().getString(R.string.msgLogoutOk), Toast.LENGTH_SHORT);
+                        toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 10, 0);
+                        toast.show();
+                        getActivity().moveTaskToBack(false);
+                        getActivity().finish();
+                        Intent intent = new Intent(getActivity(), ManagerLogin.class);
+                        intent.putExtra("logout", true);
+                        startActivity(intent);
+                    }
+                });
+
+                alert.setNegativeButton(getString(R.string.lblCancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+                alert.show();
+
                 return false;
             }
         });

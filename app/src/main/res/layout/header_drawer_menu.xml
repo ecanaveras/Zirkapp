@@ -63,6 +63,7 @@
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center_vertical"
                     android:text="User"
+                    android:textColor="@color/text_primary_color"
                     android:textSize="12sp" />
 
             </LinearLayout>

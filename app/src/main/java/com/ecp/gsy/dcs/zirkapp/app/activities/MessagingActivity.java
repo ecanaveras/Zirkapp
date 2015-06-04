@@ -45,6 +45,7 @@ import com.sinch.android.rtc.messaging.MessageDeliveryInfo;
 import com.sinch.android.rtc.messaging.MessageFailureInfo;
 import com.sinch.android.rtc.messaging.WritableMessage;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -55,23 +56,24 @@ public class MessagingActivity extends ActionBarActivity {
 
     private String receptorId, receptorUsername, receptorName;
     private EditText txtMessageBodyField;
-    private MessageService.MessageServiceInterface messageService;
     private ParseUser currentUser, receptorUser;
-    private ServiceConnection serviceConnection = new MyServiceConnection();
-    private MyMessageClientListener messageClientListener = new MyMessageClientListener();
-    private MessageAdapter adapterMessage;
     private ListView listMessage;
     private GlobalApplication globalApplication;
-    private Activity activity;
     private ProgressBar progressBar;
     private WritableMessage writableMessage;
+    private MessageAdapter adapterMessage;
+
+    //Sinch
+    private MessageService.MessageServiceInterface messageService;
+    private ServiceConnection serviceConnection = new MyServiceConnection();
+    private MyMessageClientListener messageClientListener = new MyMessageClientListener();
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messaging);
-
-        activity = this;
 
         bindService(new Intent(this, MessageService.class), serviceConnection, BIND_AUTO_CREATE);
 
@@ -147,11 +149,11 @@ public class MessagingActivity extends ActionBarActivity {
             layoutActionBarTitle.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.anim_image_click));
-                    Intent intent = new Intent(activity, UserProfileActivity.class);
+                    view.startAnimation(AnimationUtils.loadAnimation(MessagingActivity.this, R.anim.anim_image_click));
+                    Intent intent = new Intent(MessagingActivity.this, UserProfileActivity.class);
                     //intent.putExtra("activityfrom", MessagingActivity.class.getSimpleName());
                     globalApplication.setCustomParseUser(receptorUser);
-                    activity.startActivity(intent);
+                    MessagingActivity.this.startActivity(intent);
                 }
             });
             getSupportActionBar().setCustomView(customView);
@@ -178,6 +180,7 @@ public class MessagingActivity extends ActionBarActivity {
      * @param messageDirection
      */
     private void saveLocalMessage(Message message, final WritableMessage writableMessage, final String senderId, final Integer messageDirection) {
+        adapterMessage.addMessage(writableMessage, messageDirection, receptorId);
         //Agregar el mensaje en el local si no existe.
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
         query.whereEqualTo("sinchId", message.getMessageId());
@@ -195,8 +198,6 @@ public class MessagingActivity extends ActionBarActivity {
                         if (messageDirection == MessageAdapter.DIRECTION_INCOMING)
                             parseMessage.put("messageRead", false);
                         parseMessage.pinInBackground();
-
-                        adapterMessage.addMessage(writableMessage, messageDirection, receptorId);
                     }
                 }
             }
@@ -219,6 +220,7 @@ public class MessagingActivity extends ActionBarActivity {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
                 if (e == null) {
+                    List<ParseObject> leidos = new ArrayList<ParseObject>();
                     for (ParseObject parseObj : parseObjects) {
                         WritableMessage message = new WritableMessage(parseObj.get("recipientId").toString(), parseObj.get("messageText").toString());
                         if (parseObj.get("senderId").toString().equals(currentUser.getObjectId())) {
@@ -226,9 +228,10 @@ public class MessagingActivity extends ActionBarActivity {
                         } else {
                             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING, receptorUsername);
                             parseObj.put("messageRead", true);
-                            parseObj.pinInBackground();
+                            leidos.add(parseObj);
                         }
                     }
+                    ParseObject.saveAllInBackground(leidos);
                 } else {
                     Log.e("Parse.chat.history", e.getMessage());
                 }
@@ -343,7 +346,7 @@ public class MessagingActivity extends ActionBarActivity {
 
                 //Guardar historial local.
                 saveLocalMessage(message, writableMessage, receptorId, MessageAdapter.DIRECTION_INCOMING);
-                Log.i("incoming.message", message.getTextBody());
+                //Log.i("incoming.message", message.getTextBody());
             }
         }
 

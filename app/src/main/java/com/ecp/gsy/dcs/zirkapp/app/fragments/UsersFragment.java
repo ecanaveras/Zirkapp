@@ -1,13 +1,18 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,9 +20,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -32,12 +40,19 @@ import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.SinchConnectReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersTask;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.sinch.android.rtc.PushPair;
+import com.sinch.android.rtc.messaging.Message;
+import com.sinch.android.rtc.messaging.MessageClient;
+import com.sinch.android.rtc.messaging.MessageClientListener;
+import com.sinch.android.rtc.messaging.MessageDeliveryInfo;
+import com.sinch.android.rtc.messaging.MessageFailureInfo;
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,12 +78,12 @@ public class UsersFragment extends Fragment {
 
     public boolean isConnectedUser;
     private TextView lblInfoChat;
-    private AlertDialogPro sortDialog;
+    private LinearLayout layoutUsersDefault;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_users_online, container, false);
+        View view = inflater.inflate(R.layout.fragment_users, container, false);
         setHasOptionsMenu(true);
 
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
@@ -79,6 +94,11 @@ public class UsersFragment extends Fragment {
             isConnectedUser = currentUser.getBoolean("online");
 
         inicializarCompUI(view);
+
+        //Comprobar el estado del servicio Sinch
+        sinchConnectReceiver = new SinchConnectReceiver(layoutInitService, listViewUserOnline);
+        //Contar los mensajes recibidos
+        countMessagesReceiver = new CountMessagesReceiver(listViewUserOnline);
 
         instance = this;
 
@@ -95,6 +115,7 @@ public class UsersFragment extends Fragment {
 
     private void inicializarCompUI(View view) {
         //Layout
+        layoutUsersDefault = (LinearLayout) view.findViewById(R.id.layoutUsersDefault);
         layoutUsersNoFound = (LinearLayout) view.findViewById(R.id.layoutUsersNoFound);
         layoutUsersFinder = (LinearLayout) view.findViewById(R.id.layoutUsersFinder);
         layoutChatOffline = (LinearLayout) view.findViewById(R.id.layoutChatOffline);
@@ -103,25 +124,22 @@ public class UsersFragment extends Fragment {
 
         lblInfoChat = (TextView) view.findViewById(R.id.lblInfoChat);
 
+        ImageView imageView = (ImageView) view.findViewById(R.id.imgLogoZirkapp);
+        Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.fade);
+        animation.setRepeatCount(5);
+        imageView.startAnimation(animation);
+
         //ListView
         listViewUserOnline = (ListView) view.findViewById(R.id.usersListView);
         registerForContextMenu(listViewUserOnline);
         listViewUserOnline.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //((TextView) view.findViewById(R.id.lblCantMessages)).setText(null);
                 ParseUser parseUser = (ParseUser) adapterView.getAdapter().getItem(i);
                 abrirConversa(parseUser);
             }
         });
-
-//        listViewUserOnline.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-//                ParseUser parseUser = (ParseUser) adapterView.getAdapter().getItem(position);
-//                showOptionsDialog(parseUser.getObjectId());
-//                return true;
-//            }
-//        });
 
         //Swipe
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.user_refresh_layout);
@@ -150,8 +168,12 @@ public class UsersFragment extends Fragment {
 
         if (globalApplication.isConectedToInternet()) {
             if (globalApplication.isEnabledGetLocation()) {
-                if (isConnectedUser)
-                    layoutUsersFinder.setVisibility(View.VISIBLE);
+                if (isConnectedUser) {
+                    layoutUsersDefault.setVisibility(View.VISIBLE);
+                } else {
+                    layoutChatOffline.setVisibility(View.VISIBLE);
+                    lblInfoChat.setText("Chat Offline");
+                }
             } else {
                 layoutGpsOff.setVisibility(View.VISIBLE);
             }
@@ -168,6 +190,7 @@ public class UsersFragment extends Fragment {
         if (isConnectedUser && currentLocation != null) {
             layoutChatOffline.setVisibility(View.GONE);
             layoutGpsOff.setVisibility(View.GONE);
+            layoutUsersDefault.setVisibility(View.GONE);
             RefreshDataUsersTask refresDataTask = new RefreshDataUsersTask(getActivity(), currentUser, currentLocation, listViewUserOnline);
             refresDataTask.setSwipeRefreshLayout(swipeRefreshLayout);
             refresDataTask.setLayoutUsersFinder(layoutUsersFinder);
@@ -179,12 +202,15 @@ public class UsersFragment extends Fragment {
             layoutUsersFinder.setVisibility(View.GONE);
             layoutGpsOff.setVisibility(View.GONE);
             layoutChatOffline.setVisibility(View.GONE);
+            layoutUsersDefault.setVisibility(View.GONE);
             //2. Mostrar Layout correspondiente
             if (globalApplication.isConectedToInternet()) {
                 if (globalApplication.isEnabledGetLocation()) {
                     if (!isConnectedUser) {
                         layoutChatOffline.setVisibility(View.VISIBLE);
                         lblInfoChat.setText("Chat Offline");
+                    } else {
+                        layoutUsersDefault.setVisibility(View.VISIBLE);
                     }
                 } else {
                     layoutGpsOff.setVisibility(View.VISIBLE);
@@ -360,13 +386,8 @@ public class UsersFragment extends Fragment {
 
     @Override
     public void onResume() {
-        //Comprobar el estado del servicio Sinch
-        sinchConnectReceiver = new SinchConnectReceiver(layoutInitService, listViewUserOnline);
-        //Contar los mensajes recibidos
-        countMessagesReceiver = new CountMessagesReceiver(listViewUserOnline);
-
         //Registrar los Broadcast
-        getActivity().registerReceiver(countMessagesReceiver, new IntentFilter("broadcast.cant_messages"));
+        getActivity().registerReceiver(countMessagesReceiver, new IntentFilter(CountMessagesReceiver.ACTION_LISTENER));
         getActivity().registerReceiver(sinchConnectReceiver, new IntentFilter("app.fragments.UsersFragment"));
         super.onResume();
     }
@@ -437,6 +458,13 @@ public class UsersFragment extends Fragment {
             default:
                 return super.onContextItemSelected(item);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        //messageService.removeMessageClientListener(messageClientListener);
+        //getActivity().unbindService(serviceConnection);
+        super.onDestroy();
     }
 }
 

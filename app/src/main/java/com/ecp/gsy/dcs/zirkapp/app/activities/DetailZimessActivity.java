@@ -279,6 +279,7 @@ public class DetailZimessActivity extends ActionBarActivity {
                 if (zimessDetail != null) {
                     //Delete
                     new DeleteDataZimessTask(DetailZimessActivity.this).execute(zimessDetail.getZimessId());
+                    getCurrentLocation(false); //actualizar Zimess
                 }
             }
         });
@@ -292,16 +293,26 @@ public class DetailZimessActivity extends ActionBarActivity {
         alert.show();
     }
 
+
     /**
      * retorna la Ubicacion actual
      *
      * @return
      */
     private Location getCurrentLocation() {
+        return getCurrentLocation(true);
+    }
+
+    /**
+     * retorna la Ubicacion actual
+     *
+     * @return
+     */
+    private Location getCurrentLocation(boolean isManual) {
         Location location = null;
         if (LocationService.isRunning()) {
             LocationService locationService = LocationService.getInstance();
-            android.location.Location tmpLocation = locationService.getCurrentLocation(true);
+            android.location.Location tmpLocation = locationService.getCurrentLocation(isManual);
             location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
         }
         return location;

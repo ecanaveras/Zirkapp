@@ -55,6 +55,10 @@ public class GlobalApplication extends Application {
     //Controla si el chat esta habilidado
     private static boolean chatEnabled = true;
 
+    //Controla los mensajes de GPS y NETWORK
+    private static boolean isShowNetworkAlert = false;
+    private static boolean isShowGpsAlert = false;
+
     //Parse
     private ParseUser currentUser;
     private ParseUser customParseUser;
@@ -393,9 +397,10 @@ public class GlobalApplication extends Application {
      * Muestra una alerta en caso que esten desabilitados los accesorios de ubicacion
      */
     public void gpsShowSettingsAlert() {
-        if (context == null) {
+        if (context == null || isShowGpsAlert) {
             return;
         }
+        isShowGpsAlert = true;
         AlertDialogPro.Builder alert = new AlertDialogPro.Builder(context);
 
         alert.setTitle(getResources().getString(R.string.lblSettingGPS));
@@ -405,6 +410,7 @@ public class GlobalApplication extends Application {
             public void onClick(DialogInterface dialogInterface, int i) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 context.startActivity(intent);
+                isShowGpsAlert = false;
             }
         });
 
@@ -412,6 +418,7 @@ public class GlobalApplication extends Application {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.cancel();
+                isShowGpsAlert = false;
             }
         });
         alert.show();
@@ -421,9 +428,11 @@ public class GlobalApplication extends Application {
      * Muestra una alerta en caso que esten desabilitados los datos (wifi, movil)
      */
     public void networkShowSettingsAlert() {
-        if (context == null) {
+        if (context == null || isShowNetworkAlert) {
             return;
         }
+
+        isShowNetworkAlert = true;
         AlertDialogPro.Builder alert = new AlertDialogPro.Builder(context);
 
         alert.setTitle(getResources().getString(R.string.lblSettingNetwork));
@@ -433,6 +442,7 @@ public class GlobalApplication extends Application {
             public void onClick(DialogInterface dialogInterface, int i) {
                 Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
                 context.startActivity(intent);
+                isShowNetworkAlert = false;
             }
         });
 
@@ -440,10 +450,12 @@ public class GlobalApplication extends Application {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.cancel();
+                isShowNetworkAlert = false;
             }
         });
         alert.show();
     }
+
 
     public boolean isListeningNotifi() {
         return listeningNotifi;

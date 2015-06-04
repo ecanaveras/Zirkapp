@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.LocationReceiver;
 
 
 /**
@@ -43,7 +44,7 @@ public class LocationService extends Service {
     @Override
     public void onCreate() {
         instance = this;
-        this.intent = new Intent("broadcast.gps.location_change");
+        this.intent = new Intent(LocationReceiver.ACTION_LISTENER);
         globalApplication = (GlobalApplication) this.getApplicationContext();
     }
 
@@ -56,14 +57,17 @@ public class LocationService extends Service {
     private final Runnable getLocation = new Runnable() {
         @Override
         public void run() {
-            if (intent == null) intent = new Intent("broadcast.gps.location_change");
+            if (intent == null) intent = new Intent(LocationReceiver.ACTION_LISTENER);
             getCurrentLocation();
-
         }
     };
 
     public static boolean isRunning() {
         return instance != null;
+    }
+
+    public void startAutomaticLocation() {
+        handler.post(getLocation);
     }
 
     private Location getCurrentLocation() {
@@ -77,15 +81,18 @@ public class LocationService extends Service {
      * @return
      */
     public Location getCurrentLocation(boolean isManual) {
+        isAutomatic = !isManual;
         if (globalApplication.isConectedToInternet()) {
             if (globalApplication.isEnabledGetLocation()) {
+                if (isAutomatic)
+                    handler.postDelayed(getLocation, MIN_TIME_BW_UPDATES);
                 if (isLocationEnabled) {
                     isLocationEnabled = false;
                     stopUsingGPS();
                 }
                 if (!isLocationEnabled) {
                     isLocationEnabled = true;
-                    isAutomatic = !isManual;
+
                     try {
                         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                         boolean isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -101,10 +108,10 @@ public class LocationService extends Service {
                             return getLastKnownLocation(LocationManager.GPS_PROVIDER);
                         }
                     } catch (Exception e) {
+                        stopUsingGPS();
                         Log.e("Error : Location", "Impossible to connect to LocationManager", e);
                     }
                 }
-                handler.postDelayed(getLocation, MIN_TIME_BW_UPDATES);
             } else {
                 //Desabilitado la RED y GPS
                 Log.d("provider.location", "disabled");
@@ -226,13 +233,14 @@ public class LocationService extends Service {
         @Override
         public void onLocationChanged(Location location) {
             //Nueva Ubicacion
-            if (currentBestLocation != null) {
+            sendItent(location);
+            /*if (currentBestLocation != null) {
                 if (isBetterLocation(location, currentBestLocation)) {
                     sendItent(location);
                 }
             } else {
                 sendItent(location);
-            }
+            }*/
         }
 
         @Override

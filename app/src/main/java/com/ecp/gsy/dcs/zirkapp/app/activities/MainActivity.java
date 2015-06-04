@@ -1,11 +1,14 @@
 package com.ecp.gsy.dcs.zirkapp.app.activities;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -13,6 +16,7 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -30,8 +34,10 @@ import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.NotificationsFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
@@ -45,10 +51,17 @@ import com.parse.ParsePush;
 import com.parse.ParseUser;
 import com.parse.PushService;
 import com.parse.SaveCallback;
+import com.sinch.android.rtc.PushPair;
+import com.sinch.android.rtc.messaging.Message;
+import com.sinch.android.rtc.messaging.MessageClient;
+import com.sinch.android.rtc.messaging.MessageClientListener;
+import com.sinch.android.rtc.messaging.MessageDeliveryInfo;
+import com.sinch.android.rtc.messaging.MessageFailureInfo;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -94,10 +107,17 @@ public class MainActivity extends ActionBarActivity {
     private String regId;
     private BroadcastReceiver broadcastReceiver;
 
+    //Sinch listener
+    /*private MessageService.MessageServiceInterface messageService;
+    private MyMessageUserClientListener messageClientListener = new MyMessageUserClientListener();
+    private MyServiceConnection serviceConnection = new MyServiceConnection();*/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //bindService(new Intent(this, MessageService.class), serviceConnection, BIND_AUTO_CREATE);
 
         //KeyHash
         //this.getKeyHash();
@@ -363,6 +383,10 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (!LocationService.isRunning()) {
+            startService(new Intent(MainActivity.this, LocationService.class));
+        }
+
         //globalApplication.checkPlayServices(this);
         globalApplication.setListeningNotifi(false);
 
@@ -438,6 +462,9 @@ public class MainActivity extends ActionBarActivity {
         globalApplication.setCustomParseUser(null);
         stopService(new Intent(this, MessageService.class));
         stopService(new Intent(this, LocationService.class));
+
+        /*messageService.removeMessageClientListener(messageClientListener);
+        unbindService(serviceConnection);*/
         super.onDestroy();
     }
 
@@ -466,5 +493,47 @@ public class MainActivity extends ActionBarActivity {
             Log.e("KeyHashNoSuchAlgorithm", e.getMessage());
         }
     }
+
+    /*private class MyServiceConnection implements ServiceConnection {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            messageService = (MessageService.MessageServiceInterface) iBinder;
+            messageService.addMessageClientListener(messageClientListener);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            messageService = null;
+        }
+    }
+
+
+    private class MyMessageUserClientListener implements MessageClientListener {
+
+        @Override
+        public void onIncomingMessage(MessageClient messageClient, Message message) {
+            Log.d("sinch.listener", message.getSenderId());
+        }
+
+        @Override
+        public void onMessageSent(MessageClient messageClient, Message message, String s) {
+
+        }
+
+        @Override
+        public void onMessageFailed(MessageClient messageClient, Message message, MessageFailureInfo messageFailureInfo) {
+
+        }
+
+        @Override
+        public void onMessageDelivered(MessageClient messageClient, MessageDeliveryInfo messageDeliveryInfo) {
+
+        }
+
+        @Override
+        public void onShouldSendPushData(MessageClient messageClient, Message message, List<PushPair> list) {
+
+        }
+    }*/
 }
 
