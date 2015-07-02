@@ -22,6 +22,7 @@ public class Zimess implements Serializable {
     private ParseGeoPoint location;
     private Date createAt;
     private Integer cantComment;
+    private String descDistancia;
 
     /**
      * Retorna la imagen del usuario
@@ -31,7 +32,6 @@ public class Zimess implements Serializable {
     public RoundedBitmapDrawable getAvatar() {
         return GlobalApplication.getAvatar(user);
     }
-
 
     public String getZimessId() {
         return zimessId;
@@ -79,6 +79,14 @@ public class Zimess implements Serializable {
 
     public void setCantComment(Integer cantComments) {
         this.cantComment = cantComments;
+    }
+
+    public void setDescDistancia(String descDistancia) {
+        this.descDistancia = descDistancia;
+    }
+
+    public String getDescDistancia() {
+        return descDistancia;
     }
 
     /*

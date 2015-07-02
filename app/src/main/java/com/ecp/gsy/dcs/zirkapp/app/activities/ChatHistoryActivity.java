@@ -50,7 +50,7 @@ public class ChatHistoryActivity extends ActionBarActivity {
         activity = this;
 
         iniciarlizarCompUI();
-        findLocalMessageHistory();
+        findParseMessageHistory();
 
     }
 
@@ -76,7 +76,7 @@ public class ChatHistoryActivity extends ActionBarActivity {
     /**
      * Busca los mensajes previos en Local
      */
-    private void findLocalMessageHistory() {
+    private void findParseMessageHistory() {
         if (searching)
             return;
 
@@ -84,10 +84,10 @@ public class ChatHistoryActivity extends ActionBarActivity {
 
         final ArrayList<String> sendersId = new ArrayList<>();
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZMessage");
         query.whereEqualTo("recipientId", currentUser.getObjectId());
         query.orderByAscending("createdAt");
-        query.fromLocalDatastore();
+        //query.fromLocalDatastore();
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {

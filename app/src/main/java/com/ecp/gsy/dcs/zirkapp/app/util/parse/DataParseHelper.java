@@ -34,7 +34,11 @@ public class DataParseHelper {
         //Buscar Usuarios
         ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
         ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.whereNotEqualTo("objectId", currentUser.getObjectId());
+        //Buscar y excluir usuario actual
+        ParseQuery<ParseUser> innerQuery = ParseUser.getQuery();
+        innerQuery.whereEqualTo("objectId", currentUser.getObjectId());
+        query.whereDoesNotMatchKeyInQuery("objectId", "objectId", innerQuery);
+        //Buscar usuarios en el rango de Km
         query.whereWithinKilometers("location", parseGeoPoint, cantKmAround);
         query.whereEqualTo("online", true);
         query.orderByAscending("name");
@@ -79,7 +83,10 @@ public class DataParseHelper {
         List<ParseObject> listParseComments = new ArrayList<ParseObject>();
         //Buscar por Zimess
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZComment");
-        query.whereEqualTo("zimessId", ParseObject.createWithoutData("ParseZimess", zimessId));
+        //Buscar Zimess a filtrar
+        ParseQuery<ParseObject> innerquery = ParseQuery.getQuery("ParseZimess");
+        innerquery.whereEqualTo("objectId", zimessId);
+        query.whereMatchesKeyInQuery("zimessId", "objectId", innerquery);//ParseObject.createWithoutData("ParseZimess", zimessId));
         query.include("user");
         query.orderByAscending("createdAt");
         try {
@@ -129,17 +136,11 @@ public class DataParseHelper {
         //Distancia Maxima
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZimess");
         query.whereWithinKilometers("location", parseGeoPoint, cantMaxKmAround);
-        query.include("user");
         //Distancia minima
-        if (cantMinKmAround != -1) { //-1 todos
+        if (cantMinKmAround != -1) {
+            //Buscar y excluir el rango minimo
             ParseQuery<ParseObject> innerQuery = ParseQuery.getQuery("ParseZimess");
-            //500 Metros
-            if (cantMinKmAround == 0) {
-                innerQuery.whereWithinKilometers("location", parseGeoPoint, 0.5);
-            } else {
-                //1000 Metros en adelante
-                innerQuery.whereWithinKilometers("location", parseGeoPoint, cantMaxKmAround);
-            }
+            innerQuery.whereWithinKilometers("location", parseGeoPoint, cantMinKmAround);
             query.whereDoesNotMatchKeyInQuery("objectId", "objectId", innerQuery);
         }
 
@@ -149,7 +150,7 @@ public class DataParseHelper {
                 query.whereNear("location", parseGeoPoint);
                 //query.orderByDescending("location");
                 break;
-            case 2:
+            case 2: //No se usa
                 query.whereNear("location", parseGeoPoint);
                 query.orderByAscending("location");
                 break;
@@ -159,6 +160,7 @@ public class DataParseHelper {
         }
 
         try {
+            query.include("user");
             listZimess = query.find();
         } catch (ParseException e) {
             Log.e("Parse.Zimess", e.getMessage());

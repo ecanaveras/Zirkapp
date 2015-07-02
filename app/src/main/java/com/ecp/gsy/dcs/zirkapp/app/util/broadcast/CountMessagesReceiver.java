@@ -65,7 +65,7 @@ public class CountMessagesReceiver extends BroadcastReceiver {
 
         lblCantMessages.setText("New");
         //Buscar chats.
-        /*ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
+        /*ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZMessage");
         query.whereEqualTo("senderId", senderId);
         query.whereEqualTo("recipientId", recipientId);
         query.whereEqualTo("messageRead", false);

@@ -39,25 +39,25 @@
     <string name="pref_title_dist_min">Distancia mínima de los Zimess</string>
     <string-array name="pref_dist_min_list_titles">
         <item>Muy cerca</item>
-        <item>Mínimo 500 metros</item>
         <item>Mínimo 1000 metros</item>
+        <item>Mínimo 3000 metros</item>
     </string-array>
     <string-array name="pref_dist_min_list_values">
         <item>-1</item>
-        <item>0</item>
         <item>1</item>
+        <item>3</item>
     </string-array>
 
     <string name="pref_title_dist_max">Distancia máxima de los Zimess</string>
     <string-array name="pref_dist_max_list_titles">
-        <item>Máximo 2000 metros</item>
-        <item>Máximo 4000 metros</item>
         <item>Máximo 5000 metros</item>
+        <item>Máximo 8000 metros</item>
+        <item>Máximo 10000 metros</item>
     </string-array>
     <string-array name="pref_dist_max_list_values">
-        <item>2</item>
-        <item>4</item>
         <item>5</item>
+        <item>8</item>
+        <item>10</item>
     </string-array>
 
 

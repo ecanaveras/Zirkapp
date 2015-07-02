@@ -51,7 +51,7 @@ public class ChatHistoryFragment extends Fragment {
         currentUser = ParseUser.getCurrentUser();
 
         iniciarlizarCompUI(view);
-        findLocalMessageHistory();
+        findParseMessageHistory();
 
         return view;
     }
@@ -65,9 +65,9 @@ public class ChatHistoryFragment extends Fragment {
     }
 
     /**
-     * Busca los mensajes previos en Local
+     * Busca los mensajes previos en Parse
      */
-    private void findLocalMessageHistory() {
+    private void findParseMessageHistory() {
         if (searching)
             return;
 
@@ -75,10 +75,9 @@ public class ChatHistoryFragment extends Fragment {
 
         final ArrayList<String> sendersId = new ArrayList<>();
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZMessage");
         query.whereEqualTo("recipientId", currentUser.getObjectId());
         query.orderByAscending("createdAt");
-        query.fromLocalDatastore();
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
@@ -100,7 +99,7 @@ public class ChatHistoryFragment extends Fragment {
      *
      * @param userChat
      */
-    private void deleteLocalMessageHistory(final ParseUser userChat) {
+    private void deleteParseMessageHistory(final ParseUser userChat) {
         String formatMessage = "%s \"%s\"...";
         String nameUser = userChat.getString("name") != null ? userChat.getString("name") : userChat.getUsername();
         AlertDialogPro.Builder alert = new AlertDialogPro.Builder(getActivity());
@@ -113,15 +112,14 @@ public class ChatHistoryFragment extends Fragment {
                 dialog.setMessage(getResources().getString(R.string.msgDeleting));
                 dialog.show();
                 String[] userIds = {currentUser.getObjectId(), userChat.getObjectId()};
-                ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
+                ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZMessage");
                 query.whereContainedIn("senderId", Arrays.asList(userIds));
                 query.whereContainedIn("recipientId", Arrays.asList(userIds));
-                query.fromLocalDatastore();
                 query.findInBackground(new FindCallback<ParseObject>() {
                     @Override
                     public void done(List<ParseObject> parseObjects, ParseException e) {
                         if (e == null) {
-                            ParseObject.unpinAllInBackground(parseObjects);
+                            ParseObject.deleteAllInBackground(parseObjects);
                         }
                         dialog.dismiss();
                     }
@@ -133,7 +131,7 @@ public class ChatHistoryFragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         if (currentUser != null)
-            findLocalMessageHistory();
+            findParseMessageHistory();
         super.setUserVisibleHint(isVisibleToUser);
     }
 
@@ -153,7 +151,7 @@ public class ChatHistoryFragment extends Fragment {
                 AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
                 ParseUser parseUser = (ParseUser) listViewHistory.getAdapter().getItem(acmi.position);
                 if (parseUser != null)
-                    deleteLocalMessageHistory(parseUser);
+                    deleteParseMessageHistory(parseUser);
                 return true;
             case R.id.ctx_lock_user:
                 Toast.makeText(getActivity(), "Proximamente...", Toast.LENGTH_SHORT).show();

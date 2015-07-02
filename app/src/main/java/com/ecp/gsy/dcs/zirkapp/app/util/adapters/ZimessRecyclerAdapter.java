@@ -74,7 +74,8 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         //Calcular distancia del Zimess remoto
         Location zimessLocation = new Location(zimess.getLocation().getLatitude(), zimess.getLocation().getLongitude());
         ManagerDistance mDistance = new ManagerDistance(currentLocation, zimessLocation);
-        zimessViewHolder.lblDistance.setText(mDistance.getDistanciaToString());
+        zimess.setDescDistancia(mDistance.getDistanciaToString());
+        zimessViewHolder.lblDistance.setText(zimess.getDescDistancia());
     }
 
     @Override

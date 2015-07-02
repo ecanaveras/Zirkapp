@@ -21,19 +21,18 @@ import android.util.Log;
 
 import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
-import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
-import com.facebook.FacebookSdk;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseFile;
 import com.parse.ParseInstallation;
+import com.parse.ParseObject;
 import com.parse.ParseTwitterUtils;
 import com.parse.ParseUser;
-import com.parse.PushService;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -83,6 +82,11 @@ public class GlobalApplication extends Application {
 
         // Enable Local Datastore.
         Parse.enableLocalDatastore(this);
+
+        //Registrando Modelos
+        ParseObject.registerSubclass(ParseZComment.class);
+        ParseObject.registerSubclass(ParseZMessage.class);
+        ParseObject.registerSubclass(ParseZHistory.class);
 
         //Iniciar Parse
         Parse.initialize(this, getResources().getString(R.string.parse_api_id), getResources().getString(R.string.parse_api_key));
@@ -421,7 +425,9 @@ public class GlobalApplication extends Application {
                 isShowGpsAlert = false;
             }
         });
+        alert.setCancelable(false);
         alert.show();
+
     }
 
     /**
@@ -453,6 +459,7 @@ public class GlobalApplication extends Application {
                 isShowNetworkAlert = false;
             }
         });
+        alert.setCancelable(false);
         alert.show();
     }
 

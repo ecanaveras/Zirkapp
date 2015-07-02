@@ -1,6 +1,5 @@
 package com.ecp.gsy.dcs.zirkapp.app.activities;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.DialogInterface;
@@ -13,7 +12,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -28,15 +26,17 @@ import android.widget.Toast;
 import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.messaging.Message;
 import com.sinch.android.rtc.messaging.MessageClient;
@@ -69,7 +69,6 @@ public class MessagingActivity extends ActionBarActivity {
     private MyMessageClientListener messageClientListener = new MyMessageClientListener();
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +90,7 @@ public class MessagingActivity extends ActionBarActivity {
 
         initComponentUI();
 
-        findLocalMessageHistory();
+        findParseMessageHistory();
     }
 
     private void initComponentUI() {
@@ -179,59 +178,90 @@ public class MessagingActivity extends ActionBarActivity {
      * @param senderId
      * @param messageDirection
      */
-    private void saveLocalMessage(Message message, final WritableMessage writableMessage, final String senderId, final Integer messageDirection) {
+    private void saveParseMessage(final Message message, final WritableMessage writableMessage, final String senderId, final Integer messageDirection) {
         adapterMessage.addMessage(writableMessage, messageDirection, receptorId);
-        //Agregar el mensaje en el local si no existe.
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
-        query.whereEqualTo("sinchId", message.getMessageId());
-        query.fromLocalDatastore();
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
-                    if (parseObjects.size() == 0) {
-                        ParseObject parseMessage = new ParseObject("ParseMessage");
-                        parseMessage.put("senderId", senderId);
-                        parseMessage.put("recipientId", writableMessage.getRecipientIds().get(0));
-                        parseMessage.put("messageText", writableMessage.getTextBody());
-                        parseMessage.put("sinchId", writableMessage.getMessageId());
-                        if (messageDirection == MessageAdapter.DIRECTION_INCOMING)
-                            parseMessage.put("messageRead", false);
-                        parseMessage.pinInBackground();
+
+        //Guardar al enviar el mensaje
+        if (MessageAdapter.DIRECTION_OUTGOING == messageDirection) {
+            //Agrega el mensaje en parse si no existe.
+            ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
+            query.whereEqualTo(ParseZMessage.SINCH_ID, message.getMessageId());
+            query.findInBackground(new FindCallback<ParseZMessage>() {
+                @Override
+                public void done(List<ParseZMessage> zMessages, ParseException e) {
+                    if (e == null) {
+                        if (zMessages.size() == 0) {
+                            final ParseZMessage parseZMessage = new ParseZMessage();
+                            parseZMessage.setSinchId(writableMessage.getMessageId());
+                            parseZMessage.setSenderId(currentUser);
+                            parseZMessage.setRecipientId(receptorUser);
+                            parseZMessage.setMessageText(writableMessage.getTextBody());
+                            parseZMessage.setMessageRead(false);
+                            parseZMessage.saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    if (e == null) {
+                                        saveParseHistoty(parseZMessage, writableMessage, currentUser); //Usuario que envia el mensaje
+                                        saveParseHistoty(parseZMessage, writableMessage, receptorUser); //Usuario que recibe el mensaje
+                                    }
+                                }
+                            });
+
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     /**
-     * Busca los mensajes previos en Local
+     * Guarda el historial en Parse
+     *
+     * @param zMessage
+     * @param writableMessage
+     * @param user
      */
-    private void findLocalMessageHistory() {
+    private void saveParseHistoty(ParseZMessage zMessage, WritableMessage writableMessage, ParseUser user) {
+        ParseZHistory parseZHistory = new ParseZHistory();
+        parseZHistory.setUser(user);
+        parseZHistory.setSinchId(writableMessage.getMessageId());
+        parseZHistory.setZMessageId(zMessage);
+        parseZHistory.saveInBackground();
+    }
+
+    /**
+     * Busca los mensajes previos en parse
+     */
+    private void findParseMessageHistory() {
         progressBar.setVisibility(View.VISIBLE);
-        String[] userIds = {currentUser.getObjectId(), receptorId};
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
-        query.whereContainedIn("senderId", Arrays.asList(userIds));
-        query.whereContainedIn("recipientId", Arrays.asList(userIds));
+
+        //Buscar los sinchId del usuario actual
+        ParseQuery<ParseZHistory> innerQuery = ParseQuery.getQuery(ParseZHistory.class);
+        innerQuery.whereEqualTo(ParseZHistory.USER, currentUser);
+
+        //String[] userIds = {currentUser.getObjectId(), receptorId};
+        ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
+//        query.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
+//        query.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
+        query.whereMatchesKeyInQuery(ParseZMessage.SINCH_ID, ParseZHistory.SINCH_ID, innerQuery);
+        query.setLimit(100);
         query.orderByAscending("createdAt");
-        query.orderByAscending("createdAt");
-        query.fromLocalDatastore();
-        query.findInBackground(new FindCallback<ParseObject>() {
+        query.findInBackground(new FindCallback<ParseZMessage>() {
             @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
+            public void done(List<ParseZMessage> zMessages, ParseException e) {
                 if (e == null) {
-                    List<ParseObject> leidos = new ArrayList<ParseObject>();
-                    for (ParseObject parseObj : parseObjects) {
-                        WritableMessage message = new WritableMessage(parseObj.get("recipientId").toString(), parseObj.get("messageText").toString());
-                        if (parseObj.get("senderId").toString().equals(currentUser.getObjectId())) {
+                    List<ParseObject> messageLeidos = new ArrayList<>();
+                    for (ParseZMessage parseZmessa : zMessages) {
+                        WritableMessage message = new WritableMessage(parseZmessa.getRecipientId().getObjectId(), parseZmessa.getMessageText());
+                        if (parseZmessa.getSenderId().equals(currentUser.getObjectId())) {
                             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING, currentUser.getUsername());
                         } else {
                             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING, receptorUsername);
-                            parseObj.put("messageRead", true);
-                            leidos.add(parseObj);
+                            parseZmessa.setMessageRead(true);
+                            messageLeidos.add(parseZmessa);
                         }
                     }
-                    ParseObject.saveAllInBackground(leidos);
+                    ParseObject.saveAllInBackground(messageLeidos);
                 } else {
                     Log.e("Parse.chat.history", e.getMessage());
                 }
@@ -240,7 +270,10 @@ public class MessagingActivity extends ActionBarActivity {
         });
     }
 
-    private void deleteLocalMessageHistory() {
+    /**
+     * Elimina los mensajes almacenados en parse
+     */
+    private void deleteParseMessageHistory() {
         AlertDialogPro.Builder alert = new AlertDialogPro.Builder(this);
         alert.setMessage(getString(R.string.msgByeChat));
         alert.setPositiveButton(getString(R.string.lblDelete), new DialogInterface.OnClickListener() {
@@ -250,16 +283,22 @@ public class MessagingActivity extends ActionBarActivity {
                 final ProgressDialog dialog = new ProgressDialog(MessagingActivity.this);
                 dialog.setMessage(getResources().getString(R.string.msgDeleting));
                 dialog.show();
-                String[] userIds = {currentUser.getObjectId(), receptorId};
-                ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
-                query.whereContainedIn("senderId", Arrays.asList(userIds));
-                query.whereContainedIn("recipientId", Arrays.asList(userIds));
-                query.fromLocalDatastore();
-                query.findInBackground(new FindCallback<ParseObject>() {
+                ParseUser[] userIds = {currentUser, receptorUser};
+
+                //Buscar los sinchId de los mensajes de la conversacion
+                ParseQuery<ParseZMessage> innerQuery = ParseQuery.getQuery(ParseZMessage.class);
+                innerQuery.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
+                innerQuery.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
+
+                //Buscar los sinchId de usuario actual
+                ParseQuery<ParseZHistory> query = ParseQuery.getQuery(ParseZHistory.class);
+                query.whereMatchesKeyInQuery(ParseZHistory.SINCH_ID, ParseZMessage.SINCH_ID, innerQuery);
+                query.whereEqualTo(ParseZHistory.USER, currentUser);
+                query.findInBackground(new FindCallback<ParseZHistory>() {
                     @Override
-                    public void done(List<ParseObject> parseObjects, ParseException e) {
+                    public void done(List<ParseZHistory> zHistories, ParseException e) {
                         if (e == null) {
-                            ParseObject.unpinAllInBackground(parseObjects);
+                            ParseObject.deleteAllInBackground(zHistories);
                         }
                         dialog.dismiss();
                         onBackPressed();
@@ -311,7 +350,7 @@ public class MessagingActivity extends ActionBarActivity {
                 onBackPressed();
                 return true;
             case R.id.action_bar_delete_chat:
-                deleteLocalMessageHistory();
+                deleteParseMessageHistory();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -344,8 +383,7 @@ public class MessagingActivity extends ActionBarActivity {
             if (message.getSenderId().equals(receptorId)) {
                 final WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
 
-                //Guardar historial local.
-                saveLocalMessage(message, writableMessage, receptorId, MessageAdapter.DIRECTION_INCOMING);
+                adapterMessage.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING, receptorId);
                 //Log.i("incoming.message", message.getTextBody());
             }
         }
@@ -354,8 +392,8 @@ public class MessagingActivity extends ActionBarActivity {
         public void onMessageSent(MessageClient messageClient, Message message, String s) {
             writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
 
-            //Guardar historial local.
-            saveLocalMessage(message, writableMessage, currentUser.getObjectId(), MessageAdapter.DIRECTION_OUTGOING);
+            //Guardar historial en parse.
+            saveParseMessage(message, writableMessage, currentUser.getObjectId(), MessageAdapter.DIRECTION_OUTGOING);
 
             //Enviar notificacion.
             if (receptorId != null && message != null && !globalApplication.isListeningNotifi()) {

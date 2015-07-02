@@ -148,7 +148,7 @@ public class ZimessFragment extends Fragment {
             //Tomar valores de las preferencias de usuarios
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             int dist_min = Integer.parseInt(preferences.getString("min_dist_list", "-1"));
-            int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "5"));
+            int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "10"));
 
             RefreshDataZimessTask dataZimessTask = new RefreshDataZimessTask(getActivity(), currentLocation, recyclerView, zReciclerAdapter, sortZimess);
             dataZimessTask.setSwipeRefreshLayout(swipeRefreshLayout);
@@ -244,24 +244,24 @@ public class ZimessFragment extends Fragment {
     private String getHomoMinDistance(int minDinstance) {
         String minD = "1";
         switch (minDinstance) {
-            case 0:
-                minD = "500";
-                break;
             case 1:
                 minD = "1000";
+                break;
+            case 3:
+                minD = "3000";
                 break;
         }
         return minD;
     }
 
     private String getHomoMaxDistance(int maxDinstance) {
-        String maxD = "2000";
+        String maxD = "10000";
         switch (maxDinstance) {
-            case 4:
-                maxD = "4000";
-                break;
             case 5:
                 maxD = "5000";
+                break;
+            case 8:
+                maxD = "8000";
                 break;
         }
         return maxD;

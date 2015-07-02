@@ -1,18 +1,15 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SwitchCompat;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,19 +37,12 @@ import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.SinchConnectReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
-import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersTask;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.sinch.android.rtc.PushPair;
-import com.sinch.android.rtc.messaging.Message;
-import com.sinch.android.rtc.messaging.MessageClient;
-import com.sinch.android.rtc.messaging.MessageClientListener;
-import com.sinch.android.rtc.messaging.MessageDeliveryInfo;
-import com.sinch.android.rtc.messaging.MessageFailureInfo;
 
 import java.util.Arrays;
 import java.util.List;
@@ -191,11 +181,15 @@ public class UsersFragment extends Fragment {
             layoutChatOffline.setVisibility(View.GONE);
             layoutGpsOff.setVisibility(View.GONE);
             layoutUsersDefault.setVisibility(View.GONE);
+            //Tomar valores de las preferencias de usuarios
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "10"));
+
             RefreshDataUsersTask refresDataTask = new RefreshDataUsersTask(getActivity(), currentUser, currentLocation, listViewUserOnline);
             refresDataTask.setSwipeRefreshLayout(swipeRefreshLayout);
             refresDataTask.setLayoutUsersFinder(layoutUsersFinder);
             refresDataTask.setLayoutUsersNoFound(layoutUsersNoFound);
-            refresDataTask.execute(5);
+            refresDataTask.execute(dist_max);
         } else {
             //1. Layouts Invisibles
             layoutUsersNoFound.setVisibility(View.GONE);
@@ -274,7 +268,7 @@ public class UsersFragment extends Fragment {
      *
      * @param userChat
      */
-    private void deleteLocalMessageHistory(final ParseUser userChat) {
+    private void deleteParseMessageHistory(final ParseUser userChat) {
         String formatMessage = "%s \"%s\"...";
         String nameUser = userChat.getString("name") != null ? userChat.getString("name") : userChat.getUsername();
         AlertDialogPro.Builder alert = new AlertDialogPro.Builder(getActivity());
@@ -287,15 +281,14 @@ public class UsersFragment extends Fragment {
                 dialog.setMessage(getResources().getString(R.string.msgDeleting));
                 dialog.show();
                 String[] userIds = {currentUser.getObjectId(), userChat.getObjectId()};
-                ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
+                ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZMessage");
                 query.whereContainedIn("senderId", Arrays.asList(userIds));
                 query.whereContainedIn("recipientId", Arrays.asList(userIds));
-                query.fromLocalDatastore();
                 query.findInBackground(new FindCallback<ParseObject>() {
                     @Override
                     public void done(List<ParseObject> parseObjects, ParseException e) {
                         if (e == null) {
-                            ParseObject.unpinAllInBackground(parseObjects);
+                            ParseObject.deleteAllInBackground(parseObjects);
                         }
                         dialog.dismiss();
                     }
@@ -360,7 +353,7 @@ public class UsersFragment extends Fragment {
         }
 
         //Buscar chats.
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZMessage");
         query.whereContainedIn("senderId", sendersId);
         query.whereEqualTo("messageRead", false);
         query.fromLocalDatastore();
@@ -451,7 +444,7 @@ public class UsersFragment extends Fragment {
                 AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
                 ParseUser parseUser = (ParseUser) listViewUserOnline.getAdapter().getItem(acmi.position);
                 if (parseUser != null)
-                    deleteLocalMessageHistory(parseUser);
+                    deleteParseMessageHistory(parseUser);
                 return true;
             case R.id.ctx_lock_user:
                 Toast.makeText(getActivity(), "Proximamente...", Toast.LENGTH_SHORT).show();

@@ -29,6 +29,7 @@ import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
@@ -83,6 +84,7 @@ public class DetailZimessActivity extends ActionBarActivity {
 
         inicializarCompUI();
         findZimessComment();
+        refreshDataZimess(zimessDetail);
     }
 
     private void inicializarCompUI() {
@@ -128,8 +130,6 @@ public class DetailZimessActivity extends ActionBarActivity {
         });
 
         progressBar = (ProgressBar) findViewById(R.id.progressLoad);
-
-        refreshDataZimess(zimessDetail);
 
         //Set custom hint
         if (zimessUser != null) {
@@ -190,12 +190,13 @@ public class DetailZimessActivity extends ActionBarActivity {
 
         //Todo verificar utilidad
         //Calcular distancia del Zimess remoto
-        Location currentLocation = getCurrentLocation();
+        /*Location currentLocation = getCurrentLocation();
         if (currentLocation != null) {
             Location zimessLocation = new Location(zimess.getLocation().getLatitude(), zimess.getLocation().getLongitude());
             ManagerDistance mDistance = new ManagerDistance(currentLocation, zimessLocation);
             lblDistance.setText(mDistance.getDistanciaToString());
-        }
+        }*/
+        lblDistance.setText(zimess.getDescDistancia());
         lblMessage.setText(zimess.getZimessText());
     }
 
@@ -210,10 +211,10 @@ public class DetailZimessActivity extends ActionBarActivity {
             return;
         }
         final ParseObject zimessObject = ParseObject.createWithoutData("ParseZimess", zimessDetail.getZimessId());
-        ParseObject commentObject = new ParseObject("ParseZComment");
-        commentObject.put("user", currentUser);
-        commentObject.put("zimessId", zimessObject);
-        commentObject.put("commentText", commentText);
+        ParseZComment commentObject = new ParseZComment();
+        commentObject.setUser(currentUser);
+        commentObject.setZimessId(zimessObject);
+        commentObject.setCommentText(commentText);
         commentObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -240,8 +241,9 @@ public class DetailZimessActivity extends ActionBarActivity {
     }
 
     private void updateCantComments() {
+        findZimessComment();
         //Usando ParseCloud
-        ParseCloud.callFunctionInBackground("ParseZComment", new HashMap<String, Object>(), new FunctionCallback<String>() {
+        ParseCloud.callFunctionInBackground(ParseZComment.class.getSimpleName(), new HashMap<String, Object>(), new FunctionCallback<String>() {
             public void done(String result, ParseException e) {
                 if (e == null) {
                     //System.out.println(result);
@@ -250,9 +252,8 @@ public class DetailZimessActivity extends ActionBarActivity {
                 }
             }
         });
-
-        findZimessComment();
-        findZimessUpdated();
+        //TODO comprobar funcionalidad
+        //findZimessUpdated();
     }
 
 

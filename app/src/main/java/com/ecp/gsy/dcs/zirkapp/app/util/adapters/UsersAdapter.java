@@ -69,7 +69,7 @@ public class UsersAdapter extends BaseAdapter {
         lblUserId.setText(parseUser.getObjectId());
         lblCommentUser.setText(parseUser.getUsername());
         lblCommentName.setText(parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername());
-        Integer cant = findCantLocalMessages(parseUser.getObjectId());
+        Integer cant = findCantParseMessages(parseUser.getObjectId());
         if (cant != null)
             lblCantMessages.setText(String.valueOf(cant));
         //Estableciendo Imagen;
@@ -77,14 +77,13 @@ public class UsersAdapter extends BaseAdapter {
         return vista;
     }
 
-    private Integer findCantLocalMessages(String senderId) {
+    private Integer findCantParseMessages(String senderId) {
         cantMessages = 0;
         ParseUser currentUser = ParseUser.getCurrentUser();
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseMessage");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZMessage");
         query.whereEqualTo("senderId", senderId);
         query.whereEqualTo("recipientId", currentUser.getObjectId());
         query.whereEqualTo("messageRead", false);
-        query.fromLocalDatastore();
         query.countInBackground(new CountCallback() {
             @Override
             public void done(int count, ParseException e) {
