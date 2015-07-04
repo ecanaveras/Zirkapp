@@ -11,12 +11,13 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.util.Log;
 
-import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
-import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemNotification;
-import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.ParseObject;
 import com.parse.ParsePushBroadcastReceiver;
@@ -35,7 +36,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
     private String targetId;
     private String receptorId;
     private String senderId;
-    private ItemNotification itemNotifi;
+    private ParseZNotifi itemNotifi;
     private ParseUser senderUser;
     private GlobalApplication globalApplication;
     private int typeNotification;
@@ -129,7 +130,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                     intent.putExtra("receptorId", receptorId);
                     intent.putExtra("senderId", senderId);
                     //Manejar Noti
-                    itemNotifi = new ItemNotification();
+                    itemNotifi = new ParseZNotifi();
                     itemNotifi.setTypeNoti(SendPushTask.PUSH_COMMENT);
                     summary = "Nuevo comentario";
                     typeNotiString = "[Coment]";
@@ -176,26 +177,22 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
     /**
      * Guarda la notificacion
      *
-     * @param item
+     * @param noti
      */
-    private void saveNotificacion(ItemNotification item) {
+    private void saveNotificacion(ParseZNotifi noti) {
         ParseUser receptorUser = findParseUser(receptorId);
-        if (item != null && senderUser != null && targetId != null && receptorUser != null) {
-            ParseObject noti = new ParseObject("ParseZNotifi");
-            noti.put("senderUser", senderUser);
-            noti.put("receptorUser", receptorUser);
-            switch (item.getTypeNoti()) {
+        if (noti != null && senderUser != null && targetId != null && receptorUser != null) {
+            noti.put(ParseZNotifi.SENDER_USER, senderUser);
+            noti.put(ParseZNotifi.RECEPTOR_USER, receptorUser);
+            switch (noti.getTypeNoti()) {
                 case SendPushTask.PUSH_CHAT:
                     noti.put("userTarget", ParseObject.createWithoutData("user", targetId));
                     break;
                 case SendPushTask.PUSH_COMMENT:
-                    noti.put("zimessTarget", ParseObject.createWithoutData("ParseZimess", targetId));
+                    noti.put(ParseZNotifi.ZIMESS_TARGET, ParseObject.createWithoutData(ParseZimess.class, targetId));
                     break;
             }
-            noti.put("detailNoti", item.getDetailNoti());
-            noti.put("summaryNoti", item.getSummaryNoti());
-            noti.put("typeNoti", item.getTypeNoti());
-            noti.put("readNoti", false);
+            noti.put(ParseZNotifi.READ_NOTI, false);
             noti.saveInBackground();
         }
     }

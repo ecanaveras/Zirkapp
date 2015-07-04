@@ -1,5 +1,6 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.beans;
 
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.parse.ParseUser;
 
 import java.util.Date;
@@ -18,7 +19,7 @@ public class ItemNotification {
     private boolean readNoti;
     private Date created;
     private ParseUser userTarget;
-    private Zimess zimessTarget;
+    private ParseZimess zimessTarget;
 
 
     public String getSummaryNoti() {
@@ -85,11 +86,11 @@ public class ItemNotification {
         this.userTarget = userTarget;
     }
 
-    public Zimess getZimessTarget() {
+    public ParseZimess getZimessTarget() {
         return zimessTarget;
     }
 
-    public void setZimessTarget(Zimess zimessTarget) {
+    public void setZimessTarget(ParseZimess zimessTarget) {
         this.zimessTarget = zimessTarget;
     }
 

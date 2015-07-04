@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
-import com.makeramen.roundedimageview.RoundedImageView;
 import com.parse.ParseUser;
 
 /**
@@ -69,7 +68,8 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser
                 txtWall.setText(user.getString("wall"));
             }
             if (txtNombres != null) {
-                txtNombres.setText(user.getString("name"));
+                String name = user.getString("name");
+                txtNombres.setText(name != null ? name : user.getUsername());
                 txtNombres.setVisibility(View.VISIBLE);
             }
         }

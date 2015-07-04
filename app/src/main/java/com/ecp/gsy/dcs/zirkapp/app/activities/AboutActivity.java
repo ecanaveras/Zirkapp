@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.R;
 
 /**
  * Created by Elder on 26/04/2015.

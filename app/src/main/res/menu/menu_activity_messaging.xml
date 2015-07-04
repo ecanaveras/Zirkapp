@@ -5,7 +5,7 @@
     <item
         android:id="@+id/action_bar_delete_chat"
         android:orderInCategory="210"
-        android:title="@string/lblDeleteChat"
+        android:title="@string/msgDeleteChat"
         app:showAsAction="never" />
 
 </menu>

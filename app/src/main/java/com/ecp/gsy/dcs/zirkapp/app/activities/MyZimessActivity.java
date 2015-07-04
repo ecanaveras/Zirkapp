@@ -3,14 +3,11 @@ package com.ecp.gsy.dcs.zirkapp.app.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,14 +20,10 @@ import android.widget.TextView;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessRecyclerAdapter;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
-import com.ecp.gsy.dcs.zirkapp.app.util.listener.RecyclerItemListener;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
 import com.parse.ParseUser;
-
-import java.util.ArrayList;
 
 /**
  * Created by Elder on 21/03/2015.
@@ -39,7 +32,6 @@ public class MyZimessActivity extends ActionBarActivity {
 
     private RecyclerView recyclerView;
     private ZimessRecyclerAdapter zReciclerAdapter;
-    public ArrayList<Zimess> zimessList = new ArrayList<Zimess>();
 
     private LinearLayout layoutZimessNoFound, layoutZimessFinder, layoutZimessDefault;
     private ParseUser currentUser;

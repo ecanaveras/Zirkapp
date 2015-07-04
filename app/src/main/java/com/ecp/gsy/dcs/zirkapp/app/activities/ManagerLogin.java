@@ -7,24 +7,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.widget.Toast;
-
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.LoginFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.SignupFragment;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
-import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.RegisterGcmTask;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
-import com.j256.ormlite.stmt.query.In;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class ManagerLogin extends Activity {

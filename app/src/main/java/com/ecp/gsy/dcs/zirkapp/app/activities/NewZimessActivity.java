@@ -23,17 +23,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
-import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
 import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -146,11 +146,11 @@ public class NewZimessActivity extends ActionBarActivity {
         final Location currentLocation = getCurrentLocation();
         if (currentLocation != null) {
             ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
-            ParseObject parseObject = new ParseObject("ParseZimess");
-            parseObject.put("user", currentUser);
-            parseObject.put("zimessText", zimessText);
-            parseObject.put("location", parseGeoPoint);
-            parseObject.saveInBackground(new SaveCallback() {
+            ParseZimess zimess = new ParseZimess();
+            zimess.put(ParseZimess.USER, currentUser);
+            zimess.put(ParseZimess.ZIMESS_TEXT, zimessText);
+            zimess.put(ParseZimess.LOCATION, parseGeoPoint);
+            zimess.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {

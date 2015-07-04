@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:weightSum="1">
 
     <include layout="@layout/component_toolbar" />
@@ -11,24 +10,20 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
         android:layout_weight="1"
-        android:minHeight="270dp">
+        android:gravity="center"
+        android:minHeight="270dp"
+        android:orientation="vertical">
 
-        <com.makeramen.roundedimageview.RoundedImageView
+        <ImageView
             android:id="@+id/imgAvatar"
             android:layout_width="280dp"
             android:layout_height="280dp"
-            android:layout_marginBottom="10dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_user_male"
+            android:layout_marginBottom="10dp"
             android:scaleType="centerCrop"
-            app:riv_corner_radius="30dip"
-            app:riv_border_width="1dp"
-            app:riv_border_color="@color/primary_text_color"
-            app:riv_oval="true" />
+            android:src="@drawable/ic_user_male" />
 
         <TextView
             android:id="@+id/txtUserNombres"
@@ -36,10 +31,10 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/imgAvatarH"
             android:layout_centerHorizontal="true"
-            android:textStyle="bold"
-            android:textSize="18sp"
+            android:text="Zirkapp"
             android:textColor="@color/primary_text_color"
-            android:text="Zirkapp" />
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <View style="@style/line_divider_h" />
 
@@ -47,11 +42,11 @@
             android:id="@+id/txtWall"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
             android:fontFamily="sans-serif-medium"
-            android:textSize="18sp"
+            android:gravity="center_horizontal"
+            android:text="I'm using Zirkapp!"
             android:textColor="@color/accent_color"
-            android:text="I'm using Zirkapp!" />
+            android:textSize="18sp" />
 
 
     </LinearLayout>
@@ -61,36 +56,36 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="110dp"
-            android:orientation="vertical"
-            android:layout_weight="1"
             android:layout_marginTop="8dp"
-            android:gravity="center_horizontal">
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
                 android:text="Zimess"
                 android:textColor="@color/primary_text_color"
-                android:fontFamily="sans-serif"
                 android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/txtCountZimess"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
                 android:layout_marginBottom="20dp"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
                 android:text="0"
-                android:textSize="30sp"
                 android:textColor="@color/default_primary_color"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif" />
+                android:textSize="30sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -115,30 +110,30 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="110dp"
-            android:orientation="vertical"
-            android:layout_weight="1"
             android:layout_marginTop="8dp"
-            android:gravity="center_horizontal">
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
                 android:text="@string/lblVisitas"
                 android:textColor="@color/primary_text_color"
-                android:fontFamily="sans-serif"
                 android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/txtCountVisit"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
                 android:layout_marginBottom="20dp"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
                 android:text="0"
-                android:textSize="30sp"
                 android:textColor="@color/default_primary_color"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif" />
+                android:textSize="30sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

@@ -49,14 +49,14 @@ public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUse
         this.listUsersOnline = listUsersOnline;
     }
 
-    public RefreshDataUsersTask(Context context, ParseUser currentUser, ArrayList<String> userList, ListView listHistory, TextView lblChatNoFound, boolean searching) {
+    public RefreshDataUsersTask(Context context, ParseUser currentUser, ArrayList<String> userList, ListView listHistory, TextView lblChatNoFound, LinearLayout layoutUsersFinder) {
         this.context = context;
         this.currentUser = currentUser;
         this.isSearchHistory = true;
         this.userList = userList;
         this.listUsersOnline = listHistory;
         this.lblChatNoFound = lblChatNoFound;
-        this.searching = searching;
+        this.layoutUsersFinder = layoutUsersFinder;
     }
 
     @Override

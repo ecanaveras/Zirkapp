@@ -8,14 +8,14 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
-import com.parse.CountCallback;
+import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,12 +24,13 @@ import java.util.List;
 public class UsersAdapter extends BaseAdapter {
 
     private List<ParseUser> parseUserList;
+    private ArrayList<ChatCount> chatCounts = new ArrayList<>();
     private Context context;
-    private int cantMessages;
 
     public UsersAdapter(Context context, List<ParseUser> parseUserList) {
         this.context = context;
         this.parseUserList = parseUserList;
+        countMessagesForUsers();
     }
 
     @Override
@@ -60,16 +61,17 @@ public class UsersAdapter extends BaseAdapter {
         //2. Iniciar UI de la lista
         TextView lblUserId = (TextView) vista.findViewById(R.id.lblUserId);
         ImageView imgAvatar = (ImageView) vista.findViewById(R.id.imgAvatar);
-        TextView lblCommentUser = (TextView) vista.findViewById(R.id.lblUserName);
-        TextView lblCommentName = (TextView) vista.findViewById(R.id.lblNombreUsuario);
+        TextView lblUsername = (TextView) vista.findViewById(R.id.lblUserName);
+        TextView lblNameUsuario = (TextView) vista.findViewById(R.id.lblNombreUsuario);
+        TextView lblEstado = (TextView) vista.findViewById(R.id.lblEstado);
         TextView lblCantMessages = (TextView) vista.findViewById(R.id.lblCantMessages);
-
 
         //3. Asignar valores
         lblUserId.setText(parseUser.getObjectId());
-        lblCommentUser.setText(parseUser.getUsername());
-        lblCommentName.setText(parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername());
-        Integer cant = findCantParseMessages(parseUser.getObjectId());
+        lblUsername.setText(parseUser.getUsername());
+        lblNameUsuario.setText(parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername());
+        lblEstado.setText(parseUser.getString("wall") != null ? parseUser.getString("wall") : "I'm using Zirkapp!");
+        Integer cant = findCantMessages(parseUser);
         if (cant != null)
             lblCantMessages.setText(String.valueOf(cant));
         //Estableciendo Imagen;
@@ -77,22 +79,64 @@ public class UsersAdapter extends BaseAdapter {
         return vista;
     }
 
-    private Integer findCantParseMessages(String senderId) {
-        cantMessages = 0;
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZMessage");
-        query.whereEqualTo("senderId", senderId);
-        query.whereEqualTo("recipientId", currentUser.getObjectId());
-        query.whereEqualTo("messageRead", false);
-        query.countInBackground(new CountCallback() {
-            @Override
-            public void done(int count, ParseException e) {
-                if (e == null && count > 0) {
-                    cantMessages = count;
+    private void countMessagesForUsers() {
+        if (parseUserList != null && parseUserList.size() > 0) {
+            ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
+            query.whereContainedIn(ParseZMessage.SENDER_ID, parseUserList);
+            query.whereEqualTo(ParseZMessage.MESSAGE_READ, false);
+            query.orderByAscending(ParseZMessage.SENDER_ID);
+            try {
+                List<ParseZMessage> zMessages = query.find();
+                for (ParseUser user : parseUserList) {
+                    int count = 0;
+                    for (ParseZMessage m : zMessages) {
+                        if (user.equals(m.getSenderId())) {
+                            count++;
+                        }
+                    }
+                    if (count > 0)
+                        chatCounts.add(new ChatCount(user, count));
                 }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
-        });
-        return cantMessages != 0 ? cantMessages : null;
+        }
+    }
+
+    private Integer findCantMessages(ParseUser user) {
+        for (ChatCount c : chatCounts) {
+            if (c.getUser().equals(user)) {
+                return c.getCantMessages();
+            }
+        }
+        return null;
+    }
+
+    private class ChatCount {
+
+        private ParseUser user;
+        private Integer cantMessages;
+
+        public ChatCount(ParseUser user, Integer cantMessages) {
+            this.user = user;
+            this.cantMessages = cantMessages;
+        }
+
+        public ParseUser getUser() {
+            return user;
+        }
+
+        public void setUser(ParseUser user) {
+            this.user = user;
+        }
+
+        public Integer getCantMessages() {
+            return cantMessages;
+        }
+
+        public void setCantMessages(Integer cantMessages) {
+            this.cantMessages = cantMessages;
+        }
     }
 
 }

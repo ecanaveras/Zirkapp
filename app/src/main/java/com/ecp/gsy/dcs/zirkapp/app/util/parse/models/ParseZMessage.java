@@ -15,49 +15,48 @@ public class ParseZMessage extends ParseObject {
     public static final String RECIPIENT_ID = "recipientId";
     public static final String MESSAGE_TEXT = "messageText";
     public static final String MESSAGE_READ = "messageRead";
-    public static final String CREATED_BY = "createdBy";
 
     //<editor-fold desc="METHODS GETTER">
     public String getSinchId() {
-        return getString("sinchId");
+        return getString(SINCH_ID);
     }
 
     public ParseUser getSenderId() {
-        return getParseUser("senderId");
+        return getParseUser(SENDER_ID);
     }
 
     public ParseUser getRecipientId() {
-        return getParseUser("recipientId");
+        return getParseUser(RECIPIENT_ID);
     }
 
     public String getMessageText() {
-        return getString("messageText");
+        return getString(MESSAGE_TEXT);
     }
 
     public boolean isMessageRead() {
-        return getBoolean("messageRead");
+        return getBoolean(MESSAGE_READ);
     }
     //</editor-fold>
 
     //<editor-fold desc="METHODS SETTERS">
     public void setSinchId(String sinchId) {
-        put("sinchId", sinchId);
+        put(SINCH_ID, sinchId);
     }
 
     public void setSenderId(ParseUser senderId) {
-        put("senderId", senderId);
+        put(SENDER_ID, senderId);
     }
 
     public void setRecipientId(ParseUser recipientId) {
-        put("recipientId", recipientId);
+        put(RECIPIENT_ID, recipientId);
     }
 
     public void setMessageText(String messageText) {
-        put("messageText", messageText);
+        put(MESSAGE_TEXT, messageText);
     }
 
     public void setMessageRead(boolean messageRead) {
-        put("messageRead", messageRead);
+        put(MESSAGE_READ, messageRead);
     }
     //</editor-fold>
 

@@ -9,16 +9,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.CommentsAdapter;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessComment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
-import com.parse.ParseObject;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Elder on 08/03/2015.
  */
-public class RefreshDataCommentsTask extends AsyncTask<String, Void, ArrayList<ZimessComment>> {
+public class RefreshDataCommentsTask extends AsyncTask<ParseZimess, Void, List<ParseZComment>> {
 
     private ProgressBar progressBar;
     private ListView listViewComment;
@@ -52,23 +52,12 @@ public class RefreshDataCommentsTask extends AsyncTask<String, Void, ArrayList<Z
     }
 
     @Override
-    protected ArrayList<ZimessComment> doInBackground(String... strings) {
-        ArrayList<ZimessComment> arrayListComment = new ArrayList<ZimessComment>();
-
-        for (ParseObject comment : DataParseHelper.findComments(strings[0])) {
-            ZimessComment zcomment = new ZimessComment();
-            zcomment.setCommentText(comment.get("commentText").toString());
-            zcomment.setUserComment(comment.getParseUser("user"));
-            zcomment.setCreateAt(comment.getCreatedAt());
-
-            arrayListComment.add(zcomment);
-        }
-
-        return arrayListComment;
+    protected List<ParseZComment> doInBackground(ParseZimess... zimess) {
+        return DataParseHelper.findComments(zimess[0]);
     }
 
     @Override
-    protected void onPostExecute(ArrayList<ZimessComment> arrayListComment) {
+    protected void onPostExecute(List<ParseZComment> arrayListComment) {
         CommentsAdapter adapterComment = new CommentsAdapter(context, arrayListComment);
         listViewComment.setAdapter(adapterComment);
 
@@ -79,7 +68,6 @@ public class RefreshDataCommentsTask extends AsyncTask<String, Void, ArrayList<Z
             progressBar.setVisibility(View.GONE);
 
         //scrollMyListViewToBottom(adapterComment.getCount() - 1);
-
         swipeRefreshLayout.setRefreshing(false);
     }
 

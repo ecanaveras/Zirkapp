@@ -10,18 +10,16 @@ import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NotifiAdapter;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemNotification;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
-import com.parse.ParseObject;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Elder on 04/05/2015.
  */
-public class RefreshDataNotifiTask extends AsyncTask<String, Void, ArrayList<ItemNotification>> {
+public class RefreshDataNotifiTask extends AsyncTask<String, Void, List<ParseZNotifi>> {
 
     private ListView listView;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -47,36 +45,12 @@ public class RefreshDataNotifiTask extends AsyncTask<String, Void, ArrayList<Ite
     }
 
     @Override
-    protected ArrayList<ItemNotification> doInBackground(String... params) {
-        ArrayList<ItemNotification> arrayList = new ArrayList<>();
-        for (ParseObject parseObject : DataParseHelper.findNotifications(receptorUser)) {
-            ItemNotification item = new ItemNotification();
-            item.setNotiId(parseObject.getObjectId());
-            item.setTypeNoti(parseObject.getInt("typeNoti"));
-            switch (item.getTypeNoti()) {
-                case SendPushTask.PUSH_CHAT:
-                    item.setUserTarget(parseObject.getParseUser("userTarget"));
-                    break;
-                case SendPushTask.PUSH_COMMENT:
-                    item.setZimessTarget(getZimess(parseObject.getParseObject("zimessTarget")));
-                    break;
-            }
-            item.setSenderUser(parseObject.getParseUser("senderUser"));
-            item.setReceptorUser(parseObject.getParseUser("receptorUser"));
-            item.setDetailNoti(parseObject.getString("detailNoti"));
-            item.setSummaryNoti(parseObject.getString("summaryNoti"));
-            item.setReadNoti(parseObject.getBoolean("readNoti"));
-            item.setCreated(parseObject.getCreatedAt());
-            if (!item.isReadNoti()) {
-                noLeidas++;
-            }
-            arrayList.add(item);
-        }
-        return arrayList;
+    protected List<ParseZNotifi> doInBackground(String... params) {
+        return DataParseHelper.findNotifications(receptorUser);
     }
 
     @Override
-    protected void onPostExecute(ArrayList<ItemNotification> itemNotifications) {
+    protected void onPostExecute(List<ParseZNotifi> itemNotifications) {
         NotifiAdapter adapter = new NotifiAdapter(context, itemNotifications);
         listView.setAdapter(adapter);
 
@@ -87,25 +61,5 @@ public class RefreshDataNotifiTask extends AsyncTask<String, Void, ArrayList<Ite
             lblNotiNotFound.setVisibility(View.VISIBLE);
 
         swipeRefreshLayout.setRefreshing(false);
-    }
-
-    /**
-     * Crea un Zimess
-     *
-     * @param parseObject
-     * @return
-     */
-    private Zimess getZimess(ParseObject parseObject) {
-        if (parseObject != null) {
-            Zimess zimessNew = new Zimess();
-            zimessNew.setZimessId(parseObject.getObjectId());
-            zimessNew.setUser(parseObject.getParseUser("user"));
-            zimessNew.setZimessText(parseObject.get("zimessText").toString());
-            zimessNew.setLocation(parseObject.getParseGeoPoint("location"));
-            zimessNew.setCantComment(parseObject.getInt("cant_comment"));
-            zimessNew.setCreateAt(parseObject.getCreatedAt());
-            return zimessNew;
-        }
-        return null;
     }
 }

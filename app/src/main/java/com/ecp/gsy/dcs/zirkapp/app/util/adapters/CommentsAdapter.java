@@ -8,22 +8,22 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ZimessComment;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Elder on 24/02/2015.
  */
 public class CommentsAdapter extends BaseAdapter {
 
-    private ArrayList<ZimessComment> zimessCommentArrayL;
+    private List<ParseZComment> zimessCommentArrayL;
     private Context context;
     private GlobalApplication globalApplication;
 
-    public CommentsAdapter(Context context, ArrayList<ZimessComment> zimessCommentArrayList) {
+    public CommentsAdapter(Context context, List<ParseZComment> zimessCommentArrayList) {
         this.context = context;
         this.zimessCommentArrayL = zimessCommentArrayList;
         globalApplication = (GlobalApplication) context.getApplicationContext();
@@ -52,7 +52,7 @@ public class CommentsAdapter extends BaseAdapter {
             vista = layoutInflater.inflate(R.layout.itemlist_comments, viewGroup, false);
         }
         //1. Crear ZimessComment
-        ZimessComment comment = zimessCommentArrayL.get(i);
+        ParseZComment comment = zimessCommentArrayL.get(i);
         //2. Iniciar UI de la lista
         ImageView imgAvatar = (ImageView) vista.findViewById(R.id.imgCommentAvatarItem);
         TextView lblCommentUser = (TextView) vista.findViewById(R.id.lblCommentUserName);
@@ -62,16 +62,17 @@ public class CommentsAdapter extends BaseAdapter {
         TextView lblNumComment = (TextView) vista.findViewById(R.id.lblNumComment);
 
         //3. Asignar valores
-        lblCommentUser.setText(comment.getUserComment().getUsername());
+        lblCommentUser.setText(comment.getUser().getUsername());
         lblCommentText.setText(comment.getCommentText());
         lblNumComment.setText(Integer.toString(i + 1));
 
-        lblCommentName.setText(comment.getUserComment().getString("name"));
+        String name = comment.getUser().getString("name");
+        lblCommentName.setText(name != null ? name : comment.getUser().getUsername());
         //Estableciendo Imagen;
         imgAvatar.setImageDrawable(comment.getAvatar());
 
         //Manejando tiempos transcurridos
-        String tiempoTranscurrido = globalApplication.getTimepass(comment.getCreateAt());
+        String tiempoTranscurrido = globalApplication.getTimepass(comment.getCreatedAt());
         lblTimePass.setText(tiempoTranscurrido);
 
         return vista;

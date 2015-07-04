@@ -1,5 +1,8 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.parse.models;
 
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -14,31 +17,40 @@ public class ParseZComment extends ParseObject {
     public static final String COMMENT_TEXT = "commentText";
     public static final String USER = "user";
 
+    /**
+     * Retorna la imagen del usuario
+     *
+     * @return
+     */
+    public RoundedBitmapDrawable getAvatar() {
+        return GlobalApplication.getAvatar(getUser());
+    }
+
     //<editor-fold desc="METHODS GETTERS">
     public String getCommentText() {
-        return getString("commentText");
+        return getString(COMMENT_TEXT);
     }
 
     public ParseUser getUser() {
-        return getParseUser("user");
+        return getParseUser(USER);
     }
 
     public ParseObject getZimessId() {
-        return getParseObject("zimessId");
+        return getParseObject(ZIMESS_ID);
     }
     //</editor-fold>
 
     //<editor-fold desc="METHODS SETTERS">
     public void setCommentText(String commentText) {
-        put("commentText", commentText);
+        put(COMMENT_TEXT, commentText);
     }
 
     public void setUser(ParseUser user) {
-        put("user", user);
+        put(USER, user);
     }
 
     public void setZimessId(ParseObject zimessId) {
-        put("zimessId", zimessId);
+        put(ZIMESS_ID, zimessId);
     }
     //</editor-fold>
 }

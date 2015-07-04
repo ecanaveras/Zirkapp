@@ -12,12 +12,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersTask;
 import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -51,7 +51,6 @@ public class ChatHistoryActivity extends ActionBarActivity {
 
         iniciarlizarCompUI();
         findParseMessageHistory();
-
     }
 
     private void iniciarlizarCompUI() {
@@ -77,26 +76,20 @@ public class ChatHistoryActivity extends ActionBarActivity {
      * Busca los mensajes previos en Local
      */
     private void findParseMessageHistory() {
-        if (searching)
-            return;
-
-        searching = true;
-
         final ArrayList<String> sendersId = new ArrayList<>();
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZMessage");
-        query.whereEqualTo("recipientId", currentUser.getObjectId());
+        ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
+        query.whereEqualTo(ParseZMessage.RECIPIENT_ID, currentUser);
         query.orderByAscending("createdAt");
-        //query.fromLocalDatastore();
-        query.findInBackground(new FindCallback<ParseObject>() {
+        query.findInBackground(new FindCallback<ParseZMessage>() {
             @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
+            public void done(List<ParseZMessage> zMessages, ParseException e) {
                 if (e == null) {
-                    for (ParseObject parseObj : parseObjects) {
-                        sendersId.add(parseObj.getString("senderId"));
+                    for (ParseZMessage parseObj : zMessages) {
+                        sendersId.add(parseObj.getSenderId().getObjectId());
                     }
                     Set<String> uniqueSenders = new HashSet<String>(sendersId);
-                    new RefreshDataUsersTask(activity, currentUser, new ArrayList<String>(uniqueSenders), listViewHistory, lblChatNoFound, searching).execute();
+                    new RefreshDataUsersTask(activity, currentUser, new ArrayList<String>(uniqueSenders), listViewHistory, lblChatNoFound, layoudHistoryFinder).execute();
                 } else {
                     Log.e("Parse.chat.history", e.getMessage());
                 }

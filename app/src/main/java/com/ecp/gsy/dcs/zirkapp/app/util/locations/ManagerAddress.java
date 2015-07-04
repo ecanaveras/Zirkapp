@@ -1,7 +1,8 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.locations;
 
 import android.content.Context;
-import android.location.*;
+import android.location.Address;
+import android.location.Geocoder;
 import android.util.Log;
 
 import java.io.IOException;

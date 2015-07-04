@@ -14,7 +14,7 @@ import com.gc.materialdesign.views.ButtonRectangle;
 /**
  * Created by Elder on 23/05/2015.
  */
-public class WelcomeFourFragment extends Fragment  implements View.OnClickListener{
+public class WelcomeFourFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

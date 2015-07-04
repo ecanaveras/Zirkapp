@@ -14,9 +14,9 @@ import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.UserProfileActivity;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 
 import java.util.List;
 
@@ -25,12 +25,12 @@ import java.util.List;
  */
 public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAdapter.ZimessViewHolder> {
 
-    private List<Zimess> zimessList;
+    private List<ParseZimess> zimessList;
     private Location currentLocation;
     private Context context;
     private GlobalApplication globalApplication;
 
-    public ZimessRecyclerAdapter(Context context, List<Zimess> zimessList, Location currentLocation) {
+    public ZimessRecyclerAdapter(Context context, List<ParseZimess> zimessList, Location currentLocation) {
         this.context = context;
         this.zimessList = zimessList;
         this.currentLocation = currentLocation;
@@ -47,16 +47,17 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
 
     @Override
     public void onBindViewHolder(ZimessViewHolder zimessViewHolder, int i) {
-        Zimess zimess = zimessList.get(i);
+        ParseZimess zimess = zimessList.get(i);
 
         zimessViewHolder.setZimess(zimess);
 
-        zimessViewHolder.lblAliasUsuario.setText(zimess.getUser().getString("name"));
+        String name = zimess.getUser().getString("name");
+        zimessViewHolder.lblAliasUsuario.setText(name != null ? name : zimess.getUser().getUsername());
 
         //Estableciendo Imagen;
         zimessViewHolder.imgAvatar.setImageDrawable(zimess.getAvatar());
 
-        zimessViewHolder.lblUsername.setText(zimess.getUser().getUsername());
+        zimessViewHolder.lblUsername.setText(null);// zimess.getUser().getUsername();
         zimessViewHolder.lblCantComments.setText(Integer.toString(zimess.getCantComment()));
 
         //cambiar icono cuando hay comentarios
@@ -68,7 +69,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         zimessViewHolder.lblMessage.setText(zimess.getZimessText());
 
         //Manejando tiempos transcurridos
-        String tiempoTranscurrido = GlobalApplication.getTimepass(zimess.getCreateAt());
+        String tiempoTranscurrido = GlobalApplication.getTimepass(zimess.getCreatedAt());
         zimessViewHolder.lblTimePass.setText(tiempoTranscurrido);
 
         //Calcular distancia del Zimess remoto
@@ -85,7 +86,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
 
     public class ZimessViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private Zimess zimess;
+        private ParseZimess zimess;
         private Context context;
 
         public TextView lblAliasUsuario,
@@ -125,7 +126,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
             }
         }
 
-        public void setZimess(Zimess zimess) {
+        public void setZimess(ParseZimess zimess) {
             this.zimess = zimess;
         }
 

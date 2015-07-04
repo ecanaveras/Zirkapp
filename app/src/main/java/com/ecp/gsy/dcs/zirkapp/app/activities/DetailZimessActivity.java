@@ -1,6 +1,5 @@
 package com.ecp.gsy.dcs.zirkapp.app.activities;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -14,7 +13,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,15 +22,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alertdialogpro.AlertDialogPro;
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
-import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
-import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataCommentsTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
@@ -40,7 +37,6 @@ import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -49,7 +45,7 @@ import java.util.HashMap;
 public class DetailZimessActivity extends ActionBarActivity {
 
     private GlobalApplication globalApplication;
-    private Zimess zimessDetail;
+    private ParseZimess zimessDetail;
     private ParseUser currentUser, zimessUser;
 
     public boolean isZimessUpdated = false;
@@ -169,7 +165,7 @@ public class DetailZimessActivity extends ActionBarActivity {
         });
     }
 
-    public void refreshDataZimess(Zimess zimess) {
+    public void refreshDataZimess(ParseZimess zimess) {
         //Estableciendo Imagen;
         imgAvatar.setImageDrawable(zimess.getAvatar());
 
@@ -183,7 +179,7 @@ public class DetailZimessActivity extends ActionBarActivity {
         else
             imgComment.setImageResource(R.drawable.ic_icon_response);
         //Manejando tiempos transcurridos
-        String tiempoTranscurrido = globalApplication.getTimepass(zimess.getCreateAt());
+        String tiempoTranscurrido = globalApplication.getTimepass(zimess.getCreatedAt());
         lblTimePass.setText(tiempoTranscurrido);
 
         //lblCreatedAt.setText(globalApplication.getDescFechaPublicacion(zimess.getCreateAt()));
@@ -210,10 +206,9 @@ public class DetailZimessActivity extends ActionBarActivity {
             Toast.makeText(this, getResources().getString(R.string.msgZimessNull), Toast.LENGTH_SHORT).show();
             return;
         }
-        final ParseObject zimessObject = ParseObject.createWithoutData("ParseZimess", zimessDetail.getZimessId());
         ParseZComment commentObject = new ParseZComment();
         commentObject.setUser(currentUser);
-        commentObject.setZimessId(zimessObject);
+        commentObject.setZimessId(zimessDetail);
         commentObject.setCommentText(commentText);
         commentObject.saveInBackground(new SaveCallback() {
             @Override
@@ -221,10 +216,10 @@ public class DetailZimessActivity extends ActionBarActivity {
                 if (e == null) {
                     updateCantComments();
                     try {
-                        String receptorId = zimessObject.fetchIfNeeded().getParseUser("user").getObjectId();
+                        String receptorId = zimessDetail.fetchIfNeeded().getParseUser("user").getObjectId();
                         if (receptorId != null && !currentUser.getObjectId().equals(receptorId)) {
                             String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
-                            new SendPushTask(zimessDetail.getZimessId(), receptorId, currentUser.getObjectId(), name, commentText, SendPushTask.PUSH_COMMENT).execute();
+                            new SendPushTask(zimessDetail.getObjectId(), receptorId, currentUser.getObjectId(), name, commentText, SendPushTask.PUSH_COMMENT).execute();
                         }
                     } catch (ParseException e1) {
                         Log.e("find.parse.user", e.getMessage());
@@ -259,7 +254,7 @@ public class DetailZimessActivity extends ActionBarActivity {
 
     private void findZimessComment() {
         //Actualizar Lista de Comentarios
-        new RefreshDataCommentsTask(this, progressBar, listComment, swipeRefreshLayout).execute(zimessDetail.getZimessId());
+        new RefreshDataCommentsTask(this, progressBar, listComment, swipeRefreshLayout).execute(zimessDetail);
     }
 
     private void findZimessUpdated() {
@@ -279,7 +274,7 @@ public class DetailZimessActivity extends ActionBarActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (zimessDetail != null) {
                     //Delete
-                    new DeleteDataZimessTask(DetailZimessActivity.this).execute(zimessDetail.getZimessId());
+                    new DeleteDataZimessTask(DetailZimessActivity.this).execute(zimessDetail);
                     getCurrentLocation(false); //actualizar Zimess
                 }
             }

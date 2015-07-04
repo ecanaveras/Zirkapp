@@ -155,7 +155,6 @@
     <string name="msgZimessNull">Problemas con el Zimess, intenta mas tarde!</string>
     <string name="msgCommentError">Error al enviar tu comentario, reintentalo!</string>
     <string name="msgGpsOff">Zirkapp no puede obtener tu ubicación, GPS off.</string>
-    <string name="lblDeleteChat">Borrar Conversación</string>
     <string name="msgByeChat">Despidete del historial de este chat...</string>
     <string name="msgByeChat2">Despidete de la charla con</string>
     <string name="msgLockUser">Bloquear</string>
@@ -164,6 +163,7 @@
     <string name="mgsLoging">Ingresando...</string>
     <string name="msgLogout2">Quieres cerrar sesión?</string>
     <string name="msgStarting">Iniciando servicios...</string>
+    <string name="msgChatDeleteOk">Conversación borrada!</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

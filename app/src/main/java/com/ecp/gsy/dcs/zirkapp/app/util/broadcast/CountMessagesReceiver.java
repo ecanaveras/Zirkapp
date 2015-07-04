@@ -9,15 +9,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.parse.CountCallback;
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by Elder on 17/04/2015.

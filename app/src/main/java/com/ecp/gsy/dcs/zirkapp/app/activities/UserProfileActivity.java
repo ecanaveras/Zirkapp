@@ -11,18 +11,16 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
-import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZVisit;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
-import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import java.util.List;
 
 /**
  * Created by Elder on 07/02/2015.
@@ -86,23 +84,14 @@ public class UserProfileActivity extends ActionBarActivity {
         }
 
         //Buscar si existe
-        final ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZVisit");
-        query.whereEqualTo("user", parseUser);
-        query.findInBackground(new FindCallback<ParseObject>() {
+        final ParseQuery<ParseZVisit> query = ParseQuery.getQuery(ParseZVisit.class);
+        query.whereEqualTo(ParseZVisit.USER, parseUser);
+        query.getFirstInBackground(new GetCallback<ParseZVisit>() {
             @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (parseObjects.size() > 0) {
-                    objectId = parseObjects.get(0).getObjectId();
-                }
-                if (objectId != null) {//actualizar
-                    query.getInBackground(objectId, new GetCallback<ParseObject>() {
-                        @Override
-                        public void done(ParseObject parseObject, ParseException e) {
-                            if (e == null) {
-                                createOrUpdateVisit(parseObject, parseUser); //Actualiza
-                            }
-                        }
-                    });
+            public void done(ParseZVisit parseZVisit, ParseException e) {
+                if (e == null && parseZVisit != null) {
+                    //Actualizar
+                    createOrUpdateVisit(parseZVisit, parseUser);
                 } else {
                     createOrUpdateVisit(null, parseUser);
                 }
@@ -111,13 +100,18 @@ public class UserProfileActivity extends ActionBarActivity {
 
     }
 
-    private void createOrUpdateVisit(ParseObject inParseObject, ParseUser parseUser) {
-        ParseObject parseObject = inParseObject;
+    /**
+     * Crea o actualiza las visitas al usuario
+     *
+     * @param parseObject
+     * @param parseUser
+     */
+    private void createOrUpdateVisit(ParseZVisit parseObject, ParseUser parseUser) {
         if (parseObject == null) {
-            parseObject = new ParseObject("ParseZVisit");
+            parseObject = new ParseZVisit();
         }
-        parseObject.put("user", parseUser);
-        parseObject.increment("count_visit");
+        parseObject.put(ParseZVisit.USER, parseUser);
+        parseObject.increment(ParseZVisit.COUNT_VISIT);
         parseObject.saveInBackground();
     }
 

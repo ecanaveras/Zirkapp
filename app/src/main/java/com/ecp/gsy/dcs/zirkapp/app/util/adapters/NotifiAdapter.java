@@ -9,24 +9,24 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemNotification;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Elder on 04/05/2015.
  */
 public class NotifiAdapter extends BaseAdapter {
 
-    private ArrayList<ItemNotification> notificationArrayList;
+    private List<ParseZNotifi> notificationArrayList;
     private Context context;
     private int cantNotiNoRead = 0;
 
-    public NotifiAdapter(Context context, ArrayList<ItemNotification> notificationArrayList) {
-        this.notificationArrayList = notificationArrayList;
+    public NotifiAdapter(Context context, List<ParseZNotifi> notifiList) {
+        this.notificationArrayList = notifiList;
         this.context = context;
     }
 
@@ -54,7 +54,7 @@ public class NotifiAdapter extends BaseAdapter {
         }
 
         //1.Tomar Item
-        ItemNotification item = notificationArrayList.get(position);
+        ParseZNotifi item = notificationArrayList.get(position);
         //2. Manipular UI
         LinearLayout contentItem = (LinearLayout) vista.findViewById(R.id.layoutItemNoti);
         ImageView avatar = (ImageView) vista.findViewById(R.id.imgIconNoti);
@@ -77,7 +77,7 @@ public class NotifiAdapter extends BaseAdapter {
         avatar.setImageDrawable(GlobalApplication.getAvatar(item.getSenderUser()));
         summary.setText(item.getSummaryNoti());
         detail.setText(item.getDetailNoti());
-        createdAt.setText(new SimpleDateFormat("dd/MM/yyyy hh:mm a").format(item.getCreated()));
+        createdAt.setText(new SimpleDateFormat("dd/MM/yyyy hh:mm a").format(item.getCreatedAt()));
         if (!item.isReadNoti()) {
             contentItem.setBackgroundColor(context.getResources().getColor(R.color.light_primary_color));
         } else {

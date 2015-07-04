@@ -23,15 +23,13 @@ import android.view.Gravity;
 import android.widget.Toast;
 
 import com.alertdialogpro.AlertDialogPro;
-import com.ecp.gsy.dcs.zirkapp.app.activities.AboutActivity;
-import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
-import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerLogin;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.activities.AboutActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerLogin;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.parse.ParseUser;

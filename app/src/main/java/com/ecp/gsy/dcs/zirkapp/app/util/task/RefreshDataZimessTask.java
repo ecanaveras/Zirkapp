@@ -9,13 +9,10 @@ import android.widget.LinearLayout;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
-import com.ecp.gsy.dcs.zirkapp.app.activities.MyZimessActivity;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessRecyclerAdapter;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
-import com.parse.ParseObject;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -24,7 +21,7 @@ import java.util.List;
 /**
  * Created by Elder on 09/03/2015.
  */
-public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>> {
+public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<ParseZimess>> {
 
     public static final int RECIENTE = 0;
     public static final int CERCA = 1;
@@ -34,7 +31,7 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
 
     private Location currentLocation;
     private boolean findUniqueZimess = false;
-    private Zimess zimessDetail;
+    private ParseZimess zimessDetail;
     private DetailZimessActivity detailZimessActivity;
     private boolean findForUser = false;
     private ParseUser parseUser;
@@ -100,7 +97,7 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
      * @param detailZimessActivity
      * @param zimessDetail
      */
-    public RefreshDataZimessTask(DetailZimessActivity detailZimessActivity, Zimess zimessDetail) {
+    public RefreshDataZimessTask(DetailZimessActivity detailZimessActivity, ParseZimess zimessDetail) {
         this.detailZimessActivity = detailZimessActivity;
         this.zimessDetail = zimessDetail;
         this.findUniqueZimess = this.zimessDetail != null;
@@ -116,12 +113,12 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
     }
 
     @Override
-    protected List<Zimess> doInBackground(Integer... integers) {
-        List<Zimess> zimessResult = new ArrayList<Zimess>();
+    protected List<ParseZimess> doInBackground(Integer... integers) {
+        List<ParseZimess> zimessResult = new ArrayList<>();
         //Buscar por ubicacion
         if (currentLocation != null && !findForUser && !findUniqueZimess) {
-            for (ParseObject parseZimess : DataParseHelper.findZimessLocation(currentLocation, integers[0], integers[1], sortZimess)) {
-                zimessResult.add(getZimess(parseZimess));
+            for (ParseZimess parseZimess : DataParseHelper.findZimessLocation(currentLocation, integers[0], integers[1], sortZimess)) {
+                zimessResult.add(parseZimess);
             }
             //Cant de Zimess en el Drawer
             GlobalApplication.setCantZimess(zimessResult.size());
@@ -129,32 +126,24 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
 
         //Buscar por Usuario
         if (findForUser) {
-            for (ParseObject parseZimess : DataParseHelper.findZimess(parseUser)) {
-                zimessResult.add(getZimess(parseZimess));
+            for (ParseZimess parseZimess : DataParseHelper.findZimess(parseUser)) {
+                zimessResult.add(parseZimess);
             }
         }
 
         //Buscar unico Zimess
         if (findUniqueZimess) {
-            ParseObject parseZimess = DataParseHelper.findZimess(zimessDetail.getZimessId());
+            ParseZimess parseZimess = DataParseHelper.findZimess(zimessDetail.getObjectId());
             if (parseZimess != null)
-                zimessResult.add(getZimess(parseZimess));
+                zimessResult.add(parseZimess);
         }
 
         return zimessResult;
     }
 
     @Override
-    protected void onPostExecute(List<Zimess> zimessList) {
+    protected void onPostExecute(List<ParseZimess> zimessList) {
         if (!findUniqueZimess) {
-            if (ZimessFragment.isRunning() && !findForUser) {
-                ZimessFragment zimessFragment = ZimessFragment.getInstance();
-                zimessFragment.zimessList = (ArrayList<Zimess>) zimessList;
-            }
-            if (findForUser) {
-                MyZimessActivity activity = (MyZimessActivity) context;
-                activity.zimessList = (ArrayList<Zimess>) zimessList;
-            }
             zReciclerAdapter = new ZimessRecyclerAdapter(context, zimessList, currentLocation);
             recyclerView.setAdapter(zReciclerAdapter);
             zReciclerAdapter.notifyDataSetChanged();
@@ -183,26 +172,6 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<Zimess>
 
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);
-    }
-
-    /**
-     * Crea un Zimess
-     *
-     * @param zimess
-     * @return
-     */
-    private Zimess getZimess(ParseObject zimess) {
-        if (zimess != null) {
-            Zimess zimessNew = new Zimess();
-            zimessNew.setZimessId(zimess.getObjectId());
-            zimessNew.setUser(zimess.getParseUser("user"));
-            zimessNew.setZimessText(zimess.get("zimessText").toString());
-            zimessNew.setLocation(zimess.getParseGeoPoint("location"));
-            zimessNew.setCantComment(zimess.getInt("cant_comment"));
-            zimessNew.setCreateAt(zimess.getCreatedAt());
-            return zimessNew;
-        }
-        return null;
     }
 
     public void setSwipeRefreshLayout(SwipeRefreshLayout swipeRefreshLayout) {

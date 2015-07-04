@@ -3,7 +3,6 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,8 +19,8 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.HomeReceiver;
 
 /**

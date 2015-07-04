@@ -21,10 +21,12 @@ import android.util.Log;
 
 import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZVisit;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
@@ -61,7 +63,7 @@ public class GlobalApplication extends Application {
     //Parse
     private ParseUser currentUser;
     private ParseUser customParseUser;
-    private Zimess tempZimess;
+    private ParseZimess tempZimess;
 
     //Cantidades para el drawer
     private static Integer cantZimess;
@@ -84,9 +86,12 @@ public class GlobalApplication extends Application {
         Parse.enableLocalDatastore(this);
 
         //Registrando Modelos
+        ParseObject.registerSubclass(ParseZimess.class);
         ParseObject.registerSubclass(ParseZComment.class);
         ParseObject.registerSubclass(ParseZMessage.class);
         ParseObject.registerSubclass(ParseZHistory.class);
+        ParseObject.registerSubclass(ParseZNotifi.class);
+        ParseObject.registerSubclass(ParseZVisit.class);
 
         //Iniciar Parse
         Parse.initialize(this, getResources().getString(R.string.parse_api_id), getResources().getString(R.string.parse_api_key));
@@ -260,11 +265,11 @@ public class GlobalApplication extends Application {
         return inSampleSize;
     }
 
-    public Zimess getTempZimess() {
+    public ParseZimess getTempZimess() {
         return tempZimess;
     }
 
-    public void setTempZimess(Zimess tempZimess) {
+    public void setTempZimess(ParseZimess tempZimess) {
         this.tempZimess = tempZimess;
     }
 

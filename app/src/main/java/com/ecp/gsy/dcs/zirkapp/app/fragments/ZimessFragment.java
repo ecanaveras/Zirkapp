@@ -6,13 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,20 +24,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alertdialogpro.AlertDialogPro;
-import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MyZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.NewZimessActivity;
-import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.activities.UserProfileActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessRecyclerAdapter;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
-import com.ecp.gsy.dcs.zirkapp.app.util.listener.RecyclerItemListener;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
-import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
-
-import java.util.ArrayList;
 
 /**
  * Created by Elder on 23/02/2015.
@@ -53,7 +44,6 @@ public class ZimessFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ZimessRecyclerAdapter zReciclerAdapter;
-    public ArrayList<Zimess> zimessList = new ArrayList<Zimess>();
 
     private Menu menuList;
     private LinearLayout layoutZimessNoFound, layoutInternetOff, layoutZimessFinder, layoutGpsOff, layoutZimessDefault;

@@ -5,15 +5,15 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
+import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 
 /**
  * Created by Elder on 22/03/2015.
  */
-public class DeleteDataZimessTask extends AsyncTask<String, Void, Boolean> {
+public class DeleteDataZimessTask extends AsyncTask<ParseZimess, Void, Boolean> {
 
     private ProgressDialog progressDialog;
     private Context context;
@@ -30,7 +30,7 @@ public class DeleteDataZimessTask extends AsyncTask<String, Void, Boolean> {
     }
 
     @Override
-    protected Boolean doInBackground(String... params) {
+    protected Boolean doInBackground(ParseZimess... params) {
         Boolean deleteOk = false;
         if (params.length > 0 && params[0] != null) {
             deleteOk = DataParseHelper.deleteDataZimess(params[0]);

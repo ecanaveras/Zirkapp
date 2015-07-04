@@ -16,29 +16,29 @@ public class ParseZHistory extends ParseObject {
 
     //<editor-fold desc="METHODS GETTERS">
     public String getSinchId() {
-        return getString("sinchId");
+        return getString(SINCH_ID);
     }
 
     public ParseZMessage getZMessageId() {
-        return (ParseZMessage) getParseObject("zmessageId");
+        return (ParseZMessage) getParseObject(ZMESSAGE_ID);
     }
 
     public ParseUser getUser() {
-        return getParseUser("user");
+        return getParseUser(USER);
     }
     //</editor-fold>
 
     //<editor-fold desc="METHODS SETTERS">
     public void setZMessageId(ParseZMessage zMessageId) {
-        put("zmessageId", zMessageId);
+        put(ZMESSAGE_ID, zMessageId);
     }
 
     public void setSinchId(String sinchId) {
-        put("sinchId", sinchId);
+        put(SINCH_ID, sinchId);
     }
 
     public void setUser(ParseUser user) {
-        put("user", user);
+        put(USER, user);
     }
     //</editor-fold>
 

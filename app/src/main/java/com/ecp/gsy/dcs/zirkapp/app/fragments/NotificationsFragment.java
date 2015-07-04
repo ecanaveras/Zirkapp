@@ -17,20 +17,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
-import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemNotification;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemNotification;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataNotifiTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
-import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-
-import java.util.List;
 
 /**
  * Created by Elder on 24/02/2015.
@@ -132,15 +130,14 @@ public class NotificationsFragment extends Fragment {
      * @param item
      */
     private void saveReadNotificacion(ItemNotification item) {
-        ParseQuery query = new ParseQuery("ParseZNotifi");
+        ParseQuery query = new ParseQuery(ParseZNotifi.class);
         query.whereEqualTo("objectId", item.getNotiId());
-        query.findInBackground(new FindCallback<ParseObject>() {
+        query.getFirstInBackground(new GetCallback<ParseZNotifi>() {
             @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                if (e == null && list.size() > 0) {
-                    ParseObject notifi = list.get(0);
-                    notifi.put("readNoti", true);
-                    notifi.saveInBackground(new SaveCallback() {
+            public void done(ParseZNotifi parseZNotifi, ParseException e) {
+                if (e == null && parseZNotifi != null) {
+                    parseZNotifi.put(ParseZNotifi.READ_NOTI, true);
+                    parseZNotifi.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {

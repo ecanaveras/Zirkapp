@@ -26,7 +26,7 @@ public class UpdateDrawerReceiver extends BroadcastReceiver {
         Integer datos = (Integer) intent.getSerializableExtra("datos");
         if (datos != null) {
             this.cantRows = datos;
-            if(textView != null) {
+            if (textView != null) {
                 textView.setText(Integer.toString(datos));
             }
         }

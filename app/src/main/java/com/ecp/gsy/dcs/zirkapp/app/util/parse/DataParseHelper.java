@@ -3,7 +3,10 @@ package com.ecp.gsy.dcs.zirkapp.app.util.parse;
 import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZVisit;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -11,9 +14,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Elder on 11/03/2015.
@@ -30,7 +31,7 @@ public class DataParseHelper {
      * @return
      */
     public static List<ParseUser> findUsersLocation(ParseUser currentUser, Location currentLocation, int cantKmAround) {
-        List<ParseUser> listUsers = new ArrayList<ParseUser>();
+        List<ParseUser> listUsers = new ArrayList<>();
         //Buscar Usuarios
         ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
         ParseQuery<ParseUser> query = ParseUser.getQuery();
@@ -59,7 +60,7 @@ public class DataParseHelper {
      * @return
      */
     public static List<ParseUser> findUsersList(ArrayList<String> usersSearch) {
-        List<ParseUser> listUsers = new ArrayList<ParseUser>();
+        List<ParseUser> listUsers = new ArrayList<>();
         //Buscar Usuarios
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.whereContainedIn("objectId", usersSearch);
@@ -76,18 +77,15 @@ public class DataParseHelper {
     /**
      * Busca los comentarios de un Zimess
      *
-     * @param zimessId
+     * @param zimess
      * @return
      */
-    public static List<ParseObject> findComments(String zimessId) {
-        List<ParseObject> listParseComments = new ArrayList<ParseObject>();
+    public static List<ParseZComment> findComments(ParseZimess zimess) {
+        List<ParseZComment> listParseComments = new ArrayList<>();
         //Buscar por Zimess
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZComment");
-        //Buscar Zimess a filtrar
-        ParseQuery<ParseObject> innerquery = ParseQuery.getQuery("ParseZimess");
-        innerquery.whereEqualTo("objectId", zimessId);
-        query.whereMatchesKeyInQuery("zimessId", "objectId", innerquery);//ParseObject.createWithoutData("ParseZimess", zimessId));
-        query.include("user");
+        ParseQuery<ParseZComment> query = ParseQuery.getQuery(ParseZComment.class);
+        query.whereEqualTo(ParseZComment.ZIMESS_ID, zimess);
+        query.include(ParseZComment.USER);
         query.orderByAscending("createdAt");
         try {
             listParseComments = query.find();
@@ -104,13 +102,12 @@ public class DataParseHelper {
      * @param receptorUser
      * @return
      */
-    public static List<ParseObject> findNotifications(ParseUser receptorUser) {
-        List<ParseObject> parseObjects = new ArrayList<>();
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZNotifi");
-        query.whereEqualTo("receptorUser", receptorUser);
-        query.include("senderUser");
-        query.include("userTarget");
-        query.include("zimessTarget");
+    public static List<ParseZNotifi> findNotifications(ParseUser receptorUser) {
+        List<ParseZNotifi> parseObjects = new ArrayList<>();
+        ParseQuery<ParseZNotifi> query = ParseQuery.getQuery(ParseZNotifi.class);
+        query.whereEqualTo(ParseZNotifi.RECEPTOR_USER, receptorUser);
+        query.include(ParseZNotifi.SENDER_USER);
+        query.include(ParseZNotifi.ZIMESS_TARGET);
         query.orderByDescending("createdAt");
         query.setLimit(30);
         try {
@@ -129,30 +126,30 @@ public class DataParseHelper {
      * @param cantMaxKmAround
      * @return
      */
-    public static List<ParseObject> findZimessLocation(Location currentLocation, int cantMinKmAround, int cantMaxKmAround, int sortZimess) {
-        List<ParseObject> listZimess = new ArrayList();
+    public static List<ParseZimess> findZimessLocation(Location currentLocation, int cantMinKmAround, int cantMaxKmAround, int sortZimess) {
+        List<ParseZimess> listZimess = new ArrayList<>();
         //Buscar Zimess
         ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
         //Distancia Maxima
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZimess");
-        query.whereWithinKilometers("location", parseGeoPoint, cantMaxKmAround);
+        ParseQuery<ParseZimess> query = ParseQuery.getQuery(ParseZimess.class);
+        query.whereWithinKilometers(ParseZimess.LOCATION, parseGeoPoint, cantMaxKmAround);
         //Distancia minima
         if (cantMinKmAround != -1) {
             //Buscar y excluir el rango minimo
-            ParseQuery<ParseObject> innerQuery = ParseQuery.getQuery("ParseZimess");
-            innerQuery.whereWithinKilometers("location", parseGeoPoint, cantMinKmAround);
+            ParseQuery<ParseZimess> innerQuery = ParseQuery.getQuery(ParseZimess.class);
+            innerQuery.whereWithinKilometers(ParseZimess.LOCATION, parseGeoPoint, cantMinKmAround);
             query.whereDoesNotMatchKeyInQuery("objectId", "objectId", innerQuery);
         }
 
         //Orden
         switch (sortZimess) {
             case 1:
-                query.whereNear("location", parseGeoPoint);
+                query.whereNear(ParseZimess.LOCATION, parseGeoPoint);
                 //query.orderByDescending("location");
                 break;
             case 2: //No se usa
-                query.whereNear("location", parseGeoPoint);
-                query.orderByAscending("location");
+                query.whereNear(ParseZimess.LOCATION, parseGeoPoint);
+                query.orderByAscending(ParseZimess.LOCATION);
                 break;
             default:
                 query.orderByDescending("createdAt");
@@ -160,7 +157,7 @@ public class DataParseHelper {
         }
 
         try {
-            query.include("user");
+            query.include(ParseZimess.USER);
             listZimess = query.find();
         } catch (ParseException e) {
             Log.e("Parse.Zimess", e.getMessage());
@@ -175,10 +172,10 @@ public class DataParseHelper {
      * @param zimessId
      * @return
      */
-    public static ParseObject findZimess(String zimessId) {
-        List<ParseObject> listZimess = new ArrayList<ParseObject>();
+    public static ParseZimess findZimess(String zimessId) {
+        List<ParseZimess> listZimess = new ArrayList<>();
         //Buscar Zimess
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZimess");
+        ParseQuery<ParseZimess> query = ParseQuery.getQuery(ParseZimess.class);
         query.whereEqualTo("objectId", zimessId);
         try {
             listZimess = query.find();
@@ -195,11 +192,11 @@ public class DataParseHelper {
      * @param parseUser
      * @return
      */
-    public static List<ParseObject> findZimess(ParseUser parseUser) {
-        List<ParseObject> listZimess = new ArrayList<ParseObject>();
+    public static List<ParseZimess> findZimess(ParseUser parseUser) {
+        List<ParseZimess> listZimess = new ArrayList<>();
         //Buscar Zimess
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZimess");
-        query.whereEqualTo("user", parseUser);
+        ParseQuery<ParseZimess> query = ParseQuery.getQuery(ParseZimess.class);
+        query.whereEqualTo(ParseZimess.USER, parseUser);
         query.orderByDescending("createdAt");
         try {
             listZimess = query.find();
@@ -219,8 +216,8 @@ public class DataParseHelper {
     public static Integer findCountZimess(ParseUser parseUser) {
         Integer cantZimess = 0;
         //Buscar Zimess
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZimess");
-        query.whereEqualTo("user", parseUser);
+        ParseQuery<ParseZimess> query = ParseQuery.getQuery(ParseZimess.class);
+        query.whereEqualTo(ParseZimess.USER, parseUser);
         try {
             cantZimess = query.count();
         } catch (ParseException e) {
@@ -236,9 +233,9 @@ public class DataParseHelper {
      * @param parseUser
      * @return
      */
-    public static ParseObject findDataVisit(ParseUser parseUser) {
-        List<ParseObject> listVisita = new ArrayList<ParseObject>();
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZVisit");
+    public static ParseZVisit findDataVisit(ParseUser parseUser) {
+        List<ParseZVisit> listVisita = new ArrayList<>();
+        ParseQuery<ParseZVisit> query = ParseQuery.getQuery(ParseZVisit.class);
         query.whereEqualTo("user", parseUser);
         try {
             listVisita = query.find();
@@ -279,18 +276,20 @@ public class DataParseHelper {
      *
      * @return
      */
-    public static boolean deleteDataZimess(final String zimessId) {
+    public static boolean deleteDataZimess(final ParseZimess zimess) {
         deleteOk = false;
-        if (zimessId != null) {
+        if (zimess != null) {
             //Buscar los comentarios.
-            List<ParseObject> listParseComments = new ArrayList<ParseObject>();
-            listParseComments = findComments(zimessId);
-            //Eliminar los comentarios
-            ParseObject.deleteAllInBackground(listParseComments);
+            List<ParseZComment> listParseComments = findComments(zimess);
+            if (listParseComments.size() > 0) {
+                //Eliminar los comentarios
+                ParseObject.deleteAllInBackground(listParseComments);
+            }
             //Eliminar Zimess
-            ParseObject zimess = findZimess(zimessId);
+            //ParseObject zimessDelete = findZimess(zimess.getObjectId());
             try {
                 zimess.delete();
+                //zimessDelete.delete();
                 deleteOk = true;
             } catch (ParseException e1) {
                 Log.e("Parse.delete.Zimess", e1.getMessage());

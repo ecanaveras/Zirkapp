@@ -24,12 +24,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alertdialogpro.AlertDialogPro;
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
-import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -201,12 +201,11 @@ public class MessagingActivity extends ActionBarActivity {
                                 @Override
                                 public void done(ParseException e) {
                                     if (e == null) {
-                                        saveParseHistoty(parseZMessage, writableMessage, currentUser); //Usuario que envia el mensaje
-                                        saveParseHistoty(parseZMessage, writableMessage, receptorUser); //Usuario que recibe el mensaje
+                                        saveParseHistory(parseZMessage, writableMessage, currentUser); //Usuario que envia el mensaje
+                                        saveParseHistory(parseZMessage, writableMessage, receptorUser); //Usuario que recibe el mensaje
                                     }
                                 }
                             });
-
                         }
                     }
                 }
@@ -221,7 +220,7 @@ public class MessagingActivity extends ActionBarActivity {
      * @param writableMessage
      * @param user
      */
-    private void saveParseHistoty(ParseZMessage zMessage, WritableMessage writableMessage, ParseUser user) {
+    private void saveParseHistory(ParseZMessage zMessage, WritableMessage writableMessage, ParseUser user) {
         ParseZHistory parseZHistory = new ParseZHistory();
         parseZHistory.setUser(user);
         parseZHistory.setSinchId(writableMessage.getMessageId());
@@ -239,10 +238,10 @@ public class MessagingActivity extends ActionBarActivity {
         ParseQuery<ParseZHistory> innerQuery = ParseQuery.getQuery(ParseZHistory.class);
         innerQuery.whereEqualTo(ParseZHistory.USER, currentUser);
 
-        //String[] userIds = {currentUser.getObjectId(), receptorId};
+        ParseUser[] userIds = {currentUser, receptorUser};
         ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
-//        query.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
-//        query.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
+        query.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
+        query.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
         query.whereMatchesKeyInQuery(ParseZMessage.SINCH_ID, ParseZHistory.SINCH_ID, innerQuery);
         query.setLimit(100);
         query.orderByAscending("createdAt");
@@ -253,7 +252,7 @@ public class MessagingActivity extends ActionBarActivity {
                     List<ParseObject> messageLeidos = new ArrayList<>();
                     for (ParseZMessage parseZmessa : zMessages) {
                         WritableMessage message = new WritableMessage(parseZmessa.getRecipientId().getObjectId(), parseZmessa.getMessageText());
-                        if (parseZmessa.getSenderId().equals(currentUser.getObjectId())) {
+                        if (parseZmessa.getSenderId().equals(currentUser)) {
                             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING, currentUser.getUsername());
                         } else {
                             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING, receptorUsername);
@@ -283,6 +282,7 @@ public class MessagingActivity extends ActionBarActivity {
                 final ProgressDialog dialog = new ProgressDialog(MessagingActivity.this);
                 dialog.setMessage(getResources().getString(R.string.msgDeleting));
                 dialog.show();
+
                 ParseUser[] userIds = {currentUser, receptorUser};
 
                 //Buscar los sinchId de los mensajes de la conversacion
@@ -299,6 +299,7 @@ public class MessagingActivity extends ActionBarActivity {
                     public void done(List<ParseZHistory> zHistories, ParseException e) {
                         if (e == null) {
                             ParseObject.deleteAllInBackground(zHistories);
+                            Toast.makeText(MessagingActivity.this, getResources().getString(R.string.msgChatDeleteOk), Toast.LENGTH_SHORT).show();
                         }
                         dialog.dismiss();
                         onBackPressed();

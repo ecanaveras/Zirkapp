@@ -26,7 +26,7 @@ public class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return new HomeFragment();
             case 1:
-                if(fzimess == null) {
+                if (fzimess == null) {
                     fzimess = new ZimessFragment();
                 }
                 return fzimess;

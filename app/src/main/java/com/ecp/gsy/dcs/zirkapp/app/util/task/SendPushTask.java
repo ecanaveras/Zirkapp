@@ -4,13 +4,11 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.parse.ParseException;
-import com.parse.ParseFile;
 import com.parse.ParseInstallation;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SendCallback;
-import com.parse.codec.binary.Base64;
 import com.sinch.android.rtc.PushPair;
 
 import org.json.JSONException;
@@ -106,7 +104,8 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
                 //Datos para el manejo de la notificacion
                 if (targetId != null) data.put("targetId", targetId); //Objeto afectado
                 if (receptorId != null) data.put("receptorId", receptorId); //Quien recibe
-                if (senderId != null) data.put("senderId", senderId); //Quien produce la notificacion
+                if (senderId != null)
+                    data.put("senderId", senderId); //Quien produce la notificacion
                 if (pushPayLoad != null) data.put("SIN", pushPayLoad);
 
                 parsePush.setData(data);

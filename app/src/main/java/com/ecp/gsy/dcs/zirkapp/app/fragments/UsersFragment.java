@@ -29,14 +29,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alertdialogpro.AlertDialogPro;
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
+import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.ChatHistoryActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MessagingActivity;
-import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.CountMessagesReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.SinchConnectReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
-import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersTask;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -125,7 +127,7 @@ public class UsersFragment extends Fragment {
         listViewUserOnline.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //((TextView) view.findViewById(R.id.lblCantMessages)).setText(null);
+                ((TextView) view.findViewById(R.id.lblCantMessages)).setText(null);
                 ParseUser parseUser = (ParseUser) adapterView.getAdapter().getItem(i);
                 abrirConversa(parseUser);
             }
@@ -280,15 +282,24 @@ public class UsersFragment extends Fragment {
                 final ProgressDialog dialog = new ProgressDialog(getActivity());
                 dialog.setMessage(getResources().getString(R.string.msgDeleting));
                 dialog.show();
-                String[] userIds = {currentUser.getObjectId(), userChat.getObjectId()};
-                ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZMessage");
-                query.whereContainedIn("senderId", Arrays.asList(userIds));
-                query.whereContainedIn("recipientId", Arrays.asList(userIds));
-                query.findInBackground(new FindCallback<ParseObject>() {
+
+                ParseUser[] userIds = {currentUser, userChat};
+
+                //Buscar los sinchId de los mensajes de la conversacion
+                ParseQuery<ParseZMessage> innerQuery = ParseQuery.getQuery(ParseZMessage.class);
+                innerQuery.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
+                innerQuery.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
+
+                //Buscar los sinchId de usuario actual
+                ParseQuery<ParseZHistory> query = ParseQuery.getQuery(ParseZHistory.class);
+                query.whereMatchesKeyInQuery(ParseZHistory.SINCH_ID, ParseZMessage.SINCH_ID, innerQuery);
+                query.whereEqualTo(ParseZHistory.USER, currentUser);
+                query.findInBackground(new FindCallback<ParseZHistory>() {
                     @Override
-                    public void done(List<ParseObject> parseObjects, ParseException e) {
+                    public void done(List<ParseZHistory> zHistories, ParseException e) {
                         if (e == null) {
-                            ParseObject.deleteAllInBackground(parseObjects);
+                            ParseObject.deleteAllInBackground(zHistories);
+                            Toast.makeText(getActivity(), getResources().getString(R.string.msgChatDeleteOk), Toast.LENGTH_SHORT).show();
                         }
                         dialog.dismiss();
                     }
@@ -303,7 +314,6 @@ public class UsersFragment extends Fragment {
             }
         });
         alert.show();
-
     }
 
     /**
@@ -455,8 +465,6 @@ public class UsersFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        //messageService.removeMessageClientListener(messageClientListener);
-        //getActivity().unbindService(serviceConnection);
         super.onDestroy();
     }
 }

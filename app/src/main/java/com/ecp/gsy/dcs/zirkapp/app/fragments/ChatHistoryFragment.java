@@ -86,7 +86,7 @@ public class ChatHistoryFragment extends Fragment {
                         sendersId.add(parseObj.getString("senderId"));
                     }
                     Set<String> uniqueSenders = new HashSet<String>(sendersId);
-                    new RefreshDataUsersTask(getActivity(), currentUser, new ArrayList<String>(uniqueSenders), listViewHistory, lblChatNoFound, searching).execute();
+                    new RefreshDataUsersTask(getActivity(), currentUser, new ArrayList<String>(uniqueSenders), listViewHistory, lblChatNoFound, layoudHistoryFinder).execute();
                 } else {
                     Log.e("parse.chat.history", e.getMessage());
                 }

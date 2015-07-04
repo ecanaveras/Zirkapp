@@ -23,10 +23,16 @@ public class HomeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         int operacion = intent.getIntExtra("operacion", -1);
-        switch (operacion){
-            case ZMESS_CARGADOS: cargarZmessAPI(intent); break;
-            case DISTANCIA_ACTUALIZADA: actualizarInfoDistancia(intent); break;
-            case INBOX_CARGADOS: actualizarInfoInbox(intent); break;
+        switch (operacion) {
+            case ZMESS_CARGADOS:
+                cargarZmessAPI(intent);
+                break;
+            case DISTANCIA_ACTUALIZADA:
+                actualizarInfoDistancia(intent);
+                break;
+            case INBOX_CARGADOS:
+                actualizarInfoInbox(intent);
+                break;
         }
     }
 

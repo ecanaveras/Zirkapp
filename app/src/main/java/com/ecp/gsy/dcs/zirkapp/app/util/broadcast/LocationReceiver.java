@@ -5,10 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
-import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 
 /**
  * Created by Elder on 21/04/2015.

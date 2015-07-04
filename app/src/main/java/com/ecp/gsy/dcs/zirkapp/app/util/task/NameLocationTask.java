@@ -49,7 +49,7 @@ public class NameLocationTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... strings) {
         StringBuilder builder = new StringBuilder();
-        if(currentLocation != null) {
+        if (currentLocation != null) {
             Geocoder geoCoder = new Geocoder(context, Locale.getDefault());
             try {
                 List<Address> address = geoCoder.getFromLocation(currentLocation.getLatitud(), currentLocation.getLongitud(), 1);
