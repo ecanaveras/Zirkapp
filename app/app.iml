@@ -91,7 +91,6 @@
     <orderEntry type="library" exported="" name="Parse-1.9.2" level="project" />
     <orderEntry type="library" exported="" name="bolts-android-1.2.0" level="project" />
     <orderEntry type="library" exported="" name="multidex-1.0.0" level="project" />
-    <orderEntry type="library" exported="" name="roundedimageview-2.0.0" level="project" />
     <orderEntry type="library" exported="" name="cardview-v7-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="MaterialDesign-1.4" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-21.0.3" level="project" />

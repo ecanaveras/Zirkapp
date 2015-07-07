@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -25,6 +26,15 @@ public class RefreshDataCommentsTask extends AsyncTask<ParseZimess, Void, List<P
     private SwipeRefreshLayout swipeRefreshLayout;
     private Context context;
     private TextView lblCantComments;
+    private EditText txtComentario;
+
+    public RefreshDataCommentsTask(Context context, ProgressBar progressBar, ListView listViewComment, SwipeRefreshLayout swipeRefreshLayout, EditText txtComentario) {
+        this.context = context;
+        this.progressBar = progressBar;
+        this.listViewComment = listViewComment;
+        this.swipeRefreshLayout = swipeRefreshLayout;
+        this.txtComentario = txtComentario;
+    }
 
     public RefreshDataCommentsTask(Context context, ProgressBar progressBar, ListView listComment, SwipeRefreshLayout swipeRefreshLayout) {
         this.progressBar = progressBar;
@@ -58,7 +68,7 @@ public class RefreshDataCommentsTask extends AsyncTask<ParseZimess, Void, List<P
 
     @Override
     protected void onPostExecute(List<ParseZComment> arrayListComment) {
-        CommentsAdapter adapterComment = new CommentsAdapter(context, arrayListComment);
+        CommentsAdapter adapterComment = new CommentsAdapter(context, arrayListComment, txtComentario);
         listViewComment.setAdapter(adapterComment);
 
         if (lblCantComments != null)

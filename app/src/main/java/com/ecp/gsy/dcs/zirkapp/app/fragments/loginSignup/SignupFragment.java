@@ -93,6 +93,11 @@ public class SignupFragment extends Fragment {
                     return;
                 }
 
+                //validacion username
+                if (username.trim().contains(" ")) {
+                    txtUsername.setError(getResources().getString(R.string.msgNoSpaces));
+                    return;
+                }
 
                 //Validacion de Password
                 //Minimo 6 caracteres
@@ -108,13 +113,13 @@ public class SignupFragment extends Fragment {
                 }
 
                 final ProgressDialog progressDialog = new ProgressDialog(getActivity());
-                progressDialog.setMessage("Ingresando...");
+                progressDialog.setMessage(getResources().getString(R.string.mgsLoging));
                 progressDialog.show();
 
                 //Crear usuario en Parse.
 
                 ParseUser user = new ParseUser();
-                user.setUsername(username);
+                user.setUsername(username.trim());
                 user.setPassword(password1);
                 user.setEmail(correo);
                 //Conectar al chat

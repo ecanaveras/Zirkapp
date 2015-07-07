@@ -26,12 +26,12 @@
                 android:id="@+id/listMessages"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:transcriptMode="alwaysScroll"
                 android:layout_marginBottom="6dp"
-                android:stackFromBottom="true"
-                android:padding="0dip"
                 android:divider="@null"
                 android:dividerHeight="0dp"
+                android:padding="0dip"
+                android:stackFromBottom="true"
+                android:transcriptMode="alwaysScroll"
                 tools:listitem="@layout/message_left" />
 
         </FrameLayout>
@@ -41,30 +41,31 @@
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1dip"
-        android:background="@color/off_white"
-        android:layout_above="@+id/relSendMessage" />
+        android:layout_above="@+id/relSendMessage"
+        android:background="@color/off_white" />
 
     <RelativeLayout
         android:id="@+id/relSendMessage"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
         android:background="@android:color/white"
-        android:paddingLeft="10dp"
-        android:layout_alignParentBottom="true">
+        android:paddingLeft="10dp">
 
 
         <EditText
-            android:layout_marginBottom="-4dp"
             android:id="@+id/txtMessageBodyField"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textSize="14sp"
-            android:textColor="@android:color/black"
-            android:layout_marginRight="10dp"
-            android:layout_alignTop="@+id/btnSendMessage"
-            android:background="@android:color/white"
             android:layout_alignBottom="@+id/btnSendMessage"
-            android:layout_toLeftOf="@+id/btnSendMessage" />
+            android:layout_alignTop="@+id/btnSendMessage"
+            android:layout_marginBottom="-4dp"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/btnSendMessage"
+            android:background="@android:color/white"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:inputType="textCapSentences"/>
         <!-- android:hint="@string/message_elipses" -->
 
         <com.gc.materialdesign.views.ButtonRectangle
@@ -72,8 +73,8 @@
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_alignParentRight="true"
-            android:text="@string/lblSend"
-            android:background="@color/default_primary_color" />
+            android:background="@color/default_primary_color"
+            android:text="@string/lblSend" />
         <!--android:background="@drawable/button_send"-->
 
 

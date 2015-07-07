@@ -138,6 +138,20 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                     senderName = senderUser.getString("name") != null ? senderUser.getString("name") : senderUser.getUsername();
                     break;
 
+                case SendPushTask.PUSH_QUOTE:
+                    intent.setAction("OPEN_FRAGMENT_NOTI"); //Notificacion desde comentarios
+                    intent.putExtra("targetId", targetId);
+                    intent.putExtra("receptorId", receptorId);
+                    intent.putExtra("senderId", senderId);
+                    //Manejar Noti
+                    itemNotifi = new ParseZNotifi();
+                    itemNotifi.setTypeNoti(SendPushTask.PUSH_QUOTE);
+                    summary = "Nueva respuesta";
+                    typeNotiString = "[Resp]";
+                    //Buscar Nombre de usuario
+                    senderName = senderUser.getString("name") != null ? senderUser.getString("name") : senderUser.getUsername();
+                    break;
+
                 default:
                     typeNotiString = "[Gral]";
                     itemNotifi = null;
@@ -189,6 +203,9 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                     noti.put("userTarget", ParseObject.createWithoutData("user", targetId));
                     break;
                 case SendPushTask.PUSH_COMMENT:
+                    noti.put(ParseZNotifi.ZIMESS_TARGET, ParseObject.createWithoutData(ParseZimess.class, targetId));
+                    break;
+                case SendPushTask.PUSH_QUOTE:
                     noti.put(ParseZNotifi.ZIMESS_TARGET, ParseObject.createWithoutData(ParseZimess.class, targetId));
                     break;
             }

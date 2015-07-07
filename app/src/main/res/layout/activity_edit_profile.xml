@@ -1,79 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:materialdesign="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <include layout="@layout/component_toolbar" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fillViewport="true"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:fillViewport="true">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="18dp"
+                android:background="@color/accent_color"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
-                android:textSize="12sp"
-                android:fontFamily="sans-serif"
                 android:text="FOTO Y ESTADO"
                 android:textColor="@color/text_primary_color"
-                android:background="@color/accent_color"
-                android:gravity="center" />
+                android:textSize="12sp" />
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="200dp">
+                android:minHeight="200dp"
+                android:orientation="vertical">
 
-                <com.makeramen.roundedimageview.RoundedImageView
+                <ImageView
                     android:id="@+id/imgUserAvatar"
                     android:layout_width="180dp"
                     android:layout_height="180dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="2dp"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/ic_user_male"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginTop="4dp"
                     android:scaleType="centerCrop"
-                    app:riv_corner_radius="30dip"
-                    app:riv_border_width="1dp"
-                    app:riv_border_color="@color/divider_color_2"
-                    app:riv_oval="true" />
+                    android:src="@drawable/ic_user_male" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/msgHelpAvatar"
                     android:gravity="center_horizontal"
+                    android:text="@string/msgHelpAvatar"
                     android:textColor="@color/divider_color" />
 
                 <EditText
                     android:id="@+id/txtUserEstado"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
-                    android:textSize="18sp"
-                    android:hint="@string/lblEstado"
-                    android:textColor="@color/accent_color"
-                    android:maxLength="200"
-                    android:layout_marginTop="8dp"
                     android:layout_marginBottom="2dp"
-                    android:imeOptions="actionNext" />
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:hint="@string/lblEstado"
+                    android:imeOptions="actionNext"
+                    android:maxLength="200"
+                    android:textColor="@color/accent_color"
+                    android:textSize="18sp" />
 
             </LinearLayout>
 
@@ -83,33 +77,33 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="18dp"
+                android:background="@color/accent_color"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
-                android:textSize="12sp"
-                android:fontFamily="sans-serif"
                 android:text="OTROS DATOS"
                 android:textColor="@color/text_primary_color"
-                android:background="@color/accent_color"
-                android:gravity="center" />
+                android:textSize="12sp" />
 
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:gravity="center"
                 android:minHeight="80dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp">
+                android:orientation="vertical">
 
                 <EditText
                     android:id="@+id/txtUsername"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:enabled="false"
                     android:fontFamily="sans-serif-medium"
-                    android:textSize="18sp"
                     android:hint="@string/lblUser"
                     android:textColor="@color/accent_color"
-                    android:enabled="false"
+                    android:textSize="18sp"
                     android:visibility="gone" />
 
                 <EditText
@@ -117,11 +111,11 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:textSize="18sp"
                     android:hint="@string/lblName"
-                    android:textColor="@color/accent_color"
+                    android:imeOptions="actionNext"
                     android:inputType="textPersonName"
-                    android:imeOptions="actionNext" />
+                    android:textColor="@color/accent_color"
+                    android:textSize="18sp" />
 
 
                 <EditText
@@ -129,28 +123,28 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:textSize="18sp"
                     android:hint="@string/lblEmail"
+                    android:inputType="textEmailAddress"
                     android:textColor="@color/accent_color"
-                    android:inputType="textEmailAddress" />
+                    android:textSize="18sp" />
 
                 <EditText
                     android:id="@+id/txtUserCity"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:textSize="18sp"
                     android:hint="@string/lblCity"
-                    android:textColor="@color/accent_color"
+                    android:imeOptions="actionNext"
                     android:inputType="textShortMessage|textAutoComplete"
-                    android:imeOptions="actionNext" />
+                    android:textColor="@color/accent_color"
+                    android:textSize="18sp" />
             </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="*Descuida, Tu correo nadie lo ve!"
                 android:gravity="center_horizontal"
+                android:text="*Descuida, Tu correo nadie lo ve!"
                 android:textColor="@color/divider_color" />
 
             <View style="@style/line_divider_h" />
@@ -158,18 +152,18 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginRight="16dp"
                 android:layout_marginLeft="16dp"
-                android:layout_marginTop="4dp">
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="1">
 
                 <com.gc.materialdesign.views.ButtonRectangle
                     android:id="@+id/btnUpdateProfile"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:text="@string/lblSave"
                     android:background="@color/default_primary_color"
-                    android:imeOptions="actionDone" />
+                    android:imeOptions="actionDone"
+                    android:text="@string/lblSave" />
 
             </LinearLayout>
         </LinearLayout>

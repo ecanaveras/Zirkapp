@@ -26,7 +26,6 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
@@ -120,7 +119,7 @@ public class NewZimessActivity extends ActionBarActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressLoad);
 
         //Recuper el zimess no enviado.
-        Zimess zimessNoti = (Zimess) getIntent().getSerializableExtra("zimess_noti");
+        ParseZimess zimessNoti = (ParseZimess) getIntent().getSerializableExtra("zimess_noti");
         //Restablece el mensaje que no se pude enviar
         if (zimessNoti != null) {
             message.setText(zimessNoti.getZimessText());
@@ -131,9 +130,7 @@ public class NewZimessActivity extends ActionBarActivity {
 
     private void sendZmessPost(final String zimessText) {
         if (zimessText.length() < 4) {
-            Toast.makeText(this,
-                    "Escribe mínimo 4 caracteres!",
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Escribe mínimo 4 caracteres!", Toast.LENGTH_LONG).show();
             return;
         }
 

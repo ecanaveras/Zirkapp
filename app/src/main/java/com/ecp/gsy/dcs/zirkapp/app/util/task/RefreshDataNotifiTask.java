@@ -27,7 +27,7 @@ public class RefreshDataNotifiTask extends AsyncTask<String, Void, List<ParseZNo
     private ProgressBar progressBar;
     private ParseUser receptorUser;
     private TextView lblNotiNotFound;
-    private int noLeidas = 0;
+    private int cantNoLeidas = 0;
 
     public RefreshDataNotifiTask(Context context, ParseUser receptorUser, ListView listView, SwipeRefreshLayout swipeRefreshLayout, ProgressBar progressBar, TextView lblNotiNotFound) {
         this.context = context;
@@ -46,7 +46,12 @@ public class RefreshDataNotifiTask extends AsyncTask<String, Void, List<ParseZNo
 
     @Override
     protected List<ParseZNotifi> doInBackground(String... params) {
-        return DataParseHelper.findNotifications(receptorUser);
+        List<ParseZNotifi> parseZNotifis = DataParseHelper.findNotifications(receptorUser);
+        for (ParseZNotifi notifi : parseZNotifis) {
+            if (!notifi.isReadNoti())
+                cantNoLeidas++;
+        }
+        return parseZNotifis;
     }
 
     @Override
@@ -54,7 +59,8 @@ public class RefreshDataNotifiTask extends AsyncTask<String, Void, List<ParseZNo
         NotifiAdapter adapter = new NotifiAdapter(context, itemNotifications);
         listView.setAdapter(adapter);
 
-        GlobalApplication.setCantNotifications(noLeidas);
+
+        GlobalApplication.setCantNotifications(cantNoLeidas);
 
         if (progressBar != null) progressBar.setVisibility(View.GONE);
         if (lblNotiNotFound != null && itemNotifications.size() == 0)

@@ -7,13 +7,15 @@ import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZVisit;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -279,17 +281,24 @@ public class DataParseHelper {
     public static boolean deleteDataZimess(final ParseZimess zimess) {
         deleteOk = false;
         if (zimess != null) {
-            //Buscar los comentarios.
-            List<ParseZComment> listParseComments = findComments(zimess);
+            //Buscar los comentarios. No necesario porque se usa ParseCloud
+            /*List<ParseZComment> listParseComments = findComments(zimess);
             if (listParseComments.size() > 0) {
                 //Eliminar los comentarios
                 ParseObject.deleteAllInBackground(listParseComments);
-            }
+            }*/
             //Eliminar Zimess
             //ParseObject zimessDelete = findZimess(zimess.getObjectId());
             try {
                 zimess.delete();
-                //zimessDelete.delete();
+                //Usando ParseCloud
+                ParseCloud.callFunctionInBackground("ParseZimess", new HashMap<String, Object>(), new FunctionCallback<String>() {
+                    public void done(String result, ParseException e) {
+                        if (e != null) {
+                            Log.e("Parse.Cloud.Zimess", e.getMessage());
+                        }
+                    }
+                });
                 deleteOk = true;
             } catch (ParseException e1) {
                 Log.e("Parse.delete.Zimess", e1.getMessage());

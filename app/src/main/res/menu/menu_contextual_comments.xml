@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/ctx_view_profile"
+        android:title="@string/msgViewProfile" />
+
+    <group android:id="@+id/menuGroupDelete">
+        <item
+            android:id="@+id/ctx_delete_commentario"
+            android:title="@string/msgDeleteComment" />
+
+    </group>
+    <item
+        android:id="@+id/ctx_report_comment"
+        android:title="@string/msgReportComment" />
+
+</menu>

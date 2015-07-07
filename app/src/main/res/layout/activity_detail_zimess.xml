@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:card_view="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:minHeight="60dp"
@@ -15,10 +13,9 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="8dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="-5dp"
         android:scaleType="fitCenter"
         android:src="@android:drawable/arrow_down_float" />
-
 
     <!--Comentarios-->
     <android.support.v4.widget.SwipeRefreshLayout
@@ -48,7 +45,6 @@
 
         </FrameLayout>
 
-
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <LinearLayout
@@ -64,7 +60,8 @@
             android:layout_gravity="bottom"
             android:layout_weight="1"
             android:hint="@string/msgReply"
-            android:singleLine="true" />
+            android:inputType="textCapSentences|text"
+            android:singleLine="false" />
 
         <com.gc.materialdesign.views.ButtonRectangle
             android:id="@+id/btnSendZimessComment"

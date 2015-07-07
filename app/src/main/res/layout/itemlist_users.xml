@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:orientation="horizontal"
-    android:layout_marginBottom="4dp">
+    android:layout_marginBottom="4dp"
+    android:orientation="horizontal">
 
-    <com.makeramen.roundedimageview.RoundedImageView
+    <ImageView
         android:id="@+id/imgAvatar"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:src="@drawable/ic_user_male"
         android:layout_gravity="center_vertical"
-        android:layout_marginRight="6dp"
         android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
         android:scaleType="centerCrop"
-        app:riv_corner_radius="30dip"
-        app:riv_border_width="0.2dp"
-        app:riv_border_color="@color/divider_color_2"
-        app:riv_oval="true" />
+        android:src="@drawable/ic_user_male" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,28 +24,28 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:orientation="vertical"
+            android:layout_weight="1"
             android:gravity="center_vertical"
-            android:layout_weight="1">
+            android:orientation="vertical">
 
 
             <TextView
                 android:id="@+id/lblNombreUsuario"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textColor="@color/secondary_text_color"
                 android:text="Zirkapp"
-                android:textSize="18dp" />
+                android:textColor="@color/secondary_text_color"
+                android:textSize="18dp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/lblUserName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/divider_color"
-                android:textSize="14dp"
                 android:gravity="center_vertical"
-                android:text="User" />
+                android:text="User"
+                android:textColor="@color/divider_color"
+                android:textSize="14dp" />
 
 
             <!--<TextView
@@ -70,11 +65,11 @@
             android:id="@+id/lblCantMessages"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="16dp"
             android:textColor="@color/dark_primary_color"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_gravity="center"
-            android:layout_marginRight="16dp" />
+            android:textStyle="bold" />
     </LinearLayout>
 
 </LinearLayout>

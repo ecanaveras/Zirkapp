@@ -4,7 +4,9 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,6 +14,7 @@ import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,10 +25,19 @@ public class CommentsAdapter extends BaseAdapter {
     private List<ParseZComment> zimessCommentArrayL;
     private Context context;
     private GlobalApplication globalApplication;
+    private EditText txtComentario;
+    private List<String> arryUserNames = new ArrayList<>();
 
-    public CommentsAdapter(Context context, List<ParseZComment> zimessCommentArrayList) {
+    public CommentsAdapter(Context context, List<ParseZComment> zimessCommentArrayL, EditText txtComentario) {
         this.context = context;
-        this.zimessCommentArrayL = zimessCommentArrayList;
+        this.zimessCommentArrayL = zimessCommentArrayL;
+        this.txtComentario = txtComentario;
+        globalApplication = (GlobalApplication) context.getApplicationContext();
+    }
+
+    public CommentsAdapter(Context context, List<ParseZComment> zimessCommentList) {
+        this.context = context;
+        this.zimessCommentArrayL = zimessCommentList;
         globalApplication = (GlobalApplication) context.getApplicationContext();
     }
 
@@ -54,27 +66,71 @@ public class CommentsAdapter extends BaseAdapter {
         //1. Crear ZimessComment
         ParseZComment comment = zimessCommentArrayL.get(i);
         //2. Iniciar UI de la lista
-        ImageView imgAvatar = (ImageView) vista.findViewById(R.id.imgCommentAvatarItem);
-        TextView lblCommentUser = (TextView) vista.findViewById(R.id.lblCommentUserName);
-        TextView lblCommentText = (TextView) vista.findViewById(R.id.lblCommentText);
-        TextView lblCommentName = (TextView) vista.findViewById(R.id.lblCommentNombreUsuario);
-        TextView lblTimePass = (TextView) vista.findViewById(R.id.txtCommentTiempo);
-        TextView lblNumComment = (TextView) vista.findViewById(R.id.lblNumComment);
-
+        ItemViewHolder viewHolder = new ItemViewHolder(vista);
         //3. Asignar valores
-        lblCommentUser.setText(comment.getUser().getUsername());
-        lblCommentText.setText(comment.getCommentText());
-        lblNumComment.setText(Integer.toString(i + 1));
+        viewHolder.username = comment.getUser().getUsername();
+        viewHolder.lblCommentUser.setText(comment.getUser().getUsername());
+        viewHolder.lblCommentText.setText(comment.getCommentText());
+        viewHolder.lblNumComment.setText(Integer.toString(i + 1));
 
         String name = comment.getUser().getString("name");
-        lblCommentName.setText(name != null ? name : comment.getUser().getUsername());
+        viewHolder.lblCommentName.setText(name != null ? name : comment.getUser().getUsername());
         //Estableciendo Imagen;
-        imgAvatar.setImageDrawable(comment.getAvatar());
+        viewHolder.imgAvatar.setImageDrawable(comment.getAvatar());
 
         //Manejando tiempos transcurridos
         String tiempoTranscurrido = globalApplication.getTimepass(comment.getCreatedAt());
-        lblTimePass.setText(tiempoTranscurrido);
+        viewHolder.lblTimePass.setText(tiempoTranscurrido);
 
         return vista;
     }
+
+    private class ItemViewHolder implements View.OnClickListener {
+
+        public TextView lblCommentUser, lblCommentText, lblCommentName, lblTimePass, lblNumComment;
+        public ImageView imgAvatar, imgQuoteUser;
+        public String username;
+
+        public ItemViewHolder(View vista) {
+            imgAvatar = (ImageView) vista.findViewById(R.id.imgCommentAvatarItem);
+            lblCommentUser = (TextView) vista.findViewById(R.id.lblCommentUserName);
+            lblCommentText = (TextView) vista.findViewById(R.id.lblCommentText);
+            lblCommentName = (TextView) vista.findViewById(R.id.lblCommentNombreUsuario);
+            lblTimePass = (TextView) vista.findViewById(R.id.txtCommentTiempo);
+            lblNumComment = (TextView) vista.findViewById(R.id.lblNumComment);
+            imgQuoteUser = (ImageView) vista.findViewById(R.id.imgQuoteUser);
+            //vista.setOnClickListener(this);
+            imgQuoteUser.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (v instanceof ImageView) {
+                v.startAnimation(AnimationUtils.loadAnimation(context, R.anim.anim_image_click));
+                boolean userExist = false;
+                for (String usern : arryUserNames) {
+                    if (username.equals(usern)) {
+                        userExist = true;
+                        break;
+                    }
+                }
+                //Validar si ha sido borrado
+                if (userExist && txtComentario.getText() != null && txtComentario.getText().toString().contains(username)) {
+                    userExist = true;
+                } else {
+                    userExist = false;
+                }
+
+                if (!userExist) {
+                    arryUserNames.add(username);
+                    String textTmp = txtComentario.getText().toString();
+                    txtComentario.setText(new StringBuffer(textTmp).append(textTmp.isEmpty() ? "@" : " @").append(username));
+                    txtComentario.setSelection(txtComentario.getText().length());
+                } else {
+                    //Toast.makeText(context, context.getResources().getString(R.string.msgUserQuoted), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
 }
+

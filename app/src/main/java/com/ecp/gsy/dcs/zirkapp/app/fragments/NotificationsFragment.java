@@ -20,15 +20,17 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemNotification;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataNotifiTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
-import com.parse.GetCallback;
+import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Elder on 24/02/2015.
@@ -74,7 +76,7 @@ public class NotificationsFragment extends Fragment {
         listNotifi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ItemNotification item = (ItemNotification) parent.getAdapter().getItem(position);
+                ParseZNotifi item = (ParseZNotifi) parent.getAdapter().getItem(position);
                 if (!item.isReadNoti()) saveReadNotificacion(item);
                 goToTarget(item);
             }
@@ -109,7 +111,7 @@ public class NotificationsFragment extends Fragment {
      *
      * @param item
      */
-    private void goToTarget(ItemNotification item) {
+    private void goToTarget(ParseZNotifi item) {
         switch (item.getTypeNoti()) {
             case SendPushTask.PUSH_COMMENT:
                 if (item.getZimessTarget() != null) {
@@ -129,25 +131,31 @@ public class NotificationsFragment extends Fragment {
      *
      * @param item
      */
-    private void saveReadNotificacion(ItemNotification item) {
-        ParseQuery query = new ParseQuery(ParseZNotifi.class);
-        query.whereEqualTo("objectId", item.getNotiId());
-        query.getFirstInBackground(new GetCallback<ParseZNotifi>() {
-            @Override
-            public void done(ParseZNotifi parseZNotifi, ParseException e) {
-                if (e == null && parseZNotifi != null) {
-                    parseZNotifi.put(ParseZNotifi.READ_NOTI, true);
-                    parseZNotifi.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                findNotifications(currentUser);
-                            }
+    private void saveReadNotificacion(ParseZNotifi item) {
+        if (item != null) {
+            //Busca el marca como leidas todas las notificaciones que conducen al mismo Zimess
+            ParseQuery<ParseZNotifi> query = ParseQuery.getQuery(ParseZNotifi.class);
+            query.whereEqualTo(ParseZNotifi.ZIMESS_TARGET, item.getZimessTarget());
+            query.whereEqualTo(ParseZNotifi.READ_NOTI, false);
+            query.findInBackground(new FindCallback<ParseZNotifi>() {
+                @Override
+                public void done(List<ParseZNotifi> parseZNotifis, ParseException e) {
+                    if (e == null && parseZNotifis.size() > 0) {
+                        List<ParseZNotifi> listUpdate = new ArrayList<>();
+                        for (ParseZNotifi zNotifi : parseZNotifis) {
+                            zNotifi.put(ParseZNotifi.READ_NOTI, true);
+                            listUpdate.add(zNotifi);
                         }
-                    });
+                        if (listUpdate.size() > 0) {
+                            //Actualiza todas las notificaciones
+                            ParseObject.saveAllInBackground(listUpdate);
+                        }
+                        findNotifications(currentUser);
+                    }
                 }
-            }
-        });
+            });
+
+        }
     }
 
 

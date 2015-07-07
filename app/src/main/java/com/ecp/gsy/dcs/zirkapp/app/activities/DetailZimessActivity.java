@@ -1,8 +1,10 @@
 package com.ecp.gsy.dcs.zirkapp.app.activities;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -10,10 +12,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -34,13 +38,17 @@ import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataCommentsTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.gc.materialdesign.views.ButtonRectangle;
+import com.parse.DeleteCallback;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DetailZimessActivity extends ActionBarActivity {
 
@@ -63,6 +71,7 @@ public class DetailZimessActivity extends ActionBarActivity {
     private ProgressBar progressBar;
     private ButtonRectangle btnSendComment;
     private Toolbar toolbar;
+    private ImageView imgCitarUser;
 
 
     @Override
@@ -112,6 +121,7 @@ public class DetailZimessActivity extends ActionBarActivity {
             }
         });
 
+        registerForContextMenu(listComment);
         listComment.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
@@ -155,7 +165,7 @@ public class DetailZimessActivity extends ActionBarActivity {
                 String comment = txtComment.getText().toString();
                 if (!comment.isEmpty()) {
                     btnSendComment.setEnabled(false);
-                    sendZimessComment(txtComment.getText().toString());
+                    sendZimessComment(comment);
                 } else {
                     Toast.makeText(getApplicationContext(),
                             "Escribe tu comentario!",
@@ -219,7 +229,31 @@ public class DetailZimessActivity extends ActionBarActivity {
                         String receptorId = zimessDetail.fetchIfNeeded().getParseUser("user").getObjectId();
                         if (receptorId != null && !currentUser.getObjectId().equals(receptorId)) {
                             String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+                            //Envia la notificacion al creador del Zimess
                             new SendPushTask(zimessDetail.getObjectId(), receptorId, currentUser.getObjectId(), name, commentText, SendPushTask.PUSH_COMMENT).execute();
+                            //Envia la notificacion a los citados en la respuesta
+                            new AsyncTask<String, Void, String>() {
+
+                                @Override
+                                protected String doInBackground(String... params) {
+                                    if (params[0].contains("@")) {
+                                        Pattern pattern = Pattern.compile("^@[a-zA-Z0-9_-]{6,20}"); //Tomar username
+                                        ArrayList<String> usernames = new ArrayList<>();
+                                        for (String userName : params[0].split("\\s")) {
+                                            Matcher matcher = pattern.matcher(userName);
+                                            if (matcher.find()) {
+                                                usernames.add(matcher.group(0).replace("@", ""));
+                                            }
+                                        }
+                                        if (usernames.size() > 0) {
+                                            new SendPushTask(zimessDetail.getObjectId(), usernames, currentUser.getObjectId(), params[1], params[0], SendPushTask.PUSH_QUOTE).execute();
+                                        }
+                                    }
+                                    return null;
+                                }
+
+                            }.execute(new String[]{commentText, name});
+
                         }
                     } catch (ParseException e1) {
                         Log.e("find.parse.user", e.getMessage());
@@ -238,23 +272,19 @@ public class DetailZimessActivity extends ActionBarActivity {
     private void updateCantComments() {
         findZimessComment();
         //Usando ParseCloud
-        ParseCloud.callFunctionInBackground(ParseZComment.class.getSimpleName(), new HashMap<String, Object>(), new FunctionCallback<String>() {
+        ParseCloud.callFunctionInBackground("ParseZComment", new HashMap<String, Object>(), new FunctionCallback<String>() {
             public void done(String result, ParseException e) {
-                if (e == null) {
-                    //System.out.println(result);
-                } else {
-                    Log.e("Parze.Cloud.ZComment", e.getMessage());
+                if (e != null) {
+                    Log.e("Parse.Cloud.ZComment", e.getMessage());
                 }
             }
         });
-        //TODO comprobar funcionalidad
-        //findZimessUpdated();
     }
 
 
     private void findZimessComment() {
         //Actualizar Lista de Comentarios
-        new RefreshDataCommentsTask(this, progressBar, listComment, swipeRefreshLayout).execute(zimessDetail);
+        new RefreshDataCommentsTask(this, progressBar, listComment, swipeRefreshLayout, txtComment).execute(zimessDetail);
     }
 
     private void findZimessUpdated() {
@@ -289,6 +319,46 @@ public class DetailZimessActivity extends ActionBarActivity {
         alert.show();
     }
 
+
+    /**
+     * Elimina el comentario solicitado
+     *
+     * @param parseZComment
+     */
+    private void deleteComment(final ParseZComment parseZComment) {
+        if (parseZComment != null) {
+            AlertDialogPro.Builder alert = new AlertDialogPro.Builder(this);
+            alert.setMessage(getString(R.string.msgByeComment));
+            alert.setPositiveButton(getString(R.string.lblDelete), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    final ProgressDialog dialog = new ProgressDialog(DetailZimessActivity.this);
+                    dialog.setMessage(getResources().getString(R.string.msgDeleting));
+                    dialog.show();
+                    parseZComment.deleteInBackground(new DeleteCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                updateCantComments();
+                                Toast.makeText(DetailZimessActivity.this, getResources().getString(R.string.msgCommentDeleteOk), Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(DetailZimessActivity.this, getResources().getString(R.string.msgCommentDeleteFailed), Toast.LENGTH_SHORT).show();
+                            }
+                            dialog.dismiss();
+                        }
+                    });
+                }
+            });
+
+            alert.setNegativeButton(getString(R.string.lblCancel), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+            alert.show();
+        }
+    }
 
     /**
      * retorna la Ubicacion actual
@@ -357,6 +427,23 @@ public class DetailZimessActivity extends ActionBarActivity {
         return true;
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        if (v.getId() == R.id.listZComments) {
+            AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        }
+        this.getMenuInflater().inflate(R.menu.menu_contextual_comments, menu);
+        if (menu == null) {
+            return;
+        }
+        if (currentUser.equals(zimessUser)) {
+            menu.setGroupVisible(R.id.menuGroupDelete, true);
+        } else {
+            menu.setGroupVisible(R.id.menuGroupDelete, false);
+        }
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -365,6 +452,29 @@ public class DetailZimessActivity extends ActionBarActivity {
 
         } else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        ParseZComment parseZComment = (ParseZComment) listComment.getAdapter().getItem(acmi.position);
+        switch (item.getItemId()) {
+            case R.id.ctx_view_profile:
+                if (parseZComment != null) {
+                    globalApplication.setCustomParseUser(parseZComment.getUser());
+                    Intent intent = new Intent(this, UserProfileActivity.class);
+                    startActivity(intent);
+                }
+                return true;
+            case R.id.ctx_delete_commentario:
+                deleteComment(parseZComment);
+                return true;
+            case R.id.ctx_report_comment:
+                Toast.makeText(this, "Proximamente...", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
         }
     }
 }

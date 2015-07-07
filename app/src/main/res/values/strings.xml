@@ -42,7 +42,7 @@
     <string name="msgSignUpPassEmpty">La contraseña es necesaria</string>
     <string name="msgSignUpErrorEmpty">Por favor diligencia todos los datos</string>
     <string name="msgSignUpPassDif">Tus contraseñas no coinciden, verifica tus datos!</string>
-    <string name="msgLoginPassInvalid">Tu contraseña debe tener mínimo de 6 caracteres!</string>
+    <string name="msgLoginPassInvalid">Tu contraseña debe tener mínimo 6 caracteres!</string>
     <string name="msgMailFailed">Cuenta de correo inválida</string>
 
     <!-- Custom label -->
@@ -108,6 +108,7 @@
     <string name="msgZimessDeleteFailed">No es posible borrar tu Zimess, intenta mas tarde.</string>
     <string name="msgDeleting">Eliminando, espere...</string>
     <string name="msgByeZimess">Despidete de tu Zimess...</string>
+    <string name="msgByeComment">Despidete de este comentario...</string>
     <string name="msgMessageEmpty">Debes escribir algo!</string>
     <string name="msgLocationUnknown">Ubicación no disponible...</string>
     <string name="msgHelpAvatar">Mantén presionada la imagen para cambiarla!</string>
@@ -123,6 +124,7 @@
     <string name="msgCopyRights2">All rights reserved.</string>
     <string name="mgsNewChat">Nuevo chat</string>
     <string name="mgsNotiNotFound">No tienes notificaciones</string>
+
 
     <!-- Titles -->
     <string name="title_fragment_zimess">Zimess</string>
@@ -164,6 +166,13 @@
     <string name="msgLogout2">Quieres cerrar sesión?</string>
     <string name="msgStarting">Iniciando servicios...</string>
     <string name="msgChatDeleteOk">Conversación borrada!</string>
+    <string name="msgViewProfile">Ver perfil</string>
+    <string name="msgAsnwer">Responder a este  usuario</string>
+    <string name="msgNoSpaces">El nombre de usuario no debe contener espacios.</string>
+    <string name="msgReportComment">Reportar comentario</string>
+    <string name="msgDeleteComment">Eliminar comentario</string>
+    <string name="msgCommentDeleteOk">Comentario eliminado!</string>
+    <string name="msgCommentDeleteFailed">No es posible borrar el comentario, intenta mas tarde.</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>
