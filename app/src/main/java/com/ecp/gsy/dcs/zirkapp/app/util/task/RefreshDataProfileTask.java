@@ -22,6 +22,8 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser
     private String messageDialog;
     private TextView txtWall;
     private TextView txtNombres;
+    private TextView txtCantZimess;
+    private TextView txtCantVisits;
     private RoundedBitmapDrawable imgDrawable;
 
     public RefreshDataProfileTask(ImageView avatar) {
@@ -39,6 +41,17 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser
         this.messageDialog = messageDialog;
         this.txtWall = txtWall;
         this.txtNombres = txtNombres;
+    }
+
+
+    public RefreshDataProfileTask(ImageView avatar, TextView txtWall, TextView txtNombres, TextView txtCantZimess, TextView txtCantVisits, String messageDialog, Context context) {
+        this.avatar = avatar;
+        this.txtWall = txtWall;
+        this.txtNombres = txtNombres;
+        this.txtCantZimess = txtCantZimess;
+        this.txtCantVisits = txtCantVisits;
+        this.messageDialog = messageDialog;
+        this.context = context;
     }
 
     @Override
@@ -71,6 +84,12 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser
                 String name = user.getString("name");
                 txtNombres.setText(name != null ? name : user.getUsername());
                 txtNombres.setVisibility(View.VISIBLE);
+            }
+            if (txtCantVisits != null) {
+                txtCantVisits.setText(String.valueOf(user.getInt("count_visit")));
+            }
+            if (txtCantZimess != null) {
+                txtCantZimess.setText(String.valueOf(user.getInt("count_zimess")));
             }
         }
 

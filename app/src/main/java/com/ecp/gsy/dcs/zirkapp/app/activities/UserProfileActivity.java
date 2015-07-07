@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,14 +14,14 @@ import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZVisit;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
-import com.parse.GetCallback;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.util.HashMap;
 
 /**
  * Created by Elder on 07/02/2015.
@@ -38,7 +39,6 @@ public class UserProfileActivity extends ActionBarActivity {
     private ParseUser parseUser;
     private Toolbar toolbar;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +49,6 @@ public class UserProfileActivity extends ActionBarActivity {
         globalApplication = (GlobalApplication) getApplicationContext();
         parseUser = globalApplication.getCustomParseUser();
 
-
         inicializarCompUI();
 
         setTitle("Info. del Usuario");
@@ -58,7 +57,6 @@ public class UserProfileActivity extends ActionBarActivity {
 
         //Guardar visitar
         saveInfoVisit();
-
         //Cargar info de visistas y Zimess
         new UserProfileTask().execute(parseUser);
 
@@ -83,8 +81,20 @@ public class UserProfileActivity extends ActionBarActivity {
             return;
         }
 
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("userId", parseUser.getObjectId());
+        ParseCloud.callFunctionInBackground("AddUserVisit", params, new FunctionCallback<String>() {
+            public void done(String result, ParseException e) {
+                if (e == null) {
+                    //Log.e("P.Cloud.ZVisit.Result", result);
+                } else {
+                    Log.e("P.Cloud.ZVisit", e.getMessage());
+                }
+            }
+        });
+
         //Buscar si existe
-        final ParseQuery<ParseZVisit> query = ParseQuery.getQuery(ParseZVisit.class);
+        /*final ParseQuery<ParseZVisit> query = ParseQuery.getQuery(ParseZVisit.class);
         query.whereEqualTo(ParseZVisit.USER, parseUser);
         query.getFirstInBackground(new GetCallback<ParseZVisit>() {
             @Override
@@ -96,7 +106,7 @@ public class UserProfileActivity extends ActionBarActivity {
                     createOrUpdateVisit(null, parseUser);
                 }
             }
-        });
+        });*/
 
     }
 
@@ -116,7 +126,7 @@ public class UserProfileActivity extends ActionBarActivity {
     }
 
     private void loadInfoProfile() {
-        new RefreshDataProfileTask(avatar, txtWall, txtUserNombres, getString(R.string.msgLoading), this).execute(parseUser);
+        new RefreshDataProfileTask(avatar, txtWall, txtUserNombres, getResources().getString(R.string.msgLoading), this).execute(parseUser);
     }
 
     @Override
@@ -130,11 +140,9 @@ public class UserProfileActivity extends ActionBarActivity {
         }
     }
 
-
-    private class UserProfileTask extends AsyncTask<ParseUser, Void, ParseObject> {
+    private class UserProfileTask extends AsyncTask<ParseUser, Void, ParseUser> {
 
         private Integer cantZimess;
-
 
         @Override
         protected void onPreExecute() {
@@ -142,23 +150,36 @@ public class UserProfileActivity extends ActionBarActivity {
         }
 
         @Override
-        protected ParseObject doInBackground(ParseUser... parseUsers) {
-            //Buscamos Cant de Zimess en Parse
-            cantZimess = DataParseHelper.findCountZimess(parseUsers[0]);
-            //Buscamos Visitas en Parse
-            return DataParseHelper.findDataVisit(parseUsers[0]);
+        protected ParseUser doInBackground(ParseUser... parseUsers) {
+            ParseUser userTemp = null;
+            try {
+                userTemp = parseUsers[0].fetch();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            //Buscamos la informacion mas reciente del usuario.
+            /*ParseQuery query = ParseUser.getQuery();
+            query.whereEqualTo("objectId", parseUsers[0].getObjectId());
+            try {
+                userTemp = (ParseUser) query.getFirst();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            */
+            return userTemp;
         }
 
         @Override
-        protected void onPostExecute(ParseObject parseObject) {
+        protected void onPostExecute(ParseUser parseObject) {
             if (parseObject != null) {
-                txtCantVisitas.setText(parseObject.get("count_visit").toString());
+                txtCantVisitas.setText(String.valueOf(parseObject.getInt("count_visit")));
+                txtCantZimess.setText(String.valueOf(parseObject.getInt("count_zimess")));
             } else {
                 txtCantVisitas.setText("0");
+                txtCantZimess.setText("0");
             }
             //Cant de Zimess
-            txtCantZimess.setText(Integer.toString(cantZimess));
-
+            //txtCantZimess.setText(Integer.toString(cantZimess));
             progressBarLoad.setVisibility(View.INVISIBLE);
 
         }

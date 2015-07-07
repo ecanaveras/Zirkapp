@@ -35,11 +35,11 @@ import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataCommentsTask;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.DeleteCallback;
 import com.parse.FunctionCallback;
+import com.parse.GetCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -71,7 +71,6 @@ public class DetailZimessActivity extends ActionBarActivity {
     private ProgressBar progressBar;
     private ButtonRectangle btnSendComment;
     private Toolbar toolbar;
-    private ImageView imgCitarUser;
 
 
     @Override
@@ -125,7 +124,6 @@ public class DetailZimessActivity extends ActionBarActivity {
         listComment.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
-
             }
 
             @Override
@@ -167,9 +165,7 @@ public class DetailZimessActivity extends ActionBarActivity {
                     btnSendComment.setEnabled(false);
                     sendZimessComment(comment);
                 } else {
-                    Toast.makeText(getApplicationContext(),
-                            "Escribe tu comentario!",
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DetailZimessActivity.this, getResources().getString(R.string.msgCommentEmpty), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -225,6 +221,12 @@ public class DetailZimessActivity extends ActionBarActivity {
             public void done(ParseException e) {
                 if (e == null) {
                     updateCantComments();
+                    zimessDetail.fetchInBackground(new GetCallback<ParseZimess>() {
+                        @Override
+                        public void done(ParseZimess parseZimess, ParseException e) {
+                            refreshDataZimess(parseZimess);
+                        }
+                    });
                     try {
                         String receptorId = zimessDetail.fetchIfNeeded().getParseUser("user").getObjectId();
                         if (receptorId != null && !currentUser.getObjectId().equals(receptorId)) {
@@ -281,15 +283,12 @@ public class DetailZimessActivity extends ActionBarActivity {
         });
     }
 
-
+    /**
+     * Busca los comentarios en Parse
+     */
     private void findZimessComment() {
         //Actualizar Lista de Comentarios
         new RefreshDataCommentsTask(this, progressBar, listComment, swipeRefreshLayout, txtComment).execute(zimessDetail);
-    }
-
-    private void findZimessUpdated() {
-        //Actualizar el Zimess recien comentado
-        new RefreshDataZimessTask(this, zimessDetail).execute();
     }
 
     /**
@@ -318,7 +317,6 @@ public class DetailZimessActivity extends ActionBarActivity {
         });
         alert.show();
     }
-
 
     /**
      * Elimina el comentario solicitado
@@ -407,7 +405,6 @@ public class DetailZimessActivity extends ActionBarActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-
     }
 
     @Override

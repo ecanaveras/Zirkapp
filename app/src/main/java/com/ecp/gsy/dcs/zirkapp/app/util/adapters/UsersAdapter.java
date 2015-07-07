@@ -83,6 +83,7 @@ public class UsersAdapter extends BaseAdapter {
         if (parseUserList != null && parseUserList.size() > 0) {
             ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
             query.whereContainedIn(ParseZMessage.SENDER_ID, parseUserList);
+            query.whereEqualTo(ParseZMessage.RECIPIENT_ID, ParseUser.getCurrentUser());
             query.whereEqualTo(ParseZMessage.MESSAGE_READ, false);
             query.orderByAscending(ParseZMessage.SENDER_ID);
             try {

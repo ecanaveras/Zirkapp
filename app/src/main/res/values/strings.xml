@@ -111,6 +111,7 @@
     <string name="msgByeComment">Despidete de este comentario...</string>
     <string name="msgMessageEmpty">Debes escribir algo!</string>
     <string name="msgLocationUnknown">Ubicación no disponible...</string>
+    <string name="msgLocationUnknownTry">Ubicación no disponible, intenta mas tarde.</string>
     <string name="msgHelpAvatar">Mantén presionada la imagen para cambiarla!</string>
     <string name="msgSaving">Guardando, por favor espere...</string>
     <string name="msgLoading">Cargando, por favor espere...</string>
@@ -173,6 +174,8 @@
     <string name="msgDeleteComment">Eliminar comentario</string>
     <string name="msgCommentDeleteOk">Comentario eliminado!</string>
     <string name="msgCommentDeleteFailed">No es posible borrar el comentario, intenta mas tarde.</string>
+    <string name="msgMinFourChar">Escribe mínimo 4 caracteres!</string>
+    <string name="msgCommentEmpty">Escribe tu comentario!</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

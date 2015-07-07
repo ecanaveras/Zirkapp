@@ -104,13 +104,13 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
 
             //1. Tomar el/los usuario a notificar
             ParseQuery userQuery = ParseUser.getQuery();
-            ParseQuery query = ParseInstallation.getQuery();
             if (typeNotificacion == PUSH_QUOTE) {
                 userQuery.whereContainedIn("username", usersNames);
             } else {
                 userQuery.whereEqualTo("objectId", receptorId);
             }
             //2. Tomar las instalaciones de los usuarios a notificar
+            ParseQuery query = ParseInstallation.getQuery();
             query.whereMatchesQuery("user", userQuery);
             //3. Establecer query de filtro
             ParsePush parsePush = new ParsePush();

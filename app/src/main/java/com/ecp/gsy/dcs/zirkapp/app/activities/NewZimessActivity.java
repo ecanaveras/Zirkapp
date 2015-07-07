@@ -31,10 +31,14 @@ import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
 import com.gc.materialdesign.views.ButtonRectangle;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+
+import java.util.HashMap;
 
 /**
  * Created by Elder on 23/02/2015.
@@ -52,7 +56,7 @@ public class NewZimessActivity extends ActionBarActivity {
     private ProgressBar progressBar;
     private Activity activity;
     private Toolbar toolbar;
-
+    private Location currentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,12 +71,12 @@ public class NewZimessActivity extends ActionBarActivity {
 
         currentUser = globalApplication.getCurrentUser();
 
+        currentLocation = getCurrentLocation();
         //Name Location
         if (LocationService.isRunning()) {
-            new RefreshDataAddressTask(this, getCurrentLocation(), lblCurrentLocation, progressBar).execute();
+            new RefreshDataAddressTask(this, currentLocation, lblCurrentLocation, progressBar).execute();
         }
     }
-
 
     private void inicializarCompUI() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -102,7 +106,6 @@ public class NewZimessActivity extends ActionBarActivity {
             }
         });
 
-
         btnSendZimess = (ButtonRectangle) findViewById(R.id.btnSendZmess);
         btnSendZimess.setEnabled(false);
         btnSendZimess.setOnClickListener(new View.OnClickListener() {
@@ -127,10 +130,14 @@ public class NewZimessActivity extends ActionBarActivity {
         }
     }
 
-
+    /**
+     * Guarda el Zimess en Parse
+     *
+     * @param zimessText
+     */
     private void sendZmessPost(final String zimessText) {
         if (zimessText.length() < 4) {
-            Toast.makeText(this, "Escribe mínimo 4 caracteres!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getResources().getString(R.string.msgMinFourChar), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -140,7 +147,6 @@ public class NewZimessActivity extends ActionBarActivity {
         btnSendZimess.setEnabled(false);
 
         //Tomar ubicacion
-        final Location currentLocation = getCurrentLocation();
         if (currentLocation != null) {
             ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
             ParseZimess zimess = new ParseZimess();
@@ -151,13 +157,18 @@ public class NewZimessActivity extends ActionBarActivity {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
+                        //Aumentar la cantidad de Zimess del currentUser
+                        ParseCloud.callFunctionInBackground("ParseZimess", new HashMap<String, Object>(), new FunctionCallback<String>() {
+                            public void done(String result, ParseException e) {
+                                if (e != null) {
+                                    Log.e("Parse.Cloud.Zimess", e.getMessage());
+                                }
+                            }
+                        });
                         if (ZimessFragment.isRunning()) {
                             ZimessFragment zf = ZimessFragment.getInstance();
                             zf.findZimessAround(currentLocation, globalApplication.getSortZimess());
                         }
-                        /*Intent intent = new Intent();
-                        intent.putExtra("newZimessOk", true);
-                        setResult(Activity.RESULT_OK, intent);*/
                         finish();
                     } else {
                         showNotificacion(true, 0, null, getResources().getString(R.string.msgZimesFailed), zimessText);
@@ -169,6 +180,7 @@ public class NewZimessActivity extends ActionBarActivity {
             });
         } else {
             btnSendZimess.setEnabled(true);
+            Toast.makeText(this, getResources().getString(R.string.msgLocationUnknownTry), Toast.LENGTH_LONG).show();
         }
 
     }
@@ -236,7 +248,6 @@ public class NewZimessActivity extends ActionBarActivity {
         NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         manager.cancel(idNoti);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

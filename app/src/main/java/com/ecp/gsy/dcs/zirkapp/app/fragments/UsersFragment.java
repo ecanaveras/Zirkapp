@@ -334,59 +334,6 @@ public class UsersFragment extends Fragment {
         return location;
     }
 
-    /*
-    public void updateCantMessagesNoRead() {
-        if (listViewUserOnline.getChildCount() == 0)
-            return;
-
-        class UiMessage {
-            private String senderId;
-            private TextView view;
-
-            public UiMessage(String senderId, TextView view) {
-                this.senderId = senderId;
-                this.view = view;
-            }
-        }
-
-        final ArrayList<UiMessage> uiMessages = new ArrayList<>();
-        final ArrayList<String> sendersId = new ArrayList<>();
-        for (int i = 0; i < listViewUserOnline.getChildCount(); i++) {
-            View v = listViewUserOnline.getChildAt(i - listViewUserOnline.getFirstVisiblePosition());
-            if (v != null) {
-                TextView lblCommentUser = (TextView) v.findViewById(R.id.lblUserName);
-                TextView lblCantMessages = (TextView) v.findViewById(R.id.lblCantMessages);
-                UiMessage uiMessage = new UiMessage(lblCommentUser.getText().toString(), lblCantMessages);
-                uiMessages.add(uiMessage);
-                sendersId.add(uiMessage.senderId);
-            }
-        }
-
-        //Buscar chats.
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ParseZMessage");
-        query.whereContainedIn("senderId", sendersId);
-        query.whereEqualTo("messageRead", false);
-        query.fromLocalDatastore();
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                if (e == null) {
-                    for (UiMessage uiMess : uiMessages) {
-                        int cantMessages = 0;
-                        for (ParseObject message : list) {
-                            if (message.getString("senderId").equals(uiMess.senderId)) {
-                                cantMessages++;
-                            }
-                        }
-                        if (cantMessages > 0)
-                            uiMess.view.setText(String.valueOf(cantMessages));
-                    }
-                }
-            }
-        });
-    }
-    */
-
     @Override
     public void onResume() {
         //Registrar los Broadcast
