@@ -6,7 +6,7 @@
     android:background="@drawable/splash_zirkapp">
 
 
-    <TextView
+    <!--<TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/lblWelcome"
@@ -15,6 +15,13 @@
         android:textSize="25dp"
         android:textColor="@color/text_primary_color"
         android:typeface="serif"/>
+-->
+    <ImageView
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/logo_zirkapp_circle"/>
 
     <TextView
         android:layout_width="wrap_content"

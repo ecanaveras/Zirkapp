@@ -14,7 +14,6 @@ import com.sinch.android.rtc.PushPair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,8 +33,8 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
     private String message;
     private String title;
     private String pushPayLoad;
-    private int typeNotificacion;
-    private ArrayList<String> usersNames = new ArrayList<>();
+    private int typeNotify;
+    private ParseUser receptorUser;
 
 
     /**
@@ -44,33 +43,32 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
      * @param title
      * @param message
      * @param receptorId
-     * @param typeNotificacion
+     * @param typeNotify
      */
-    public SendPushTask(String targetId, String receptorId, String senderId, String title, String message, int typeNotificacion) {
+    public SendPushTask(String targetId, String receptorId, String senderId, String title, String message, int typeNotify) {
         this.targetId = targetId;
         this.receptorId = receptorId;
         this.senderId = senderId;
         this.title = title;
         this.message = message;
-        this.typeNotificacion = typeNotificacion;
+        this.typeNotify = typeNotify;
     }
 
     /**
-     * Envia una notificacion a una lista de usuarios
+     * Envia una notificacion
      *
      * @param title
      * @param message
-     * @param usersNames
-     * @param typeNotificacion
+     * @param receptorUser
+     * @param typeNotify
      */
-    public SendPushTask(String targetId, ArrayList<String> usersNames, String senderId, String title, String message, int typeNotificacion) {
+    public SendPushTask(String targetId, ParseUser receptorUser, String senderId, String title, String message, int typeNotify) {
         this.targetId = targetId;
-        this.usersNames = usersNames;
+        this.receptorUser = receptorUser;
         this.senderId = senderId;
-        this.receptorId = receptorId;
         this.title = title;
         this.message = message;
-        this.typeNotificacion = typeNotificacion;
+        this.typeNotify = typeNotify;
     }
 
     /**
@@ -81,37 +79,44 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
      * @param receptorId
      * @param senderId
      * @param pushPairs
-     * @param typeNotificacion
+     * @param typeNotify
      */
-    public SendPushTask(String targetId, String receptorId, String senderId, String title, String message, List<PushPair> pushPairs, int typeNotificacion) {
+    public SendPushTask(String targetId, String receptorId, String senderId, String title, String message, List<PushPair> pushPairs, int typeNotify) {
         this.targetId = targetId;
         this.receptorId = receptorId;
         this.senderId = senderId;
         this.title = title;
         this.message = message;
         this.pushPairs = pushPairs;
-        this.typeNotificacion = typeNotificacion;
+        this.typeNotify = typeNotify;
     }
 
     @Override
     protected Void doInBackground(Void... params) {
         Log.d("send.push.task", "started...");
-        if ((receptorId != null || usersNames.size() > 0) && message != null) {
+        if ((receptorId != null || receptorUser != null) && message != null) {
             if (pushPairs != null && pushPairs.size() > 0) {
                 PushPair pushPair = pushPairs.get(0);
                 pushPayLoad = pushPair.getPushPayload();
             }
 
-            //1. Tomar el/los usuario a notificar
-            ParseQuery userQuery = ParseUser.getQuery();
-            if (typeNotificacion == PUSH_QUOTE) {
-                userQuery.whereContainedIn("username", usersNames);
-            } else {
-                userQuery.whereEqualTo("objectId", receptorId);
-            }
-            //2. Tomar las instalaciones de los usuarios a notificar
+
             ParseQuery query = ParseInstallation.getQuery();
-            query.whereMatchesQuery("user", userQuery);
+            if (receptorId != null) {
+                //1. Tomar el usuario a notificar
+                ParseQuery userQuery = ParseUser.getQuery();
+                userQuery.whereEqualTo("objectId", receptorId);
+                //2a. Tomar las instalaciones del usuario a notificar
+                query.whereMatchesQuery("user", userQuery);
+            }
+
+            //Como se envia el usuario, no es necesario buscarlo en parse
+            if (receptorUser != null) {
+                receptorId = receptorUser.getObjectId();
+                //2b. Tomar las instalaciones del usuario a notificar
+                query.whereEqualTo("user", receptorUser);
+            }
+
             //3. Establecer query de filtro
             ParsePush parsePush = new ParsePush();
             parsePush.setQuery(query);
@@ -121,9 +126,10 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
 
             try {
                 JSONObject data = new JSONObject();
-                data.put("alert", String.format(messageBody, message.length() < 81 ? message : message.substring(0, 80).concat("..."), typeNotificacion));
+                data.put("alert", String.format(messageBody, message.length() < 81 ? message : message.substring(0, 80).concat("..."), typeNotify));
                 data.put("badge", "Increment");
                 data.put("sound", "default"); //Todo obtener Tono de preferencias
+                data.put("type", typeNotify);
                 //Pasar sender como titulo
                 data.put("title", title);
                 //Datos para el manejo de la notificacion

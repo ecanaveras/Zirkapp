@@ -271,6 +271,26 @@ public class DataParseHelper {
         return parseUsers.size() > 0 ? parseUsers.get(0) : null;
     }
 
+    /**
+     * Busca un usuarios de acuerdo a su username
+     *
+     * @param username
+     * @return
+     */
+    public static ParseUser findUserName(String username) {
+        List<ParseUser> parseUsers = new ArrayList<>();
+        //Buscar Usuario
+        ParseQuery query = ParseUser.getQuery();
+        query.whereEqualTo("username", username);
+        try {
+            parseUsers = query.find();
+        } catch (ParseException e) {
+            Log.e("Parse.Users", e.getMessage());
+        }
+
+        return parseUsers.size() > 0 ? parseUsers.get(0) : null;
+    }
+
     //##############################################################
     //                          DELETE
     //##############################################################

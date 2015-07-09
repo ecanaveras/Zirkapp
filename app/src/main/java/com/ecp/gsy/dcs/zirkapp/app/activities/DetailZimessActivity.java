@@ -20,6 +20,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -30,6 +31,7 @@ import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
@@ -37,6 +39,9 @@ import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataCommentsTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.gc.materialdesign.views.ButtonRectangle;
+import com.github.ksoichiro.android.observablescrollview.ObservableListView;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.parse.DeleteCallback;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
@@ -50,7 +55,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DetailZimessActivity extends ActionBarActivity {
+public class DetailZimessActivity extends ActionBarActivity { // implements ObservableScrollViewCallbacks {
 
     private GlobalApplication globalApplication;
     private ParseZimess zimessDetail;
@@ -61,6 +66,7 @@ public class DetailZimessActivity extends ActionBarActivity {
     //UI
     private EditText txtComment;
     private ListView listComment;
+    private LinearLayout layoutBodyZimess;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ImageView imgAvatar, imgComment;
     private TextView lblTimePass,
@@ -102,6 +108,7 @@ public class DetailZimessActivity extends ActionBarActivity {
         toolbar.setTitle("Inf. Zimess");
 
         //UI
+        layoutBodyZimess = (LinearLayout) findViewById(R.id.layoutBodyZimess);
         lblAliasUsuario = (TextView) findViewById(R.id.lblNombreUsuario);
         lblUsername = (TextView) findViewById(R.id.lblUserName);
         lblMessage = (TextView) findViewById(R.id.lblZimess);
@@ -124,6 +131,7 @@ public class DetailZimessActivity extends ActionBarActivity {
         });
 
         registerForContextMenu(listComment);
+        //listComment.setScrollViewCallbacks(this);
         listComment.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
@@ -250,8 +258,15 @@ public class DetailZimessActivity extends ActionBarActivity {
                                                 usernames.add(matcher.group(0).replace("@", ""));
                                             }
                                         }
+                                        //Enviar la notificacion a cada uno de los usuarios citados.
                                         if (usernames.size() > 0) {
-                                            new SendPushTask(zimessDetail.getObjectId(), usernames, currentUser.getObjectId(), params[1], params[0], SendPushTask.PUSH_QUOTE).execute();
+                                            for (String username : usernames) {
+                                                if (!currentUser.getUsername().equals(username)) {
+                                                    ParseUser user = DataParseHelper.findUserName(username);
+                                                    if (user != null)
+                                                        new SendPushTask(zimessDetail.getObjectId(), user, currentUser.getObjectId(), params[1], params[0], SendPushTask.PUSH_QUOTE).execute();
+                                                }
+                                            }
                                         }
                                     }
                                     return null;
@@ -457,7 +472,6 @@ public class DetailZimessActivity extends ActionBarActivity {
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
         } else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-
         }
     }
 
@@ -483,4 +497,29 @@ public class DetailZimessActivity extends ActionBarActivity {
                 return super.onContextItemSelected(item);
         }
     }
+
+    /*@Override
+    public void onScrollChanged(int i, boolean b, boolean b1) {
+    }
+
+    @Override
+    public void onDownMotionEvent() {
+    }
+
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+        if (scrollState == ScrollState.UP) {
+            if (layoutBodyZimess.isShown()) {
+                //layoutBodyZimess.setVisibility(View.GONE);
+                layoutBodyZimess.animate().translationY(-200);
+            }
+        }
+
+        if (scrollState == ScrollState.DOWN) {
+            if (!layoutBodyZimess.isShown()) {
+                //layoutBodyZimess.setVisibility(View.VISIBLE);
+                layoutBodyZimess.animate().translationY(0);
+            }
+        }
+    }*/
 }

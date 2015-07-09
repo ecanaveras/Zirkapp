@@ -26,6 +26,8 @@ import com.parse.ParseUser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 /**
  * Created by Elder on 24/04/2015.
  */
@@ -39,8 +41,9 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
     private ParseZNotifi itemNotifi;
     private ParseUser senderUser;
     private GlobalApplication globalApplication;
-    private int typeNotification;
+    private int typeNotify = 0;
     private boolean notificar = true;
+    private ArrayList<String> usersNames = new ArrayList<>();
 
     @Override
     protected Notification getNotification(Context context, Intent intent) {
@@ -55,6 +58,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
             data = new JSONObject(bundle.getString("com.parse.Data"));
             String message = data.getString("alert");
             String title = data.getString("title");
+            typeNotify = data.getInt("type");
             targetId = data.getString("targetId");
             receptorId = data.getString("receptorId");
             senderId = data.getString("senderId");
@@ -84,11 +88,8 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
      * @param context
      */
     private void sendNotification(String msg, String title, Context context) {
-        String[] messages = msg.split("-:-");
+        //String[] messages = msg.split("-:-");
         msg = msg.contains("-:-") ? msg.substring(0, msg.length() - 4) : msg; //Limpiar mensaje
-        typeNotification = 0;
-        if (messages.length > 1)
-            typeNotification = Integer.parseInt(messages[messages.length - 1]);
         //Notificacion
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent intent = new Intent(context, MainActivity.class);
@@ -98,7 +99,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
         String summary = null, senderName = null, typeNotiString = null;
         senderUser = findParseUser(senderId);
         if (senderId != null) {
-            switch (typeNotification) {
+            switch (typeNotify) {
                 case SendPushTask.PUSH_CHAT:
                     //Receiver
                     Intent broad = new Intent();
@@ -158,17 +159,12 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                     break;
             }
             //imgLargeIcon = GlobalApplication.getAvatar(senderUser);
+        } else {
+            typeNotiString = "[Gral]";
+            itemNotifi = null;
         }
 
         if (notificar) {
-
-            if (itemNotifi != null) {
-                itemNotifi.setSummaryNoti(String.format(titleNoti, summary, senderName));
-                itemNotifi.setDetailNoti(msg);
-
-                //Guardar la Noti
-                saveNotificacion(itemNotifi);
-            }
 
             PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -183,9 +179,17 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                     .setWhen(System.currentTimeMillis());
 
             nBuilder.setContentIntent(contentIntent);
-            notificationManager.notify(typeNotification, nBuilder.build());
-        }
+            notificationManager.notify(typeNotify, nBuilder.build());
 
+            if (itemNotifi != null) {
+                itemNotifi.setSummaryNoti(String.format(titleNoti, summary, senderName));
+                itemNotifi.setDetailNoti(msg);
+
+                //Guardar la Noti
+                saveNotificacion(itemNotifi, findParseUser(receptorId));
+
+            }
+        }
     }
 
     /**
@@ -193,8 +197,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
      *
      * @param noti
      */
-    private void saveNotificacion(ParseZNotifi noti) {
-        ParseUser receptorUser = findParseUser(receptorId);
+    private void saveNotificacion(ParseZNotifi noti, ParseUser receptorUser) {
         if (noti != null && senderUser != null && targetId != null && receptorUser != null) {
             noti.put(ParseZNotifi.SENDER_USER, senderUser);
             noti.put(ParseZNotifi.RECEPTOR_USER, receptorUser);
@@ -215,13 +218,23 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
     }
 
     /**
-     * Busca los datos del usuario que envia la notificacion
+     * Busca usuario del objectId
      *
      * @param objectId
      * @return
      */
     private ParseUser findParseUser(String objectId) {
         return DataParseHelper.findUser(objectId);
+    }
+
+    /**
+     * Busca usuario del username
+     *
+     * @param username
+     * @return
+     */
+    private ParseUser findParseUsername(String username) {
+        return DataParseHelper.findUserName(username);
     }
 }
 

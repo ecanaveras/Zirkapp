@@ -19,7 +19,7 @@
 
     <!-- Welcome -->
     <string name="lblWelcome">Bienvenido</string>
-    <string name="lblWelcomeMsg">Estas apunto de ser parte del mundo Zirkapp, todo lo que quieras cerca de ti!</string>
+    <string name="lblWelcomeMsg">Bienvenido, "Hay cosas en la vida que solo existen si decides crearlas!".</string>
     <string name="lblWelcomeMsg1">Comunicate con los que te rodean!</string>
     <string name="lblWelcomeMsg2">Dile a todos lo que está pasando cerca de ti!</string>
     <string name="lblWelcomeMsg3">Encuentra amigos donde quiera que vayas!</string>
@@ -177,6 +177,7 @@
     <string name="msgMinFourChar">Escribe mínimo 4 caracteres!</string>
     <string name="msgCommentEmpty">Escribe tu comentario!</string>
     <string name="lblHistory">Historial</string>
+    <string name="msgZimessNoFound">Zimess no encontrado</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

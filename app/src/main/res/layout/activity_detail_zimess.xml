@@ -7,15 +7,22 @@
 
     <include layout="@layout/component_toolbar" />
 
-    <!--Zimess-->
-    <include layout="@layout/cardview_item_zimess" />
-
-    <ImageView
+    <LinearLayout
+        android:id="@+id/layoutBodyZimess"
         android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:layout_marginTop="-5dp"
-        android:scaleType="fitCenter"
-        android:src="@android:drawable/arrow_down_float" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <!--Zimess-->
+        <include layout="@layout/cardview_item_zimess" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:layout_marginTop="-5dp"
+            android:scaleType="fitCenter"
+            android:src="@android:drawable/arrow_down_float" />
+
+    </LinearLayout>
 
     <!--Comentarios-->
     <android.support.v4.widget.SwipeRefreshLayout
@@ -30,6 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <!--<com.github.ksoichiro.android.observablescrollview.ObservableListView-->
             <ListView
                 android:id="@+id/listZComments"
                 android:layout_width="match_parent"

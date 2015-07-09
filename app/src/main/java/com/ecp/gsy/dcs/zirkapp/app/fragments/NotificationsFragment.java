@@ -112,17 +112,15 @@ public class NotificationsFragment extends Fragment {
      * @param item
      */
     private void goToTarget(ParseZNotifi item) {
-        switch (item.getTypeNoti()) {
-            case SendPushTask.PUSH_COMMENT:
-                if (item.getZimessTarget() != null) {
-                    Activity activity = getActivity();
-                    Intent intent = new Intent(activity, DetailZimessActivity.class);
-                    globalApplication.setTempZimess(item.getZimessTarget());
-                    activity.startActivityForResult(intent, 105);
-                } else {
-                    Toast.makeText(getActivity(), "Zimess no encontrado!", Toast.LENGTH_SHORT).show();
-                }
-                break;
+        if (item.getTypeNoti() == SendPushTask.PUSH_COMMENT || item.getTypeNoti() == SendPushTask.PUSH_QUOTE) {
+            if (item.getZimessTarget() != null) {
+                Activity activity = getActivity();
+                Intent intent = new Intent(activity, DetailZimessActivity.class);
+                globalApplication.setTempZimess(item.getZimessTarget());
+                activity.startActivityForResult(intent, 105);
+            } else {
+                Toast.makeText(getActivity(), getResources().getString(R.string.msgZimessNoFound), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
