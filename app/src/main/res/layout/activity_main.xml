@@ -5,14 +5,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
     <include layout="@layout/component_toolbar" />
 
-
     <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/drawer_layout"
         android:fitsSystemWindows="false">
 
         <!-- Contenido Principal -->
@@ -35,27 +33,27 @@
             android:layout_height="match_parent"
             android:id="@+id/f_chat"
             android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.ChatFragment"
-            tools:layout="@layout/fragment_users" />-->
+            tools:layout="@layout/fragment_chat_tabs" />-->
 
         <fragment
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
             android:id="@+id/f_zimess"
             android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             tools:layout="@layout/fragment_zimess" />
 
         <fragment
+            android:id="@+id/f_users"
+            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/f_usuariosOnline"
-            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment"
             tools:layout="@layout/fragment_users" />
 
         <fragment
+            android:id="@+id/f_notify"
+            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.NotificationsFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/f_notificaciones"
-            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.NotificationsFragment"
             tools:layout="@layout/fragment_notifications" />
 
         <!-- Lista de Navegacion -->

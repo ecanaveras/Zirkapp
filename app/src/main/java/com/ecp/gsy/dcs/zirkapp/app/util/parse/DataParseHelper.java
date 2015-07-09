@@ -213,6 +213,7 @@ public class DataParseHelper {
      * Devuelve la cantidad Zimess de acuerdo al usuario
      *
      * @param parseUser
+     * * @deprecated No se usa, estos datos ahora se almacenan en ParseUser
      * @return
      */
     public static Integer findCountZimess(ParseUser parseUser) {
@@ -233,6 +234,7 @@ public class DataParseHelper {
      * Busca los datos de la visita del perfil
      *
      * @param parseUser
+     * @deprecated No se usa, estos datos ahora se almacenan en ParseUser
      * @return
      */
     public static ParseZVisit findDataVisit(ParseUser parseUser) {

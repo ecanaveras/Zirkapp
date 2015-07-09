@@ -71,7 +71,7 @@ public class DetailZimessActivity extends ActionBarActivity {
     private ProgressBar progressBar;
     private ButtonRectangle btnSendComment;
     private Toolbar toolbar;
-
+    private String contextClass = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +85,9 @@ public class DetailZimessActivity extends ActionBarActivity {
 
         //Tomar nombre del usuario del Zimess
         zimessUser = zimessDetail.getUser();
+
+        //Toma el nombre de la clase que llama el detail
+        contextClass = getIntent().getStringExtra("contextClass");
 
         inicializarCompUI();
         findZimessComment();
@@ -304,7 +307,13 @@ public class DetailZimessActivity extends ActionBarActivity {
                 if (zimessDetail != null) {
                     //Delete
                     new DeleteDataZimessTask(DetailZimessActivity.this).execute(zimessDetail);
-                    getCurrentLocation(false); //actualizar Zimess
+                    if (contextClass != null && contextClass.equals(MyZimessActivity.class.getSimpleName())) {
+                        if (MyZimessActivity.isRunning()) {
+                            MyZimessActivity.getInstance().findZimessCurrentUser();
+                        }
+                    } else {
+                        getCurrentLocation(false); //actualizar Zimess
+                    }
                 }
             }
         });

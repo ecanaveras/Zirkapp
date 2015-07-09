@@ -104,11 +104,11 @@ public class SettingsFragment extends PreferenceFragment {
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_options_notification);
 
-        // Add 'data and sync' preferences, and a corresponding header.
+       /* // Add 'data and sync' preferences, and a corresponding header.
         fakeHeader = new PreferenceCategory(getActivity());
         fakeHeader.setTitle(R.string.pref_header_data_sync);
         getPreferenceScreen().addPreference(fakeHeader);
-        addPreferencesFromResource(R.xml.pref_options_data_sync);
+        addPreferencesFromResource(R.xml.pref_options_data_sync);*/
 
         //Agregar opciones de cuenta
         fakeHeader = new PreferenceCategory(getActivity());
@@ -202,7 +202,7 @@ public class SettingsFragment extends PreferenceFragment {
         bindPreferenceSummaryToValue(findPreference("min_dist_list"));
         bindPreferenceSummaryToValue(findPreference("max_dist_list"));
         bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
-        bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+        //bindPreferenceSummaryToValue(findPreference("sync_frequency"));
 
     }
 
@@ -379,7 +379,7 @@ public class SettingsFragment extends PreferenceFragment {
      * This fragment shows data and sync preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    /*@TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class DataSyncPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -392,7 +392,7 @@ public class SettingsFragment extends PreferenceFragment {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("sync_frequency"));
         }
-    }
+    }*/
 
     private void saveSessionActive(boolean sessionActive) {
         List<HandlerLogindb> listHldb = new ArrayList<>();

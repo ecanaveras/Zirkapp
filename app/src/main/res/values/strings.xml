@@ -176,6 +176,7 @@
     <string name="msgCommentDeleteFailed">No es posible borrar el comentario, intenta mas tarde.</string>
     <string name="msgMinFourChar">Escribe mínimo 4 caracteres!</string>
     <string name="msgCommentEmpty">Escribe tu comentario!</string>
+    <string name="lblHistory">Historial</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

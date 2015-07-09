@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.MyZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.UserProfileActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
@@ -122,6 +123,8 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
                 //Ir al Zimess
                 globalApplication.setTempZimess(zimess);
                 Intent intent = new Intent((Activity) context, DetailZimessActivity.class);
+                if (context instanceof MyZimessActivity)
+                    intent.putExtra("contextClass", MyZimessActivity.class.getSimpleName());
                 context.startActivity(intent);
             }
         }

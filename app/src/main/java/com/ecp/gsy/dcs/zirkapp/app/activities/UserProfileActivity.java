@@ -113,16 +113,16 @@ public class UserProfileActivity extends ActionBarActivity {
     /**
      * Crea o actualiza las visitas al usuario
      *
-     * @param parseObject
+     * @param parseZVisit
      * @param parseUser
      */
-    private void createOrUpdateVisit(ParseZVisit parseObject, ParseUser parseUser) {
-        if (parseObject == null) {
-            parseObject = new ParseZVisit();
+    private void createOrUpdateVisit(ParseZVisit parseZVisit, ParseUser parseUser) {
+        if (parseZVisit == null) {
+            parseZVisit = new ParseZVisit();
         }
-        parseObject.put(ParseZVisit.USER, parseUser);
-        parseObject.increment(ParseZVisit.COUNT_VISIT);
-        parseObject.saveInBackground();
+        parseZVisit.put(ParseZVisit.USER, parseUser);
+        parseZVisit.increment(ParseZVisit.COUNT_VISIT);
+        parseZVisit.saveInBackground();
     }
 
     private void loadInfoProfile() {

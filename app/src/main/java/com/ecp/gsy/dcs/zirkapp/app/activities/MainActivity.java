@@ -51,7 +51,7 @@ import java.util.ArrayList;
 public class MainActivity extends ActionBarActivity {
 
     //KEY FRAGMENT
-    private static final int HOME = 0; //Disabled
+    //private static final int HOME = 3; //Disabled
     private static final int ZIMESS = 0;
     private static final int CHAT = 1;
     private static final int NOTI = 2;
@@ -92,11 +92,6 @@ public class MainActivity extends ActionBarActivity {
     private String regId;
     private BroadcastReceiver broadcastReceiver;
 
-    //Sinch listener
-    /*private MessageService.MessageServiceInterface messageService;
-    private MyMessageUserClientListener messageClientListener = new MyMessageUserClientListener();
-    private MyServiceConnection serviceConnection = new MyServiceConnection();*/
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,10 +125,10 @@ public class MainActivity extends ActionBarActivity {
 
         //Manipulando Fragments
         FragmentManager fm = getFragmentManager();
-        //fragments[HOME] = fm.findFragmentById(R.id.fhome);
+        //fragments[HOME] = fm.findFragmentById(R.id.f_chat);
         fragments[ZIMESS] = fm.findFragmentById(R.id.f_zimess);
-        fragments[CHAT] = fm.findFragmentById(R.id.f_usuariosOnline);
-        fragments[NOTI] = fm.findFragmentById(R.id.f_notificaciones);
+        fragments[CHAT] = fm.findFragmentById(R.id.f_users);
+        fragments[NOTI] = fm.findFragmentById(R.id.f_notify);
 
         FragmentTransaction ft = fm.beginTransaction();
         for (int i = 0; i < fragments.length; i++) {
@@ -371,8 +366,6 @@ public class MainActivity extends ActionBarActivity {
         if (!LocationService.isRunning()) {
             startService(new Intent(MainActivity.this, LocationService.class));
         }
-
-        //globalApplication.checkPlayServices(this);
         globalApplication.setListeningNotifi(false);
 
         //FACEBOOK
@@ -448,8 +441,6 @@ public class MainActivity extends ActionBarActivity {
         stopService(new Intent(this, MessageService.class));
         stopService(new Intent(this, LocationService.class));
 
-        /*messageService.removeMessageClientListener(messageClientListener);
-        unbindService(serviceConnection);*/
         super.onDestroy();
     }
 
@@ -478,47 +469,5 @@ public class MainActivity extends ActionBarActivity {
             Log.e("KeyHashNoSuchAlgorithm", e.getMessage());
         }
     }
-
-    /*private class MyServiceConnection implements ServiceConnection {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            messageService = (MessageService.MessageServiceInterface) iBinder;
-            messageService.addMessageClientListener(messageClientListener);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            messageService = null;
-        }
-    }
-
-
-    private class MyMessageUserClientListener implements MessageClientListener {
-
-        @Override
-        public void onIncomingMessage(MessageClient messageClient, Message message) {
-            Log.d("sinch.listener", message.getSenderId());
-        }
-
-        @Override
-        public void onMessageSent(MessageClient messageClient, Message message, String s) {
-
-        }
-
-        @Override
-        public void onMessageFailed(MessageClient messageClient, Message message, MessageFailureInfo messageFailureInfo) {
-
-        }
-
-        @Override
-        public void onMessageDelivered(MessageClient messageClient, MessageDeliveryInfo messageDeliveryInfo) {
-
-        }
-
-        @Override
-        public void onShouldSendPushData(MessageClient messageClient, Message message, List<PushPair> list) {
-
-        }
-    }*/
 }
 

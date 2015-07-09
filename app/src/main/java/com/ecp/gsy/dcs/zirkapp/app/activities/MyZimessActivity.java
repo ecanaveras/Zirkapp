@@ -32,11 +32,13 @@ public class MyZimessActivity extends ActionBarActivity {
 
     private RecyclerView recyclerView;
     private ZimessRecyclerAdapter zReciclerAdapter;
+    private static MyZimessActivity instance;
 
     private LinearLayout layoutZimessNoFound, layoutZimessFinder, layoutZimessDefault;
     private ParseUser currentUser;
     private Toolbar toolbar;
     public int requestCodeUpdateZimess = 105;
+    public int requestCodeDeleteZimess = 115;
     private GlobalApplication globalApplication;
 
     @Override
@@ -52,6 +54,15 @@ public class MyZimessActivity extends ActionBarActivity {
 
         findZimessCurrentUser();
 
+        instance = this;
+    }
+
+    public static boolean isRunning() {
+        return instance != null;
+    }
+
+    public static MyZimessActivity getInstance() {
+        return instance;
     }
 
     private void inicializarCompUI() {
@@ -84,7 +95,7 @@ public class MyZimessActivity extends ActionBarActivity {
     /**
      * Busca los Zimess del Usuario
      */
-    private void findZimessCurrentUser() {
+    public void findZimessCurrentUser() {
         Location currentLocation = getCurrentLocation();
         if (currentLocation != null) {
             layoutZimessDefault.setVisibility(View.GONE);
@@ -133,6 +144,12 @@ public class MyZimessActivity extends ActionBarActivity {
         if (requestCode == requestCodeUpdateZimess && data != null) {
             boolean updateZimessOk = data.getBooleanExtra("updateZimessOk", false);
             if (resultCode == Activity.RESULT_OK && updateZimessOk)
+                findZimessCurrentUser();
+        }
+
+        if (requestCode == requestCodeDeleteZimess && data != null) {
+            boolean deleteZimessOk = data.getBooleanExtra("deleteZimessOk", false);
+            if (resultCode == Activity.RESULT_OK && deleteZimessOk)
                 findZimessCurrentUser();
         }
     }
