@@ -11,7 +11,7 @@
         android:layout_margin="20dp"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/imgLogoZirkapp"

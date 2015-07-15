@@ -19,7 +19,7 @@
 
     <!-- Welcome -->
     <string name="lblWelcome">Bienvenido</string>
-    <string name="lblWelcomeMsg">Bienvenido, "Hay cosas en la vida que solo existen si decides crearlas!".</string>
+    <string name="lblWelcomeMsg">Bienvenido, \"Hay cosas en la vida que solo existen si decides crearlas!\".</string>
     <string name="lblWelcomeMsg1">Comunicate con los que te rodean!</string>
     <string name="lblWelcomeMsg2">Dile a todos lo que está pasando cerca de ti!</string>
     <string name="lblWelcomeMsg3">Encuentra amigos donde quiera que vayas!</string>

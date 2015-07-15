@@ -2,7 +2,6 @@ package com.ecp.gsy.dcs.zirkapp.app;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
@@ -391,13 +391,10 @@ public class GlobalApplication extends Application {
      * @return
      */
     public boolean isEnabledGetLocation() {
-        ContentResolver contentResolver = getContentResolver();
-        //Buscar que modo esta habilitado
-        int mode = Settings.Secure.getInt(contentResolver, Settings.Secure.LOCATION_MODE, Settings.Secure.LOCATION_MODE_OFF);
-        if (mode != Settings.Secure.LOCATION_MODE_OFF) {
-            return true;
-        }
-        return false;
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        boolean isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        return (isEnabledGPS || isEnabledNetwork);
     }
 
     //ALERTAS

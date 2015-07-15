@@ -10,6 +10,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -62,7 +63,7 @@ public class ZimessFragment extends Fragment {
 
         inicializarCompUI(view);
 
-        findZimessAround(getCurrentLocation(false), globalApplication.getSortZimess());
+        //findZimessAround(getCurrentLocation(false), globalApplication.getSortZimess());
 
         instance = this;
 
@@ -213,19 +214,24 @@ public class ZimessFragment extends Fragment {
     private Location getCurrentLocation(boolean isManual) {
         Location location = null;
         if (globalApplication.isConectedToInternet()) {
-            if (LocationService.isRunning()) {
-                layoutInternetOff.setVisibility(View.GONE);
-                LocationService locationService = LocationService.getInstance();
-                if (locationService != null) {
-                    android.location.Location tmpLocation = locationService.getCurrentLocation(isManual);
-                    if (tmpLocation != null)
-                        location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+            if (globalApplication.isEnabledGetLocation()) {
+                if (LocationService.isRunning()) {
+                    layoutInternetOff.setVisibility(View.GONE);
+                    LocationService locationService = LocationService.getInstance();
+                    if (locationService != null) {
+                        android.location.Location tmpLocation = locationService.getCurrentLocation(isManual);
+                        if (tmpLocation != null)
+                            location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+                    }
+                } else {
+                    Log.i("ZimessGetLocation", LocationService.class.getSimpleName() + " not running");
                 }
             } else {
-                Intent intent = new Intent(getActivity(), LocationService.class);
-                getActivity().startService(intent);
+                layoutGpsOff.setVisibility(View.VISIBLE);
+                globalApplication.gpsShowSettingsAlert();
             }
         } else {
+            layoutInternetOff.setVisibility(View.VISIBLE);
             globalApplication.networkShowSettingsAlert();
         }
         return location;

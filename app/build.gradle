@@ -2,12 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        config {
-            keyAlias 'zirkapp'
-            keyPassword 'Ecanave1986'
-            storeFile file('C:/dev/android-apps/key-zirkapp.jks')
-            storePassword 'Ecanave1986'
-        }
     }
     compileSdkVersion 21
     buildToolsVersion '21.1.2'
@@ -15,18 +9,14 @@ android {
         multiDexEnabled true
         minSdkVersion 14
         targetSdkVersion 21
-        versionName '1.1.40'
+        versionName '1.1.45'
         applicationId 'com.ecp.gsy.dcs.zirkapp'
-        versionCode 5
-        signingConfig signingConfigs.config
+        versionCode 6
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-        }
-        debug {
-            signingConfig signingConfigs.config
         }
     }
     productFlavors {
@@ -50,7 +40,6 @@ dependencies {
     compile 'com.google.android.gms:play-services:4.0.+'
     compile 'com.github.fengdai:alertdialogpro-theme-material:0.2.1'
     compile 'com.github.navasmdc:MaterialDesign:1.+@aar'
-    compile 'com.github.ksoichiro:android-observablescrollview:1.5.0'
     compile 'fr.avianey.com.viewpagerindicator:library:2.4.1@aar'
     compile 'com.parse.bolts:bolts-android:1.2.0'
     compile files('libs/ormlite-core-4.48.jar')

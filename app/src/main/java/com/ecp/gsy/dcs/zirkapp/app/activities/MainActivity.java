@@ -97,8 +97,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //bindService(new Intent(this, MessageService.class), serviceConnection, BIND_AUTO_CREATE);
-
         //KeyHash
         //this.getKeyHash();
 
@@ -363,9 +361,10 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (!LocationService.isRunning()) {
+        /*if (!LocationService.isRunning()) {
+            Log.i("starServiceOnResume", LocationService.class.getSimpleName());
             startService(new Intent(MainActivity.this, LocationService.class));
-        }
+        }*/
         globalApplication.setListeningNotifi(false);
 
         //FACEBOOK

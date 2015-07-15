@@ -80,39 +80,38 @@ public class LocationService extends Service {
     public Location getCurrentLocation(boolean isManual) {
         isAutomatic = !isManual;
         if (globalApplication.isConectedToInternet()) {
-            if (globalApplication.isEnabledGetLocation()) {
-                if (isAutomatic)
-                    handler.postDelayed(getLocation, MIN_TIME_BW_UPDATES);
-                if (isLocationEnabled) {
-                    isLocationEnabled = false;
-                    stopUsingGPS();
-                }
-                if (!isLocationEnabled) {
-                    isLocationEnabled = true;
+            if (isAutomatic)
+                handler.postDelayed(getLocation, MIN_TIME_BW_UPDATES);
+            if (isLocationEnabled) {
+                isLocationEnabled = false;
+                stopUsingGPS();
+            }
+            if (!isLocationEnabled) {
+                isLocationEnabled = true;
 
-                    try {
-                        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                        boolean isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-                        boolean isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-                        //Network
-                        if (isEnabledNetwork) {
-                            Log.d("provider.location", "network");
-                            return getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        }
-                        //Gps
-                        if (isEnabledGPS) {
-                            Log.d("provider.location", "gps");
-                            return getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        }
-                    } catch (Exception e) {
-                        stopUsingGPS();
-                        Log.e("Error : Location", "Impossible to connect to LocationManager", e);
+                try {
+                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    boolean isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                    boolean isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                    //Network
+                    if (isEnabledNetwork) {
+                        Log.d("provider.location", "network");
+                        return getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     }
+                    //Gps
+                    if (isEnabledGPS) {
+                        Log.d("provider.location", "gps");
+                        return getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    }
+
+                    //Desabilitado la RED y GPS
+                    Log.d("provider.location", "disabled");
+                    globalApplication.gpsShowSettingsAlert();
+
+                } catch (Exception e) {
+                    stopUsingGPS();
+                    Log.e("Error : Location", "Impossible to connect to LocationManager", e);
                 }
-            } else {
-                //Desabilitado la RED y GPS
-                Log.d("provider.location", "disabled");
-                globalApplication.gpsShowSettingsAlert();
             }
         } else {
             globalApplication.networkShowSettingsAlert();

@@ -6,7 +6,6 @@ import android.support.v13.app.FragmentTabHost;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TabHost;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 

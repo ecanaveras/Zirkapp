@@ -3,6 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util.broadcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.NotificationsFragment;
@@ -16,6 +17,7 @@ import com.parse.ParseUser;
  */
 public class NetworkChangeReceiver extends BroadcastReceiver {
 
+    String TAG = "starServiceNetworkChangeReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -27,6 +29,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                 locationService.startAutomaticLocation();
             } else {
                 //Iniciamos el servicio
+                Log.i(TAG, LocationService.class.getSimpleName() + " started...");
                 Intent intentService = new Intent(context, LocationService.class);
                 context.startService(intentService);
             }
