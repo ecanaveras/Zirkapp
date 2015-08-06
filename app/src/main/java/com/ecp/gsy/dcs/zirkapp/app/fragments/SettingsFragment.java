@@ -19,6 +19,7 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
@@ -31,9 +32,10 @@ import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.j256.ormlite.dao.Dao;
 import com.parse.ParseUser;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -393,27 +395,43 @@ public class SettingsFragment extends PreferenceFragment {
             bindPreferenceSummaryToValue(findPreference("sync_frequency"));
         }
     }*/
-
     private void saveSessionActive(boolean sessionActive) {
         List<HandlerLogindb> listHldb = new ArrayList<>();
 
-        RuntimeExceptionDao<HandlerLogindb, Integer> dao = databaseHelper.getHandlerLogindbRuntimeDao();
-        listHldb = dao.queryForAll();
+        Dao dao = null;
+        try {
+            dao = databaseHelper.getHandlerLogindbDao();
+            listHldb = dao.queryForAll();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         boolean guardar = true;
 
         //Si existe un registro se actualiza y no se crea uno nuevo
         for (HandlerLogindb row : listHldb) {
-            row.setSessionActive(sessionActive);
-            dao.update(row);
+            if (dao != null) {
+                try {
+                    row.setSessionActive(sessionActive);
+                    dao.update(row);
+                } catch (SQLException e) {
+                    Log.e("Ormlite", "Error actualizando handlerLogin");
+                }
+            }
             guardar = false;
             break;
         }
 
         //Guardar si no existen registro
         if (guardar) {
-            HandlerLogindb ldb = new HandlerLogindb(sessionActive);
-            dao.create(ldb);
+            if (dao != null) {
+                try {
+                    HandlerLogindb ldb = new HandlerLogindb(sessionActive);
+                    dao.create(ldb);
+                } catch (SQLException e) {
+                    Log.e("Ormlite", "Error creando handlerLogin");
+                }
+            }
         }
     }
 

@@ -27,7 +27,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.gc.materialdesign.views.ButtonRectangle;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.j256.ormlite.dao.Dao;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
@@ -48,6 +48,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -403,8 +404,13 @@ public class LoginFragment extends Fragment {
     private void saveInfoWelcome() {
         List<Welcomedb> listWdb = new ArrayList<Welcomedb>();
 
-        RuntimeExceptionDao<Welcomedb, Integer> dao = databaseHelper.getWelcomedbRuntimeDao();
-        listWdb = dao.queryForAll();
+        Dao dao = null;
+        try {
+            dao = databaseHelper.getWelcomedbDao();
+            listWdb = dao.queryForAll();
+        } catch (SQLException e) {
+            Log.e("Ormlite", "Error buscando welcome");
+        }
 
         boolean guardar = true;
 
@@ -414,32 +420,52 @@ public class LoginFragment extends Fragment {
             break;
         }
 
-        if (guardar) {
-            Welcomedb wdb = new Welcomedb("SI");
-            dao.create(wdb);
+        if (guardar && dao != null) {
+            try {
+                Welcomedb wdb = new Welcomedb("SI");
+                dao.create(wdb);
+            } catch (SQLException e) {
+                Log.e("Ormlite", "Error creando welcome");
+            }
         }
     }
 
     private void saveSessionActive(boolean sessionActive) {
         List<HandlerLogindb> listHldb = new ArrayList<>();
 
-        RuntimeExceptionDao<HandlerLogindb, Integer> dao = databaseHelper.getHandlerLogindbRuntimeDao();
-        listHldb = dao.queryForAll();
+        Dao dao = null;
+        try {
+            dao = databaseHelper.getHandlerLogindbDao();
+            listHldb = dao.queryForAll();
+        } catch (SQLException e) {
+            Log.e("Ormlite", "Error buscando handlerLogin");
+        }
+
 
         boolean guardar = true;
 
         //Si existe un registro se actualiza y no se crea uno nuevo
         for (HandlerLogindb row : listHldb) {
-            row.setSessionActive(sessionActive);
-            dao.update(row);
+            if (dao != null) {
+                try {
+                    row.setSessionActive(sessionActive);
+                    dao.update(row);
+                } catch (SQLException e) {
+                    Log.e("Ormlite", "Error actualizando handlerLogin");
+                }
+            }
             guardar = false;
             break;
         }
 
         //Guardar si no existen registro
-        if (guardar) {
-            HandlerLogindb ldb = new HandlerLogindb(sessionActive);
-            dao.create(ldb);
+        if (guardar && dao != null) {
+            try {
+                HandlerLogindb ldb = new HandlerLogindb(sessionActive);
+                dao.create(ldb);
+            } catch (SQLException e) {
+                Log.e("Ormlite", "Error creando handlerLogin");
+            }
         }
     }
 

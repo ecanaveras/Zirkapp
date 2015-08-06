@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,12 +21,13 @@ import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.gc.materialdesign.views.ButtonRectangle;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.j256.ormlite.dao.Dao;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -93,7 +95,7 @@ public class SignupFragment extends Fragment {
                     return;
                 }
 
-                //validacion username
+                //validacion parseUser
                 if (username.trim().contains(" ")) {
                     txtUsername.setError(getResources().getString(R.string.msgNoSpaces));
                     return;
@@ -169,8 +171,13 @@ public class SignupFragment extends Fragment {
 
         List<Welcomedb> listWdb = new ArrayList<Welcomedb>();
 
-        RuntimeExceptionDao<Welcomedb, Integer> dao = databaseHelper.getWelcomedbRuntimeDao();
-        listWdb = dao.queryForAll();
+        Dao dao = null;
+        try {
+            dao = databaseHelper.getWelcomedbDao();
+            listWdb = dao.queryForAll();
+        } catch (SQLException e) {
+            Log.e("Ormlite", "Error buscando welcome");
+        }
 
         boolean guardar = true;
 
@@ -180,9 +187,13 @@ public class SignupFragment extends Fragment {
             break;
         }
 
-        if (guardar) {
-            Welcomedb wdb = new Welcomedb("SI");
-            dao.create(wdb);
+        if (guardar && dao != null) {
+            try {
+                Welcomedb wdb = new Welcomedb("SI");
+                dao.create(wdb);
+            } catch (SQLException e) {
+                Log.e("Ormlite", "Error creando welcome");
+            }
         }
         activity.finish();
     }

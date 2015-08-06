@@ -4,12 +4,15 @@
     <alpha
         android:duration="2000"
         android:fromAlpha="0"
-        android:toAlpha="1" />
+        android:toAlpha="1.5"
+        android:repeatMode="reverse"
+        android:repeatCount="infinite"
+        android:fillAfter="false"/>
 
-    <alpha
+<!--    <alpha
         android:duration="2000"
         android:fromAlpha="1"
         android:startOffset="2000"
-        android:toAlpha="0" />
+        android:toAlpha="0" />-->
 
 </set>

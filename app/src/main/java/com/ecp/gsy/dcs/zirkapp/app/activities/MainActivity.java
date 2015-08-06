@@ -151,12 +151,8 @@ public class MainActivity extends ActionBarActivity {
             refreshDatosDrawer();
 
         //Iniciar servicio de ubicacion
-        if (globalApplication.isConectedToInternet()) {
-            Intent intentService = new Intent(this, LocationService.class);
-            startService(intentService);
-        } else {
-            globalApplication.networkShowSettingsAlert();
-        }
+        Intent intentService = new Intent(this, LocationService.class);
+        startService(intentService);
 
         instance = this;
     }
@@ -353,6 +349,9 @@ public class MainActivity extends ActionBarActivity {
                 NotificationsFragment frag = (NotificationsFragment) fragments[NOTI];
                 frag.findNotifications(currentUser);
                 showFragment(NOTI, false);
+            }
+            if (intent.getAction().equals("OPEN_FRAGMENT_CHAT")) {
+                showFragment(CHAT, false);
             }
             Log.d("onNewIntent", intent.getAction());
         }

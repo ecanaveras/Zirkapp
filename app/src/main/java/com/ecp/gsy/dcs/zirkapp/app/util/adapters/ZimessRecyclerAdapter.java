@@ -58,7 +58,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         //Estableciendo Imagen;
         zimessViewHolder.imgAvatar.setImageDrawable(zimess.getAvatar());
 
-        zimessViewHolder.lblUsername.setText(null);// zimess.getUser().getUsername();
+        zimessViewHolder.lblUsername.setText(null);// zimess.getUser().getParseUser();
         zimessViewHolder.lblCantComments.setText(Integer.toString(zimess.getCantComment()));
 
         //cambiar icono cuando hay comentarios

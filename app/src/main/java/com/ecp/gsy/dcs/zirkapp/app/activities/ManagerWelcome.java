@@ -22,10 +22,11 @@ import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
+import com.j256.ormlite.dao.Dao;
 import com.parse.ParseUser;
 import com.viewpagerindicator.CirclePageIndicator;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,11 +112,21 @@ public class ManagerWelcome extends Activity {
         List<Welcomedb> listWdb = new ArrayList<Welcomedb>();
         List<HandlerLogindb> listHldb = new ArrayList<>();
 
-        RuntimeExceptionDao<Welcomedb, Integer> dao = databaseHelper.getWelcomedbRuntimeDao();
-        listWdb = dao.queryForAll();
+        try {
+            Dao dao = null;
+            dao = databaseHelper.getWelcomedbDao();
+            listWdb = dao.queryForAll();
+        } catch (SQLException e) {
+            Log.e("Ormlite", "Error buscando welcome");
+        }
 
-        RuntimeExceptionDao<HandlerLogindb, Integer> daoL = databaseHelper.getHandlerLogindbRuntimeDao();
-        listHldb = daoL.queryForAll();
+        try {
+            Dao daoL = null;
+            daoL = databaseHelper.getHandlerLogindbDao();
+            listHldb = daoL.queryForAll();
+        } catch (SQLException e) {
+            Log.e("Ormlite", "Error buscando handkerLogin");
+        }
 
         //Si existe un registro de welcolme, no se mostrará la pantalla de bienvenida
         for (Welcomedb w : listWdb) {

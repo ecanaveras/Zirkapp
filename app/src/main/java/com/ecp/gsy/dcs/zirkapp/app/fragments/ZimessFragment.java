@@ -89,7 +89,6 @@ public class ZimessFragment extends Fragment {
 
         ImageView imageView = (ImageView) view.findViewById(R.id.imgLogoZirkapp);
         Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.fade);
-        animation.setRepeatCount(5);
         imageView.startAnimation(animation);
 
         lblRangoZimess = (TextView) view.findViewById(R.id.lblInfoRango);

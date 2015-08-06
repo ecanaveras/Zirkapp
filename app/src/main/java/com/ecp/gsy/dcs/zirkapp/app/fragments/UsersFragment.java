@@ -118,7 +118,6 @@ public class UsersFragment extends Fragment {
 
         ImageView imageView = (ImageView) view.findViewById(R.id.imgLogoZirkapp);
         Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.fade);
-        animation.setRepeatCount(5);
         imageView.startAnimation(animation);
 
         //ListView
@@ -180,9 +179,6 @@ public class UsersFragment extends Fragment {
      */
     public void findUsersOnline(Location currentLocation) {
         if (isConnectedUser && currentLocation != null) {
-            layoutChatOffline.setVisibility(View.GONE);
-            layoutGpsOff.setVisibility(View.GONE);
-            layoutUsersDefault.setVisibility(View.GONE);
             //Tomar valores de las preferencias de usuarios
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "10"));
@@ -192,6 +188,11 @@ public class UsersFragment extends Fragment {
             refresDataTask.setLayoutUsersFinder(layoutUsersFinder);
             refresDataTask.setLayoutUsersNoFound(layoutUsersNoFound);
             refresDataTask.execute(dist_max);
+
+            //UI
+            layoutChatOffline.setVisibility(View.GONE);
+            layoutGpsOff.setVisibility(View.GONE);
+            layoutUsersDefault.setVisibility(View.GONE);
         } else {
             //1. Layouts Invisibles
             layoutUsersNoFound.setVisibility(View.GONE);
@@ -225,7 +226,6 @@ public class UsersFragment extends Fragment {
     public void conectarChat(Location currentLocation) {
         if (currentUser != null) {
             isConnectedUser = true;
-            layoutChatOffline.setVisibility(View.GONE);
             findUsersOnline(currentLocation);
         } else {
             swipeRefreshLayout.setRefreshing(false);

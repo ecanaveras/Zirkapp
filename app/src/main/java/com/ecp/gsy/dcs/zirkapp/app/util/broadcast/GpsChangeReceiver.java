@@ -22,8 +22,8 @@ public class GpsChangeReceiver extends BroadcastReceiver {
         LocationService locationService = null;
         if (LocationService.isRunning()) {
             locationService = LocationService.getInstance();
-            locationService.startAutomaticLocation();
-            //locationService.getCurrentLocation(false);
+            //locationService.startAutomaticLocation();
+            locationService.getCurrentLocation();
         } else {
             if (globalApplication.isEnabledGetLocation()) {
                 //Iniciamos el servicio

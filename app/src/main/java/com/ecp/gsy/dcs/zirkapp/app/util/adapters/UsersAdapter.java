@@ -70,7 +70,8 @@ public class UsersAdapter extends BaseAdapter {
         lblUserId.setText(parseUser.getObjectId());
         lblUsername.setText(parseUser.getUsername());
         lblNameUsuario.setText(parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername());
-        lblEstado.setText(parseUser.getString("wall") != null ? parseUser.getString("wall") : "I'm using Zirkapp!");
+        String wall = parseUser.getString("wall");
+        lblEstado.setText(wall != null && !wall.isEmpty() ? wall : "I'm using Zirkapp!");
         Integer cant = findCantMessages(parseUser);
         if (cant != null)
             lblCantMessages.setText(String.valueOf(cant));

@@ -26,7 +26,8 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         if (globalApplication.isConectedToInternet()) {
             if (LocationService.isRunning()) {
                 LocationService locationService = LocationService.getInstance();
-                locationService.startAutomaticLocation();
+                //locationService.startAutomaticLocation();
+                locationService.getCurrentLocation();
             } else {
                 //Iniciamos el servicio
                 Log.i(TAG, LocationService.class.getSimpleName() + " started...");

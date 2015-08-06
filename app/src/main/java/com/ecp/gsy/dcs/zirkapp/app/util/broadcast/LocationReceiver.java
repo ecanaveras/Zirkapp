@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
@@ -25,6 +24,7 @@ public class LocationReceiver extends BroadcastReceiver {
         boolean locationUpdate = intent.getBooleanExtra("locationchange", false);
         double latitud = intent.getDoubleExtra("latitud", 0.0);
         double longitud = intent.getDoubleExtra("longitud", 0.0);
+        int sortZimess = intent.getIntExtra("sort_zimess", 0);
 
         Location location = new Location(latitud, longitud);
         if (locationUpdate) {
@@ -40,8 +40,7 @@ public class LocationReceiver extends BroadcastReceiver {
             //actualizar lista de Zimess en la nueva posision
             if (ZimessFragment.isRunning()) {
                 ZimessFragment zimessFragment = ZimessFragment.getInstance();
-                GlobalApplication globalApplication = (GlobalApplication) zimessFragment.getActivity().getApplicationContext();
-                zimessFragment.findZimessAround(location, globalApplication.getSortZimess());
+                zimessFragment.findZimessAround(location, sortZimess);
                 Log.i("zimess.location", "update");
             }
         }

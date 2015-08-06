@@ -3,8 +3,12 @@ package com.ecp.gsy.dcs.zirkapp.app.util.task;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
+import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -144,6 +148,16 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
+                            String titleNoti = "%s de %s";
+                            ParseUser senderUser = findParseUser(senderId);
+                            String senderName = senderUser.getString("name") != null ? senderUser.getString("name") : senderUser.getUsername();
+                            ParseZNotifi notifi = new ParseZNotifi();
+                            notifi.setTypeNoti(typeNotify);
+                            notifi.setDetailNoti(message);
+                            notifi.setSummaryNoti(String.format(titleNoti, typeNotify == SendPushTask.PUSH_COMMENT ? "Nuevo comentario" : "Nueva respuesta", senderName));
+                            if (typeNotify == SendPushTask.PUSH_COMMENT || typeNotify == SendPushTask.PUSH_QUOTE) {
+                                saveNotificacion(notifi, senderUser, findParseUser(receptorId));
+                            }
                             Log.i("parse.push.task", "success");
                         } else {
                             Log.i("parse.push.task", "failed");
@@ -156,5 +170,40 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
         }
 
         return null;
+    }
+
+    /**
+     * Guarda la notificacion
+     *
+     * @param noti
+     */
+    private void saveNotificacion(ParseZNotifi noti, ParseUser senderUser, ParseUser receptorUser) {
+        if (noti != null && targetId != null && receptorUser != null) {
+            noti.put(ParseZNotifi.SENDER_USER, senderUser);
+            noti.put(ParseZNotifi.RECEPTOR_USER, receptorUser);
+            switch (noti.getTypeNoti()) {
+                case SendPushTask.PUSH_CHAT:
+                    noti.put("userTarget", ParseObject.createWithoutData("user", targetId));
+                    break;
+                case SendPushTask.PUSH_COMMENT:
+                    noti.put(ParseZNotifi.ZIMESS_TARGET, ParseObject.createWithoutData(ParseZimess.class, targetId));
+                    break;
+                case SendPushTask.PUSH_QUOTE:
+                    noti.put(ParseZNotifi.ZIMESS_TARGET, ParseObject.createWithoutData(ParseZimess.class, targetId));
+                    break;
+            }
+            noti.put(ParseZNotifi.READ_NOTI, false);
+            noti.saveInBackground();
+        }
+    }
+
+    /**
+     * Busca usuario del objectId
+     *
+     * @param objectId
+     * @return
+     */
+    private ParseUser findParseUser(String objectId) {
+        return DataParseHelper.findUser(objectId);
     }
 }

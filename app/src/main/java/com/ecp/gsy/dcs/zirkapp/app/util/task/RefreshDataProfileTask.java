@@ -78,7 +78,9 @@ public class RefreshDataProfileTask extends AsyncTask<ParseUser, Void, ParseUser
         if (user != null) {
             //Podemos obtener todos los datos del profile
             if (txtWall != null) {
-                txtWall.setText(user.getString("wall"));
+                String wall = user.getString("wall");
+                txtWall.setText(wall != null && !wall.isEmpty() ? wall : "I'm using Zirkapp!");
+
             }
             if (txtNombres != null) {
                 String name = user.getString("name");

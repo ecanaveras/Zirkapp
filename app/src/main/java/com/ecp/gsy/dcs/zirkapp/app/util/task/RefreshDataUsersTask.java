@@ -117,6 +117,9 @@ public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUse
             }
         }
 
+        //Mostrar notificacion cuando hay usuarios nuevos online
+        new CounterUsersAroundTask(context).execute(parseUsers);
+
         searching = false;
 
     }

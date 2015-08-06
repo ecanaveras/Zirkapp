@@ -13,7 +13,7 @@
     <ListPreference
         android:key="max_dist_list"
         android:title="@string/pref_title_dist_max"
-        android:defaultValue="5"
+        android:defaultValue="10"
         android:entries="@array/pref_dist_max_list_titles"
         android:entryValues="@array/pref_dist_max_list_values"
         android:negativeButtonText="@null"

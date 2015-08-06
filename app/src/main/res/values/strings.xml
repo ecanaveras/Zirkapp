@@ -178,6 +178,8 @@
     <string name="msgCommentEmpty">Escribe tu comentario!</string>
     <string name="lblHistory">Historial</string>
     <string name="msgZimessNoFound">Zimess no encontrado</string>
+    <string name="msgUsersAround">A chatear...</string>
+    <string name="msgUsersAround2">nuevos usuarios cerca!</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

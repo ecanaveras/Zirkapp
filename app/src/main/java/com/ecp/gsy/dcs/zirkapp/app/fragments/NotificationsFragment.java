@@ -2,6 +2,8 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -118,6 +120,8 @@ public class NotificationsFragment extends Fragment {
                 Intent intent = new Intent(activity, DetailZimessActivity.class);
                 globalApplication.setTempZimess(item.getZimessTarget());
                 activity.startActivityForResult(intent, 105);
+                NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                manager.cancel(item.getTypeNoti());
             } else {
                 Toast.makeText(getActivity(), getResources().getString(R.string.msgZimessNoFound), Toast.LENGTH_SHORT).show();
             }
@@ -143,6 +147,9 @@ public class NotificationsFragment extends Fragment {
                         for (ParseZNotifi zNotifi : parseZNotifis) {
                             zNotifi.put(ParseZNotifi.READ_NOTI, true);
                             listUpdate.add(zNotifi);
+                            //Cancelar todas las notificaciones
+                            NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                            manager.cancel(zNotifi.getTypeNoti());
                         }
                         if (listUpdate.size() > 0) {
                             //Actualiza todas las notificaciones

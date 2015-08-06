@@ -6,12 +6,13 @@ import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.UsersArounddb;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import com.parse.ParseUser;
 
 import java.sql.SQLException;
 
@@ -21,13 +22,12 @@ import java.sql.SQLException;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     public static final String DATABASE_NAME = "zirkapp.db";
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
 
     //Objetos DAO para acceder a las tablas db
-    private Dao<Welcomedb, Integer> welcomedbDao = null;
-    private Dao<HandlerLogindb, Integer> handlerLogindbDao = null;
-    private RuntimeExceptionDao<Welcomedb, Integer> welcomedbRuntimeDao = null;
-    private RuntimeExceptionDao<HandlerLogindb, Integer> handlerLogindbRuntimeDao = null;
+    private Dao<Welcomedb, Integer> welcomedbDao;
+    private Dao<HandlerLogindb, Integer> handlerLogindbDao;
+    private Dao<UsersArounddb, ParseUser> usersarounddbDao;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
@@ -44,8 +44,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     public void onCreate(SQLiteDatabase db, ConnectionSource dbSource) {
         try {
             Log.i(DatabaseHelper.class.getSimpleName(), "onCreate()");
-            TableUtils.createTable(dbSource, Welcomedb.class);
-            TableUtils.createTable(dbSource, HandlerLogindb.class);
+            TableUtils.createTableIfNotExists(dbSource, Welcomedb.class);
+            TableUtils.createTableIfNotExists(dbSource, HandlerLogindb.class);
+            TableUtils.createTableIfNotExists(dbSource, UsersArounddb.class);
         } catch (SQLException e) {
             Log.e(DatabaseHelper.class.getSimpleName(), "Imposible crear la base de datos", e);
             throw new RuntimeException(e);
@@ -64,25 +65,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, ConnectionSource dbSource, int oldVersion, int newVersion) {
-        try {
-            Log.i(DatabaseHelper.class.getSimpleName(), "onUpgrade()");
-            TableUtils.dropTable(dbSource, Welcomedb.class, true);
-            TableUtils.dropTable(dbSource, HandlerLogindb.class, true);
-            //Creamos nuevamente las tablas
-            onCreate(db, dbSource);
-        } catch (SQLException e) {
-            Log.e(DatabaseHelper.class.getSimpleName(), "Imposible eliminar la base de datos", e);
-            throw new RuntimeException(e);
-        }
+        Log.i(DatabaseHelper.class.getSimpleName(), "onUpgrade()");
+        //Creamos nuevamente las tablas
+        onCreate(db, dbSource);
     }
 
     @Override
     public void close() {
         super.close();
         welcomedbDao = null;
-        welcomedbRuntimeDao = null;
         handlerLogindbDao = null;
-        handlerLogindbRuntimeDao = null;
+        usersarounddbDao = null;
+
     }
 
     public Dao<Welcomedb, Integer> getWelcomedbDao() throws SQLException {
@@ -90,20 +84,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return welcomedbDao;
     }
 
-    public RuntimeExceptionDao<Welcomedb, Integer> getWelcomedbRuntimeDao() {
-        if (welcomedbRuntimeDao == null)
-            welcomedbRuntimeDao = getRuntimeExceptionDao(Welcomedb.class);
-        return welcomedbRuntimeDao;
-    }
-
     public Dao<HandlerLogindb, Integer> getHandlerLogindbDao() throws SQLException {
         if (handlerLogindbDao == null) handlerLogindbDao = getDao(HandlerLogindb.class);
         return handlerLogindbDao;
     }
 
-    public RuntimeExceptionDao<HandlerLogindb, Integer> getHandlerLogindbRuntimeDao() {
-        if (handlerLogindbRuntimeDao == null)
-            handlerLogindbRuntimeDao = getRuntimeExceptionDao(HandlerLogindb.class);
-        return handlerLogindbRuntimeDao;
+    public Dao<UsersArounddb, ParseUser> getUsersarounddbDao() throws SQLException {
+        if (usersarounddbDao == null) usersarounddbDao = getDao(UsersArounddb.class);
+        return usersarounddbDao;
     }
 }

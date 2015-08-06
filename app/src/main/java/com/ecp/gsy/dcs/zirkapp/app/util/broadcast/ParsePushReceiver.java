@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
@@ -43,7 +44,6 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
     private GlobalApplication globalApplication;
     private int typeNotify = 0;
     private boolean notificar = true;
-    private ArrayList<String> usersNames = new ArrayList<>();
 
     @Override
     protected Notification getNotification(Context context, Intent intent) {
@@ -176,6 +176,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(String.format(bodyNoti, typeNotiString, msg)))
                     .setContentText(String.format(bodyNoti, typeNotiString, msg))
                     .setAutoCancel(true)
+                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                     .setWhen(System.currentTimeMillis());
 
             nBuilder.setContentIntent(contentIntent);
@@ -186,7 +187,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                 itemNotifi.setDetailNoti(msg);
 
                 //Guardar la Noti
-                saveNotificacion(itemNotifi, findParseUser(receptorId));
+                //saveNotificacion(itemNotifi, findParseUser(receptorId));
 
             }
         }
@@ -228,7 +229,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
     }
 
     /**
-     * Busca usuario del username
+     * Busca usuario del parseUser
      *
      * @param username
      * @return

@@ -49,6 +49,7 @@ import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -220,7 +221,7 @@ public class DetailZimessActivity extends ActionBarActivity { // implements Obse
             Toast.makeText(this, getResources().getString(R.string.msgZimessNull), Toast.LENGTH_SHORT).show();
             return;
         }
-        ParseZComment commentObject = new ParseZComment();
+        final ParseZComment commentObject = new ParseZComment();
         commentObject.setUser(currentUser);
         commentObject.setZimessId(zimessDetail);
         commentObject.setCommentText(commentText);
@@ -237,41 +238,44 @@ public class DetailZimessActivity extends ActionBarActivity { // implements Obse
                     });
                     try {
                         String receptorId = zimessDetail.fetchIfNeeded().getParseUser("user").getObjectId();
+                        final String receptorName = zimessDetail.fetchIfNeeded().getParseUser("user").getUsername();
+                        final String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
                         if (receptorId != null && !currentUser.getObjectId().equals(receptorId)) {
-                            String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
                             //Envia la notificacion al creador del Zimess
                             new SendPushTask(zimessDetail.getObjectId(), receptorId, currentUser.getObjectId(), name, commentText, SendPushTask.PUSH_COMMENT).execute();
-                            //Envia la notificacion a los citados en la respuesta
-                            new AsyncTask<String, Void, String>() {
+                        }
+                        //Envia la notificacion a los citados en la respuesta
+                        new AsyncTask<String, Void, List<String>>() {
 
-                                @Override
-                                protected String doInBackground(String... params) {
-                                    if (params[0].contains("@")) {
-                                        Pattern pattern = Pattern.compile("^@[a-zA-Z0-9_-]{6,20}"); //Tomar username
-                                        ArrayList<String> usernames = new ArrayList<>();
-                                        for (String userName : params[0].split("\\s")) {
-                                            Matcher matcher = pattern.matcher(userName);
-                                            if (matcher.find()) {
-                                                usernames.add(matcher.group(0).replace("@", ""));
-                                            }
-                                        }
-                                        //Enviar la notificacion a cada uno de los usuarios citados.
-                                        if (usernames.size() > 0) {
-                                            for (String username : usernames) {
-                                                if (!currentUser.getUsername().equals(username)) {
-                                                    ParseUser user = DataParseHelper.findUserName(username);
-                                                    if (user != null)
-                                                        new SendPushTask(zimessDetail.getObjectId(), user, currentUser.getObjectId(), params[1], params[0], SendPushTask.PUSH_QUOTE).execute();
-                                                }
-                                            }
+                            @Override
+                            protected List doInBackground(String... params) {
+                                ArrayList<String> usernames = new ArrayList<>();
+                                if (commentText.contains("@")) {
+                                    Pattern pattern = Pattern.compile("^@[a-zA-Z0-9_-]{6,20}"); //Tomar parseUser
+                                    for (String userName : commentText.split("\\s")) {
+                                        Matcher matcher = pattern.matcher(userName);
+                                        if (matcher.find()) {
+                                            usernames.add(matcher.group(0).replace("@", ""));
                                         }
                                     }
-                                    return null;
                                 }
+                                return usernames;
+                            }
 
-                            }.execute(new String[]{commentText, name});
-
-                        }
+                            @Override
+                            protected void onPostExecute(List<String> usernames) {
+                                //Enviar la notificacion a cada uno de los usuarios citados.
+                                if (usernames.size() > 0) {
+                                    for (String username : usernames) {
+                                        if (!currentUser.getUsername().equals(username) && !receptorName.equals(username)) {
+                                            ParseUser user = DataParseHelper.findUserName(username);
+                                            if (user != null)
+                                                new SendPushTask(zimessDetail.getObjectId(), user, currentUser.getObjectId(), name, commentText, SendPushTask.PUSH_QUOTE).execute();
+                                        }
+                                    }
+                                }
+                            }
+                        }.execute();
                     } catch (ParseException e1) {
                         Log.e("find.parse.user", e.getMessage());
                     }
@@ -359,6 +363,14 @@ public class DetailZimessActivity extends ActionBarActivity { // implements Obse
                         public void done(ParseException e) {
                             if (e == null) {
                                 updateCantComments();
+                                if (zimessDetail != null) {
+                                    zimessDetail.fetchInBackground(new GetCallback<ParseZimess>() {
+                                        @Override
+                                        public void done(ParseZimess parseZimess, ParseException e) {
+                                            refreshDataZimess(parseZimess);
+                                        }
+                                    });
+                                }
                                 Toast.makeText(DetailZimessActivity.this, getResources().getString(R.string.msgCommentDeleteOk), Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(DetailZimessActivity.this, getResources().getString(R.string.msgCommentDeleteFailed), Toast.LENGTH_SHORT).show();

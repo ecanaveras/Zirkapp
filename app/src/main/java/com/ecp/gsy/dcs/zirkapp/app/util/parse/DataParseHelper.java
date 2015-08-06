@@ -272,7 +272,7 @@ public class DataParseHelper {
     }
 
     /**
-     * Busca un usuarios de acuerdo a su username
+     * Busca un usuarios de acuerdo a su parseUser
      *
      * @param username
      * @return

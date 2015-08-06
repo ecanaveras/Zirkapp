@@ -3,12 +3,12 @@ package com.ecp.gsy.dcs.zirkapp.app.util.services;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -22,54 +22,74 @@ import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.LocationReceiver;
 public class LocationService extends Service {
 
     private static LocationService instance = null;
-    boolean isLocationEnabled = false;
     private boolean isAutomatic = false;
 
     private MyLocationListener listener;
-    private Location currentBestLocation;
-    private String TAG = MyLocationListener.class.getName();
-    private Intent intent;
+    private Location oldLocation;
+    private String TAG = MyLocationListener.class.getSimpleName();
     private GlobalApplication globalApplication;
 
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 500; // 500 metros
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 10; // 10 minutoS
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 15; // 15 minutoS
 
-    private final Handler handler = new Handler();
+    /**
+     * Tiempo de umbral de diferencia fija durante un minuto.
+     */
+    static final int TIME_DIFFERENCE_THRESHOLD = 1 * 60 * 1000;
+
+
+    //private final Handler handler = new Handler();
 
     protected LocationManager locationManager;
 
     @Override
     public void onCreate() {
         instance = this;
-        this.intent = new Intent(LocationReceiver.ACTION_LISTENER);
         globalApplication = (GlobalApplication) this.getApplicationContext();
+        getCurrentLocation();
+        //getLocation();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        handler.post(getLocation);
+        Log.i(TAG, "started");
+        //handler.post(getLocation);
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private final Runnable getLocation = new Runnable() {
+    /*private final Runnable getLocation = new Runnable() {
         @Override
         public void run() {
             if (intent == null) intent = new Intent(LocationReceiver.ACTION_LISTENER);
             getCurrentLocation();
         }
-    };
+    };*/
 
     public static boolean isRunning() {
         return instance != null;
     }
 
-    public void startAutomaticLocation() {
+    /*public void startAutomaticLocation() {
         handler.post(getLocation);
-    }
+    }*/
 
-    private Location getCurrentLocation() {
+    public Location getCurrentLocation() {
         return getCurrentLocation(false);
     }
+
+    /*private void getLocation() {
+        isAutomatic = true;
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        String provider = getProviderName(locationManager);
+        Location location = locationManager.getLastKnownLocation(provider);
+        listener = new MyLocationListener();
+//        if (location != null) {
+//            listener.onLocationChanged(location);
+//        }
+        locationManager.requestLocationUpdates(provider, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, listener);
+        Log.d("provider.location", provider);
+    }
+*/
 
     /**
      * Utiliza android para localizar el dispositivo
@@ -80,39 +100,33 @@ public class LocationService extends Service {
     public Location getCurrentLocation(boolean isManual) {
         isAutomatic = !isManual;
         if (globalApplication.isConectedToInternet()) {
-            if (isAutomatic)
-                handler.postDelayed(getLocation, MIN_TIME_BW_UPDATES);
-            if (isLocationEnabled) {
-                isLocationEnabled = false;
-                stopUsingGPS();
-            }
-            if (!isLocationEnabled) {
-                isLocationEnabled = true;
-
-                try {
-                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                    boolean isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-                    boolean isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-                    //Network
-                    if (isEnabledNetwork) {
-                        Log.d("provider.location", "network");
-                        return getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    }
-                    //Gps
-                    if (isEnabledGPS) {
-                        Log.d("provider.location", "gps");
-                        return getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    }
-
-                    //Desabilitado la RED y GPS
-                    Log.d("provider.location", "disabled");
-                    globalApplication.gpsShowSettingsAlert();
-
-                } catch (Exception e) {
-                    stopUsingGPS();
-                    Log.e("Error : Location", "Impossible to connect to LocationManager", e);
+            //handler.postDelayed(getLocation, MIN_TIME_BW_UPDATES);
+            try {
+                locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                boolean isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                boolean isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                //Network
+                if (isEnabledNetwork) {
+                    //Log.d("provider.location", "network");
+                    //return getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    return getLastKnownLocation(getProviderName(locationManager));
                 }
+                //Gps
+                if (isEnabledGPS) {
+                    //Log.d("provider.location", "gps");
+                    //return getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    return getLastKnownLocation(getProviderName(locationManager));
+                }
+
+                //Desabilitado la RED y GPS
+                Log.d("provider.location", "disabled");
+                globalApplication.gpsShowSettingsAlert();
+
+            } catch (Exception e) {
+                stopUsingGPS();
+                Log.e("Error : Location", "Impossible to connect to LocationManager", e);
             }
+
         } else {
             globalApplication.networkShowSettingsAlert();
         }
@@ -125,70 +139,63 @@ public class LocationService extends Service {
      * @param provider
      */
     private Location getLastKnownLocation(String provider) {
+        Log.d("provider.location", provider);
+        Location location = locationManager.getLastKnownLocation(provider);
         listener = new MyLocationListener();
         locationManager.requestLocationUpdates(provider, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, listener);
-        return locationManager.getLastKnownLocation(provider);
+        return location;
     }
 
 
     /**
      * Determinar la mejor ubicacion
      *
-     * @param location
-     * @param currentBestLocation
+     * @param oldLocation
+     * @param newLocation
      * @return
      */
-    protected boolean isBetterLocation(Location location, Location currentBestLocation) {
-        if (currentBestLocation == null) {
+    protected boolean isBetterLocation(Location oldLocation, Location newLocation) {
+        if (oldLocation == null) {
             return true;
         }
 
-        //Chequear cual ubicacion es mas nueva;
-        long timeDelta = location.getTime() - currentBestLocation.getTime();
-        boolean isSignificantlyNewer = timeDelta > MIN_TIME_BW_UPDATES;
-        boolean isSignificantlyOlder = timeDelta < -MIN_TIME_BW_UPDATES;
-        boolean isNewer = timeDelta > 0;
+        //Comprobar si la nueva ubicacion es mas reciente
+        boolean isNewer = newLocation.getTime() > oldLocation.getTime();
 
-        //Si ha pasado mas del tiempo minimo, se debe usar una nueva ubicacion
-        if (isSignificantlyNewer) {
-            return true;
-        } else if (isSignificantlyOlder) {
-            return false;
-        }
+        //Comprobar si la nueva ubicacion es mas precisa, la precision es el radio en metrios, menos mejor.
+        boolean isMoreAccurate = newLocation.getAccuracy() < oldLocation.getAccuracy();
 
-        //Chequear si la nueva ubicacion es mas o menos exacta
-        int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
-        boolean isLessAccurate = accuracyDelta > 0;
-        boolean isMoreAccurate = accuracyDelta < 0;
-        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
-
-        //Verificar si es el mismo provider
-        boolean isFromSameProvider = isSameProvider(location.getProvider(), currentBestLocation.getProvider());
-
-        //Determinar la calidad de ubicacion, usando la combinacion de tiempo y exactitud
-        if (isMoreAccurate) {
+        if (isMoreAccurate && isNewer) {
+            //Mas precisa y mas reciente
             return true;
-        } else if (isNewer && !isLessAccurate) {
-            return true;
-        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-            return true;
+        } else if (isMoreAccurate && !isNewer) {
+            //Mas precisa, pero desactualizada debido a movimientos del usuario
+            //Establecemos un umbral para determinar la viabilidad de la ubicacion
+            long timeDiff = newLocation.getTime() - oldLocation.getTime();
+            if (timeDiff > -TIME_DIFFERENCE_THRESHOLD) {
+                return true;
+            }
         }
 
         return false;
     }
 
+
     /**
-     * Verifica si 2 provider son iguales
-     *
-     * @param provider1
-     * @param provider2
-     * @return
+     * Determina el mejor proveedor
      */
-    private boolean isSameProvider(String provider1, String provider2) {
-        if (provider1 == null) {
-            return provider2 == null;
+    private String getProviderName(LocationManager locationManager) {
+        if (locationManager != null) {
+            Criteria criteria = new Criteria();
+            criteria.setPowerRequirement(Criteria.POWER_LOW);
+            criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+            criteria.setSpeedRequired(true);
+            criteria.setAltitudeRequired(false);
+            criteria.setBearingRequired(false);
+            criteria.setCostAllowed(false);
+            return locationManager.getBestProvider(criteria, true);
         }
-        return provider1.equals(provider2);
+        return null;
     }
 
     @Override
@@ -214,29 +221,15 @@ public class LocationService extends Service {
     //LISTENER
     public class MyLocationListener implements LocationListener {
 
-        private void sendItent(Location location) {
-            if (location != null && intent != null && isAutomatic) {
-                currentBestLocation = location;
-                intent.putExtra("locationchange", true);
-                intent.putExtra("latitud", location.getLatitude());
-                intent.putExtra("longitud", location.getLongitude());
-                intent.putExtra("provider", location.getProvider());
-                sendBroadcast(intent);
-                Log.i("intent.location.service", "update");
-            }
-        }
-
         @Override
         public void onLocationChanged(Location location) {
-            //Nueva Ubicacion
-            sendItent(location);
-            /*if (currentBestLocation != null) {
-                if (isBetterLocation(location, currentBestLocation)) {
-                    sendItent(location);
-                }
-            } else {
+            //Comprobar si la nueva ubicacion es mejor
+            if (isBetterLocation(oldLocation, location)) {
                 sendItent(location);
-            }*/
+                oldLocation = location;
+            } else {
+                sendItent(oldLocation); //Se envia la mejor ubicacion
+            }
         }
 
         @Override
@@ -258,6 +251,19 @@ public class LocationService extends Service {
         @Override
         public void onProviderDisabled(String s) {
             stopUsingGPS();
+        }
+
+        private void sendItent(Location location) {
+            if (location != null && isAutomatic) {
+                Intent intent = new Intent(LocationReceiver.ACTION_LISTENER);
+                intent.putExtra("locationchange", true);
+                intent.putExtra("latitud", location.getLatitude());
+                intent.putExtra("longitud", location.getLongitude());
+                intent.putExtra("provider", location.getProvider());
+                intent.putExtra("sort_zimess", globalApplication.getSortZimess());
+                sendBroadcast(intent);
+                Log.i("intent.location.service", "update");
+            }
         }
     }
 
