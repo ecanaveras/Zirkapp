@@ -262,7 +262,7 @@ public class EditProfileActivity extends ActionBarActivity {
         Location location = null;
         if (LocationService.isRunning()) {
             LocationService locationService = LocationService.getInstance();
-            android.location.Location tmpLocation = locationService.getCurrentLocation(true);
+            android.location.Location tmpLocation = locationService.getCurrentLocation();
             location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
         }
         return location;

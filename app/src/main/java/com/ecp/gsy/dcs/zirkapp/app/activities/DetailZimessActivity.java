@@ -328,7 +328,7 @@ public class DetailZimessActivity extends ActionBarActivity { // implements Obse
                             MyZimessActivity.getInstance().findZimessCurrentUser();
                         }
                     } else {
-                        getCurrentLocation(false); //actualizar Zimess
+                        getCurrentLocation(); //actualizar Zimess
                     }
                 }
             }
@@ -397,19 +397,10 @@ public class DetailZimessActivity extends ActionBarActivity { // implements Obse
      * @return
      */
     private Location getCurrentLocation() {
-        return getCurrentLocation(true);
-    }
-
-    /**
-     * retorna la Ubicacion actual
-     *
-     * @return
-     */
-    private Location getCurrentLocation(boolean isManual) {
         Location location = null;
         if (LocationService.isRunning()) {
             LocationService locationService = LocationService.getInstance();
-            android.location.Location tmpLocation = locationService.getCurrentLocation(isManual);
+            android.location.Location tmpLocation = locationService.getCurrentLocation();
             location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
         }
         return location;

@@ -150,10 +150,6 @@ public class MainActivity extends ActionBarActivity {
         if (currentUser != null)
             refreshDatosDrawer();
 
-        //Iniciar servicio de ubicacion
-        Intent intentService = new Intent(this, LocationService.class);
-        startService(intentService);
-
         instance = this;
     }
 

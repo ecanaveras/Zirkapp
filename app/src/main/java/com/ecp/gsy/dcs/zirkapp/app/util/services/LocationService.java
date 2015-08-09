@@ -22,20 +22,22 @@ import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.LocationReceiver;
 public class LocationService extends Service {
 
     private static LocationService instance = null;
-    private boolean isAutomatic = false;
+    //private boolean isAutomatic = false;
 
     private MyLocationListener listener;
     private Location oldLocation;
     private String TAG = MyLocationListener.class.getSimpleName();
     private GlobalApplication globalApplication;
 
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 500; // 500 metros
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; // 0 metros
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 15; // 15 minutoS
 
     /**
      * Tiempo de umbral de diferencia fija durante un minuto.
      */
-    static final int TIME_DIFFERENCE_THRESHOLD = 1 * 60 * 1000;
+    public static final int TIME_DIFFERENCE_THRESHOLD = 1 * 60 * 1000;
+
+    public static long TIME_LAST_LOCATION;
 
 
     //private final Handler handler = new Handler();
@@ -46,7 +48,7 @@ public class LocationService extends Service {
     public void onCreate() {
         instance = this;
         globalApplication = (GlobalApplication) this.getApplicationContext();
-        getCurrentLocation();
+//        getCurrentLocation();
         //getLocation();
     }
 
@@ -73,10 +75,6 @@ public class LocationService extends Service {
         handler.post(getLocation);
     }*/
 
-    public Location getCurrentLocation() {
-        return getCurrentLocation(false);
-    }
-
     /*private void getLocation() {
         isAutomatic = true;
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -92,13 +90,12 @@ public class LocationService extends Service {
 */
 
     /**
-     * Utiliza android para localizar el dispositivo
+     * Retorna la ubicacion actual del dispositivo
      *
-     * @param isManual
      * @return
      */
-    public Location getCurrentLocation(boolean isManual) {
-        isAutomatic = !isManual;
+    public Location getCurrentLocation() {
+        //isAutomatic = !isManual;
         if (globalApplication.isConectedToInternet()) {
             //handler.postDelayed(getLocation, MIN_TIME_BW_UPDATES);
             try {
@@ -141,8 +138,11 @@ public class LocationService extends Service {
     private Location getLastKnownLocation(String provider) {
         Log.d("provider.location", provider);
         Location location = locationManager.getLastKnownLocation(provider);
-        listener = new MyLocationListener();
-        locationManager.requestLocationUpdates(provider, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, listener);
+        if (listener == null) {
+            listener = new MyLocationListener();
+            locationManager.requestLocationUpdates(provider, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, listener);
+        }
+        TIME_LAST_LOCATION = System.currentTimeMillis();
         return location;
     }
 
@@ -234,14 +234,14 @@ public class LocationService extends Service {
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-            Log.d(TAG, "The status of the provider " + provider + " has changed");
+            /*Log.d(TAG, "The status of the provider " + provider + " has changed");
             if (status == 0) {
                 Log.d(TAG, provider + " is OUT OF SERVICE");
             } else if (status == 1) {
                 Log.d(TAG, provider + " is TEMPORARILY_UNAVAILABLE");
             } else {
                 Log.d(TAG, provider + " is AVAILABLE");
-            }
+            }*/
         }
 
         @Override
@@ -254,7 +254,7 @@ public class LocationService extends Service {
         }
 
         private void sendItent(Location location) {
-            if (location != null && isAutomatic) {
+            if (location != null) {
                 Intent intent = new Intent(LocationReceiver.ACTION_LISTENER);
                 intent.putExtra("locationchange", true);
                 intent.putExtra("latitud", location.getLatitude());

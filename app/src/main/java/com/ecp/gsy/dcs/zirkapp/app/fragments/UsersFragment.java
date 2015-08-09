@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -82,8 +83,10 @@ public class UsersFragment extends Fragment {
 
         currentUser = ParseUser.getCurrentUser();
 
-        if (currentUser != null)
+        if (currentUser != null) {
             isConnectedUser = currentUser.getBoolean("online");
+            callLocation();
+        }
 
         inicializarCompUI(view);
 
@@ -104,6 +107,27 @@ public class UsersFragment extends Fragment {
     public static UsersFragment getInstance() {
         return instance;
     }
+
+    private void callLocation() {
+        new AsyncTask<Void, Void, String>() {
+
+            @Override
+            protected String doInBackground(Void... params) {
+                try {
+                    Thread.sleep(4000); // 4 segundos
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                findUsersOnline(getCurrentLocation());
+            }
+        }.execute();
+    }
+
 
     private void inicializarCompUI(View view) {
         //Layout
@@ -326,7 +350,7 @@ public class UsersFragment extends Fragment {
         if (LocationService.isRunning()) {
             LocationService locationService = LocationService.getInstance();
             if (locationService != null) {
-                android.location.Location tmpLocation = locationService.getCurrentLocation(true);
+                android.location.Location tmpLocation = locationService.getCurrentLocation();
                 if (tmpLocation != null)
                     location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
             }

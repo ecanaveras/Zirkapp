@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -63,7 +64,8 @@ public class ZimessFragment extends Fragment {
 
         inicializarCompUI(view);
 
-        //findZimessAround(getCurrentLocation(false), globalApplication.getSortZimess());
+        //Actualiza la lista de Zimess por primera vez
+        callLocation();
 
         instance = this;
 
@@ -78,6 +80,25 @@ public class ZimessFragment extends Fragment {
         return instance;
     }
 
+    private void callLocation() {
+        new AsyncTask<Void, Void, String>() {
+
+            @Override
+            protected String doInBackground(Void... params) {
+                try {
+                    Thread.sleep(4000); // 4 segundos
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                findZimessAround(getCurrentLocation(), globalApplication.getSortZimess());
+            }
+        }.execute();
+    }
 
     private void inicializarCompUI(View view) {
         //UI Zimess
@@ -195,22 +216,12 @@ public class ZimessFragment extends Fragment {
         sortDialog.show();
     }
 
-
     /**
      * retorna la Ubicacion actual
      *
      * @return
      */
     private Location getCurrentLocation() {
-        return getCurrentLocation(true);
-    }
-
-    /**
-     * retorna la Ubicacion actual
-     *
-     * @return
-     */
-    private Location getCurrentLocation(boolean isManual) {
         Location location = null;
         if (globalApplication.isConectedToInternet()) {
             if (globalApplication.isEnabledGetLocation()) {
@@ -218,7 +229,7 @@ public class ZimessFragment extends Fragment {
                     layoutInternetOff.setVisibility(View.GONE);
                     LocationService locationService = LocationService.getInstance();
                     if (locationService != null) {
-                        android.location.Location tmpLocation = locationService.getCurrentLocation(isManual);
+                        android.location.Location tmpLocation = locationService.getCurrentLocation();
                         if (tmpLocation != null)
                             location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
                     }
@@ -265,9 +276,9 @@ public class ZimessFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (zReciclerAdapter != null && zReciclerAdapter.getItemCount() == 0) {
-            findZimessAround(getCurrentLocation(false), globalApplication.getSortZimess());
-        }
+//        if (zReciclerAdapter != null && zReciclerAdapter.getItemCount() == 0) {
+//            findZimessAround(getCurrentLocation(false), globalApplication.getSortZimess());
+//        }
     }
 
     @Override

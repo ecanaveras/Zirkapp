@@ -27,6 +27,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZVisit;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
@@ -49,7 +50,6 @@ public class GlobalApplication extends Application {
     //Key GCM
     public final String SENDER_ID = "323224512527"; //Key GCM
     public static final String PROPERTY_REG_ID = "registration_id";
-    public static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     private Context context;
 
@@ -73,7 +73,7 @@ public class GlobalApplication extends Application {
 
     //Order Zimess
     private int sortZimess;
-    private boolean listeningNotifi;
+    private boolean listeningNotifi = true;
 
 
     @Override
@@ -81,6 +81,10 @@ public class GlobalApplication extends Application {
         super.onCreate();
 
         resources = this.getResources();
+
+        //Iniciar servicio de ubicacion
+        Intent intentService = new Intent(this, LocationService.class);
+        startService(intentService);
 
         // Enable Local Datastore.
         Parse.enableLocalDatastore(this);
@@ -489,4 +493,6 @@ public class GlobalApplication extends Application {
     public void setContext(Context context) {
         this.context = context;
     }
+
+
 }
