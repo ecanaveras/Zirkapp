@@ -46,6 +46,7 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -182,7 +183,7 @@ public class DetailZimessActivity extends ActionBarActivity { // implements Obse
 
     public void refreshDataZimess(ParseZimess zimess) {
         //Estableciendo Imagen;
-        imgAvatar.setImageDrawable(zimess.getAvatar());
+        globalApplication.setAvatarRoundedResize(zimess.getUser().getParseFile("avatar"), imgAvatar, 100, 100);
 
         lblAliasUsuario.setText(zimess.getUser().getString("name"));
         lblUsername.setText(zimess.getUser().getUsername());
@@ -199,14 +200,6 @@ public class DetailZimessActivity extends ActionBarActivity { // implements Obse
 
         //lblCreatedAt.setText(globalApplication.getDescFechaPublicacion(zimess.getCreateAt()));
 
-        //Todo verificar utilidad
-        //Calcular distancia del Zimess remoto
-        /*Location currentLocation = getCurrentLocation();
-        if (currentLocation != null) {
-            Location zimessLocation = new Location(zimess.getLocation().getLatitude(), zimess.getLocation().getLongitude());
-            ManagerDistance mDistance = new ManagerDistance(currentLocation, zimessLocation);
-            lblDistance.setText(mDistance.getDistanciaToString());
-        }*/
         lblDistance.setText(zimess.getDescDistancia());
         lblMessage.setText(zimess.getZimessText());
     }

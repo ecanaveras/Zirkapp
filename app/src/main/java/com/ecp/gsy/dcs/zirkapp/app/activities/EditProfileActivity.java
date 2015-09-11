@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
+import com.ecp.gsy.dcs.zirkapp.app.util.picasso.CircleTransform;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
 import com.gc.materialdesign.views.ButtonRectangle;
@@ -30,6 +31,7 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -119,7 +121,10 @@ public class EditProfileActivity extends ActionBarActivity {
         progressDialog.show();
         if (currentUser != null) {
             if (currentUser.getParseFile("avatar") != null) {
-                imgAvatar.setImageDrawable(GlobalApplication.getAvatar(currentUser));
+                Picasso.with(EditProfileActivity.this)
+                        .load(currentUser.getParseFile("avatar").getUrl())
+                        .transform(new CircleTransform())
+                        .into(imgAvatar);
             }
             txtNombres.setText(currentUser.getString("name"));
             txtEstado.setText(currentUser.getString("wall"));

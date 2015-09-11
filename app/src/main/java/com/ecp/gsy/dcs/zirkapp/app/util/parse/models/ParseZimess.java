@@ -21,15 +21,6 @@ public class ParseZimess extends ParseObject {
 
     private String descDistancia;
 
-    /**
-     * Retorna la imagen del usuario
-     *
-     * @return
-     */
-    public RoundedBitmapDrawable getAvatar() {
-        return GlobalApplication.getAvatar(getUser());
-    }
-
     //<editor-fold desc="METHODS GETTERS">
     public ParseUser getUser() {
         return getParseUser(USER);

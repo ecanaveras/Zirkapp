@@ -3,6 +3,8 @@ package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,7 +58,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         zimessViewHolder.lblAliasUsuario.setText(name != null ? name : zimess.getUser().getUsername());
 
         //Estableciendo Imagen;
-        zimessViewHolder.imgAvatar.setImageDrawable(zimess.getAvatar());
+        globalApplication.setAvatarRoundedResize(zimess.getUser().getParseFile("avatar"), zimessViewHolder.imgAvatar, 100, 100);
 
         zimessViewHolder.lblUsername.setText(null);// zimess.getUser().getParseUser();
         zimessViewHolder.lblCantComments.setText(Integer.toString(zimess.getCantComment()));
@@ -78,11 +80,29 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         ManagerDistance mDistance = new ManagerDistance(currentLocation, zimessLocation);
         zimess.setDescDistancia(mDistance.getDistanciaToString());
         zimessViewHolder.lblDistance.setText(zimess.getDescDistancia());
+        zimessViewHolder.lblDistance.setBackgroundResource(getResourceRibbon(mDistance.getDistancia()));
     }
 
     @Override
     public int getItemCount() {
         return zimessList != null ? zimessList.size() : 0;
+    }
+
+    private int getResourceRibbon(double distancia) {
+        double rango = getRango();
+        if (distancia <= rango) { //Verde
+            return R.drawable.ic_ribbon_green;
+        } else if (distancia > rango && distancia <= (rango * 2)) {
+            return R.drawable.ic_ribbon_yellow;
+        }
+        return R.drawable.ic_ribbon_red;
+    }
+
+    private double getRango() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "10"));
+        double rango = (dist_max * 1000) / 3;
+        return rango;
     }
 
     public class ZimessViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

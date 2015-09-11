@@ -1,7 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.activities;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
@@ -21,6 +21,7 @@ import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeThirdFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.parse.ParseUser;
@@ -55,6 +56,7 @@ public class ManagerWelcome extends Activity {
      */
     ViewPager mViewPager;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,36 +75,27 @@ public class ManagerWelcome extends Activity {
 
         CirclePageIndicator circlePageIndicator = (CirclePageIndicator) findViewById(R.id.indicator);
         circlePageIndicator.setViewPager(mViewPager);
-
     }
 
 
     @Override
     public void onBackPressed() {
-        showMessageExitApp();
-    }
-
-    private void showMessageExitApp() {
-        AlertDialogPro.Builder alertDialogBuilder = new AlertDialogPro.Builder(this);
-        alertDialogBuilder.setTitle(getResources().getString(R.string.msgExitApp));
-        alertDialogBuilder
+       AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+        //builder.setTitle("Zirkapp...");
+        builder.setMessage("Seguro que te vas?")
                 .setCancelable(false)
-                .setPositiveButton(R.string.msgYes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        moveTaskToBack(true);
-                        android.os.Process.killProcess(android.os.Process.myPid());
-                        System.exit(1);
+                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ManagerWelcome.this.finish();
                     }
                 })
-                .setNegativeButton(getResources().getString(R.string.msgNo), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
                     }
                 });
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     /**

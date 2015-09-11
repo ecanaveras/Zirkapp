@@ -113,7 +113,7 @@
                     android:layout_gravity="center_vertical"
                     android:text="Google+" />-->
 
-                <!--Facebook-->
+                <!--Facebook- ->
                 <Button
                     android:id="@+id/btnLoginFacebook"
                     android:layout_width="match_parent"
@@ -129,8 +129,9 @@
                     android:textSize="@dimen/com_facebook_likeview_text_size"
                     android:textStyle="bold"
                     android:textAllCaps="true"/>
+                    -->
 
-                <!--Twitter-->
+                <!--Twitter- ->
                 <Button
                     android:id="@+id/btnLoginTwitter"
                     android:layout_width="match_parent"
@@ -145,6 +146,7 @@
                     android:textSize="@dimen/com_facebook_likeview_text_size"
                     android:textStyle="bold"
                     android:textAllCaps="true"/>
+                    -->
 
             </LinearLayout>
         </LinearLayout>

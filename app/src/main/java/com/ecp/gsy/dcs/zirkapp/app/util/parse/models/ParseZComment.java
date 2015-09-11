@@ -17,15 +17,6 @@ public class ParseZComment extends ParseObject {
     public static final String COMMENT_TEXT = "commentText";
     public static final String USER = "user";
 
-    /**
-     * Retorna la imagen del usuario
-     *
-     * @return
-     */
-    public RoundedBitmapDrawable getAvatar() {
-        return GlobalApplication.getAvatar(getUser());
-    }
-
     //<editor-fold desc="METHODS GETTERS">
     public String getCommentText() {
         return getString(COMMENT_TEXT);

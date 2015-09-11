@@ -1,6 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +12,11 @@ import android.widget.TextView;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
+import com.ecp.gsy.dcs.zirkapp.app.util.picasso.CircleTransform;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +29,13 @@ public class UsersAdapter extends BaseAdapter {
     private List<ParseUser> parseUserList;
     private ArrayList<ChatCount> chatCounts = new ArrayList<>();
     private Context context;
+    private GlobalApplication application;
 
     public UsersAdapter(Context context, List<ParseUser> parseUserList) {
         this.context = context;
         this.parseUserList = parseUserList;
-        countMessagesForUsers();
+        application = (GlobalApplication) context;
+        //countMessagesForUsers();
     }
 
     @Override
@@ -53,7 +58,7 @@ public class UsersAdapter extends BaseAdapter {
         View vista = view;
         if (vista == null) {
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            vista = layoutInflater.inflate(R.layout.cardview_item_user, viewGroup, false);
+            vista = layoutInflater.inflate(R.layout.itemlist_users, viewGroup, false);
         }
 
         //1. Tomar usuario
@@ -72,11 +77,12 @@ public class UsersAdapter extends BaseAdapter {
         lblNameUsuario.setText(parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername());
         String wall = parseUser.getString("wall");
         lblEstado.setText(wall != null && !wall.isEmpty() ? wall : "I'm using Zirkapp!");
-        Integer cant = findCantMessages(parseUser);
+        /*Integer cant = findCantMessages(parseUser);
         if (cant != null)
-            lblCantMessages.setText(String.valueOf(cant));
+            lblCantMessages.setText(String.valueOf(cant));*/
         //Estableciendo Imagen;
-        imgAvatar.setImageDrawable(GlobalApplication.getAvatar(parseUser));
+        application.setAvatarRoundedResize(parseUser.getParseFile("avatar"), imgAvatar, 100, 100);
+
         return vista;
     }
 

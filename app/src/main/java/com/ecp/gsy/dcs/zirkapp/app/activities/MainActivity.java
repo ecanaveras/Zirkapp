@@ -12,9 +12,9 @@ import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
@@ -26,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
@@ -33,22 +34,23 @@ import com.ecp.gsy.dcs.zirkapp.app.fragments.NotificationsFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
-import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.SinchService;
+import com.ecp.gsy.dcs.zirkapp.app.util.sinch.SinchBaseActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RegisterGcmTask;
-import com.facebook.appevents.AppEventsLogger;
+//import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.parse.ParseException;
 import com.parse.ParsePush;
 import com.parse.ParseUser;
-import com.parse.PushService;
 import com.parse.SaveCallback;
+import com.sinch.android.rtc.SinchError;
 
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends SinchBaseActivity implements SinchService.StartFailedListener {
 
     //KEY FRAGMENT
     //private static final int HOME = 3; //Disabled
@@ -106,6 +108,8 @@ public class MainActivity extends ActionBarActivity {
         //User Parse
         currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
+            //Save Parse Installation
+            globalApplication.storeParseInstallation();
             new RegisterGcmTask(gcm, this).execute();
             ParsePush.subscribeInBackground("", new SaveCallback() {
                 @Override
@@ -117,9 +121,10 @@ public class MainActivity extends ActionBarActivity {
                     }
                 }
             });
+        } else {
+            //Login
+            startActivity(new Intent(this, ManagerWelcome.class));
         }
-
-        PushService.setDefaultPushCallback(this, MainActivity.class);
 
         //Manipulando Fragments
         FragmentManager fm = getFragmentManager();
@@ -244,9 +249,7 @@ public class MainActivity extends ActionBarActivity {
         lblUsername.setText(currentUser.getUsername());
         lblUsermail.setText(currentUser.getEmail());
         lblNombreUsuario.setText(currentUser.getString("name"));
-        //avatar.setImageDrawable(GlobalApplication.getAvatar(currentUser));
-        //Buscar en segundo plano
-        new RefreshDataProfileTask(avatar, lblNombreUsuario).execute(currentUser); //TODO psoiblemente no necesario
+        globalApplication.setAvatarRoundedResize(currentUser.getParseFile("avatar"), avatar, 120, 120);
     }
 
 
@@ -364,7 +367,7 @@ public class MainActivity extends ActionBarActivity {
 
         //FACEBOOK
         // Logs 'install' and 'app activate' App Events.
-        AppEventsLogger.activateApp(this);
+        //AppEventsLogger.activateApp(this);
     }
 
     @Override
@@ -374,7 +377,7 @@ public class MainActivity extends ActionBarActivity {
 
         //FACEBOOK
         // Logs 'app deactivate' App Event.
-        AppEventsLogger.deactivateApp(this);
+        //AppEventsLogger.deactivateApp(this);
     }
 
     @Override
@@ -432,10 +435,47 @@ public class MainActivity extends ActionBarActivity {
     protected void onDestroy() {
         globalApplication.setListeningNotifi(true);
         globalApplication.setCustomParseUser(null);
-        stopService(new Intent(this, MessageService.class));
         stopService(new Intent(this, LocationService.class));
-
+        if (getSinchServiceInterface() != null) {
+            getSinchServiceInterface().stopClient();
+        }
         super.onDestroy();
+    }
+
+    @Override
+    public void onStartFailed(SinchError error) {
+        Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onStarted() {
+    }
+
+    @Override
+    protected void onServiceConnected() {
+        if (GlobalApplication.isChatEnabled() && !getSinchServiceInterface().isStarted()) {
+            new AsyncTask<String, Void, String>() {
+
+                @Override
+                protected String doInBackground(String... params) {
+                    GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(MainActivity.this);
+                    String regid = null;
+                    try {
+                        regid = gcm.register(globalApplication.SENDER_ID);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return regid;
+                }
+
+                @Override
+                protected void onPostExecute(String regId) {
+                    getSinchServiceInterface().startClient(currentUser.getObjectId(), regId);
+                    getSinchServiceInterface().setStartListener(MainActivity.this);
+                }
+            }.execute();
+
+        }
     }
 
     /**

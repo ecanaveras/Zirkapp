@@ -38,13 +38,9 @@ public class RegisterGcmTask extends AsyncTask<Void, Void, String> {
             msg = regId;
 
             globalApplication.storeRegistrationId(context, regId);
-            if (regId != null) {
-                globalApplication.storeParseInstallation();
-            }
 
         } catch (IOException e) {
             msg = "Error :" + e.getMessage();
-            globalApplication.storeParseInstallation();
         }
 
         return msg;
@@ -54,11 +50,12 @@ public class RegisterGcmTask extends AsyncTask<Void, Void, String> {
     protected void onPostExecute(String _msg) {
         if (context != null) {
             //Iniciar SINCH
-            if (GlobalApplication.isChatEnabled()) {
+            /*if (GlobalApplication.isChatEnabled()) {
                 Intent serviceIntent = new Intent(context.getApplicationContext(), MessageService.class);
                 serviceIntent.putExtra("regId", _msg);
                 context.startService(serviceIntent);
             }
+            */
         }
     }
 }

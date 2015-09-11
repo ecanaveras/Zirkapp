@@ -12,6 +12,8 @@ import android.widget.TextView;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
+import com.ecp.gsy.dcs.zirkapp.app.util.picasso.CircleTransform;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -74,7 +76,14 @@ public class NotifiAdapter extends BaseAdapter {
                 break;
         }*/
         //La imagen debe ser cuadrada
-        avatar.setImageDrawable(GlobalApplication.getAvatar(item.getSenderUser()));
+        if (item.getSenderUser() != null && item.getSenderUser().getParseFile("avatar") != null) {
+            Picasso.with(context)
+                    .load(item.getSenderUser().getParseFile("avatar").getUrl())
+                    .transform(new CircleTransform())
+                    .into(avatar);
+            //imgAvatar.setImageDrawable(GlobalApplication.getAvatar(currentUser));
+        }
+        //avatar.setImageDrawable(GlobalApplication.getAvatar(item.getSenderUser()));
         summary.setText(item.getSummaryNoti());
         detail.setText(item.getDetailNoti());
         createdAt.setText(new SimpleDateFormat("dd/MM/yyyy hh:mm a").format(item.getCreatedAt()));

@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.sinch.android.rtc.messaging.Message;
 import com.sinch.android.rtc.messaging.WritableMessage;
 
 import java.util.ArrayList;
@@ -22,26 +23,16 @@ public class MessageAdapter extends BaseAdapter {
     public static final int DIRECTION_INCOMING = 0;
     public static final int DIRECTION_OUTGOING = 1;
 
-    private String userSendMessageIncoming;
-    private String userSendMessageOutgoing;
-
-    private List<Pair<WritableMessage, Integer>> messages;
+    private List<Pair<Message, Integer>> messages;
     private LayoutInflater layoutInflater;
 
     public MessageAdapter(Activity activity) {
         layoutInflater = activity.getLayoutInflater();
-        messages = new ArrayList<Pair<WritableMessage, Integer>>();
+        messages = new ArrayList<Pair<Message, Integer>>();
     }
 
-    public void addMessage(WritableMessage message, Integer direccion) {
+    public void addMessage(Message message, Integer direccion) {
         messages.add(new Pair(message, direccion));
-        notifyDataSetChanged();
-    }
-
-    public void addMessage(WritableMessage message, Integer direccion, String userSendMessage) {
-        messages.add(new Pair(message, direccion));
-        this.userSendMessageIncoming = userSendMessage;
-        this.userSendMessageOutgoing = userSendMessage;
         notifyDataSetChanged();
     }
 
@@ -84,7 +75,7 @@ public class MessageAdapter extends BaseAdapter {
             view = layoutInflater.inflate(res, viewGroup, false);
         }
 
-        WritableMessage message = messages.get(i).first;
+        Message message = messages.get(i).first;
 
         TextView txtMessage = (TextView) view.findViewById(R.id.txtMessage);
         txtMessage.setText(message.getTextBody());

@@ -3,6 +3,7 @@
 
     <string name="app_name">Zirkapp</string>
     <string name="gcm_sender_id">323224512527</string>
+    <string name="gcm_api_key">AIzaSyBu7IT1aUw9PzU_EfVbxNkCGj97oX-p--Y</string>
     <string name="facebook_app_id">2009083782565906</string>
     <string name="twitter_api_key">HKNgH8O9c7QSXTIOaWxuBvBEW</string>
     <string name="twitter_api_secret">5co4OWxU9F51rxJ1QJIoIMPrz2B0Pzh8hWauZPnWluEoGeGXbl</string>
@@ -180,6 +181,7 @@
     <string name="msgZimessNoFound">Zimess no encontrado</string>
     <string name="msgUsersAround">A chatear...</string>
     <string name="msgUsersAround2">nuevos usuarios cerca!</string>
+    <string name="usingZirkapp">I\' m using Zirkapp</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

@@ -230,8 +230,11 @@ public class ZimessFragment extends Fragment {
                     LocationService locationService = LocationService.getInstance();
                     if (locationService != null) {
                         android.location.Location tmpLocation = locationService.getCurrentLocation();
-                        if (tmpLocation != null)
+                        if (tmpLocation != null) {
                             location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+                            Log.d("Zimess, Latitude", tmpLocation.getLatitude()+"");
+                            Log.d("Zimess, Longitude", tmpLocation.getLongitude()+"");
+                        }
                     }
                 } else {
                     Log.i("ZimessGetLocation", LocationService.class.getSimpleName() + " not running");

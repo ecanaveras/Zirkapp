@@ -158,6 +158,9 @@ public class DataParseHelper {
                 break;
         }
 
+        //Limite de Zimess
+        query.setLimit(200);
+
         try {
             query.include(ParseZimess.USER);
             listZimess = query.find();

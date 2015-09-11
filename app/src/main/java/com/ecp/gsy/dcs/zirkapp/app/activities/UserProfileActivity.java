@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZVisit;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataProfileTask;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -52,8 +51,6 @@ public class UserProfileActivity extends ActionBarActivity {
         inicializarCompUI();
 
         setTitle("Info. del Usuario");
-
-        loadInfoProfile();
 
         //Guardar visitar
         saveInfoVisit();
@@ -125,10 +122,6 @@ public class UserProfileActivity extends ActionBarActivity {
         parseZVisit.saveInBackground();
     }
 
-    private void loadInfoProfile() {
-        new RefreshDataProfileTask(avatar, txtWall, txtUserNombres, getResources().getString(R.string.msgLoading), this).execute(parseUser);
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -157,29 +150,21 @@ public class UserProfileActivity extends ActionBarActivity {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            //Buscamos la informacion mas reciente del usuario.
-            /*ParseQuery query = ParseUser.getQuery();
-            query.whereEqualTo("objectId", parseUsers[0].getObjectId());
-            try {
-                userTemp = (ParseUser) query.getFirst();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            */
             return userTemp;
         }
 
         @Override
         protected void onPostExecute(ParseUser parseObject) {
             if (parseObject != null) {
+                globalApplication.setAvatarRounded(parseObject.getParseFile("avatar"), avatar);
+                txtUserNombres.setText(parseObject.getString("name") != null ? parseObject.getString("name") : parseObject.getUsername());
+                txtWall.setText(parseObject.getString("wall") != null && !parseObject.getString("wall").isEmpty() ? parseObject.getString("wall") : getString(R.string.usingZirkapp));
                 txtCantVisitas.setText(String.valueOf(parseObject.getInt("count_visit")));
                 txtCantZimess.setText(String.valueOf(parseObject.getInt("count_zimess")));
             } else {
                 txtCantVisitas.setText("0");
                 txtCantZimess.setText("0");
             }
-            //Cant de Zimess
-            //txtCantZimess.setText(Integer.toString(cantZimess));
             progressBarLoad.setVisibility(View.INVISIBLE);
 
         }

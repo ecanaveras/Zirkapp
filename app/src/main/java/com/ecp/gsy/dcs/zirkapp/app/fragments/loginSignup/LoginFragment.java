@@ -22,19 +22,19 @@ import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerLogin;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
-import com.facebook.AccessToken;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
+//import com.facebook.AccessToken;
+//import com.facebook.GraphRequest;
+//import com.facebook.GraphResponse;
 import com.gc.materialdesign.views.ButtonRectangle;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
-import com.parse.ParseFacebookUtils;
+//import com.parse.ParseFacebookUtils;
 import com.parse.ParseFile;
-import com.parse.ParseTwitterUtils;
+//import com.parse.ParseTwitterUtils;
 import com.parse.ParseUser;
-import com.parse.twitter.Twitter;
+//import com.parse.twitter.Twitter;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -88,8 +88,8 @@ public class LoginFragment extends Fragment {
     private void inicializarCompUI(View view) {
 
         ButtonRectangle btnLogin = (ButtonRectangle) view.findViewById(R.id.btnLogin);
-        Button btnLoginFacebook = (Button) view.findViewById(R.id.btnLoginFacebook);
-        Button btnLoginTwitter = (Button) view.findViewById(R.id.btnLoginTwitter);
+        //Button btnLoginFacebook = (Button) view.findViewById(R.id.btnLoginFacebook);
+        //Button btnLoginTwitter = (Button) view.findViewById(R.id.btnLoginTwitter);
         txtUser = (EditText) view.findViewById(R.id.txtUserLogin);
         txtPassword = (EditText) view.findViewById(R.id.txtPassLogin);
         TextView createAccount = (TextView) view.findViewById(R.id.lblCreateAccount);
@@ -110,7 +110,7 @@ public class LoginFragment extends Fragment {
                 loginWithParse();
             }
         });
-
+        /*
         btnLoginFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,6 +124,7 @@ public class LoginFragment extends Fragment {
                 loginWithTwitter();
             }
         });
+        */
     }
 
     /**
@@ -182,7 +183,7 @@ public class LoginFragment extends Fragment {
 
     /**
      * Realiza el logueo con FACEBOOK
-     */
+     * /
     private void loginWithFacebook() {
         //(https://developers.facebook.com/docs/facebook-login/permissions/)
         List<String> permisos = Arrays.asList("public_profile", "email");
@@ -198,10 +199,11 @@ public class LoginFragment extends Fragment {
             }
         });
     }
+     */
 
     /**
      * Realiza el logueo con TWITTER
-     */
+     * /
     private void loginWithTwitter() {
         userLogin = null;
         ParseTwitterUtils.logIn(getActivity(), new LogInCallback() {
@@ -219,7 +221,9 @@ public class LoginFragment extends Fragment {
             }
         });
     }
+     */
 
+    /*
     private void getDataFacebook(final boolean isNew) {
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage(getResources().getString(R.string.mgsLoging));
@@ -249,7 +253,9 @@ public class LoginFragment extends Fragment {
                     }
                 }).executeAsync();
     }
+    */
 
+    /*
     private void getDataTwitter(Twitter twitter) {
         if (userLogin != null && twitter.getScreenName().length() > 0) {
             if (userLogin.isNew()) {
@@ -265,12 +271,13 @@ public class LoginFragment extends Fragment {
             saveSessionActive(true);
         }
     }
+    */
 
     /**
      * GET Avatar de la API de TWITTER
      *
      * @param twitter
-     */
+     * /
     private void getAvatarTwitter(Twitter twitter) {
 
         //Obtener info de Twitter
@@ -339,6 +346,7 @@ public class LoginFragment extends Fragment {
 
         }.execute(twitter);
     }
+    */
 
 
     /**

@@ -47,6 +47,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -207,7 +208,7 @@ public class UsersFragment extends Fragment {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "10"));
 
-            RefreshDataUsersTask refresDataTask = new RefreshDataUsersTask(getActivity(), currentUser, currentLocation, listViewUserOnline);
+            RefreshDataUsersTask refresDataTask = new RefreshDataUsersTask(getActivity().getApplicationContext(), currentUser, currentLocation, listViewUserOnline);
             refresDataTask.setSwipeRefreshLayout(swipeRefreshLayout);
             refresDataTask.setLayoutUsersFinder(layoutUsersFinder);
             refresDataTask.setLayoutUsersNoFound(layoutUsersNoFound);
@@ -285,7 +286,7 @@ public class UsersFragment extends Fragment {
     private void abrirConversa(ParseUser parseUserDestino) {
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
         globalApplication.setCustomParseUser(parseUserDestino);
-        Intent intent = new Intent(getActivity().getApplicationContext(), MessagingActivity.class);
+        Intent intent = new Intent(getActivity(), MessagingActivity.class);
         startActivity(intent);
     }
 

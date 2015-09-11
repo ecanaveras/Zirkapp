@@ -76,7 +76,7 @@ public class CommentsAdapter extends BaseAdapter {
         String name = comment.getUser().getString("name");
         viewHolder.lblCommentName.setText(name != null ? name : comment.getUser().getUsername());
         //Estableciendo Imagen;
-        viewHolder.imgAvatar.setImageDrawable(comment.getAvatar());
+        globalApplication.setAvatarRoundedResize(comment.getUser().getParseFile("avatar"), viewHolder.imgAvatar, 100, 100);
 
         //Manejando tiempos transcurridos
         String tiempoTranscurrido = globalApplication.getTimepass(comment.getCreatedAt());
@@ -124,7 +124,7 @@ public class CommentsAdapter extends BaseAdapter {
                 if (!userExist) {
                     arryUserNames.add(username);
                     String textTmp = txtComentario.getText().toString();
-                    txtComentario.setText(new StringBuffer(textTmp).append(textTmp.isEmpty() ? "@" : " @").append(username));
+                    txtComentario.setText(new StringBuffer(textTmp).append(textTmp.isEmpty() ? "@" : " @").append(username).append(" "));
                     txtComentario.setSelection(txtComentario.getText().length());
                 } else {
                     //Toast.makeText(context, context.getResources().getString(R.string.msgUserQuoted), Toast.LENGTH_SHORT).show();

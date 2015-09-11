@@ -18,6 +18,7 @@ import android.provider.Settings;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
@@ -27,15 +28,18 @@ import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZVisit;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
+import com.ecp.gsy.dcs.zirkapp.app.util.picasso.CircleTransform;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
+import com.ecp.gsy.dcs.zirkapp.app.util.services.SinchService;
 import com.parse.Parse;
 import com.parse.ParseException;
-import com.parse.ParseFacebookUtils;
+//import com.parse.ParseFacebookUtils;
 import com.parse.ParseFile;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
-import com.parse.ParseTwitterUtils;
+//import com.parse.ParseTwitterUtils;
 import com.parse.ParseUser;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -54,7 +58,7 @@ public class GlobalApplication extends Application {
     private Context context;
 
     //Controla si el chat esta habilidado
-    private static boolean chatEnabled = true;
+    private static boolean chatEnabled = false;
 
     //Controla los mensajes de GPS y NETWORK
     private static boolean isShowNetworkAlert = false;
@@ -69,7 +73,7 @@ public class GlobalApplication extends Application {
     private static Integer cantZimess;
     private static Integer cantUsersOnline;
     private static Integer cantNotifications;
-    private static Resources resources;
+    //private static Resources resources;
 
     //Order Zimess
     private int sortZimess;
@@ -79,8 +83,6 @@ public class GlobalApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        resources = this.getResources();
 
         //Iniciar servicio de ubicacion
         Intent intentService = new Intent(this, LocationService.class);
@@ -101,9 +103,9 @@ public class GlobalApplication extends Application {
         Parse.initialize(this, getResources().getString(R.string.parse_api_id), getResources().getString(R.string.parse_api_key));
 
         //Facebook
-        ParseFacebookUtils.initialize(this);
+        //ParseFacebookUtils.initialize(this);
         //Twitter
-        ParseTwitterUtils.initialize(getResources().getString(R.string.twitter_api_key), getResources().getString(R.string.twitter_api_secret));
+        //ParseTwitterUtils.initialize(getResources().getString(R.string.twitter_api_key), getResources().getString(R.string.twitter_api_secret));
     }
 
 
@@ -177,43 +179,93 @@ public class GlobalApplication extends Application {
     }
 
     /**
+     * Dibuja la imagen del parseFile en el ImageView
+     *
+     * @param parseFile
+     * @param imageViewRender
+     */
+    public void setAvatarRounded(ParseFile parseFile, ImageView imageViewRender) {
+        if (imageViewRender != null) {
+            if (parseFile != null) {
+                Picasso.with(this)
+                        .load(parseFile.getUrl())
+                        .transform(new CircleTransform())
+                        .into(imageViewRender);
+            } else {
+                Picasso.with(this)
+                        .load(R.drawable.ic_user_male)
+                        .transform(new CircleTransform())
+                        .into(imageViewRender);
+            }
+        }
+    }
+
+    /**
+     * Dibuja y redimensiona la imagen del parseFile en el ImageView
+     *
+     * @param parseFile
+     * @param imageViewRender
+     * @param width
+     * @param height
+     */
+    public void setAvatarRoundedResize(ParseFile parseFile, ImageView imageViewRender, int width, int height) {
+        if (imageViewRender != null) {
+            if (parseFile != null) {
+                Picasso.with(this)
+                        .load(parseFile.getUrl())
+                        .transform(new CircleTransform())
+                        .resize(width, height)
+                        .centerCrop()
+                        .into(imageViewRender);
+            } else {
+                Picasso.with(this)
+                        .load(R.drawable.ic_user_male)
+                        .transform(new CircleTransform())
+                        .resize(width, height)
+                        .centerCrop()
+                        .into(imageViewRender);
+            }
+        }
+    }
+
+    /**
      * Retorna la imagen del usuario
      *
      * @return
-     */
+     * /
     public static RoundedBitmapDrawable getAvatar(ParseUser currentUser) {
-        if (currentUser != null) {
-            ParseFile parseFile = currentUser.getParseFile("avatar");
-            try {
-                if (parseFile != null && parseFile.getData().length > 0) {
-                    byte[] byteImage;
-                    byteImage = parseFile.getData();
-                    if (byteImage != null) {
-                        Bitmap bitmap = decodeSampledBitmapFromResource(byteImage, 100, 100);
-                        if (bitmap != null)
-                            //Cuadrar imagen
-                            if (bitmap != null && bitmap.getWidth() > bitmap.getHeight()) {
-                                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getHeight(), bitmap.getHeight());
-                            } else if (bitmap != null && bitmap.getHeight() > bitmap.getWidth()) {
-                                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getWidth());
-                            }
-                        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, bitmap);
-                        //corner radius
-                        roundedBitmapDrawable.setCornerRadius(bitmap.getHeight());
-                        return roundedBitmapDrawable;
-                    }
-                }
-            } catch (ParseException e) {
-                Log.e("Parse.avatar.exception", e.getMessage());
-            } catch (OutOfMemoryError e) {
-                Log.e("Parse.avatar.outmemory", e.toString());
-            }
-        }
-        //Si no hay imagen se retorna una imagen por defecto.
-        Bitmap bitmapDefault = BitmapFactory.decodeResource(resources, R.drawable.ic_user_male);
-        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, bitmapDefault);
-        return roundedBitmapDrawable;
+    if (currentUser != null) {
+    ParseFile parseFile = currentUser.getParseFile("avatar");
+    try {
+    if (parseFile != null && parseFile.getData().length > 0) {
+    byte[] byteImage;
+    byteImage = parseFile.getData();
+    if (byteImage != null) {
+    Bitmap bitmap = decodeSampledBitmapFromResource(byteImage, 100, 100);
+    if (bitmap != null)
+    //Cuadrar imagen
+    if (bitmap != null && bitmap.getWidth() > bitmap.getHeight()) {
+    bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getHeight(), bitmap.getHeight());
+    } else if (bitmap != null && bitmap.getHeight() > bitmap.getWidth()) {
+    bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getWidth());
     }
+    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, bitmap);
+    //corner radius
+    roundedBitmapDrawable.setCornerRadius(bitmap.getHeight());
+    return roundedBitmapDrawable;
+    }
+    }
+    } catch (ParseException e) {
+    Log.e("Parse.avatar.exception", e.getMessage());
+    } catch (OutOfMemoryError e) {
+    Log.e("Parse.avatar.outmemory", e.toString());
+    }
+    }
+    //Si no hay imagen se retorna una imagen por defecto.
+    Bitmap bitmapDefault = BitmapFactory.decodeResource(resources, R.drawable.ic_user_male);
+    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, bitmapDefault);
+    return roundedBitmapDrawable;
+    } */
 
 
     /**
@@ -477,6 +529,7 @@ public class GlobalApplication extends Application {
     public void setListeningNotifi(boolean listeningNotifi) {
         this.listeningNotifi = listeningNotifi;
     }
+
 
     public static boolean isChatEnabled() {
         return chatEnabled;

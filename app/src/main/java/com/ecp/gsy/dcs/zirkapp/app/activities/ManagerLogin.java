@@ -11,7 +11,7 @@ import android.support.v4.view.ViewPager;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.LoginFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.SignupFragment;
-import com.parse.ParseFacebookUtils;
+//import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 
 
@@ -67,7 +67,7 @@ public class ManagerLogin extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
+        //ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
