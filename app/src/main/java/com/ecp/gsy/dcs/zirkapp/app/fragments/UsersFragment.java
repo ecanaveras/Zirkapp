@@ -434,10 +434,5 @@ public class UsersFragment extends Fragment {
                 return super.onContextItemSelected(item);
         }
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
 }
 

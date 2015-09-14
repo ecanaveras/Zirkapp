@@ -121,25 +121,27 @@
                     android:layout_width="match_parent"
                     android:layout_height="18dp"
                     android:layout_marginBottom="2dp"
-                    android:layout_marginTop="2dp">
+                    android:layout_marginTop="2dp"
+                    android:gravity="center_vertical">
 
                     <LinearLayout
+                        android:id="@+id/lyFavorito"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="16dp"
                         android:clickable="true">
 
                         <ImageView
+                            android:id="@+id/imgFav"
                             android:layout_width="16dp"
                             android:layout_height="16dp"
-                            android:layout_gravity="center_vertical"
-                            android:src="@drawable/ic_action_star" />
+                            android:src="@drawable/ic_icon_fav" />
 
                         <TextView
+                            android:id="@+id/lblCantFavs"
                             style="@style/mini_text"
-                            android:layout_width="58dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginLeft="1dp"
-                            android:text="4" />
+                            android:layout_width="60dp"
+                            android:layout_height="16dp"
+                            android:layout_marginLeft="1dp" />
 
                     </LinearLayout>
 
@@ -161,7 +163,6 @@
                         android:id="@+id/imgComment"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:gravity="center_vertical"
                         android:src="@drawable/ic_icon_response" />
 
                     <TextView
@@ -169,9 +170,7 @@
                         style="@style/mini_text"
                         android:layout_width="60dp"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="1dp"
-                        android:gravity="center_vertical"
-                        android:text="0" />
+                        android:layout_marginLeft="1dp" />
 
                     <ImageView
                         android:layout_width="16dp"
@@ -183,9 +182,8 @@
                         android:id="@+id/txtTiempo"
                         style="@style/mini_text"
                         android:layout_width="60dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="16dp"
                         android:layout_marginLeft="1dp"
-                        android:gravity="center_vertical"
                         android:text="1h" />
 
                 </LinearLayout>

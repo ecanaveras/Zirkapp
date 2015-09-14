@@ -23,7 +23,7 @@
             android:layout_centerVertical="true"
             android:layout_marginBottom="10dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_user_male" />
+            android:src="@drawable/logo_zirkapp_circle" />
 
         <TextView
             android:id="@+id/txtUserNombres"
