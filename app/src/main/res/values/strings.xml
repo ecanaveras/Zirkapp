@@ -182,6 +182,10 @@
     <string name="msgUsersAround">A chatear...</string>
     <string name="msgUsersAround2">nuevos usuarios cerca!</string>
     <string name="usingZirkapp">I\' m using Zirkapp</string>
+    <string name="lblBirthday">Fecha de Nacimiento</string>
+    <string name="lblGenderM">Masculino</string>
+    <string name="lblGenderF">Femenino</string>
+    <string name="lblNext">Siguiente</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

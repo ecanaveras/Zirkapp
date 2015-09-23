@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,7 +26,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MyZimessActivity;
@@ -51,7 +51,7 @@ public class ZimessFragment extends Fragment {
     private LinearLayout layoutZimessNoFound, layoutInternetOff, layoutZimessFinder, layoutGpsOff, layoutZimessDefault;
     private GlobalApplication globalApplication;
 
-    private AlertDialogPro sortDialog;
+    private AlertDialog sortDialog;
     private TextView lblRangoZimess;
     private ImageView avatar;
 
@@ -86,7 +86,7 @@ public class ZimessFragment extends Fragment {
             @Override
             protected String doInBackground(Void... params) {
                 try {
-                    Thread.sleep(4000); // 4 segundos
+                    Thread.sleep(2000); // 4 segundos
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -193,7 +193,7 @@ public class ZimessFragment extends Fragment {
     private void showSortDialog() {
         sortDialog = null;
         final CharSequence[] optionsSort = {getResources().getString(R.string.msgMoreRecents), getResources().getString(R.string.mgsMoreNear)};
-        AlertDialogPro.Builder builder = new AlertDialogPro.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
         builder.setTitle("Ordenar...");
         builder.setSingleChoiceItems(optionsSort, globalApplication.getSortZimess(), new DialogInterface.OnClickListener() {
             @Override

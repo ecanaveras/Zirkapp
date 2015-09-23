@@ -12,7 +12,6 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeFirstFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeFourFragment;
@@ -80,7 +79,7 @@ public class ManagerWelcome extends Activity {
 
     @Override
     public void onBackPressed() {
-       AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
         //builder.setTitle("Zirkapp...");
         builder.setMessage("Seguro que te vas?")
                 .setCancelable(false)
@@ -137,14 +136,19 @@ public class ManagerWelcome extends Activity {
         if (!runWelcome) {
             currentUser = ParseUser.getCurrentUser();
             if (currentUser != null && isSessionActive) {
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                if (currentUser.getParseFile("avatar") == null) { // No ha pasado por el asistente
+                    Intent wizard = new Intent(this, ManagerWizard.class);
+                    startActivity(wizard);
+                } else {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
                 finish();
             } else if (!isSessionActive) {
                 Intent login = new Intent(this, ManagerLogin.class);
-                login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivityForResult(login, inputLoginRequestCode);
             }
@@ -164,23 +168,6 @@ public class ManagerWelcome extends Activity {
             databaseHelper = null;
         }
         super.onDestroy();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //Respuesta del Login
-        if (requestCode == inputLoginRequestCode && data != null) {
-            boolean loginOk = data.getBooleanExtra("loginOk", false);
-            if (resultCode == RESULT_OK && loginOk) {
-                currentUser = ParseUser.getCurrentUser();
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
-            } else {
-                Toast.makeText(getApplicationContext(),
-                        "No ha sido posible loguearse",
-                        Toast.LENGTH_LONG).show();
-            }
-        }
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

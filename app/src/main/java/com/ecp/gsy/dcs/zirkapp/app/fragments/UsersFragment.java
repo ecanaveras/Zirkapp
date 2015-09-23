@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -29,7 +30,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.ChatHistoryActivity;
@@ -115,7 +115,7 @@ public class UsersFragment extends Fragment {
             @Override
             protected String doInBackground(Void... params) {
                 try {
-                    Thread.sleep(4000); // 4 segundos
+                    Thread.sleep(2000); // 4 segundos
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -298,7 +298,7 @@ public class UsersFragment extends Fragment {
     private void deleteParseMessageHistory(final ParseUser userChat) {
         String formatMessage = "%s \"%s\"...";
         String nameUser = userChat.getString("name") != null ? userChat.getString("name") : userChat.getUsername();
-        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(getActivity());
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
         alert.setMessage(String.format(formatMessage, getResources().getString(R.string.msgByeChat2), nameUser));
         alert.setPositiveButton(getString(R.string.lblDelete), new DialogInterface.OnClickListener() {
             @Override

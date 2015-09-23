@@ -5,12 +5,15 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
@@ -19,10 +22,12 @@ import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
+import com.ecp.gsy.dcs.zirkapp.app.util.picasso.CircleTransform;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.ParseObject;
 import com.parse.ParsePushBroadcastReceiver;
 import com.parse.ParseUser;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -165,12 +170,18 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
         }
 
         if (notificar) {
+            Bitmap bitmap = null;
+            if (senderUser != null && senderUser.getParseFile("avatar") != null) {
+                ImageView bitmapImageView = new ImageView(context);
+                Picasso.with(context).load(senderUser.getParseFile("avatar").getUrl()).transform(new CircleTransform()).resize(100, 100).into(bitmapImageView);
+                bitmap = ((BitmapDrawable) bitmapImageView.getDrawable()).getBitmap();
+            }
 
             PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             NotificationCompat.Builder nBuilder = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.ic_zirkapp_noti)
-                    .setLargeIcon(imgLargeIcon != null ? imgLargeIcon.getBitmap() : BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher))
+                    .setLargeIcon(bitmap != null ? bitmap : BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher))
                     .setDefaults(Notification.DEFAULT_ALL)
                     .setContentTitle(title != null ? title : "Zirkapp")
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(String.format(bodyNoti, typeNotiString, msg)))

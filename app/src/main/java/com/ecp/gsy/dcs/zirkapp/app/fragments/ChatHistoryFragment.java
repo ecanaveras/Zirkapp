@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -17,7 +18,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersTask;
 import com.parse.FindCallback;
@@ -102,7 +102,7 @@ public class ChatHistoryFragment extends Fragment {
     private void deleteParseMessageHistory(final ParseUser userChat) {
         String formatMessage = "%s \"%s\"...";
         String nameUser = userChat.getString("name") != null ? userChat.getString("name") : userChat.getUsername();
-        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(getActivity());
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
         alert.setMessage(String.format(formatMessage, getResources().getString(R.string.msgByeChat2), nameUser));
         alert.setPositiveButton(getString(R.string.lblDelete), new DialogInterface.OnClickListener() {
             @Override

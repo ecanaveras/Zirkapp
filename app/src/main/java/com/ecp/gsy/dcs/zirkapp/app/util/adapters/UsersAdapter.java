@@ -34,7 +34,7 @@ public class UsersAdapter extends BaseAdapter {
     public UsersAdapter(Context context, List<ParseUser> parseUserList) {
         this.context = context;
         this.parseUserList = parseUserList;
-        application = (GlobalApplication) context;
+        application = (GlobalApplication) context.getApplicationContext();
         //countMessagesForUsers();
     }
 

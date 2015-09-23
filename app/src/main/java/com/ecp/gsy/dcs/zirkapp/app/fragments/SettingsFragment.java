@@ -1,6 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,15 +18,17 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
-import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.AboutActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerLogin;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
@@ -149,7 +152,7 @@ public class SettingsFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 //Deteniendo los servicios Sinch
-                AlertDialogPro.Builder alert = new AlertDialogPro.Builder(getActivity());
+                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
                 alert.setMessage(getString(R.string.msgLogout2));
                 alert.setPositiveButton(getString(R.string.lblOk), new DialogInterface.OnClickListener() {
                     @Override
@@ -167,10 +170,17 @@ public class SettingsFragment extends PreferenceFragment {
                         Toast toast = Toast.makeText(getActivity(), getResources().getString(R.string.msgLogoutOk), Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 10, 0);
                         toast.show();
-                        getActivity().moveTaskToBack(false);
-                        getActivity().finish();
+
+                        if (MainActivity.instance != null) {
+                            MainActivity.instance.finish();
+                        }
+
                         Intent intent = new Intent(getActivity(), ManagerLogin.class);
                         intent.putExtra("logout", true);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                        ActivityCompat.finishAffinity(getActivity());
                         startActivity(intent);
                     }
                 });

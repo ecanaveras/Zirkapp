@@ -27,6 +27,7 @@ public class ParseZimess extends ParseObject {
     public static final String ZIMESS_TEXT = "zimessText";
     public static final String FAVORITES = "favorites";
 
+    private boolean myFavorite = false;
     private String descDistancia;
 
     //<editor-fold desc="METHODS GETTERS">
@@ -95,8 +96,8 @@ public class ParseZimess extends ParseObject {
 
     public boolean isMyFavorite(String currentId) {
         if (getFavorites() != null && currentId != null) {
-            return getFavorites().contains(currentId);
+            this.myFavorite = getFavorites().contains(currentId);
         }
-        return false;
+        return this.myFavorite;
     }
 }

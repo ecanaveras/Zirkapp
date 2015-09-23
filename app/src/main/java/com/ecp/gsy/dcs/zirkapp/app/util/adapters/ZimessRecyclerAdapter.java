@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -53,7 +54,8 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         this.zimessList = zimessList;
         this.currentLocation = currentLocation;
         globalApplication = (GlobalApplication) context.getApplicationContext();
-        currentUserId = ParseUser.getCurrentUser().getObjectId();
+        if (ParseUser.getCurrentUser() != null)
+            currentUserId = ParseUser.getCurrentUser().getObjectId();
         rango = getRango();
     }
 
@@ -70,6 +72,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         ParseZimess zimess = zimessList.get(i);
 
         zimessViewHolder.setZimess(zimess);
+        zimessViewHolder.setIndexZimess(i);
 
         String name = zimess.getUser().getString("name");
         zimessViewHolder.lblAliasUsuario.setText(name != null ? name : zimess.getUser().getUsername());
@@ -78,10 +81,9 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         globalApplication.setAvatarRoundedResize(zimess.getUser().getParseFile("avatar"), zimessViewHolder.imgAvatar, 100, 100);
 
         zimessViewHolder.lblUsername.setText(null);// zimess.getUser().getParseUser();
+        zimessViewHolder.lblCantComments.setText(zimess.getCantComment() > 0 ? Integer.toString(zimess.getCantComment()) : "");
+        zimessViewHolder.lblCantFavs.setText(zimess.getCantFavorite() > 0 ? Integer.toString(zimess.getCantFavorite()) : "");
 
-        if (zimess.getCantFavorite() > 0) {
-            zimessViewHolder.lblCantFavs.setText(Integer.toString(zimess.getCantFavorite()));
-        }
 
         //cambiar icono cuando es favorito
         if (zimess.isMyFavorite(currentUserId)) {
@@ -92,7 +94,6 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
 
         //cambiar icono cuando hay comentarios
         if (zimess.getCantComment() > 0) {
-            zimessViewHolder.lblCantComments.setText(Integer.toString(zimess.getCantComment()));
             zimessViewHolder.imgComment.setImageResource(R.drawable.ic_icon_response_color);
         } else {
             zimessViewHolder.imgComment.setImageResource(R.drawable.ic_icon_response);
@@ -137,6 +138,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
 
         private ParseZimess zimess;
         private Context context;
+        private int indexZimess;
 
         public TextView lblAliasUsuario,
                 lblUsername,
@@ -181,7 +183,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
                     zimess.saveInBackground();
                     callParseFunction("DelZimessFavorite", params);
                     imgFav.setImageResource(R.drawable.ic_icon_fav);
-                    if (zimess.getCantFavorite() == 1) {
+                    if (zimess.getCantFavorite() <= 1) {
                         lblCantFavs.setText("");
                     } else {
                         lblCantFavs.setText(Integer.toString(zimess.getCantFavorite() - 1));
@@ -196,11 +198,13 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
                     imgFav.setImageResource(R.drawable.ic_icon_fav_color);
                 }
                 try {
-                    zimess.fetchIfNeeded();
+                    //Actualizar el Zimess
+                    zimessList.set(indexZimess, (ParseZimess) zimessList.get(indexZimess).fetch());
                     //Toast.makeText(context, "Add favorite", Toast.LENGTH_SHORT).show();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+                view.playSoundEffect(SoundEffectConstants.CLICK);
             } else {
                 //Ir al Zimess
                 globalApplication.setTempZimess(zimess);
@@ -228,6 +232,10 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
 
         public void setContext(Context context) {
             this.context = context;
+        }
+
+        public void setIndexZimess(int indexZimess) {
+            this.indexZimess = indexZimess;
         }
     }
 

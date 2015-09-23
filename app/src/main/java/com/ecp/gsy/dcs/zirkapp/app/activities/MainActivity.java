@@ -106,7 +106,11 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         globalApplication.setContext(this);
 
         //User Parse
-        currentUser = ParseUser.getCurrentUser();
+        try {
+            currentUser = ParseUser.getCurrentUser().fetch();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         if (currentUser != null) {
             //Save Parse Installation
             globalApplication.storeParseInstallation();

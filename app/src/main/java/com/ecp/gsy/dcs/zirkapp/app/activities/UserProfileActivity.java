@@ -154,13 +154,13 @@ public class UserProfileActivity extends ActionBarActivity {
         }
 
         @Override
-        protected void onPostExecute(ParseUser parseObject) {
-            if (parseObject != null) {
-                globalApplication.setAvatarRounded(parseObject.getParseFile("avatar"), avatar);
-                txtUserNombres.setText(parseObject.getString("name") != null ? parseObject.getString("name") : parseObject.getUsername());
-                txtWall.setText(parseObject.getString("wall") != null && !parseObject.getString("wall").isEmpty() ? parseObject.getString("wall") : getString(R.string.usingZirkapp));
-                txtCantVisitas.setText(String.valueOf(parseObject.getInt("count_visit")));
-                txtCantZimess.setText(String.valueOf(parseObject.getInt("count_zimess")));
+        protected void onPostExecute(ParseUser parseUser) {
+            if (parseUser != null) {
+                globalApplication.setAvatarRounded(parseUser.getParseFile("avatar"), avatar);
+                txtUserNombres.setText(parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername());
+                txtWall.setText(parseUser.getString("wall") != null && !parseUser.getString("wall").isEmpty() ? parseUser.getString("wall") : getString(R.string.usingZirkapp));
+                txtCantVisitas.setText(String.valueOf(parseUser.getInt("count_visit")));
+                txtCantZimess.setText(String.valueOf(parseUser.getInt("count_zimess")));
             } else {
                 txtCantVisitas.setText("0");
                 txtCantZimess.setText("0");

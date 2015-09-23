@@ -14,13 +14,12 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
-import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZFavorite;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
@@ -93,7 +92,6 @@ public class GlobalApplication extends Application {
         ParseObject.registerSubclass(ParseZMessage.class);
         ParseObject.registerSubclass(ParseZHistory.class);
         ParseObject.registerSubclass(ParseZNotifi.class);
-        ParseObject.registerSubclass(ParseZFavorite.class);
 
         //Iniciar Parse
         Parse.initialize(this, getResources().getString(R.string.parse_api_id), getResources().getString(R.string.parse_api_key));
@@ -459,7 +457,7 @@ public class GlobalApplication extends Application {
             return;
         }
         isShowGpsAlert = true;
-        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(context);
+        AlertDialog.Builder alert = new AlertDialog.Builder(context, R.style.AppCompatAlertDialogStyle);
 
         alert.setTitle(getResources().getString(R.string.lblSettingGPS));
         alert.setMessage(getResources().getString(R.string.msgGPSdisabled));
@@ -493,7 +491,7 @@ public class GlobalApplication extends Application {
         }
 
         isShowNetworkAlert = true;
-        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(context);
+        AlertDialog.Builder alert = new AlertDialog.Builder(context, R.style.AppCompatAlertDialogStyle);
 
         alert.setTitle(getResources().getString(R.string.lblSettingNetwork));
         alert.setMessage(getResources().getString(R.string.msgNetworkDisabled));

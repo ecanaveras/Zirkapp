@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -26,7 +27,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
@@ -46,7 +46,6 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -235,7 +234,7 @@ public class DetailZimessActivity extends ActionBarActivity { // implements Obse
                         final String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
                         if (receptorId != null && !currentUser.getObjectId().equals(receptorId)) {
                             //Envia la notificacion al creador del Zimess
-                            new SendPushTask(zimessDetail.getObjectId(), receptorId, currentUser.getObjectId(), name, commentText, SendPushTask.PUSH_COMMENT).execute();
+                            new SendPushTask(zimessDetail.getObjectId(), zimessDetail.getUser(), currentUser.getObjectId(), name, commentText, SendPushTask.PUSH_COMMENT).execute();
                         }
                         //Envia la notificacion a los citados en la respuesta
                         new AsyncTask<String, Void, List<String>>() {
@@ -307,7 +306,7 @@ public class DetailZimessActivity extends ActionBarActivity { // implements Obse
      * Elimina el Zimess Actual
      */
     private void deleteZimess() {
-        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(this);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
         //alert.setTitle(getString(R.string.msgDeleting));
         alert.setMessage(getString(R.string.msgByeZimess));
         alert.setPositiveButton(getString(R.string.lblDelete), new DialogInterface.OnClickListener() {
@@ -343,7 +342,7 @@ public class DetailZimessActivity extends ActionBarActivity { // implements Obse
      */
     private void deleteComment(final ParseZComment parseZComment) {
         if (parseZComment != null) {
-            AlertDialogPro.Builder alert = new AlertDialogPro.Builder(this);
+            AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
             alert.setMessage(getString(R.string.msgByeComment));
             alert.setPositiveButton(getString(R.string.lblDelete), new DialogInterface.OnClickListener() {
                 @Override

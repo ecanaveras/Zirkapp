@@ -50,8 +50,16 @@
             android:name=".activities.ManagerLogin"
             android:label="@string/lblLogin"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity android:name=".activities.MessagingActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.ManagerWizard"
+            android:label="@string/lblWelcome"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="stateHidden|adjustResize"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.MessagingActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
             <meta-data
@@ -137,11 +145,10 @@
 
         <!--Servicios-->
         <service android:name=".util.services.LocationService" />
-        <service android:name=".util.services.SinchService"/>
+        <service android:name=".util.services.SinchService" />
 
         <!--Receivers-->
-        <receiver
-            android:name=".util.broadcast.LocationReceiver">
+        <receiver android:name=".util.broadcast.LocationReceiver">
             <intent-filter>
                 <action android:name="broadcast.gps.location.change" />
             </intent-filter>

@@ -106,6 +106,7 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
 
 
             ParseQuery query = ParseInstallation.getQuery();
+            //Si viene el userId y no el parseUser
             if (receptorId != null) {
                 //1. Tomar el usuario a notificar
                 ParseQuery userQuery = ParseUser.getQuery();
@@ -114,7 +115,7 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
                 query.whereMatchesQuery("user", userQuery);
             }
 
-            //Como se envia el usuario, no es necesario buscarlo en parse
+            //Si viene el parseUser y no el userId
             if (receptorUser != null) {
                 receptorId = receptorUser.getObjectId();
                 //2b. Tomar las instalaciones del usuario a notificar
