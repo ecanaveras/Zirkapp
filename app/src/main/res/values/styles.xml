@@ -22,13 +22,14 @@
     </style>
 
     <style name="ToolbarTheme" parent="Theme.AppCompat">
-        <item name="android:textColorPrimary">@color/abc_primary_text_material_dark</item>
+        <item name="android:textColorPrimary">@color/text_primary_color</item>
         <item name="actionMenuTextColor">@color/abc_primary_text_material_dark</item>
         <item name="android:textColorSecondary">@color/abc_primary_text_material_dark</item>
     </style>
 
-    <style name="ButtonAppTheme" parent="android:Widget.Material.Button">
+    <style name="ButtonAppTheme" parent="android:style/Widget.Material.Button">
         <item name="android:background">@drawable/raised_button_background</item>
+        <item name="android:textColor">@color/text_primary_color</item>
     </style>
 
     <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog">
@@ -71,6 +72,18 @@
         <item name="android:layout_marginBottom">4dp</item>
         <item name="android:layout_marginRight">8dp</item>
         <item name="android:layout_marginLeft">8dp</item>
+    </style>
+
+    <style name="custom_edit_text">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/bg_edittext</item>
+        <item name="android:layout_marginBottom">2dp</item>
+        <item name="android:textColor">@color/accent_color</item>
+    </style>
+
+    <style name="custom_edit_text_disable" parent="custom_edit_text">
+        <item name="android:textColor">@color/divider_color</item>
     </style>
 
     <style name="mini_text">

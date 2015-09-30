@@ -9,7 +9,7 @@ android {
         multiDexEnabled true
         minSdkVersion 14
         targetSdkVersion 21
-        versionName '1.2.55'
+        versionName '1.2.56'
         applicationId 'com.ecp.gsy.dcs.zirkapp'
         versionCode 10
     }
@@ -46,7 +46,6 @@ dependencies {
     compile files('libs/ormlite-core-4.48.jar')
     compile files('libs/ormlite-android-4.48.jar')
     compile files('libs/sinch-android-rtc-3.6.2.jar')
-
     //compile files('libs/ParseFacebookUtilsV4-1.9.2.jar')
     //compile project(':facebook')
 }

@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical|center_horizontal"
             android:padding="16dp"
-            android:text="Muy bien, ahora completa los datos de tu perfil..."
+            android:text="Hola, completa o actualiza los datos de tu perfil..."
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/text_primary_color"
             android:textStyle="italic"
@@ -44,58 +44,42 @@
 
                 <EditText
                     android:id="@+id/txtUsername"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    style="@style/custom_edit_text_disable"
                     android:enabled="false"
-                    android:fontFamily="sans-serif-medium"
-                    android:hint="@string/lblUser"
-                    android:textColor="@color/accent_color"
-                    android:textColorHint="@color/accent_color"
-                    android:textSize="18sp" />
+                    android:focusable="false"
+                    android:hint="@string/lblUser" />
 
                 <EditText
                     android:id="@+id/txtUserEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
+                    style="@style/custom_edit_text"
                     android:focusable="true"
-                    android:fontFamily="sans-serif-medium"
                     android:hint="@string/lblEmail"
-                    android:inputType="textEmailAddress"
-                    android:textColor="@color/accent_color"
-                    android:textColorHint="@color/accent_color"
-                    android:textSize="18sp" />
+                    android:imeOptions="actionNext"
+                    android:inputType="textEmailAddress" />
 
                 <EditText
                     android:id="@+id/txtUserNombres"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
+                    style="@style/custom_edit_text"
                     android:hint="@string/lblName"
-                    android:textColor="@color/accent_color"
-                    android:textColorHint="@color/accent_color"
-                    android:textSize="18sp" />
+                    android:imeOptions="actionNext" />
 
                 <EditText
-                    android:id="@+id/txtUserEdad"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/txtUserBirthday"
+                    style="@style/custom_edit_text"
                     android:editable="false"
                     android:ems="10"
-                    android:fontFamily="sans-serif-medium"
+                    android:focusable="false"
                     android:hint="@string/lblBirthday"
-                    android:inputType="date"
-                    android:textColor="@color/accent_color"
-                    android:textColorHint="@color/accent_color"
-                    android:textSize="18sp"
-                    android:focusable="false"/>
+                    android:inputType="date" />
 
                 <RadioGroup
+                    android:id="@+id/radioG"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:gravity="center_horizontal"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp">
 
                     <RadioButton
                         android:id="@+id/rbtnMasculino"
@@ -103,6 +87,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginRight="10dp"
+                        android:checked="true"
                         android:text="@string/lblGenderM"
                         android:textColor="@color/accent_color"
                         android:textSize="18sp" />
@@ -134,6 +119,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginBottom="8dp"
                     android:text="@string/lblNext" />
+
             </LinearLayout>
 
         </LinearLayout>

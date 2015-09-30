@@ -84,7 +84,7 @@
     <string name="lblVersion">Versión</string>
     <string name="lblEstado">Tu estado</string>
     <string name="lblName">Nombres</string>
-    <string name="lblCity">Ciudad</string>
+    <string name="lblCity">En que ciudad vives?</string>
 
     <!-- Custom Msg -->
     <string name="msgNoAmygos">No tienes amygos</string>
@@ -186,6 +186,10 @@
     <string name="lblGenderM">Masculino</string>
     <string name="lblGenderF">Femenino</string>
     <string name="lblNext">Siguiente</string>
+    <string name="lblBack">Atras</string>
+    <string name="lblFinish">Finalizar</string>
+    <string name="lblLikes">Que te gusta?</string>
+    <string name="msgProfiBirthdayEmty">Tu fecha de nacimiento es necesaria...</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

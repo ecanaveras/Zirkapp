@@ -1,6 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/default_primary_color"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|center_horizontal"
+            android:padding="16dp"
+            android:text="Por último, algo sobre ti, y si deseas, tus redes sociales!"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/text_primary_color"
+            android:textStyle="italic"
+            android:typeface="sans" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:minHeight="200dp"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/txtUserCity"
+                    style="@style/custom_edit_text"
+                    android:hint="@string/lblCity"
+                    android:imeOptions="actionNext"
+                    android:inputType="textShortMessage|textAutoComplete" />
+
+                <EditText
+                    android:id="@+id/txtLikeMe"
+                    style="@style/custom_edit_text"
+                    android:hint="@string/lblLikes"
+                    android:imeOptions="actionNext"
+                    android:maxLength="200" />
+
+                <EditText
+                    android:id="@+id/txtAboutMe"
+                    style="@style/custom_edit_text"
+                    android:hint="Cuentanos sobre ti"
+                    android:imeOptions="actionNext"
+                    android:maxLength="200"
+                    android:minLines="2" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="18dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/accent_color"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:text="TUS REDES SOCIALES"
+                    android:textColor="@color/text_primary_color"
+                    android:textSize="12sp" />
+
+                <EditText
+                    android:id="@+id/txtAccountFace"
+                    style="@style/custom_edit_text"
+                    android:hint="Facebook"
+                    android:imeOptions="actionNext" />
+
+
+                <EditText
+                    android:id="@+id/txtAccountTwit"
+                    style="@style/custom_edit_text"
+                    android:hint="Twitter"
+                    android:imeOptions="actionNext" />
+
+                <EditText
+                    android:id="@+id/txtAccountInst"
+                    style="@style/custom_edit_text"
+                    android:hint="Instagram"
+                    android:imeOptions="actionNext" />
+
+                <EditText
+                    android:id="@+id/txtAccountGoo"
+                    style="@style/custom_edit_text"
+                    android:hint="Google+"
+                    android:imeOptions="actionNext" />
+
+                <EditText
+                    android:id="@+id/txtAccountSkyp"
+                    style="@style/custom_edit_text"
+                    android:hint="Skype"
+                    android:imeOptions="actionNext" />
+
+                <EditText
+                    android:id="@+id/txtAccountLink"
+                    style="@style/custom_edit_text"
+                    android:hint="LinkedIn"
+                    android:imeOptions="actionNext" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="bottom"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/lblBack" />
+
+                <Button
+                    android:id="@+id/btnFinish"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/lblFinish" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>
