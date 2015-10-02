@@ -42,7 +42,7 @@ public class DataParseHelper {
         //Buscar usuarios en el rango de Km
         query.whereWithinKilometers("location", parseGeoPoint, cantKmAround);
         query.whereEqualTo("online", true);
-        query.orderByAscending("name");
+        query.whereNear("location", parseGeoPoint);
         try {
             listUsers = query.find();
         } catch (ParseException e) {

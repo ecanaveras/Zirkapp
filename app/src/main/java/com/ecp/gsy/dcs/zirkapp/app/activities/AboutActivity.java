@@ -2,6 +2,7 @@ package com.ecp.gsy.dcs.zirkapp.app.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -11,7 +12,7 @@ import com.ecp.gsy.dcs.zirkapp.app.R;
 /**
  * Created by Elder on 26/04/2015.
  */
-public class AboutActivity extends Activity {
+public class AboutActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

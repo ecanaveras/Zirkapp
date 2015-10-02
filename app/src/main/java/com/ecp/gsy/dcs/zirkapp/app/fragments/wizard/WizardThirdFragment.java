@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
@@ -53,12 +54,13 @@ public class WizardThirdFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //Cambia el fragment
-                saveDataUser();
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                getActivity().finish();
+                if (saveDataUser()) {
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    getActivity().finish();
+                }
             }
         });
 
@@ -73,7 +75,18 @@ public class WizardThirdFragment extends Fragment {
     }
 
 
-    private void saveDataUser() {
+    private boolean saveDataUser() {
+        ManagerWizard mW = (ManagerWizard) getActivity();
+        if (!mW.isW1()) {
+            mW.mViewPager.setCurrentItem(mW.mViewPager.getCurrentItem() - 2);
+            Toast.makeText(getActivity(), "Hey, fijate si finalizaste esta parte!", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        if (!mW.isW2()) {
+            mW.mViewPager.setCurrentItem(mW.mViewPager.getCurrentItem() - 1);
+            Toast.makeText(getActivity(), "Hey, fijate si cargaste tu Imagen!", Toast.LENGTH_LONG).show();
+            return false;
+        }
         if (currentUser != null) {
             String ciudad = txtCiudad.getText().toString();
             String likes = txtLike.getText().toString();
@@ -100,6 +113,7 @@ public class WizardThirdFragment extends Fragment {
             currentUser.saveInBackground();
         }
 
+        return true;
     }
 
     private void loadDataUser() {

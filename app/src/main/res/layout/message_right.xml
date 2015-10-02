@@ -18,7 +18,7 @@
             android:layout_marginLeft="15dp"
             android:layout_marginRight="6dp"
             android:minWidth="40dp"
-            card_view:cardBackgroundColor="@color/light_back_color"
+            card_view:cardBackgroundColor="@color/default_primary_color"
             card_view:cardCornerRadius="6dp"
             card_view:cardElevation="3dp"
             card_view:cardUseCompatPadding="true">
@@ -35,7 +35,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="I fine, thanks"
-                    android:textColor="@color/primary_text_color"
+                    android:textColor="@color/text_primary_color"
                     android:textSize="14sp" />
 
             </LinearLayout>

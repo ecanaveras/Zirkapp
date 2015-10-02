@@ -10,13 +10,14 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -29,7 +30,6 @@ import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
-import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -42,12 +42,12 @@ import java.util.HashMap;
 /**
  * Created by Elder on 23/02/2015.
  */
-public class NewZimessActivity extends ActionBarActivity {
+public class NewZimessActivity extends AppCompatActivity {
 
     private ParseUser currentUser;
 
     private EditText message;
-    private ButtonRectangle btnSendZimess;
+    private Button btnSendZimess;
     private TextView txtIndicadorConn;
     private TextView lblCurrentLocation;
 
@@ -105,7 +105,7 @@ public class NewZimessActivity extends ActionBarActivity {
             }
         });
 
-        btnSendZimess = (ButtonRectangle) findViewById(R.id.btnSendZmess);
+        btnSendZimess = (Button) findViewById(R.id.btnSendZmess);
         btnSendZimess.setEnabled(false);
         btnSendZimess.setOnClickListener(new View.OnClickListener() {
             @Override

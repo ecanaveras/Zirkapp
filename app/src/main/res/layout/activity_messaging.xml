@@ -63,20 +63,18 @@
             android:layout_marginRight="10dp"
             android:layout_toLeftOf="@+id/btnSendMessage"
             android:background="@android:color/white"
+            android:inputType="textCapSentences"
             android:textColor="@android:color/black"
-            android:textSize="14sp"
-            android:inputType="textCapSentences"/>
+            android:textSize="14sp" />
         <!-- android:hint="@string/message_elipses" -->
 
-        <com.gc.materialdesign.views.ButtonRectangle
+        <Button
             android:id="@+id/btnSendMessage"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:background="@color/default_primary_color"
             android:text="@string/lblSend" />
         <!--android:background="@drawable/button_send"-->
-
 
     </RelativeLayout>
 

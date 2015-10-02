@@ -80,12 +80,11 @@
 
                 </FrameLayout>
 
-                <com.gc.materialdesign.views.ButtonRectangle
+                <Button
                     android:id="@+id/btnSendZmess"
                     android:layout_width="wrap_content"
-                    android:layout_height="45dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:background="@color/default_primary_color"
                     android:text="@string/lblSend" />
 
             </LinearLayout>

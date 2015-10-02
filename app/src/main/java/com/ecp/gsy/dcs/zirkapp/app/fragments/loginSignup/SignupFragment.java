@@ -2,16 +2,15 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -21,7 +20,6 @@ import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
-import com.gc.materialdesign.views.ButtonRectangle;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.parse.ParseException;
@@ -54,7 +52,7 @@ public class SignupFragment extends Fragment {
 
     private void inicializarCompUI(View view) {
 
-        ButtonRectangle btnSingUp = (ButtonRectangle) view.findViewById(R.id.btnSingUp);
+        Button btnSingUp = (Button) view.findViewById(R.id.btnSingUp);
         final EditText txtCorreo = (EditText) view.findViewById(R.id.txtUserEmail);
         final EditText txtUsername = (EditText) view.findViewById(R.id.txtUserSignUp);
         final EditText txtPassword1 = (EditText) view.findViewById(R.id.txtPassSignUp1);

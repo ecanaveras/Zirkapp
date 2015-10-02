@@ -6,37 +6,37 @@
     tools:context="com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.SignupFragment">
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@color/default_primary_color">
+        android:background="@color/default_primary_color"
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/lblCreateCount"
-            android:textStyle="italic"
-            android:typeface="sans"
             android:gravity="center_vertical|center_horizontal"
             android:padding="16dp"
-            android:textColor="@color/text_primary_color" />
+            android:text="@string/lblCreateCount"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/text_primary_color"
+            android:textStyle="italic"
+            android:typeface="sans" />
     </LinearLayout>
 
     <!--Login-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginRight="16dp"
+            android:layout_gravity="center"
             android:layout_marginLeft="16dp"
-            android:layout_gravity="center">
+            android:layout_marginRight="16dp"
+            android:orientation="vertical">
 
             <!--<TextView
                 android:layout_width="match_parent"
@@ -49,51 +49,45 @@
 
             <EditText
                 android:id="@+id/txtUserEmail"
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:inputType="textEmailAddress"
+                style="@style/custom_edit_text"
                 android:hint="@string/lblEmail"
-                android:imeOptions="actionNext" />
+                android:imeOptions="actionNext"
+                android:inputType="textEmailAddress" />
 
             <EditText
                 android:id="@+id/txtUserSignUp"
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
+                style="@style/custom_edit_text"
                 android:hint="@string/lblUser"
-                android:inputType="textVisiblePassword|textNoSuggestions"
-                android:imeOptions="actionNext" />
+                android:imeOptions="actionNext"
+                android:inputType="textVisiblePassword|textNoSuggestions" />
 
             <EditText
                 android:id="@+id/txtPassSignUp1"
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
+                style="@style/custom_edit_text"
                 android:ems="10"
-                android:inputType="textPassword"
                 android:hint="@string/lblPassword"
-                android:imeOptions="actionNext" />
+                android:imeOptions="actionNext"
+                android:inputType="textPassword" />
 
             <EditText
                 android:id="@+id/txtPassSignUp2"
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
+                style="@style/custom_edit_text"
                 android:ems="10"
-                android:inputType="textPassword"
                 android:hint="@string/lblPasswordConfirm"
-                android:imeOptions="actionNext" />
+                android:imeOptions="actionNext"
+                android:inputType="textPassword" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <com.gc.materialdesign.views.ButtonRectangle
+                <Button
                     android:id="@+id/btnSingUp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:text="@string/lblSingUp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:imeOptions="actionSend"
-                    android:background="@color/default_primary_color" />
+                    android:text="@string/lblSingUp" />
 
             </LinearLayout>
         </LinearLayout>

@@ -9,9 +9,15 @@
         android:actionLayout="@layout/component_switch" />
 
     <item
+        android:id="@+id/action_bar_filter_users"
+        android:title="@string/action_bar_filter"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_bar_history"
         android:title="@string/action_bar_history"
-        android:orderInCategory="100"
+        android:orderInCategory="110"
         app:showAsAction="never" />
 
 </menu>

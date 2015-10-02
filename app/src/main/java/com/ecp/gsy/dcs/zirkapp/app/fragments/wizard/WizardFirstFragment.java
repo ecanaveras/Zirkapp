@@ -17,6 +17,7 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerWelcome;
 import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerWizard;
 import com.parse.ParseUser;
 
@@ -145,6 +146,9 @@ public class WizardFirstFragment extends Fragment {
             currentUser.put("gender", (radioGroup.getCheckedRadioButtonId() == R.id.rbtnMasculino ? "M" : "F"));
 
             currentUser.saveInBackground();
+
+            ManagerWizard mW = (ManagerWizard) getActivity();
+            mW.setW1(true);
         }
 
         return true;

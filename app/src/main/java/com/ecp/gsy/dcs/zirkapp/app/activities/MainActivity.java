@@ -38,6 +38,8 @@ import com.ecp.gsy.dcs.zirkapp.app.util.services.SinchService;
 import com.ecp.gsy.dcs.zirkapp.app.util.sinch.SinchBaseActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RegisterGcmTask;
 //import com.facebook.appevents.AppEventsLogger;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.parse.ParseException;
 import com.parse.ParsePush;
@@ -51,6 +53,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class MainActivity extends SinchBaseActivity implements SinchService.StartFailedListener {
+
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     //KEY FRAGMENT
     //private static final int HOME = 3; //Disabled
@@ -112,19 +116,16 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
             e.printStackTrace();
         }
         if (currentUser != null) {
-            //Save Parse Installation
             globalApplication.storeParseInstallation();
-            new RegisterGcmTask(gcm, this).execute();
-            ParsePush.subscribeInBackground("", new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        //Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
-                    } else {
-                        Log.e("com.parse.push", "failed to subscribe for push", e);
-                    }
+            //Se realiza en el metodo OnServiceConnected()
+            /*if (checkPlayServices()) {
+                gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
+                regId = globalApplication.getRegistrationId(getApplicationContext(), currentUser.getUsername());
+                if (regId.isEmpty()) {
+                    new RegisterGcmTask(gcm, currentUser.getUsername(), globalApplication).execute();
                 }
-            });
+            }*/
+            ParsePush.subscribeInBackground("");
         } else {
             //Login
             startActivity(new Intent(this, ManagerWelcome.class));
@@ -162,6 +163,20 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         instance = this;
     }
 
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i("GCM Services", "Dispositivo no soportado.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
 
     private void createOrUpdateDrawer() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -457,27 +472,41 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
 
     @Override
     protected void onServiceConnected() {
-        if (GlobalApplication.isChatEnabled() && !getSinchServiceInterface().isStarted()) {
-            new AsyncTask<String, Void, String>() {
+        if (currentUser != null && GlobalApplication.isChatEnabled() && !getSinchServiceInterface().isStarted() && checkPlayServices()) {
+            gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
+            regId = globalApplication.getRegistrationId(getApplicationContext(), currentUser.getUsername());
+            //Si regId no existe, Registrarlo
+            if (regId.isEmpty()) {
+                new AsyncTask<String, Void, String>() {
 
-                @Override
-                protected String doInBackground(String... params) {
-                    GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(MainActivity.this);
-                    String regid = null;
-                    try {
-                        regid = gcm.register(globalApplication.SENDER_ID);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    @Override
+                    protected String doInBackground(String... params) {
+                        String regId = "";
+                        try {
+                            //Obtenemos el id de la instalacion
+                            regId = gcm.register(globalApplication.SENDER_ID);
+                            //Guardamos los datos de la instalacion
+                            globalApplication.storeRegistrationId(MainActivity.this, regId, currentUser.getUsername());
+                            //Info del gcm id
+                            Log.d("GCM regID", "Registrado en GCM: registration_id=" + regId);
+
+                        } catch (IOException e) {
+                            Log.e("Error registro GCM:", e.getMessage());
+                        }
+
+                        return regId;
                     }
-                    return regid;
-                }
 
-                @Override
-                protected void onPostExecute(String regId) {
-                    getSinchServiceInterface().startClient(currentUser.getObjectId(), regId);
-                    getSinchServiceInterface().setStartListener(MainActivity.this);
-                }
-            }.execute();
+                    @Override
+                    protected void onPostExecute(String regId) {
+                        getSinchServiceInterface().startClient(currentUser.getObjectId(), regId);
+                        getSinchServiceInterface().setStartListener(MainActivity.this);
+                    }
+                }.execute();
+            } else {
+                getSinchServiceInterface().startClient(currentUser.getObjectId(), regId);
+                getSinchServiceInterface().setStartListener(MainActivity.this);
+            }
 
         }
     }

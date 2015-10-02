@@ -25,6 +25,7 @@ import com.parse.ParseUser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 
 /**
@@ -109,6 +110,9 @@ public class WizardSecondFragment extends Fragment {
             }
 
             currentUser.saveInBackground();
+
+            ManagerWizard mW = (ManagerWizard) getActivity();
+            mW.setW2(true);
         }
 
         return true;

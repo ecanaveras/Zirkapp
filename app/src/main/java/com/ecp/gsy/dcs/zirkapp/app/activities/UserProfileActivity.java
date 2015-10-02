@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -25,7 +26,7 @@ import java.util.HashMap;
 /**
  * Created by Elder on 07/02/2015.
  */
-public class UserProfileActivity extends ActionBarActivity {
+public class UserProfileActivity extends AppCompatActivity {
 
     private ParseUser currentUser;
 

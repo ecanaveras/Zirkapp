@@ -3,6 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -29,7 +30,7 @@ import java.util.Set;
 /**
  * Created by Elder on 18/04/2015.
  */
-public class ChatHistoryActivity extends ActionBarActivity {
+public class ChatHistoryActivity extends AppCompatActivity {
 
     private ParseUser currentUser;
     private ListView listViewHistory;

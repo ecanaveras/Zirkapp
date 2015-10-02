@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,7 +40,6 @@ import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataCommentsTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
-import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.DeleteCallback;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
@@ -53,7 +54,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DetailZimessActivity extends ActionBarActivity { // implements ObservableScrollViewCallbacks {
+public class DetailZimessActivity extends AppCompatActivity { // implements ObservableScrollViewCallbacks {
 
     private GlobalApplication globalApplication;
     private ParseZimess zimessDetail;
@@ -73,7 +74,7 @@ public class DetailZimessActivity extends ActionBarActivity { // implements Obse
             lblUsername,
             lblAliasUsuario, lblCantComments;
     private ProgressBar progressBar;
-    private ButtonRectangle btnSendComment;
+    private Button btnSendComment;
     private Toolbar toolbar;
     private String contextClass = null;
 
@@ -165,7 +166,7 @@ public class DetailZimessActivity extends ActionBarActivity { // implements Obse
             }
         });
 
-        btnSendComment = (ButtonRectangle) findViewById(R.id.btnSendZimessComment);
+        btnSendComment = (Button) findViewById(R.id.btnSendZimessComment);
         btnSendComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

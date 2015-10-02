@@ -23,6 +23,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -41,6 +42,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersTask;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -73,6 +75,7 @@ public class UsersFragment extends Fragment {
     public boolean isConnectedUser;
     private TextView lblInfoChat;
     private LinearLayout layoutUsersDefault;
+    private AlertDialog sortDialog;
 
 
     @Override
@@ -138,6 +141,14 @@ public class UsersFragment extends Fragment {
         layoutChatOffline = (LinearLayout) view.findViewById(R.id.layoutChatOffline);
         layoutGpsOff = (LinearLayout) view.findViewById(R.id.layoutGpsOff);
         layoutInitService = (LinearLayout) view.findViewById(R.id.layoutInitService);
+
+        Button btnFiltro = (Button) view.findViewById(R.id.btnFilter);
+        btnFiltro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showSortDialog();
+            }
+        });
 
         lblInfoChat = (TextView) view.findViewById(R.id.lblInfoChat);
 
@@ -341,6 +352,30 @@ public class UsersFragment extends Fragment {
         alert.show();
     }
 
+    private void showSortDialog() {
+        sortDialog = null;
+        final CharSequence[] optionsSort = {getResources().getString(R.string.msgViewAll), getResources().getString(R.string.mgsViewGirls), getResources().getString(R.string.mgsViewBoys)};
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
+        builder.setTitle("Filtrar...");
+        builder.setSingleChoiceItems(optionsSort, globalApplication.getSortZimess(), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getActivity(), optionsSort[which], Toast.LENGTH_SHORT).show();
+                switch (which) {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                }
+                sortDialog.dismiss();
+            }
+        });
+        sortDialog = builder.create();
+        sortDialog.show();
+    }
+
     /**
      * retorna la Ubicacion actual
      *
@@ -405,6 +440,9 @@ public class UsersFragment extends Fragment {
             case R.id.action_bar_history:
                 intent = new Intent(getActivity(), ChatHistoryActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.action_bar_filter_users:
+                showSortDialog();
                 break;
         }
         return super.onOptionsItemSelected(item);

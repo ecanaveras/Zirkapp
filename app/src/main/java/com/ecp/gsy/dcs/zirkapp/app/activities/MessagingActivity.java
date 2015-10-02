@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,7 +29,6 @@ import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.sinch.SinchBaseActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
-import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -42,15 +42,6 @@ import com.sinch.android.rtc.messaging.MessageClientListener;
 import com.sinch.android.rtc.messaging.MessageDeliveryInfo;
 import com.sinch.android.rtc.messaging.MessageFailureInfo;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -71,7 +62,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
     private GlobalApplication globalApplication;
     private ProgressBar progressBar;
     private MessageAdapter adapterMessage;
-    private ButtonRectangle btnSendMessage;
+    private Button btnSendMessage;
 
 
     @Override
@@ -90,6 +81,8 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
             receptorUsername = receptorUser.getUsername();
             receptorName = receptorUser.getString("name");
             Log.i("SinchReceptor", receptorUser.getObjectId());
+        }else{
+            finish();
         }
 
         if (getSinchServiceInterface() != null) {
@@ -116,7 +109,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
 
         txtMessageBodyField = (EditText) findViewById(R.id.txtMessageBodyField);
 
-        btnSendMessage = (ButtonRectangle) findViewById(R.id.btnSendMessage);
+        btnSendMessage = (Button) findViewById(R.id.btnSendMessage);
 
         btnSendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,37 +173,43 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
      * @param messageDirection
      */
     private void saveParseMessage(final Message message, final Integer messageDirection) {
-        adapterMessage.addMessage(message, messageDirection);
-
         //Guardar al enviar el mensaje
         if (MessageAdapter.DIRECTION_OUTGOING == messageDirection) {
             //Agrega el mensaje en parse si no existe.
-            ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
-            query.whereEqualTo(ParseZMessage.SINCH_ID, message.getMessageId());
-            query.findInBackground(new FindCallback<ParseZMessage>() {
+            new AsyncTask<String, String, String>() {
+
                 @Override
-                public void done(List<ParseZMessage> zMessages, ParseException e) {
-                    if (e == null) {
-                        if (zMessages.size() == 0) {
-                            final ParseZMessage parseZMessage = new ParseZMessage();
-                            parseZMessage.setSinchId(message.getMessageId());
-                            parseZMessage.setSenderId(currentUser);
-                            parseZMessage.setRecipientId(receptorUser);
-                            parseZMessage.setMessageText(message.getTextBody());
-                            parseZMessage.setMessageRead(false);
-                            parseZMessage.saveInBackground(new SaveCallback() {
-                                @Override
-                                public void done(ParseException e) {
-                                    if (e == null) {
-                                        saveParseHistory(parseZMessage, message, currentUser); //Usuario que envia el mensaje
-                                        saveParseHistory(parseZMessage, message, receptorUser); //Usuario que recibe el mensaje
-                                    }
+                protected String doInBackground(String... strings) {
+                    ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
+                    query.whereEqualTo(ParseZMessage.SINCH_ID, message.getMessageId());
+                    query.findInBackground(new FindCallback<ParseZMessage>() {
+                        @Override
+                        public void done(List<ParseZMessage> zMessages, ParseException e) {
+                            if (e == null) {
+                                if (zMessages.size() == 0) {
+                                    final ParseZMessage parseZMessage = new ParseZMessage();
+                                    parseZMessage.setSinchId(message.getMessageId());
+                                    parseZMessage.setSenderId(currentUser);
+                                    parseZMessage.setRecipientId(receptorUser);
+                                    parseZMessage.setMessageText(message.getTextBody());
+                                    parseZMessage.setMessageRead(false);
+                                    parseZMessage.saveInBackground(new SaveCallback() {
+                                        @Override
+                                        public void done(ParseException e) {
+                                            if (e == null) {
+                                                saveParseHistory(parseZMessage, message, currentUser); //Usuario que envia el mensaje
+                                                saveParseHistory(parseZMessage, message, receptorUser); //Usuario que recibe el mensaje
+                                            }
+                                        }
+                                    });
                                 }
-                            });
+                            }
                         }
-                    }
+                    });
+                    return null;
                 }
-            });
+            }.execute();
+
         }
     }
 
@@ -419,19 +418,14 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
 
     @Override
     public void onMessageSent(MessageClient messageClient, Message message, String s) {
+        adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING);
         //Guardar historial en parse.
         saveParseMessage(message, MessageAdapter.DIRECTION_OUTGOING);
-
-        //Enviar notificacion.
-        if (receptorId != null && message != null && !globalApplication.isListeningNotifi()) {
-            String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
-            new SendPushTask(currentUser.getObjectId(), receptorId, currentUser.getObjectId(), name, message.getTextBody(), SendPushTask.PUSH_CHAT).execute();
-        }
     }
 
     @Override
     public void onMessageFailed(MessageClient messageClient, Message message, MessageFailureInfo messageFailureInfo) {
-        Toast.makeText(MessagingActivity.this, "Tu mensaje no pudo ser enviado.", Toast.LENGTH_LONG).show();
+        Toast.makeText(MessagingActivity.this, "Out!!! Tu mensaje no pudo ser enviado.", Toast.LENGTH_LONG).show();
         StringBuilder sb = new StringBuilder();
         sb.append("Sending failed: ")
                 .append(messageFailureInfo.getSinchError().getMessage());
@@ -445,8 +439,15 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
 
     @Override
     public void onShouldSendPushData(MessageClient messageClient, Message message, List<PushPair> pushPairs) {
-        final String regId = new String(pushPairs.get(0).getPushData());
+        //final String regId = new String(pushPairs.get(0).getPushData());
+        //Enviar notificacion.
+        if (receptorUser != null && message != null) {
+            String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+            new SendPushTask(receptorUser, currentUser.getObjectId(), name, message.getTextBody(), pushPairs, SendPushTask.PUSH_CHAT).execute();
+        }
+        Log.d("onShouldSendPushData", "success");
         //use an async task to make the http request
+        /*
         class SendPushTask extends AsyncTask<Void, Void, Void> {
             @Override
             protected Void doInBackground(Void... voids) {
@@ -465,7 +466,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                 return null;
             }
         }
-        (new SendPushTask()).execute();
-
+        new SendPushTask().execute();
+        */
     }
 }

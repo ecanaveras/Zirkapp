@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -46,7 +47,6 @@ public class ManagerWelcome extends Activity {
 
     //Database Local
     private DatabaseHelper databaseHelper;
-
 
     SectionsPagerAdapter mSectionsPagerAdapter;
 
@@ -136,7 +136,7 @@ public class ManagerWelcome extends Activity {
         if (!runWelcome) {
             currentUser = ParseUser.getCurrentUser();
             if (currentUser != null && isSessionActive) {
-                if (currentUser.getParseFile("avatar") == null) { // No ha pasado por el asistente
+                if (currentUser.getString("name") == null || currentUser.getParseFile("avatar") == null) { // No ha pasado por el asistente
                     Intent wizard = new Intent(this, ManagerWizard.class);
                     startActivity(wizard);
                 } else {

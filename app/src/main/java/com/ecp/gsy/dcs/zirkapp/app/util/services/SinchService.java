@@ -112,10 +112,10 @@ public class SinchService extends Service {
                     .environmentHost(ENVIRONMENT).build();
 
             mSinchClient.setSupportMessaging(true);
-            mSinchClient.startListeningOnActiveConnection();
-
             mSinchClient.setSupportPushNotifications(true);
             mSinchClient.setSupportActiveConnectionInBackground(true);
+
+            mSinchClient.startListeningOnActiveConnection();
             mSinchClient.addSinchClientListener(new MySinchClientListener());
             mSinchClient.start();
             if (regId != null)
@@ -125,6 +125,7 @@ public class SinchService extends Service {
 
     private void stop() {
         if (mSinchClient != null) {
+            mSinchClient.stopListeningOnActiveConnection();
             mSinchClient.terminate();
             mSinchClient = null;
         }
@@ -144,6 +145,7 @@ public class SinchService extends Service {
             if (mListener != null) {
                 mListener.onStartFailed(error);
             }
+            mSinchClient.stopListeningOnActiveConnection();
             mSinchClient.terminate();
             mSinchClient = null;
         }

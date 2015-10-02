@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.wizard.WizardFirstFragment;
@@ -19,6 +20,10 @@ import com.parse.ParseUser;
 public class ManagerWizard extends Activity {
 
     SectionsPagerAdapter mSectionsPagerAdapter;
+
+    private boolean w1 = false;
+    private boolean w2 = false;
+
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -74,5 +79,21 @@ public class ManagerWizard extends Activity {
             }
             return null;
         }
+    }
+
+    public boolean isW1() {
+        return w1;
+    }
+
+    public void setW1(boolean w1) {
+        this.w1 = w1;
+    }
+
+    public boolean isW2() {
+        return w2;
+    }
+
+    public void setW2(boolean w2) {
+        this.w2 = w2;
     }
 }

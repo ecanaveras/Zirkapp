@@ -48,39 +48,37 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center_vertical|center_horizontal"
                     android:text="@string/lblLoginZirkapp"
                     android:textColor="@color/accent_color"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/txtUserLogin"
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
+                    style="@style/custom_edit_text"
                     android:hint="@string/lblUser"
                     android:imeOptions="actionNext"
                     android:inputType="textVisiblePassword|textNoSuggestions" />
 
                 <EditText
                     android:id="@+id/txtPassLogin"
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
+                    style="@style/custom_edit_text"
                     android:ems="10"
                     android:hint="@string/lblPassword"
                     android:imeOptions="actionNext"
                     android:inputType="textPassword" />
 
 
-                <com.gc.materialdesign.views.ButtonRectangle
+                <Button
                     android:id="@+id/btnLogin"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@color/default_primary_color"
-                    android:drawableLeft="@drawable/ic_zirkapp_noti"
+                    android:layout_height="wrap_content"
                     android:imeOptions="actionSend"
                     android:text="@string/lblLogin"
-                    android:textAllCaps="true"/>
+                    android:textAllCaps="true" />
 
 
                 <TextView
@@ -90,9 +88,9 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="10dp"
                     android:clickable="true"
-                    android:text="Crear mi cuenta Zirkapp"
-                    android:textColor="@color/link_text_material_dark"
-                    android:textSize="18sp" />
+                    android:text="Crea tu cuenta Zirkapp"
+                    android:textColor="#2A363C"
+                    android:textSize="18sp"/>
             </LinearLayout>
 
 

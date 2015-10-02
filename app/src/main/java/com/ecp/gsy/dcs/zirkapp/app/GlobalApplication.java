@@ -27,6 +27,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.picasso.CircleTransform;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.parse.Parse;
+import com.parse.ParseCrashReporting;
 import com.parse.ParseFile;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
@@ -47,13 +48,15 @@ import java.util.TimeZone;
 public class GlobalApplication extends Application {
 
     //Key GCM
-    public final String SENDER_ID = "323224512527"; //Key GCM
+    public static final String SENDER_ID = "323224512527"; //Key GCM
     public static final String PROPERTY_REG_ID = "registration_id";
+    private static final String PROPERTY_APP_VERSION = "appVersion";
+    private static final String PROPERTY_USER = "user";
 
     private Context context;
 
     //Controla si el chat esta habilidado
-    private static boolean chatEnabled = false;
+    private static boolean chatEnabled = true;
 
     //Controla los mensajes de GPS y NETWORK
     private static boolean isShowNetworkAlert = false;
@@ -93,13 +96,49 @@ public class GlobalApplication extends Application {
         ParseObject.registerSubclass(ParseZHistory.class);
         ParseObject.registerSubclass(ParseZNotifi.class);
 
+
+        //Crash Reporting
+        ParseCrashReporting.enable(this);
+
         //Iniciar Parse
         Parse.initialize(this, getResources().getString(R.string.parse_api_id), getResources().getString(R.string.parse_api_key));
+
 
         //Facebook
         //ParseFacebookUtils.initialize(this);
         //Twitter
         //ParseTwitterUtils.initialize(getResources().getString(R.string.twitter_api_key), getResources().getString(R.string.twitter_api_secret));
+    }
+
+    /**
+     * Busca en las prefencias si existe un registro posterior
+     *
+     * @param context
+     * @param user
+     * @return
+     */
+    public String getRegistrationId(Context context, String user) {
+        SharedPreferences pref = getGCMPreferences();
+        String registrationId = pref.getString(PROPERTY_REG_ID, "");
+        if (registrationId.isEmpty()) {
+            Log.d("GCM regId", "Registro GCM no encontrado");
+            return "";
+        }
+
+        String registeredUser = pref.getString(PROPERTY_USER, "user");
+        int registeredVersion = pref.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
+
+        Log.d("GCM", "Registro GCM encontrado (usuario=" + registeredUser + ", version=" + registeredVersion + ")");
+
+        int currentVersion = getAppVersionCode(context);
+        if (registeredVersion != currentVersion) {
+            Log.d("GCM", "Nueva versión de la aplicación.");
+            return "";
+        } else if (!user.equals(registeredUser)) {
+            Log.d("GCM", "Nuevo nombre de usuario.");
+            return "";
+        }
+        return registrationId;
     }
 
 
@@ -110,13 +149,14 @@ public class GlobalApplication extends Application {
      * @param context application's context.
      * @param regId   registration ID
      */
-    public void storeRegistrationId(Context context, String regId) {
+    public void storeRegistrationId(Context context, String regId, String user) {
         final SharedPreferences prefs = getGCMPreferences();
         int appVersion = getAppVersionCode(context);
         Log.i("GCM", "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PROPERTY_REG_ID, regId);
-        editor.putInt(getAppVersionName(context), appVersion);
+        editor.putString(PROPERTY_USER, user);
+        editor.putInt(PROPERTY_APP_VERSION, appVersion);
         editor.commit();
     }
 

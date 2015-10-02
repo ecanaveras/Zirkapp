@@ -61,7 +61,6 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
             android:gravity="center_horizontal"
-            android:text="Rango actual de 1 a 5000 metros"
             android:textColor="@color/divider_color" />
 
     </LinearLayout>

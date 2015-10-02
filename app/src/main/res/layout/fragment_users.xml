@@ -120,6 +120,23 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/btnFilter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Filtro" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Historial" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/layoutInitService"
                 android:layout_width="match_parent"
                 android:layout_height="25dp"
