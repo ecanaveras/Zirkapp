@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -62,7 +63,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
     private GlobalApplication globalApplication;
     private ProgressBar progressBar;
     private MessageAdapter adapterMessage;
-    private Button btnSendMessage;
+    private ImageButton btnSendMessage;
 
 
     @Override
@@ -81,7 +82,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
             receptorUsername = receptorUser.getUsername();
             receptorName = receptorUser.getString("name");
             Log.i("SinchReceptor", receptorUser.getObjectId());
-        }else{
+        } else {
             finish();
         }
 
@@ -109,7 +110,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
 
         txtMessageBodyField = (EditText) findViewById(R.id.txtMessageBodyField);
 
-        btnSendMessage = (Button) findViewById(R.id.btnSendMessage);
+        btnSendMessage = (ImageButton) findViewById(R.id.btnSendMessage);
 
         btnSendMessage.setOnClickListener(new View.OnClickListener() {
             @Override

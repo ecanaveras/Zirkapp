@@ -47,11 +47,10 @@
     <RelativeLayout
         android:id="@+id/relSendMessage"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         android:layout_alignParentBottom="true"
         android:background="@android:color/white"
         android:paddingLeft="10dp">
-
 
         <EditText
             android:id="@+id/txtMessageBodyField"
@@ -68,12 +67,14 @@
             android:textSize="14sp" />
         <!-- android:hint="@string/message_elipses" -->
 
-        <Button
+        <ImageButton
             android:id="@+id/btnSendMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:text="@string/lblSend" />
+            android:src="@drawable/ic_send_white_48dp"
+            android:adjustViewBounds="false"
+            android:scaleType="fitCenter" />
         <!--android:background="@drawable/button_send"-->
 
     </RelativeLayout>

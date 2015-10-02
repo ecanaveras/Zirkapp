@@ -19,8 +19,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -42,14 +44,12 @@ import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersTask;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -94,11 +94,6 @@ public class UsersFragment extends Fragment {
 
         inicializarCompUI(view);
 
-        //Comprobar el estado del servicio Sinch
-        sinchConnectReceiver = new SinchConnectReceiver(layoutInitService, listViewUserOnline);
-        //Contar los mensajes recibidos
-        countMessagesReceiver = new CountMessagesReceiver(listViewUserOnline);
-
         instance = this;
 
         return view;
@@ -118,7 +113,7 @@ public class UsersFragment extends Fragment {
             @Override
             protected String doInBackground(Void... params) {
                 try {
-                    Thread.sleep(2000); // 4 segundos
+                    Thread.sleep(2000); // 2 segundos
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -141,12 +136,22 @@ public class UsersFragment extends Fragment {
         layoutChatOffline = (LinearLayout) view.findViewById(R.id.layoutChatOffline);
         layoutGpsOff = (LinearLayout) view.findViewById(R.id.layoutGpsOff);
         layoutInitService = (LinearLayout) view.findViewById(R.id.layoutInitService);
+        final LinearLayout layoutMenu = (LinearLayout) view.findViewById(R.id.lyMenu);
 
         Button btnFiltro = (Button) view.findViewById(R.id.btnFilter);
         btnFiltro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showSortDialog();
+            }
+        });
+
+        Button btnHistory = (Button) view.findViewById(R.id.btnHistory);
+        btnHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), ChatHistoryActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -190,6 +195,38 @@ public class UsersFragment extends Fragment {
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 int topRowVerticalPosition = (listViewUserOnline == null || listViewUserOnline.getChildCount() == 0) ? 0 : listViewUserOnline.getChildAt(0).getTop();
                 swipeRefreshLayout.setEnabled(firstVisibleItem == 0 && topRowVerticalPosition >= 0);
+                if (firstVisibleItem == 0 && topRowVerticalPosition >= 0) {
+                    //Show
+                    layoutMenu.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
+                    swipeRefreshLayout.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
+
+                } else {
+                    //Hidden
+                    layoutMenu.animate().translationY(-layoutMenu.getHeight()).setInterpolator(new AccelerateInterpolator(2));
+                    swipeRefreshLayout.animate().translationY(-layoutMenu.getHeight()).setInterpolator(new AccelerateInterpolator(2));
+                }
+                /*new AsyncTask<Boolean, Void, Boolean>() {
+
+                    @Override
+                    protected Boolean doInBackground(Boolean... params) {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        return params[0];
+                    }
+
+                    @Override
+                    protected void onPostExecute(Boolean show) {
+                        if (show) {
+                            layoutMenu.setVisibility(View.VISIBLE);
+                        } else {
+                            layoutMenu.setVisibility(View.GONE);
+                        }
+                    }
+                }.execute(firstVisibleItem == 0 && topRowVerticalPosition >= 0);*/
+
             }
         });
 
@@ -397,15 +434,15 @@ public class UsersFragment extends Fragment {
     @Override
     public void onResume() {
         //Registrar los Broadcast
-        getActivity().registerReceiver(countMessagesReceiver, new IntentFilter(CountMessagesReceiver.ACTION_LISTENER));
-        getActivity().registerReceiver(sinchConnectReceiver, new IntentFilter("app.fragments.UsersFragment"));
+        //getActivity().registerReceiver(countMessagesReceiver, new IntentFilter(CountMessagesReceiver.ACTION_LISTENER));
+        //getActivity().registerReceiver(sinchConnectReceiver, new IntentFilter("app.fragments.UsersFragment"));
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        getActivity().unregisterReceiver(countMessagesReceiver);
-        getActivity().unregisterReceiver(sinchConnectReceiver);
+        //getActivity().unregisterReceiver(countMessagesReceiver);
+        //getActivity().unregisterReceiver(sinchConnectReceiver);
         super.onPause();
     }
 
