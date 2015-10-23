@@ -212,6 +212,36 @@ public class GlobalApplication extends Application {
         return this.currentUser;
     }
 
+    public void setAvatarParse(ParseFile parseFile, ImageView imageViewRender, boolean rounded) {
+        if (imageViewRender != null) {
+            if (parseFile != null) {
+                if (rounded) {
+                    Picasso.with(this)
+                            .load(parseFile.getUrl())
+                            .transform(new CircleTransform())
+                            .into(imageViewRender);
+                } else {
+                    Picasso.with(this)
+                            .load(parseFile.getUrl())
+                            .into(imageViewRender);
+                }
+            } else {
+                if (rounded) {
+                    Picasso.with(this)
+                            .load(R.drawable.ic_user_male)
+                            .transform(new CircleTransform())
+                            .into(imageViewRender);
+                } else {
+                    Picasso.with(this)
+                            .load(R.drawable.ic_user_male)
+                            .into(imageViewRender);
+
+                }
+            }
+        }
+
+    }
+
     /**
      * Dibuja la imagen del parseFile en el ImageView
      *
@@ -219,20 +249,10 @@ public class GlobalApplication extends Application {
      * @param imageViewRender
      */
     public void setAvatarRounded(ParseFile parseFile, ImageView imageViewRender) {
-        if (imageViewRender != null) {
-            if (parseFile != null) {
-                Picasso.with(this)
-                        .load(parseFile.getUrl())
-                        .transform(new CircleTransform())
-                        .into(imageViewRender);
-            } else {
-                Picasso.with(this)
-                        .load(R.drawable.ic_user_male)
-                        .transform(new CircleTransform())
-                        .into(imageViewRender);
-            }
-        }
+        this.setAvatarParse(parseFile, imageViewRender, true);
+
     }
+
 
     /**
      * Dibuja y redimensiona la imagen del parseFile en el ImageView

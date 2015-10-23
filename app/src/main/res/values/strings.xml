@@ -190,10 +190,11 @@
     <string name="lblFinish">Finalizar</string>
     <string name="lblLikes">Que te gusta?</string>
     <string name="msgProfiBirthdayEmty">Tu fecha de nacimiento es necesaria...</string>
-    <string name="action_bar_filter">Filtros</string>
-    <string name="msgViewAll">Todos los Zirkaperos</string>
-    <string name="mgsViewGirls">Solo Chicas</string>
-    <string name="mgsViewBoys">Solo Chicos</string>
+    <string name="action_bar_filter">Filtro</string>
+    <string name="msgViewAll">Todos los Usuarios</string>
+    <string name="mgsViewGirls">Solo chicas</string>
+    <string name="mgsViewBoys">Solo chicos</string>
+    <string name="lblYears"> Años</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

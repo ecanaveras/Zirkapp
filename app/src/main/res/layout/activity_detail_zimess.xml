@@ -7,53 +7,68 @@
 
     <include layout="@layout/component_toolbar" />
 
-    <LinearLayout
-        android:id="@+id/layoutBodyZimess"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <!--Zimess-->
-        <include layout="@layout/cardview_item_zimess" />
+        android:layout_weight="1"
+        android:fillViewport="true">
 
-        <ImageView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:layout_marginTop="-5dp"
-            android:scaleType="fitCenter"
-            android:src="@android:drawable/arrow_down_float" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    </LinearLayout>
-
-    <!--Comentarios-->
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshComment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_weight="1">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <!--<com.github.ksoichiro.android.observablescrollview.ObservableListView-->
-            <ListView
-                android:id="@+id/listZComments"
+            <LinearLayout
+                android:id="@+id/layoutBodyZimess"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:stackFromBottom="true"
-                android:transcriptMode="alwaysScroll" />
-
-            <ProgressBar
-                android:id="@+id/progressLoad"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:orientation="vertical">
+                <!--Zimess-->
+                <include layout="@layout/cardview_item_zimess" />
 
-        </FrameLayout>
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="-5dp"
+                    android:scaleType="fitCenter"
+                    android:src="@android:drawable/arrow_down_float" />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+            </LinearLayout>
+
+            <!--Comentarios-->
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefreshComment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <!--<com.github.ksoichiro.android.observablescrollview.ObservableListView-->
+                    <ListView
+                        android:id="@+id/listZComments"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:stackFromBottom="true"
+                        android:transcriptMode="alwaysScroll" />
+
+                    <ProgressBar
+                        android:id="@+id/progressLoad"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center" />
+
+                </FrameLayout>
+
+            </android.support.v4.widget.SwipeRefreshLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
     <LinearLayout
         android:layout_width="fill_parent"

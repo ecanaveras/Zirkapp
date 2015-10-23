@@ -30,7 +30,7 @@ public class DataParseHelper {
      * @param cantKmAround
      * @return
      */
-    public static List<ParseUser> findUsersLocation(ParseUser currentUser, Location currentLocation, int cantKmAround) {
+    public static List<ParseUser> findUsersLocation(ParseUser currentUser, Location currentLocation, int cantKmAround, String gender) {
         List<ParseUser> listUsers = new ArrayList<>();
         //Buscar Usuarios
         ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
@@ -43,6 +43,9 @@ public class DataParseHelper {
         query.whereWithinKilometers("location", parseGeoPoint, cantKmAround);
         query.whereEqualTo("online", true);
         query.whereNear("location", parseGeoPoint);
+        if (gender != null) {
+            query.whereEqualTo("gender", gender);
+        }
         try {
             listUsers = query.find();
         } catch (ParseException e) {

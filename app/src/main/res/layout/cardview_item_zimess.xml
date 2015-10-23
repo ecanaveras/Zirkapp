@@ -63,7 +63,8 @@
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:clickable="true"
-                    android:src="@drawable/ic_user_male" />
+                    android:src="@drawable/ic_user_male"
+                    android:transitionName="profile_image"/>
 
             </LinearLayout>
 

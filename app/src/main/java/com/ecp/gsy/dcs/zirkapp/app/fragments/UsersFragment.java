@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -37,6 +36,7 @@ import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.ChatHistoryActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MessagingActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.UserProfileActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.CountMessagesReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.SinchConnectReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
@@ -75,7 +75,7 @@ public class UsersFragment extends Fragment {
     public boolean isConnectedUser;
     private TextView lblInfoChat;
     private LinearLayout layoutUsersDefault;
-    private AlertDialog sortDialog;
+    private AlertDialog filterDialog;
 
 
     @Override
@@ -142,7 +142,7 @@ public class UsersFragment extends Fragment {
         btnFiltro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showSortDialog();
+                showFilterDialog();
             }
         });
 
@@ -255,8 +255,9 @@ public class UsersFragment extends Fragment {
             //Tomar valores de las preferencias de usuarios
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "10"));
+            String gender = preferences.getString("filter_user_gender", null);
 
-            RefreshDataUsersTask refresDataTask = new RefreshDataUsersTask(getActivity().getApplicationContext(), currentUser, currentLocation, listViewUserOnline);
+            RefreshDataUsersTask refresDataTask = new RefreshDataUsersTask(getActivity().getApplicationContext(), currentUser, currentLocation, listViewUserOnline, gender);
             refresDataTask.setSwipeRefreshLayout(swipeRefreshLayout);
             refresDataTask.setLayoutUsersFinder(layoutUsersFinder);
             refresDataTask.setLayoutUsersNoFound(layoutUsersNoFound);
@@ -389,28 +390,61 @@ public class UsersFragment extends Fragment {
         alert.show();
     }
 
-    private void showSortDialog() {
-        sortDialog = null;
+    /**
+     * Guarda el filtro de genero en las preferencias.
+     *
+     * @param gender
+     */
+    private void saveGenderPreference(String gender) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("filter_user_gender", gender);
+        editor.commit();
+    }
+
+    private String getGenderPreference() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return preferences.getString("filter_user_gender", null);
+    }
+
+    private void showFilterDialog() {
+        filterDialog = null;
+        String gender = getGenderPreference();
+        int selected = 0;
+        if (gender != null) {
+            if (gender.equals("F")) {
+                selected = 1;
+            } else {
+                selected = 2;
+            }
+        }
         final CharSequence[] optionsSort = {getResources().getString(R.string.msgViewAll), getResources().getString(R.string.mgsViewGirls), getResources().getString(R.string.mgsViewBoys)};
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
         builder.setTitle("Filtrar...");
-        builder.setSingleChoiceItems(optionsSort, globalApplication.getSortZimess(), new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(optionsSort, selected, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Toast.makeText(getActivity(), optionsSort[which], Toast.LENGTH_SHORT).show();
                 switch (which) {
                     case 0:
+                        saveGenderPreference(null);
+                        findUsersOnline(getCurrentLocation());
                         break;
                     case 1:
+                        saveGenderPreference("F");
+                        findUsersOnline(getCurrentLocation());
+
                         break;
                     case 2:
+                        saveGenderPreference("M");
+                        findUsersOnline(getCurrentLocation());
                         break;
                 }
-                sortDialog.dismiss();
+                filterDialog.dismiss();
             }
         });
-        sortDialog = builder.create();
-        sortDialog.show();
+        filterDialog = builder.create();
+        filterDialog.show();
     }
 
     /**
@@ -479,7 +513,7 @@ public class UsersFragment extends Fragment {
                 startActivity(intent);
                 break;
             case R.id.action_bar_filter_users:
-                showSortDialog();
+                showFilterDialog();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -496,9 +530,15 @@ public class UsersFragment extends Fragment {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
+            case R.id.ctx_view_profile:
+                ParseUser receptorUser = (ParseUser) listViewUserOnline.getAdapter().getItem(acmi.position);
+                Intent intent = new Intent(getActivity(), UserProfileActivity.class);
+                globalApplication.setCustomParseUser(receptorUser);
+                startActivity(intent);
+                return true;
             case R.id.ctx_delete_chat:
-                AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
                 ParseUser parseUser = (ParseUser) listViewUserOnline.getAdapter().getItem(acmi.position);
                 if (parseUser != null)
                     deleteParseMessageHistory(parseUser);

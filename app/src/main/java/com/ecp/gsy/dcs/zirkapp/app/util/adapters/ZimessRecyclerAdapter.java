@@ -14,25 +14,21 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MyZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.UserProfileActivity;
+import com.ecp.gsy.dcs.zirkapp.app.util.listener.ItemClickListener;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
-import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
-import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZFavorite;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +36,7 @@ import java.util.List;
 /**
  * Created by Elder on 20/03/2015.
  */
-public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAdapter.ZimessViewHolder> {
+public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAdapter.ZimessViewHolder> implements ItemClickListener {
 
     private List<ParseZimess> zimessList;
     private Location currentLocation;
@@ -62,7 +58,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
     @Override
     public ZimessViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View vista = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardview_item_zimess, viewGroup, false);
-        ZimessViewHolder holder = new ZimessViewHolder(vista);
+        ZimessViewHolder holder = new ZimessViewHolder(vista, this);
         holder.setContext(context);
         return holder;
     }
@@ -118,6 +114,121 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         return zimessList != null ? zimessList.size() : 0;
     }
 
+
+    @Override
+    public void onItemClick(View view, int position) {
+        ParseZimess zimess = zimessList.get(position);
+//        View sharedImage = view.findViewById(R.id.imgAvatarItem);
+//        globalApplication.setCustomParseUser(zimess.getUser());
+//        UserProfileActivity.launch(
+//                (Activity) context, position, sharedImage);
+        ImageView imgFav = (ImageView) view.findViewById(R.id.imgFav);
+        TextView lblCantFavs = (TextView) view.findViewById(R.id.lblCantFavs);
+        switch (view.getId()) {
+            case R.id.imgAvatarItem:
+                //Ir la perfil del usuario
+                globalApplication.setCustomParseUser(zimess.getUser());
+                Intent intent = new Intent(context, UserProfileActivity.class);
+                context.startActivity(intent);
+                break;
+
+            case R.id.lyFavorito:
+                HashMap params = new HashMap<String, Object>();
+                params.put("zimessId", zimess.getObjectId());
+                //Marcar/desmarcar como favorito
+                if (zimess != null && zimess.isMyFavorite(currentUserId)) {
+                    zimess.removeFavorites(Arrays.asList(currentUserId));
+                    zimess.saveInBackground();
+                    callParseFunction("DelZimessFavorite", params);
+
+                    imgFav.setImageResource(R.drawable.ic_icon_fav);
+                    if (zimess.getCantFavorite() <= 1) {
+                        lblCantFavs.setText("");
+                    } else {
+                        lblCantFavs.setText(Integer.toString(zimess.getCantFavorite() - 1));
+                    }
+                } else {
+                    //Actualizar los datos del Zimess
+                    zimess.addFavorites(currentUserId);
+                    zimess.saveInBackground();
+
+                    callParseFunction("AddZimessFavorite", params);
+
+                    lblCantFavs.setText(Integer.toString(zimess.getCantFavorite() + 1));
+                    imgFav.setImageResource(R.drawable.ic_icon_fav_color);
+                }
+                try {
+                    //Actualizar el Zimess
+                    zimessList.set(position, (ParseZimess) zimessList.get(position).fetch());
+                    //Toast.makeText(context, "Add favorite", Toast.LENGTH_SHORT).show();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                view.playSoundEffect(SoundEffectConstants.CLICK);
+                break;
+
+            default:
+                //Ir al Zimess
+                globalApplication.setTempZimess(zimess);
+                Intent intent2 = new Intent((Activity) context, DetailZimessActivity.class);
+                if (context instanceof MyZimessActivity)
+                    intent2.putExtra("contextClass", MyZimessActivity.class.getSimpleName());
+                context.startActivity(intent2);
+                break;
+        }
+        /*else if (view instanceof LinearLayout && view.getId() == lyFavorito.getId()) {
+            HashMap params = new HashMap<String, Object>();
+            params.put("zimessId", zimess.getObjectId());
+
+            if (zimess != null && zimess.isMyFavorite(currentUserId)) {
+                zimess.removeFavorites(Arrays.asList(currentUserId));
+                zimess.saveInBackground();
+                callParseFunction("DelZimessFavorite", params);
+                imgFav.setImageResource(R.drawable.ic_icon_fav);
+                if (zimess.getCantFavorite() <= 1) {
+                    lblCantFavs.setText("");
+                } else {
+                    lblCantFavs.setText(Integer.toString(zimess.getCantFavorite() - 1));
+                }
+            } else {
+                //Actualizar los datos del Zimess
+                zimess.addFavorites(currentUserId);
+                zimess.saveInBackground();
+                callParseFunction("AddZimessFavorite", params);
+
+                lblCantFavs.setText(Integer.toString(zimess.getCantFavorite() + 1));
+                imgFav.setImageResource(R.drawable.ic_icon_fav_color);
+            }
+            try {
+                //Actualizar el Zimess
+                zimessList.set(indexZimess, (ParseZimess) zimessList.get(indexZimess).fetch());
+                //Toast.makeText(context, "Add favorite", Toast.LENGTH_SHORT).show();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            view.playSoundEffect(SoundEffectConstants.CLICK);
+        } else {
+            //Ir al Zimess
+            globalApplication.setTempZimess(zimess);
+            Intent intent = new Intent((Activity) context, DetailZimessActivity.class);
+            if (context instanceof MyZimessActivity)
+                intent.putExtra("contextClass", MyZimessActivity.class.getSimpleName());
+            context.startActivity(intent);
+        }
+        */
+
+    }
+
+    private void callParseFunction(final String nameFunction, HashMap<String, Object> params) {
+        ParseCloud.callFunctionInBackground(nameFunction, params, new FunctionCallback<String>() {
+            public void done(String result, ParseException e) {
+                if (e != null) {
+                    Log.e("Parse.Cloud." + nameFunction, e.getMessage());
+                }
+            }
+        });
+    }
+
     private int getResourceRibbon(double distancia) {
         if (distancia <= rango) { //Verde
             return R.drawable.ic_ribbon_green;
@@ -134,11 +245,13 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         return rango;
     }
 
+
     public class ZimessViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ParseZimess zimess;
         private Context context;
         private int indexZimess;
+        public ItemClickListener listener;
 
         public TextView lblAliasUsuario,
                 lblUsername,
@@ -149,7 +262,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         public ImageView imgComment, imgFav, imgAvatar;
         public LinearLayout lyFavorito;
 
-        public ZimessViewHolder(View vista) {
+        public ZimessViewHolder(View vista, ItemClickListener listener) {
             super(vista);
             lblAliasUsuario = (TextView) vista.findViewById(R.id.lblNombreUsuario);
             lblUsername = (TextView) vista.findViewById(R.id.lblUserName);
@@ -166,63 +279,13 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
             vista.setOnClickListener(this);
             imgAvatar.setOnClickListener(this);
             lyFavorito.setOnClickListener(this);
+
+            this.listener = listener;
         }
 
         @Override
         public void onClick(View view) {
-            if (view instanceof ImageView) { //Ir al perfil de usuario
-                globalApplication.setCustomParseUser(zimess.getUser());
-                Intent intent = new Intent(context, UserProfileActivity.class);
-                context.startActivity(intent);
-            } else if (view instanceof LinearLayout && view.getId() == lyFavorito.getId()) {
-                HashMap params = new HashMap<String, Object>();
-                params.put("zimessId", zimess.getObjectId());
-
-                if (zimess != null && zimess.isMyFavorite(currentUserId)) {
-                    zimess.removeFavorites(Arrays.asList(currentUserId));
-                    zimess.saveInBackground();
-                    callParseFunction("DelZimessFavorite", params);
-                    imgFav.setImageResource(R.drawable.ic_icon_fav);
-                    if (zimess.getCantFavorite() <= 1) {
-                        lblCantFavs.setText("");
-                    } else {
-                        lblCantFavs.setText(Integer.toString(zimess.getCantFavorite() - 1));
-                    }
-                } else {
-                    //Actualizar los datos del Zimess
-                    zimess.addFavorites(currentUserId);
-                    zimess.saveInBackground();
-                    callParseFunction("AddZimessFavorite", params);
-
-                    lblCantFavs.setText(Integer.toString(zimess.getCantFavorite() + 1));
-                    imgFav.setImageResource(R.drawable.ic_icon_fav_color);
-                }
-                try {
-                    //Actualizar el Zimess
-                    zimessList.set(indexZimess, (ParseZimess) zimessList.get(indexZimess).fetch());
-                    //Toast.makeText(context, "Add favorite", Toast.LENGTH_SHORT).show();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                view.playSoundEffect(SoundEffectConstants.CLICK);
-            } else {
-                //Ir al Zimess
-                globalApplication.setTempZimess(zimess);
-                Intent intent = new Intent((Activity) context, DetailZimessActivity.class);
-                if (context instanceof MyZimessActivity)
-                    intent.putExtra("contextClass", MyZimessActivity.class.getSimpleName());
-                context.startActivity(intent);
-            }
-        }
-
-        private void callParseFunction(final String nameFunction, HashMap<String, Object> params) {
-            ParseCloud.callFunctionInBackground(nameFunction, params, new FunctionCallback<String>() {
-                public void done(String result, ParseException e) {
-                    if (e != null) {
-                        Log.e("Parse.Cloud." + nameFunction, e.getMessage());
-                    }
-                }
-            });
+            listener.onItemClick(view, getAdapterPosition());
         }
 
         public void setZimess(ParseZimess zimess) {
@@ -239,4 +302,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         }
     }
 
+
 }
+
+

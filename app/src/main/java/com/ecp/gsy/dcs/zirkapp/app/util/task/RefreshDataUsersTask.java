@@ -33,6 +33,7 @@ public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUse
     private Context context;
     private boolean isSearchHistory;
     private TextView lblChatNoFound;
+    private String gender;
 
     /**
      * Busca los usuarios que esten cerca y online
@@ -42,11 +43,12 @@ public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUse
      * @param currentLocation
      * @param listUsersOnline
      */
-    public RefreshDataUsersTask(Context context, ParseUser currentUser, Location currentLocation, ListView listUsersOnline) {
+    public RefreshDataUsersTask(Context context, ParseUser currentUser, Location currentLocation, ListView listUsersOnline, String gender) {
         this.context = context;
         this.currentUser = currentUser;
         this.currentLocation = currentLocation;
         this.listUsersOnline = listUsersOnline;
+        this.gender = gender;
     }
 
     public RefreshDataUsersTask(Context context, ParseUser currentUser, ArrayList<String> userList, ListView listHistory, TextView lblChatNoFound, LinearLayout layoutUsersFinder) {
@@ -80,7 +82,7 @@ public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUse
         parseUser.put("location", parseGeoPoint);
         parseUser.put("online", true);
         parseUser.saveInBackground();
-        return DataParseHelper.findUsersLocation(currentUser, currentLocation, integers[0]);
+        return DataParseHelper.findUsersLocation(currentUser, currentLocation, integers[0], gender);
     }
 
     @Override

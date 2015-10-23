@@ -420,6 +420,9 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
     @Override
     public void onMessageSent(MessageClient messageClient, Message message, String s) {
         adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING);
+        //Enviar notificacion
+        String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+        new SendPushTask(receptorUser, currentUser.getObjectId(), name, message.getTextBody(), null, SendPushTask.PUSH_CHAT).execute();
         //Guardar historial en parse.
         saveParseMessage(message, MessageAdapter.DIRECTION_OUTGOING);
     }
