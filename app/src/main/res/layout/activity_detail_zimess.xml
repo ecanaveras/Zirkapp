@@ -33,43 +33,43 @@
                     android:scaleType="fitCenter"
                     android:src="@android:drawable/arrow_down_float" />
 
-            </LinearLayout>
-
-            <!--Comentarios-->
-            <android.support.v4.widget.SwipeRefreshLayout
-                android:id="@+id/swipeRefreshComment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_weight="1">
-
-                <FrameLayout
+                <!--Comentarios-->
+                <android.support.v4.widget.SwipeRefreshLayout
+                    android:id="@+id/swipeRefreshComment"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp">
 
-                    <!--<com.github.ksoichiro.android.observablescrollview.ObservableListView-->
-                    <ListView
-                        android:id="@+id/listZComments"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:stackFromBottom="true"
-                        android:transcriptMode="alwaysScroll" />
+                        android:layout_height="match_parent">
 
-                    <ProgressBar
-                        android:id="@+id/progressLoad"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center" />
+                        <!--<com.github.ksoichiro.android.observablescrollview.ObservableListView-->
+                        <ListView
+                            android:id="@+id/listZComments"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:stackFromBottom="true"
+                            android:transcriptMode="alwaysScroll" />
 
-                </FrameLayout>
+                        <ProgressBar
+                            android:id="@+id/progressLoad"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center" />
 
-            </android.support.v4.widget.SwipeRefreshLayout>
+                    </FrameLayout>
+
+                </android.support.v4.widget.SwipeRefreshLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 
     </ScrollView>
 
+    <!--footer-->
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

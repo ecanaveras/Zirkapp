@@ -21,12 +21,6 @@ public class AboutActivity extends AppCompatActivity {
         setContentView(R.layout.activity_about);
         TextView version = (TextView) findViewById(R.id.lblVersionApp);
         version.setText(GlobalApplication.getAppVersionName(this));
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        toolbar.setTitle(getString(R.string.title_activity_about));
     }
 
     public void onBackPressed() {
