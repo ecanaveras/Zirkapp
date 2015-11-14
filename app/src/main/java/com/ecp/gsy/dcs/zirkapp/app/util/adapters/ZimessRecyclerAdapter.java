@@ -58,17 +58,12 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
     @Override
     public ZimessViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View vista = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardview_item_zimess, viewGroup, false);
-        ZimessViewHolder holder = new ZimessViewHolder(vista, this);
-        holder.setContext(context);
-        return holder;
+        return new ZimessViewHolder(vista, this);
     }
 
     @Override
     public void onBindViewHolder(ZimessViewHolder zimessViewHolder, int i) {
         ParseZimess zimess = zimessList.get(i);
-
-        zimessViewHolder.setZimess(zimess);
-        zimessViewHolder.setIndexZimess(i);
 
         String name = zimess.getUser().getString("name");
         zimessViewHolder.lblAliasUsuario.setText(name != null ? name : zimess.getUser().getUsername());
@@ -176,46 +171,6 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
                 context.startActivity(intent2);
                 break;
         }
-        /*else if (view instanceof LinearLayout && view.getId() == lyFavorito.getId()) {
-            HashMap params = new HashMap<String, Object>();
-            params.put("zimessId", zimess.getObjectId());
-
-            if (zimess != null && zimess.isMyFavorite(currentUserId)) {
-                zimess.removeFavorites(Arrays.asList(currentUserId));
-                zimess.saveInBackground();
-                callParseFunction("DelZimessFavorite", params);
-                imgFav.setImageResource(R.drawable.ic_icon_fav);
-                if (zimess.getCantFavorite() <= 1) {
-                    lblCantFavs.setText("");
-                } else {
-                    lblCantFavs.setText(Integer.toString(zimess.getCantFavorite() - 1));
-                }
-            } else {
-                //Actualizar los datos del Zimess
-                zimess.addFavorites(currentUserId);
-                zimess.saveInBackground();
-                callParseFunction("AddZimessFavorite", params);
-
-                lblCantFavs.setText(Integer.toString(zimess.getCantFavorite() + 1));
-                imgFav.setImageResource(R.drawable.ic_icon_fav_color);
-            }
-            try {
-                //Actualizar el Zimess
-                zimessList.set(indexZimess, (ParseZimess) zimessList.get(indexZimess).fetch());
-                //Toast.makeText(context, "Add favorite", Toast.LENGTH_SHORT).show();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            view.playSoundEffect(SoundEffectConstants.CLICK);
-        } else {
-            //Ir al Zimess
-            globalApplication.setTempZimess(zimess);
-            Intent intent = new Intent((Activity) context, DetailZimessActivity.class);
-            if (context instanceof MyZimessActivity)
-                intent.putExtra("contextClass", MyZimessActivity.class.getSimpleName());
-            context.startActivity(intent);
-        }
-        */
 
     }
 
@@ -248,9 +203,6 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
 
     public class ZimessViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private ParseZimess zimess;
-        private Context context;
-        private int indexZimess;
         public ItemClickListener listener;
 
         public TextView lblAliasUsuario,
@@ -286,19 +238,6 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         @Override
         public void onClick(View view) {
             listener.onItemClick(view, getAdapterPosition());
-        }
-
-        public void setZimess(ParseZimess zimess) {
-            this.zimess = zimess;
-        }
-
-
-        public void setContext(Context context) {
-            this.context = context;
-        }
-
-        public void setIndexZimess(int indexZimess) {
-            this.indexZimess = indexZimess;
         }
     }
 

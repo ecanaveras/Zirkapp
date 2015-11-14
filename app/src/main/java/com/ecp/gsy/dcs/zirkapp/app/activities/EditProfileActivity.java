@@ -213,7 +213,7 @@ public class EditProfileActivity extends ActionBarActivity {
     }
 
     /**
-     * Cambiar imagen
+     * Cambiar imgAvatar
      *
      * @param view
      */
@@ -233,7 +233,7 @@ public class EditProfileActivity extends ActionBarActivity {
     }
 
     /**
-     * Corta la imagen
+     * Corta la imgAvatar
      */
     private void cropImage() {
         if (mImageCaptureUri == null) {

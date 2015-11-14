@@ -194,7 +194,22 @@
     <string name="msgViewAll">Todos los Usuarios</string>
     <string name="mgsViewGirls">Solo chicas</string>
     <string name="mgsViewBoys">Solo chicos</string>
-    <string name="lblYears"> Años</string>
+    <string name="lblYears">Años</string>
+    <string name="lblNavZimess">Zimess</string>
+    <string name="lblNavChat">Chat</string>
+    <string name="lblNavNotifi">Notificaciones</string>
+    <string name="lblNavAjust">Ajustes</string>
+    <string name="lblNavQuali">Calificar</string>
+    <string name="lblNavShare">Compartir</string>
+    <string name="title_tab_user_online">Online</string>
+    <string name="title_tab_messages">Mensajes</string>
+    <string name="title_tab_info_user">Inf. del usuario</string>
+    <string name="title_tab_social_user">Redes sociales</string>
+    <string name="lblAboutMe">Sobre mi...</string>
+    <string name="lblLikeMe">Me gusta:</string>
+    <string name="lblLiveIn">Vivo en:</string>
+    <string name="lblPopularity">Popularidad</string>
+    <string name="lblSocialNetwork">Mis Redes...</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

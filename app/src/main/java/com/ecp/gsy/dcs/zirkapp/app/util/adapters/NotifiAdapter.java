@@ -75,7 +75,7 @@ public class NotifiAdapter extends BaseAdapter {
                 icon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_icon_location));
                 break;
         }*/
-        //La imagen debe ser cuadrada
+        //La imgAvatar debe ser cuadrada
         if (item.getSenderUser() != null && item.getSenderUser().getParseFile("avatar") != null) {
             Picasso.with(context)
                     .load(item.getSenderUser().getParseFile("avatar").getUrl())

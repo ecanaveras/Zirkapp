@@ -3,6 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.util.task;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.UsersAdapter;
+import com.ecp.gsy.dcs.zirkapp.app.util.adapters.UsersRecyclerAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.parse.ParseGeoPoint;
@@ -30,6 +32,7 @@ public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUse
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView listUsersOnline;
+    private RecyclerView recyclerView;
     private Context context;
     private boolean isSearchHistory;
     private TextView lblChatNoFound;
@@ -48,6 +51,22 @@ public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUse
         this.currentUser = currentUser;
         this.currentLocation = currentLocation;
         this.listUsersOnline = listUsersOnline;
+        this.gender = gender;
+    }
+
+    /**
+     * Busca los usuarios que esten cerca y online
+     *
+     * @param context
+     * @param currentUser
+     * @param currentLocation
+     * @param recyclerView
+     */
+    public RefreshDataUsersTask(Context context, ParseUser currentUser, Location currentLocation, RecyclerView recyclerView, String gender) {
+        this.context = context;
+        this.currentUser = currentUser;
+        this.currentLocation = currentLocation;
+        this.recyclerView = recyclerView;
         this.gender = gender;
     }
 
@@ -87,10 +106,16 @@ public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUse
 
     @Override
     protected void onPostExecute(List<ParseUser> parseUsers) {
-        UsersAdapter usersAdapter = new UsersAdapter(context, parseUsers);
-        if (listUsersOnline != null)
+        if (recyclerView != null) {
+            UsersRecyclerAdapter adapter = new UsersRecyclerAdapter(context, parseUsers);
+            recyclerView.setAdapter(adapter);
+        }
+        if (listUsersOnline != null) {
+            UsersAdapter usersAdapter = new UsersAdapter(context, parseUsers);
             listUsersOnline.setAdapter(usersAdapter);
-        usersAdapter.notifyDataSetChanged();
+            usersAdapter.notifyDataSetChanged();
+        }
+
         //Cant para el drawer
         if (!isSearchHistory)
             GlobalApplication.setCantUsersOnline(parseUsers.size());

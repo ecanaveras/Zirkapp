@@ -56,7 +56,7 @@ public class GlobalApplication extends Application {
     private Context context;
 
     //Controla si el chat esta habilidado
-    private static boolean chatEnabled = true;
+    private static boolean chatEnabled = false;
 
     //Controla los mensajes de GPS y NETWORK
     private static boolean isShowNetworkAlert = false;
@@ -135,7 +135,7 @@ public class GlobalApplication extends Application {
             Log.d("GCM", "Nueva versión de la aplicación.");
             return "";
         } else if (!user.equals(registeredUser)) {
-            Log.d("GCM", "Nuevo nombre de usuario.");
+            Log.d("GCM", "Nuevo lblNombreUsuario de usuario.");
             return "";
         }
         return registrationId;
@@ -243,7 +243,7 @@ public class GlobalApplication extends Application {
     }
 
     /**
-     * Dibuja la imagen del parseFile en el ImageView
+     * Dibuja la imgAvatar del parseFile en el ImageView
      *
      * @param parseFile
      * @param imageViewRender
@@ -255,7 +255,7 @@ public class GlobalApplication extends Application {
 
 
     /**
-     * Dibuja y redimensiona la imagen del parseFile en el ImageView
+     * Dibuja y redimensiona la imgAvatar del parseFile en el ImageView
      *
      * @param parseFile
      * @param imageViewRender
@@ -283,7 +283,7 @@ public class GlobalApplication extends Application {
     }
 
     /**
-     * Retorna la imagen del usuario
+     * Retorna la imgAvatar del usuario
      *
      * @return
      * /
@@ -297,7 +297,7 @@ public class GlobalApplication extends Application {
     if (byteImage != null) {
     Bitmap bitmap = decodeSampledBitmapFromResource(byteImage, 100, 100);
     if (bitmap != null)
-    //Cuadrar imagen
+    //Cuadrar imgAvatar
     if (bitmap != null && bitmap.getWidth() > bitmap.getHeight()) {
     bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getHeight(), bitmap.getHeight());
     } else if (bitmap != null && bitmap.getHeight() > bitmap.getWidth()) {
@@ -315,7 +315,7 @@ public class GlobalApplication extends Application {
     Log.e("Parse.avatar.outmemory", e.toString());
     }
     }
-    //Si no hay imagen se retorna una imagen por defecto.
+    //Si no hay imgAvatar se retorna una imgAvatar por defecto.
     Bitmap bitmapDefault = BitmapFactory.decodeResource(resources, R.drawable.ic_user_male);
     RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, bitmapDefault);
     return roundedBitmapDrawable;

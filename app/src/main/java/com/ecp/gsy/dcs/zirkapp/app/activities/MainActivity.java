@@ -14,11 +14,14 @@ import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,13 +33,16 @@ import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.NotificationsFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
+import com.ecp.gsy.dcs.zirkapp.app.util.listener.FragmentIterationListener;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.SinchService;
 import com.ecp.gsy.dcs.zirkapp.app.util.sinch.SinchBaseActivity;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.RegisterGcmTask;
 //import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -44,7 +50,6 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.parse.ParseException;
 import com.parse.ParsePush;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 import com.sinch.android.rtc.SinchError;
 
 import java.io.IOException;
@@ -52,7 +57,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-public class MainActivity extends SinchBaseActivity implements SinchService.StartFailedListener {
+public class MainActivity extends SinchBaseActivity implements SinchService.StartFailedListener, FragmentIterationListener {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
@@ -74,6 +79,8 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
     private Toolbar toolbar;
     //Drawer
     private DrawerLayout drawerNavigation;
+    private NavigationView navigationView;
+
     private ActionBarDrawerToggle drawerToggle;
     private ListView navListView;
     private String[] navTitles;
@@ -117,22 +124,16 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         }
         if (currentUser != null) {
             globalApplication.storeParseInstallation();
-            //Se realiza en el metodo OnServiceConnected()
-            /*if (checkPlayServices()) {
-                gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
-                regId = globalApplication.getRegistrationId(getApplicationContext(), currentUser.getUsername());
-                if (regId.isEmpty()) {
-                    new RegisterGcmTask(gcm, currentUser.getUsername(), globalApplication).execute();
-                }
-            }*/
             ParsePush.subscribeInBackground("");
         } else {
             //Login
             startActivity(new Intent(this, ManagerWelcome.class));
         }
 
+        initComponentsUI();
+
         //Manipulando Fragments
-        FragmentManager fm = getFragmentManager();
+        /*FragmentManager fm = getFragmentManager();
         //fragments[HOME] = fm.findFragmentById(R.id.f_chat);
         fragments[ZIMESS] = fm.findFragmentById(R.id.f_zimess);
         fragments[CHAT] = fm.findFragmentById(R.id.f_users);
@@ -148,7 +149,7 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         indexBackOrDefaultFragment = getIntent().getIntExtra("posicion", 1);
 
         //Crea el menú Lateral
-        createOrUpdateDrawer();
+        initComponentsUI();
 
         //Fragment por Default
         if (savedInstanceState == null) {
@@ -160,6 +161,7 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         if (currentUser != null)
             refreshDatosDrawer();
 
+        */
         instance = this;
     }
 
@@ -178,11 +180,31 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         return true;
     }
 
-    private void createOrUpdateDrawer() {
+    private void initComponentsUI() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+
+
+        drawerNavigation = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        //Seleccionar Zimess por default
+        selectItemDrawer(navigationView.getMenu().getItem(0));
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                item.setChecked(true);
+                selectItemDrawer(item);
+                drawerNavigation.closeDrawers();
+                return false;
+            }
+        });
+        /*
         //Layout Header Y Footer para la lista en Drawer
         headerDrawer = getLayoutInflater().inflate(R.layout.header_drawer_menu, null);
         //Config Edid Profile
@@ -229,34 +251,7 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         drawerToggle.setDrawerIndicatorEnabled(true);
         drawerNavigation.setDrawerListener(drawerToggle);
         drawerToggle.syncState();
-    }
-
-    private void refreshDrawerAdapter() {
-        //UI
-        //Obtener los titulos para el Drawer
-        navTitles = getResources().getStringArray(R.array.options_drawer);
-        //Obetner las url de las imagenes para el Drawer
-        navIcons = getResources().obtainTypedArray(R.array.navigations_icons);
-
-        //Listado de titulos e iconos  para el Drawer
-        navItems = new ArrayList<ItemListDrawer>();
-        //Zimess
-        navItems.add(new ItemListDrawer(navTitles[0], navIcons.getResourceId(0, -1), GlobalApplication.getCantZimess()));
-        //Chat
-        navItems.add(new ItemListDrawer(navTitles[1], navIcons.getResourceId(1, -1), GlobalApplication.getCantUsersOnline()));
-        //Notificaciones
-        navItems.add(new ItemListDrawer(navTitles[2], navIcons.getResourceId(2, -1), GlobalApplication.getCantNotifications()));
-        //Configurar
-        navItems.add(new ItemListDrawer(navTitles[3], navIcons.getResourceId(3, -1), "Opciones".toUpperCase()));
-        //Compartir Zirkapp
-        navItems.add(new ItemListDrawer(navTitles[4], navIcons.getResourceId(4, -1), "Apoyanos".toUpperCase()));
-        //Calificar Zirkapp
-        navItems.add(new ItemListDrawer(navTitles[5], navIcons.getResourceId(5, -1)));
-
-        //Adapter
-        navAdapter = new NavigationAdapter(this, navItems);
-
-        navListView.setAdapter(navAdapter);
+        */
     }
 
     private void refreshDatosDrawer() {
@@ -275,14 +270,16 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
     /**
      * Reemplaza el contenido principal del Drawer
      *
-     * @param position
+     * @param itemDrawer
      */
-    public void selectItemDrawer(int position) {
+    public void selectItemDrawer(MenuItem itemDrawer) {
+        Fragment fragmentSelected = null;
+        FragmentManager fragmentManager = getFragmentManager();
         //Reemplazar el content_frame
         //fragmentManager.beginTransaction().replace(R.id.content_frame, fragmentAdapter.getItem(position)).commit();
         invalidateOptionsMenu();
-        switch (position) {
-            case 0:
+        switch (itemDrawer.getItemId()) {
+            /*case R.id.item_zimess:
                 if (getIntent().getAction() != null && getIntent().getAction().equals("OPEN_FRAGMENT_USER")) {
                     toolbar.setTitle(R.string.title_fragment_chat);
                     showFragment(CHAT, false);
@@ -290,24 +287,21 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
                     toolbar.setTitle(R.string.title_fragment_zimess);
                     showFragment(ZIMESS, false);
                 }
+                break;*/
+            case R.id.item_zimess:
+                fragmentSelected = new ZimessFragment();
                 break;
-            case 1:
-                toolbar.setTitle(R.string.title_fragment_zimess);
-                showFragment(ZIMESS, false);
+            case R.id.item_chat:
+                fragmentSelected = ChatFragment.newInstance(null);
                 break;
-            case 2:
-                toolbar.setTitle(R.string.title_fragment_chat);
-                showFragment(CHAT, false);
+            case R.id.item_notifi:
+                fragmentSelected = new NotificationsFragment();
                 break;
-            case 3:
-                toolbar.setTitle(R.string.title_fragment_notifications);
-                showFragment(NOTI, false);
-                break;
-            case 4: //Ajustes
+            case R.id.item_ajust: //Ajustes
                 Intent intent = new Intent(this, CustomSettingsActivity.class);
                 startActivity(intent);
                 break;
-            case 5: //Calificar
+            case R.id.item_quali: //Calificar
                 //Log.i("package.name", this.getApplicationContext().getPackageName());
                 Uri uri = Uri.parse("market://details?id=" + this.getApplicationContext().getPackageName());
                 Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
@@ -317,7 +311,7 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getResources().getString(R.string.urlPlayStore))));
                 }
                 break;
-            case 6: //Compartir
+            case R.id.item_share: //Compartir
                 String msg1 = getResources().getString(R.string.msgShareApp);
                 String urlPS = getResources().getString(R.string.urlPlayStore);
                 Intent sendIntent = new Intent();
@@ -326,31 +320,15 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
                 sendIntent.setType("text/plain");
                 startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.msgShareTo)));
                 break;
-//            default:
-//                showFragment(ZIMESS, false);
-//                break;
         }
-        //Establece la posicion
-        navListView.setItemChecked(position, true);
-        //actionBar.setTitle(position > 0 ? navTitles[position - 1] : navTitles[0]);
-        drawerNavigation.closeDrawer(navListView);
 
-    }
-
-    private void showFragment(int indexFragment, boolean addToBackStack) {
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        for (int i = 0; i < fragments.length; i++) {
-            if (i == indexFragment) {
-                ft.show(fragments[i]);
-            } else {
-                ft.hide(fragments[i]);
-            }
+        if (fragmentSelected != null) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.contenedor_principal, fragmentSelected)
+                    .commit();
         }
-        if (addToBackStack) {
-            ft.addToBackStack(null);
-        }
-        ft.commit();
+        //Titulo
+        setTitle(itemDrawer.getTitle());
     }
 
     @Override
@@ -361,18 +339,26 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
                 //globalApplication.setCustomParseUser(parseUserDestino); Seteado en la notifcacion
                 Intent intent1 = new Intent(this, MessagingActivity.class);
                 startActivity(intent1);
-                //showFragment(CHAT, false);
+                //Chat Fragment
+                selectItemDrawer(navigationView.getMenu().getItem(1));
             }
             if (intent.getAction().equals("OPEN_FRAGMENT_NOTI")) {
                 NotificationsFragment frag = (NotificationsFragment) fragments[NOTI];
                 frag.findNotifications(currentUser);
-                showFragment(NOTI, false);
+                //Noti Fragment
+                selectItemDrawer(navigationView.getMenu().getItem(2));
             }
             if (intent.getAction().equals("OPEN_FRAGMENT_CHAT")) {
-                showFragment(CHAT, false);
+                //Chat Fragment
+                selectItemDrawer(navigationView.getMenu().getItem(1));
             }
             Log.d("onNewIntent", intent.getAction());
         }
+    }
+
+    @Override
+    public void onFragmentIteration(Bundle params) {
+
     }
 
     @Override
@@ -405,32 +391,10 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        drawerToggle.syncState();
-        super.onPostCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        drawerToggle.onConfigurationChanged(newConfig);
-        super.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        boolean drawerOpen = drawerNavigation.isDrawerOpen(navListView);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (drawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        //Mis acciones
         switch (item.getItemId()) {
-            default:
-                break;
+            case android.R.id.home:
+                drawerNavigation.openDrawer(GravityCompat.START);
         }
         return super.onOptionsItemSelected(item);
 
@@ -511,16 +475,6 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         }
     }
 
-    /**
-     * CLASE PARA LISTVIEW CLICK
-     */
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-            selectItemDrawer(position);
-        }
-    }
-
     private void getKeyHash() {
         //Generar HashKey onCreate
         try {
@@ -536,5 +490,7 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
             Log.e("KeyHashNoSuchAlgorithm", e.getMessage());
         }
     }
+
+
 }
 

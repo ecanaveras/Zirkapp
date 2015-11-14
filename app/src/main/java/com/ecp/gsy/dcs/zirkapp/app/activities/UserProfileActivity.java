@@ -3,10 +3,18 @@ package com.ecp.gsy.dcs.zirkapp.app.activities;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.TabLayout;
+import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerTitleStrip;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +27,10 @@ import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatHistoryFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.profile.InfoUserFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.profile.SocialUserFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZVisit;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
@@ -27,9 +39,11 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Elder on 07/02/2015.
@@ -40,15 +54,15 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private ParseUser currentUser;
 
-    private ActionBar actionBar;
     private ImageView avatar;
-    private String objectId;
-    private TextView txtCantVisitas, txtWall, txtCantZimess, txtUserNombres;
-    private ProgressBar progressBarLoad;
+    private TextView txtWall;// txtCantZimess, txtCantVisitas,txtUserNombres;
     private GlobalApplication globalApplication;
     private ParseUser parseUser;
     private Toolbar toolbar;
     private TextView txtEdad;
+    private AppBarLayout appBar;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,22 +98,39 @@ public class UserProfileActivity extends AppCompatActivity {
         String name = parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername();
         collapser.setTitle(name); // Cambiar titulo
 
+        //Tabs
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setTabTextColors(Color.parseColor("#FFFFFF"), Color.parseColor("#FFFFFF"));
+        tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#FFFFFF"));
+
+        viewPager = (ViewPager) findViewById(R.id.pager);
+        //Setear View Pager
+        AdaptadorSecciones adapter = new AdaptadorSecciones(getFragmentManager());
+        adapter.addFragment(new InfoUserFragment(), getString(R.string.title_tab_info_user));
+        adapter.addFragment(new SocialUserFragment(), getString(R.string.title_tab_social_user));
+        viewPager.setAdapter(adapter);
+        //Setear ViewPager en TabLayout
+        tabLayout.setupWithViewPager(viewPager);
+        //Fin tabs
+
         avatar = (ImageView) findViewById(R.id.imgAvatar);
         txtWall = (TextView) findViewById(R.id.txtWall);
         txtEdad = (TextView) findViewById(R.id.txtEdad);
-        txtCantVisitas = (TextView) findViewById(R.id.txtCountVisit);
+
+        /*txtCantVisitas = (TextView) findViewById(R.id.txtCountVisit);
         txtCantZimess = (TextView) findViewById(R.id.txtCountZimess);
         txtUserNombres = (TextView) findViewById(R.id.txtUserNombres);
-        progressBarLoad = (ProgressBar) findViewById(R.id.progressLoad);
+        progressBarLoad = (ProgressBar) findViewById(R.id.progressLoad);*/
 
         //Setup Data
         //txtUserNombres.setText(name);
         txtWall.setText(parseUser.getString("wall") != null && !parseUser.getString("wall").isEmpty() ? parseUser.getString("wall") : getString(R.string.usingZirkapp));
-        txtCantVisitas.setText(String.valueOf(parseUser.getInt("count_visit")));
-        txtCantZimess.setText(String.valueOf(parseUser.getInt("count_zimess")));
+
+        //txtCantVisitas.setText(String.valueOf(parseUser.getInt("count_visit")));
+        //txtCantZimess.setText(String.valueOf(parseUser.getInt("count_zimess")));
         int edad = calcEdad(parseUser.getDate("birthday"));
         if (edad > 0)
-            txtEdad.setText(edad + getString(R.string.lblYears));
+            txtEdad.setText(edad + " " + getString(R.string.lblYears));
         else {
             txtEdad.setText(null);
             txtEdad.setVisibility(View.GONE);
@@ -125,12 +156,12 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private int calcEdad(Date birthday) {
-        int age = 0;
+        Double age = 0.0;
         if (birthday != null) {
             Calendar dob = Calendar.getInstance();
             dob.setTime(birthday);
             Calendar today = Calendar.getInstance();
-            age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
+            age = Double.valueOf(today.get(Calendar.YEAR) - dob.get(Calendar.YEAR));
             if (today.get(Calendar.MONTH) < dob.get(Calendar.MONTH)) {
                 age--;
             } else if (today.get(Calendar.MONTH) == dob.get(Calendar.MONTH)
@@ -138,7 +169,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 age--;
             }
         }
-        return age;
+        return age.intValue();
     }
 
     /**
@@ -190,7 +221,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            progressBarLoad.setVisibility(View.VISIBLE);
+            //progressBarLoad.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -210,14 +241,47 @@ public class UserProfileActivity extends AppCompatActivity {
                 globalApplication.setAvatarParse(parseUser.getParseFile("avatar"), avatar, false);
                 //txtUserNombres.setText(parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername());
                 txtWall.setText(parseUser.getString("wall") != null && !parseUser.getString("wall").isEmpty() ? parseUser.getString("wall") : getString(R.string.usingZirkapp));
-                txtCantVisitas.setText(String.valueOf(parseUser.getInt("count_visit")));
-                txtCantZimess.setText(String.valueOf(parseUser.getInt("count_zimess")));
+                //txtCantVisitas.setText(String.valueOf(parseUser.getInt("count_visit")));
+                //txtCantZimess.setText(String.valueOf(parseUser.getInt("count_zimess")));
             } else {
-                txtCantVisitas.setText("0");
-                txtCantZimess.setText("0");
+                //txtCantVisitas.setText("0");
+                //txtCantZimess.setText("0");
             }
-            progressBarLoad.setVisibility(View.INVISIBLE);
+            //progressBarLoad.setVisibility(View.INVISIBLE);
 
+        }
+    }
+
+    /**
+     * Gestiona los fragmentos y titulos de los tabs
+     */
+    public class AdaptadorSecciones extends FragmentStatePagerAdapter {
+
+        private final List<Fragment> fragments = new ArrayList<>();
+        private final List<String> titles = new ArrayList<>();
+
+        public AdaptadorSecciones(FragmentManager fm) {
+            super(fm);
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            fragments.add(fragment);
+            titles.add(title);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return fragments.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return titles.get(position);
         }
     }
 }

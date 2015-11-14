@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
+
     <!-- App Bar -->
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -53,7 +54,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -61,348 +62,88 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/divider_color_2">
+            android:background="@color/divider_color_2"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:background="@color/primary_text_color"
-                android:gravity="center"
-                android:minHeight="80dp"
-                android:orientation="vertical"
-                android:padding="10dp">
+                android:orientation="horizontal">
 
-                <!-- <ImageView
-                    android:id="@+id/imgAvatar"
-                    android:layout_width="280dp"
-                    android:layout_height="280dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginBottom="10dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/logo_zirkapp_circle"
-                    android:transitionName="profile_image"/> -->
-
-                <!-- <TextView
-                    android:id="@+id/txtUserNombres"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/imgAvatarH"
-                    android:layout_centerHorizontal="true"
-                    android:text="Zirkapp"
-                    android:textColor="@color/primary_text_color"
-                    android:textSize="18sp"
-                    android:textStyle="bold" /> - ->
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:minHeight="80dp"
+                    android:orientation="vertical"
+                    android:padding="10dp">
 
-                <TextView
-                    android:id="@+id/txtUserNombres"
-                    android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/txtWall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="I'm using Zirkapp!"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/text_primary_color"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtEdad"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="20 años"
+                        android:textColor="@color/text_primary_color"
+                        android:textSize="12dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="2dp"
-                    android:text="Carlos Vives"
-                    android:textColor="@color/text_primary_color"
-                    android:textSize="24sp" />-->
+                    android:gravity="center"
+                    android:minHeight="80dp"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/txtWall"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="I'm using Zirkapp!"
-                    android:textColor="@color/text_primary_color"
-                    android:textSize="18sp" />
+                    <ImageButton
+                        android:id="@+id/btnOpenChat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="#00000000"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_action_chat" />
 
-                <TextView
-                    android:id="@+id/txtEdad"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="53 años"
-                    android:textColor="@color/text_primary_color"
-                    android:textSize="12dp" />
-
-
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="#00000000"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_ziss_on_white_24dp" />
+                </LinearLayout>
             </LinearLayout>
-
-            <View style="@style/line_divider_h" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="8dp"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- Card Popularidad -->
-                <android.support.v7.widget.CardView
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tabs"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:visibility="visible"
-                    app:cardElevation="2dp">
+                    android:background="@color/default_primary_color" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <!--Etiqueta Perfil -->
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="6dp"
-                            android:text="Popularidad"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                            android:textColor="@color/default_primary_color" />
-
-                        <!--Texto de ejemplo-->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="horizontal">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center_horizontal"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="sans-serif"
-                                    android:text="Zimess"
-                                    android:textColor="@color/primary_text_color"
-                                    android:textSize="18sp" />
-
-                                <TextView
-                                    android:id="@+id/txtCountZimess"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_marginBottom="20dp"
-                                    android:fontFamily="sans-serif"
-                                    android:gravity="center"
-                                    android:text="0"
-                                    android:textColor="@color/default_primary_color"
-                                    android:textSize="30sp"
-                                    android:textStyle="bold" />
-
-                            </LinearLayout>
-
-                            <FrameLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="60dp">
-
-                                <View
-                                    android:id="@+id/viewCenter"
-                                    style="@style/line_divider_v"
-                                    android:layout_gravity="center" />
-
-                                <ProgressBar
-                                    android:id="@+id/progressLoad"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
-                                    android:background="@android:color/transparent"
-                                    android:visibility="gone" />
-
-                            </FrameLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center_horizontal"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="sans-serif"
-                                    android:text="@string/lblVisitas"
-                                    android:textColor="@color/primary_text_color"
-                                    android:textSize="18sp" />
-
-                                <TextView
-                                    android:id="@+id/txtCountVisit"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_marginBottom="20dp"
-                                    android:fontFamily="sans-serif"
-                                    android:gravity="center"
-                                    android:text="0"
-                                    android:textColor="@color/default_primary_color"
-                                    android:textSize="30sp"
-                                    android:textStyle="bold" />
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                </android.support.v7.widget.CardView>
-
-                <!-- Card about -->
-                <android.support.v7.widget.CardView
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/pager"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:visibility="visible">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <!--Etiqueta Perfil -->
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="6dp"
-                            android:text="Sobre mi..."
-                            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                            android:textColor="@color/default_primary_color" />
-                        <!--Texto de ejemplo-->
-                        <TextView
-                            android:id="@+id/txtAboutMe"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:layout_marginBottom="10dp"
-                            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec id maximus eros, quis luctus enim."
-                            android:textColor="@color/primary_text_color"
-                            android:textSize="12dp" />
-
-                    </LinearLayout>
-
-                </android.support.v7.widget.CardView>
-
-                <!-- Card Redes Sociales -->
-                <android.support.v7.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <!--Etiqueta Card -->
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="6dp"
-                            android:text="Redes Sociales"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                            android:textColor="@color/default_primary_color" />
-
-                        <!--Texto de ejemplo-->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:layout_marginBottom="10dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal"
-                                android:padding="4dp">
-
-                                <TextView
-                                    android:layout_width="100dp"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="sans-serif-medium"
-                                    android:gravity="center_vertical|right"
-                                    android:text="Facebook:"
-                                    android:textColor="@color/primary_text_color"
-                                    android:textSize="18sp" />
-
-                                <TextView
-                                    android:id="@+id/txtAccountFace"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_marginLeft="4dp"
-                                    android:gravity="center_vertical"
-                                    android:text="facebook_user"
-                                    android:textColor="@color/primary_text_color"
-                                    android:textSize="12dp" />
-
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal"
-                                android:padding="4dp">
-
-                                <TextView
-                                    android:layout_width="100dp"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="sans-serif-medium"
-                                    android:gravity="center_vertical|right"
-                                    android:text="Twitter:"
-                                    android:textColor="@color/primary_text_color"
-                                    android:textSize="18sp" />
-
-                                <TextView
-                                    android:id="@+id/txtAccountTwit"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_marginLeft="4dp"
-                                    android:gravity="center_vertical"
-                                    android:text="twiiter_user"
-                                    android:textColor="@color/primary_text_color"
-                                    android:textSize="12dp" />
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal"
-                                android:padding="4dp">
-
-                                <TextView
-                                    android:layout_width="100dp"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="sans-serif-medium"
-                                    android:gravity="center_vertical|right"
-                                    android:text="Google+:"
-                                    android:textColor="@color/primary_text_color"
-                                    android:textSize="18sp" />
-
-                                <TextView
-                                    android:id="@+id/txtAccountGoo"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_marginLeft="4dp"
-                                    android:gravity="center_vertical"
-                                    android:text="google_user"
-                                    android:textColor="@color/primary_text_color"
-                                    android:textSize="12dp" />
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                </android.support.v7.widget.CardView>
-
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@color/divider_color_2" />
             </LinearLayout>
 
-
         </LinearLayout>
+
     </android.support.v4.widget.NestedScrollView>
 
 </android.support.design.widget.CoordinatorLayout>

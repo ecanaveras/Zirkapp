@@ -141,7 +141,7 @@ public class WizardSecondFragment extends Fragment {
 
 
     /**
-     * Cambiar imagen
+     * Cambiar imgAvatar
      *
      * @param view
      */
@@ -161,7 +161,7 @@ public class WizardSecondFragment extends Fragment {
     }
 
     /**
-     * Corta la imagen
+     * Corta la imgAvatar
      */
     private void cropImage() {
         if (mImageCaptureUri == null) {

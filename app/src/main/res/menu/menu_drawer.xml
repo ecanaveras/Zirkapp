@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/item_zimess"
+            android:checked="true"
+            android:icon="@drawable/ic_icon_radar_new"
+            android:title="@string/lblNavZimess" />
+        <item
+            android:id="@+id/item_chat"
+            android:icon="@drawable/ic_icon_chat"
+            android:title="@string/lblNavChat" />
+        <item
+            android:id="@+id/item_notifi"
+            android:icon="@drawable/ic_icon_noti"
+            android:title="@string/lblNavNotifi" />
+
+    </group>
+
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/item_ajust"
+            android:icon="@drawable/ic_icon_config_gral"
+            android:title="@string/lblNavAjust" />
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/item_quali"
+            android:icon="@drawable/ic_icon_star"
+            android:title="@string/lblNavQuali" />
+
+        <item
+            android:id="@+id/item_share"
+            android:icon="@drawable/ic_icon_share"
+            android:title="@string/lblNavShare" />
+    </group>
+
+</menu>

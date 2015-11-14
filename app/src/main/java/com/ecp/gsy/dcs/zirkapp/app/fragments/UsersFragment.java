@@ -2,6 +2,7 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,7 +11,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,27 +22,20 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.activities.ChatHistoryActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MessagingActivity;
-import com.ecp.gsy.dcs.zirkapp.app.activities.UserProfileActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.CountMessagesReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.SinchConnectReceiver;
+import com.ecp.gsy.dcs.zirkapp.app.util.listener.FragmentIterationListener;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
@@ -60,7 +57,11 @@ public class UsersFragment extends Fragment {
 
     private static UsersFragment instance = null;
 
-    private ListView listViewUserOnline;
+    public static final String TAG = "UsersFragment";
+    private FragmentIterationListener mCallback = null;
+
+    //private ListView listViewUserOnline;
+    private RecyclerView userRecyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout layoutUsersNoFound, layoutUsersFinder, layoutChatOffline, layoutInitService, layoutGpsOff;
 
@@ -77,11 +78,18 @@ public class UsersFragment extends Fragment {
     private LinearLayout layoutUsersDefault;
     private AlertDialog filterDialog;
 
+    public static UsersFragment newInstance(Bundle arguments) {
+        UsersFragment usersFragment = new UsersFragment();
+        if (arguments != null) {
+            usersFragment.setArguments(arguments);
+        }
+        return usersFragment;
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_users, container, false);
-        setHasOptionsMenu(true);
+        View view = inflater.inflate(R.layout.fragment_users_online, container, false);
 
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
 
@@ -136,8 +144,13 @@ public class UsersFragment extends Fragment {
         layoutChatOffline = (LinearLayout) view.findViewById(R.id.layoutChatOffline);
         layoutGpsOff = (LinearLayout) view.findViewById(R.id.layoutGpsOff);
         layoutInitService = (LinearLayout) view.findViewById(R.id.layoutInitService);
-        final LinearLayout layoutMenu = (LinearLayout) view.findViewById(R.id.lyMenu);
 
+        userRecyclerView = (RecyclerView) view.findViewById(R.id.usersRecyView);
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
+        userRecyclerView.setLayoutManager(layoutManager);
+
+
+        /*
         Button btnFiltro = (Button) view.findViewById(R.id.btnFilter);
         btnFiltro.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,6 +167,7 @@ public class UsersFragment extends Fragment {
                 startActivity(intent);
             }
         });
+        */
 
         lblInfoChat = (TextView) view.findViewById(R.id.lblInfoChat);
 
@@ -162,7 +176,7 @@ public class UsersFragment extends Fragment {
         imageView.startAnimation(animation);
 
         //ListView
-        listViewUserOnline = (ListView) view.findViewById(R.id.usersListView);
+        /*listViewUserOnline = (ListView) view.findViewById(R.id.usersListView);
         registerForContextMenu(listViewUserOnline);
         listViewUserOnline.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -171,22 +185,12 @@ public class UsersFragment extends Fragment {
                 ParseUser parseUser = (ParseUser) adapterView.getAdapter().getItem(i);
                 abrirConversa(parseUser);
             }
-        });
+        });*/
 
-        //Swipe
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.user_refresh_layout);
-        swipeRefreshLayout.setColorScheme(R.color.primary_text_color, R.color.default_primary_color, R.color.primary_text_color, R.color.default_primary_color);
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (isConnectedUser)
-                    conectarChat(getCurrentLocation());
-            }
-        });
-        swipeRefreshLayout.setEnabled(isConnectedUser);
 
-        listViewUserOnline.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+        /*listViewUserOnline.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
             }
@@ -205,7 +209,7 @@ public class UsersFragment extends Fragment {
                     layoutMenu.animate().translationY(-layoutMenu.getHeight()).setInterpolator(new AccelerateInterpolator(2));
                     swipeRefreshLayout.animate().translationY(-layoutMenu.getHeight()).setInterpolator(new AccelerateInterpolator(2));
                 }
-                /*new AsyncTask<Boolean, Void, Boolean>() {
+                *//*new AsyncTask<Boolean, Void, Boolean>() {
 
                     @Override
                     protected Boolean doInBackground(Boolean... params) {
@@ -225,10 +229,40 @@ public class UsersFragment extends Fragment {
                             layoutMenu.setVisibility(View.GONE);
                         }
                     }
-                }.execute(firstVisibleItem == 0 && topRowVerticalPosition >= 0);*/
+                }.execute(firstVisibleItem == 0 && topRowVerticalPosition >= 0);*//*
 
             }
+        });*/
+
+
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
+        //Corrige bug de Swipe... [Permite el scroll sin problemas]
+        userRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int firstVisibleItem, int dy) {
+                int topRow = (recyclerView == null || recyclerView.getChildCount() == 0) ? 0 : recyclerView.getChildAt(0).getTop();
+                swipeRefreshLayout.setEnabled(firstVisibleItem == 0 && topRow >= 0);
+            }
         });
+
+        //Swipe
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.user_refresh_layout);
+        swipeRefreshLayout.setColorScheme(R.color.primary_text_color, R.color.default_primary_color, R.color.primary_text_color, R.color.default_primary_color);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (isConnectedUser)
+                    conectarChat(getCurrentLocation());
+            }
+        });
+        swipeRefreshLayout.setEnabled(isConnectedUser);
 
         if (globalApplication.isConectedToInternet()) {
             if (globalApplication.isEnabledGetLocation()) {
@@ -247,6 +281,17 @@ public class UsersFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onAttach(Context activity) {
+        super.onAttach(activity);
+        try {
+            mCallback = (FragmentIterationListener) activity;
+        } catch (ClassCastException ex) {
+            Log.e(TAG, "El activity debe implementar la interfaz FragmentIterationListener");
+        }
+    }
+
+
     /**
      * Actualiza la ubicacion del usuario actual y busca los usuarios en Linea y que esten en cerca
      */
@@ -257,7 +302,7 @@ public class UsersFragment extends Fragment {
             int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "10"));
             String gender = preferences.getString("filter_user_gender", null);
 
-            RefreshDataUsersTask refresDataTask = new RefreshDataUsersTask(getActivity().getApplicationContext(), currentUser, currentLocation, listViewUserOnline, gender);
+            RefreshDataUsersTask refresDataTask = new RefreshDataUsersTask(getActivity(), currentUser, currentLocation, userRecyclerView, gender);
             refresDataTask.setSwipeRefreshLayout(swipeRefreshLayout);
             refresDataTask.setLayoutUsersFinder(layoutUsersFinder);
             refresDataTask.setLayoutUsersNoFound(layoutUsersNoFound);
@@ -318,7 +363,7 @@ public class UsersFragment extends Fragment {
             parseUser.put("online", false);
             parseUser.saveInBackground();
             isConnectedUser = false;
-            listViewUserOnline.setAdapter(null);
+            userRecyclerView.setAdapter(null);
             layoutChatOffline.setVisibility(View.VISIBLE);
             lblInfoChat.setText("Chat Offline");
             layoutUsersNoFound.setVisibility(View.GONE);
@@ -333,7 +378,6 @@ public class UsersFragment extends Fragment {
      * @param parseUserDestino
      */
     private void abrirConversa(ParseUser parseUserDestino) {
-        globalApplication = (GlobalApplication) getActivity().getApplicationContext();
         globalApplication.setCustomParseUser(parseUserDestino);
         Intent intent = new Intent(getActivity(), MessagingActivity.class);
         startActivity(intent);
@@ -480,6 +524,13 @@ public class UsersFragment extends Fragment {
         super.onPause();
     }
 
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_users_fragment, menu);
@@ -506,12 +557,7 @@ public class UsersFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         //Manejar seleccion en el menú
-        Intent intent;
         switch (item.getItemId()) {
-            case R.id.action_bar_history:
-                intent = new Intent(getActivity(), ChatHistoryActivity.class);
-                startActivity(intent);
-                break;
             case R.id.action_bar_filter_users:
                 showFilterDialog();
                 break;
@@ -521,16 +567,16 @@ public class UsersFragment extends Fragment {
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        if (v.getId() == R.id.usersListView) {
+        /*if (v.getId() == R.id.usersListView) {
             AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) menuInfo;
         }
-        getActivity().getMenuInflater().inflate(R.menu.menu_contextual_users, menu);
+        getActivity().getMenuInflater().inflate(R.menu.menu_contextual_users, menu);*/
         super.onCreateContextMenu(menu, v, menuInfo);
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+       /* AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
             case R.id.ctx_view_profile:
                 ParseUser receptorUser = (ParseUser) listViewUserOnline.getAdapter().getItem(acmi.position);
@@ -547,7 +593,15 @@ public class UsersFragment extends Fragment {
                 Toast.makeText(getActivity(), "Proximamente...", Toast.LENGTH_SHORT).show();
             default:
                 return super.onContextItemSelected(item);
-        }
+        }*/
+
+        return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public void onDetach() {
+        mCallback = null;
+        super.onDetach();
     }
 }
 

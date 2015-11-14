@@ -88,10 +88,10 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
 
         zimessDetail = globalApplication.getTempZimess();
 
-        //Tomar nombre del usuario del Zimess
+        //Tomar lblNombreUsuario del usuario del Zimess
         zimessUser = zimessDetail.getUser();
 
-        //Toma el nombre de la clase que llama el detail
+        //Toma el lblNombreUsuario de la clase que llama el detail
         contextClass = getIntent().getStringExtra("contextClass");
 
         inicializarCompUI();
