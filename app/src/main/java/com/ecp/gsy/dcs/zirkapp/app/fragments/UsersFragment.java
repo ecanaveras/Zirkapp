@@ -77,6 +77,7 @@ public class UsersFragment extends Fragment {
     private TextView lblInfoChat;
     private LinearLayout layoutUsersDefault;
     private AlertDialog filterDialog;
+    private SharedPreferences preferences;
 
     public static UsersFragment newInstance(Bundle arguments) {
         UsersFragment usersFragment = new UsersFragment();
@@ -94,6 +95,8 @@ public class UsersFragment extends Fragment {
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
 
         currentUser = ParseUser.getCurrentUser();
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         if (currentUser != null) {
             isConnectedUser = currentUser.getBoolean("online");
@@ -298,7 +301,6 @@ public class UsersFragment extends Fragment {
     public void findUsersOnline(Location currentLocation) {
         if (isConnectedUser && currentLocation != null) {
             //Tomar valores de las preferencias de usuarios
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "10"));
             String gender = preferences.getString("filter_user_gender", null);
 
@@ -533,7 +535,7 @@ public class UsersFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_users_fragment, menu);
+        inflater.inflate(R.menu.menu_chat_fragment, menu);
         this.menu = menu;
         MenuItem item = menu.findItem(R.id.switchUsersOnline);
         item.setActionView(R.layout.component_switch);

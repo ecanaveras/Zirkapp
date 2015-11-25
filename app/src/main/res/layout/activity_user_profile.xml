@@ -1,149 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
-
+    android:fitsSystemWindows="false">
 
     <!-- App Bar -->
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="256dp"
-        android:fitsSystemWindows="true"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="false"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <!-- Collapser -->
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapser"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
+            android:layout_height="250dp"
+            android:fitsSystemWindows="false"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginEnd="64dp"
             app:expandedTitleMarginStart="48dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
 
             <!-- Imagen del detalle -->
             <ImageView
                 android:id="@+id/imgAvatar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
                 android:src="@drawable/logo_zirkapp_circle"
                 android:transitionName="profile_image"
                 app:layout_collapseMode="parallax" />
 
             <!-- Toolbar -->
-            <android.support.v7.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
+            <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@android:color/transparent"
+                android:gravity="top"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                app:theme="@style/ToolbarTheme" />
+                app:titleMarginTop="15dp" />
+
+            <!--<android.support.design.widget.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom"
+                app:tabIndicatorColor="@color/text_primary_color"
+                app:tabMode="fixed" />-->
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
 
     </android.support.design.widget.AppBarLayout>
 
+    <!--ViewPager-->
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:layout_weight="1"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!--Contenido desplazable -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/divider_color_2"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <!--Contenido desplazable -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/primary_text_color"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:minHeight="80dp"
-                    android:orientation="vertical"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:id="@+id/txtWall"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="I'm using Zirkapp!"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@color/text_primary_color"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/txtEdad"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="20 años"
-                        android:textColor="@color/text_primary_color"
-                        android:textSize="12dp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:minHeight="80dp"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:id="@+id/btnOpenChat"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="#00000000"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_action_chat" />
-
-                    <ImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="#00000000"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_ziss_on_white_24dp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
-                <android.support.design.widget.TabLayout
-                    android:id="@+id/tabs"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/default_primary_color" />
 
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/pager"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@color/divider_color_2" />
+                    android:layout_height="match_parent"
+                    android:background="@color/very_dark_gray"
+                    android:minHeight="50dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="bottom|center_vertical"
+                        android:minHeight="50dp"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:id="@+id/txtWall"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="I'm using Zirkapp!"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textColor="@color/text_primary_color"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/txtEdad"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="20 años"
+                            android:textColor="@color/text_primary_color"
+                            android:textSize="12dp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/btnOpenChat"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/highlight_effect"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_action_chat" />
+
+                        <ImageButton
+                            android:id="@+id/btnSendZiss"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/highlight_effect"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_ziss_on_white_24dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
             </LinearLayout>
 
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:background="@color/very_dark_gray"
+                app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget" />
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
+
 
 </android.support.design.widget.CoordinatorLayout>

@@ -40,8 +40,6 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
     private String targetId;
     private String receptorId;
     private String senderId;
-    private ParseUser senderUser;
-    private GlobalApplication globalApplication;
     private int typeNotify = 0;
     private boolean notificar = true;
     private String message;
@@ -96,6 +94,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent intent = new Intent(context, MainActivity.class);
         intent.setFlags(0);//Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.putExtra("typeNotify", typeNotify);
         String bodyNoti = "%s %s";
         String typeNotiString = null;
         //senderUser = findParseUser(senderId);
@@ -142,6 +141,23 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                     intent.putExtra("senderId", senderId);
 
                     typeNotiString = "[Resp]";
+                    break;
+
+                case SendPushTask.PUSH_ZISS:
+                    intent.setAction("OPEN_PROFILE_USER");//Notificacion para ver perfil
+                    intent.putExtra("targetId", senderId);
+                    intent.putExtra("receptorId", receptorId);
+
+                    typeNotiString = "[Ziss]";
+                    break;
+
+                case SendPushTask.PUSH_FAVORITE:
+                    intent.setAction("OPEN_FRAGMENT_NOTI"); //Notificacion desde comentarios
+                    intent.putExtra("targetId", targetId);
+                    intent.putExtra("receptorId", receptorId);
+                    intent.putExtra("senderId", senderId);
+
+                    typeNotiString = "[Fav]";
                     break;
 
                 default:

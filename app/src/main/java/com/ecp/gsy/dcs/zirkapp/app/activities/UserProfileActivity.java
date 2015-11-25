@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
@@ -21,17 +22,22 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatHistoryFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.LoginFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.SignupFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.profile.InfoUserFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.profile.SocialUserFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZVisit;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
 import com.parse.ParseCloud;
@@ -60,7 +66,6 @@ public class UserProfileActivity extends AppCompatActivity {
     private ParseUser parseUser;
     private Toolbar toolbar;
     private TextView txtEdad;
-    private AppBarLayout appBar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
@@ -77,7 +82,6 @@ public class UserProfileActivity extends AppCompatActivity {
         inicializarCompUI();
 
         globalApplication.setAvatarParse(parseUser.getParseFile("avatar"), avatar, false);
-
 
         //Guardar visitar
         saveInfoVisit();
@@ -113,21 +117,39 @@ public class UserProfileActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
         //Fin tabs
 
+
         avatar = (ImageView) findViewById(R.id.imgAvatar);
         txtWall = (TextView) findViewById(R.id.txtWall);
         txtEdad = (TextView) findViewById(R.id.txtEdad);
 
-        /*txtCantVisitas = (TextView) findViewById(R.id.txtCountVisit);
-        txtCantZimess = (TextView) findViewById(R.id.txtCountZimess);
-        txtUserNombres = (TextView) findViewById(R.id.txtUserNombres);
-        progressBarLoad = (ProgressBar) findViewById(R.id.progressLoad);*/
+        //Botones
+        ImageButton btnOpenChat = (ImageButton) findViewById(R.id.btnOpenChat);
+        ImageButton btnSendZiss = (ImageButton) findViewById(R.id.btnSendZiss);
 
-        //Setup Data
-        //txtUserNombres.setText(name);
+        //Accion Botones
+        btnOpenChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Ir la perfil del usuario
+                globalApplication.setCustomParseUser(parseUser);
+                Intent intent = new Intent(UserProfileActivity.this, MessagingActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnSendZiss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nameCurrentUser = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+                String nameReceptorUser = parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername();
+                new SendPushTask(parseUser, currentUser.getObjectId(), "Ziiiss", String.format("%s ha dado un toque en tu perfil...", nameCurrentUser), SendPushTask.PUSH_ZISS).execute();
+                Toast.makeText(UserProfileActivity.this, String.format("Has dado un Ziss a %s", nameReceptorUser), Toast.LENGTH_SHORT).show();
+            }
+        });
+
         txtWall.setText(parseUser.getString("wall") != null && !parseUser.getString("wall").isEmpty() ? parseUser.getString("wall") : getString(R.string.usingZirkapp));
 
-        //txtCantVisitas.setText(String.valueOf(parseUser.getInt("count_visit")));
-        //txtCantZimess.setText(String.valueOf(parseUser.getInt("count_zimess")));
+
         int edad = calcEdad(parseUser.getDate("birthday"));
         if (edad > 0)
             txtEdad.setText(edad + " " + getString(R.string.lblYears));

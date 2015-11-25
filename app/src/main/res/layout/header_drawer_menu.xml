@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="320dp"
-    android:layout_height="150dp"
+    android:layout_height="154dp"
     android:layout_marginRight="56dp"
     android:background="@drawable/header_background_3"
     android:orientation="vertical"

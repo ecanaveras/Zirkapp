@@ -23,6 +23,7 @@ import java.util.List;
  */
 public class NotifiAdapter extends BaseAdapter {
 
+    private final GlobalApplication globalApplication;
     private List<ParseZNotifi> notificationArrayList;
     private Context context;
     private int cantNotiNoRead = 0;
@@ -30,6 +31,7 @@ public class NotifiAdapter extends BaseAdapter {
     public NotifiAdapter(Context context, List<ParseZNotifi> notifiList) {
         this.notificationArrayList = notifiList;
         this.context = context;
+        globalApplication = (GlobalApplication) context.getApplicationContext();
     }
 
     @Override
@@ -76,13 +78,8 @@ public class NotifiAdapter extends BaseAdapter {
                 break;
         }*/
         //La imgAvatar debe ser cuadrada
-        if (item.getSenderUser() != null && item.getSenderUser().getParseFile("avatar") != null) {
-            Picasso.with(context)
-                    .load(item.getSenderUser().getParseFile("avatar").getUrl())
-                    .transform(new CircleTransform())
-                    .into(avatar);
-            //imgAvatar.setImageDrawable(GlobalApplication.getAvatar(currentUser));
-        }
+        globalApplication.setAvatarRoundedResize(item.getSenderUser().getParseFile("avatar"), avatar, 100, 100);
+
         //avatar.setImageDrawable(GlobalApplication.getAvatar(item.getSenderUser()));
         summary.setText(item.getSummaryNoti());
         detail.setText(item.getDetailNoti());

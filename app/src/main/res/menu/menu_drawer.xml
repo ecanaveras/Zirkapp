@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/menugroup_fragments"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/item_zimess"
             android:checked="true"
@@ -15,17 +17,22 @@
             android:id="@+id/item_notifi"
             android:icon="@drawable/ic_icon_noti"
             android:title="@string/lblNavNotifi" />
-
     </group>
 
-    <group android:checkableBehavior="none">
+
+    <group
+        android:id="@+id/menugroup_opciones"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/item_ajust"
             android:icon="@drawable/ic_icon_config_gral"
             android:title="@string/lblNavAjust" />
     </group>
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/menugroup_share"
+        android:checkableBehavior="single"
+        android:menuCategory="alternative">
         <item
             android:id="@+id/item_quali"
             android:icon="@drawable/ic_icon_star"

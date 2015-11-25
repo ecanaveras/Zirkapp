@@ -210,6 +210,13 @@
     <string name="lblLiveIn">Vivo en:</string>
     <string name="lblPopularity">Popularidad</string>
     <string name="lblSocialNetwork">Mis Redes...</string>
+    <string name="InfoNotAvailable">...</string>
+
+    <!--Formatos-->
+    <string name="formatPushFavorite" formatted="false">A %1$s le gustó tu Zimess</string>
+    <string name="formatPushComment" formatted="false">%1$ comentó tu Zimess</string>
+    <string name="formatPushQuote" formatted="false">%1$ te mencionó en un comentario</string>
+    <string name="formatPushZiss" formatted="false">%1$ te dió un Ziss</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

@@ -24,6 +24,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.listener.ItemClickListener;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -43,15 +44,14 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
     private Context context;
     private GlobalApplication globalApplication;
     private Double rango;
-    private String currentUserId;
+    private ParseUser currentUser;
 
     public ZimessRecyclerAdapter(Context context, List<ParseZimess> zimessList, Location currentLocation) {
         this.context = context;
         this.zimessList = zimessList;
         this.currentLocation = currentLocation;
         globalApplication = (GlobalApplication) context.getApplicationContext();
-        if (ParseUser.getCurrentUser() != null)
-            currentUserId = ParseUser.getCurrentUser().getObjectId();
+        this.currentUser = ParseUser.getCurrentUser();
         rango = getRango();
     }
 
@@ -77,7 +77,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
 
 
         //cambiar icono cuando es favorito
-        if (zimess.isMyFavorite(currentUserId)) {
+        if (zimess.isMyFavorite(currentUser.getObjectId())) {
             zimessViewHolder.imgFav.setImageResource(R.drawable.ic_icon_fav_color);
         } else {
             zimessViewHolder.imgFav.setImageResource(R.drawable.ic_icon_fav);
@@ -131,8 +131,8 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
                 HashMap params = new HashMap<String, Object>();
                 params.put("zimessId", zimess.getObjectId());
                 //Marcar/desmarcar como favorito
-                if (zimess != null && zimess.isMyFavorite(currentUserId)) {
-                    zimess.removeFavorites(Arrays.asList(currentUserId));
+                if (zimess != null && zimess.isMyFavorite(currentUser.getObjectId())) {
+                    zimess.removeFavorites(Arrays.asList(currentUser.getObjectId()));
                     zimess.saveInBackground();
                     callParseFunction("DelZimessFavorite", params);
 
@@ -144,13 +144,16 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
                     }
                 } else {
                     //Actualizar los datos del Zimess
-                    zimess.addFavorites(currentUserId);
+                    zimess.addFavorites(currentUser.getObjectId());
                     zimess.saveInBackground();
 
                     callParseFunction("AddZimessFavorite", params);
 
                     lblCantFavs.setText(Integer.toString(zimess.getCantFavorite() + 1));
                     imgFav.setImageResource(R.drawable.ic_icon_fav_color);
+
+                    String nameCurrentUser = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+                    new SendPushTask(zimess.getObjectId(), zimess.getUser(), currentUser.getObjectId(), String.format("%s le gusta tu Zimes", nameCurrentUser), String.format("%s...", zimess.getZimessText().length() > 60 ? zimess.getZimessText().substring(0, 60) : zimess.getZimessText()), SendPushTask.PUSH_FAVORITE).execute();
                 }
                 try {
                     //Actualizar el Zimess

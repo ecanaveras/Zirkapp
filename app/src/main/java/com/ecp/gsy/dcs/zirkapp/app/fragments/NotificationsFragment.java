@@ -16,13 +16,16 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.UserProfileActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.NavigationProfileTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataNotifiTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.FindCallback;
@@ -50,7 +53,6 @@ public class NotificationsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_notifications, container, false);
-        setHasOptionsMenu(true);
 
         currentUser = ParseUser.getCurrentUser();
 
@@ -114,18 +116,41 @@ public class NotificationsFragment extends Fragment {
      * @param item
      */
     private void goToTarget(ParseZNotifi item) {
-        if (item.getTypeNoti() == SendPushTask.PUSH_COMMENT || item.getTypeNoti() == SendPushTask.PUSH_QUOTE) {
+        boolean gotoZimess = false;
+        boolean gotoProfile = false;
+        switch (item.getTypeNoti()) {
+            case SendPushTask.PUSH_COMMENT:
+                gotoZimess = true;
+                break;
+            case SendPushTask.PUSH_QUOTE:
+                gotoZimess = true;
+                break;
+            case SendPushTask.PUSH_ZISS:
+                gotoProfile = true;
+                break;
+            case SendPushTask.PUSH_FAVORITE:
+                gotoZimess = true;
+                break;
+        }
+        if (gotoZimess) {
             if (item.getZimessTarget() != null) {
                 Activity activity = getActivity();
                 Intent intent = new Intent(activity, DetailZimessActivity.class);
                 globalApplication.setTempZimess(item.getZimessTarget());
                 activity.startActivityForResult(intent, 105);
-                NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-                manager.cancel(item.getTypeNoti());
             } else {
                 Toast.makeText(getActivity(), getResources().getString(R.string.msgZimessNoFound), Toast.LENGTH_SHORT).show();
             }
         }
+        if (gotoProfile) {
+            globalApplication.setCustomParseUser(item.getSenderUser());
+            Intent intentProf = new Intent(getActivity(), UserProfileActivity.class);
+            getActivity().startActivity(intentProf);
+            //new NavigationProfileTask(getActivity()).execute(item.getSenderUser().getObjectId());
+        }
+        //Cancelar la notificacion
+        NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.cancel(item.getTypeNoti());
     }
 
     /**
@@ -137,7 +162,7 @@ public class NotificationsFragment extends Fragment {
         if (item != null) {
             //Busca el marca como leidas todas las notificaciones que conducen al mismo Zimess
             ParseQuery<ParseZNotifi> query = ParseQuery.getQuery(ParseZNotifi.class);
-            query.whereEqualTo(ParseZNotifi.ZIMESS_TARGET, item.getZimessTarget());
+            query.whereEqualTo("objectId", item.getObjectId());
             query.whereEqualTo(ParseZNotifi.READ_NOTI, false);
             query.findInBackground(new FindCallback<ParseZNotifi>() {
                 @Override
@@ -163,9 +188,15 @@ public class NotificationsFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_notifications_fragment, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 }

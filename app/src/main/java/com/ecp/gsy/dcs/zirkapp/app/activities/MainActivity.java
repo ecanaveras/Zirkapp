@@ -1,8 +1,10 @@
 package com.ecp.gsy.dcs.zirkapp.app.activities;
 
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
@@ -22,6 +24,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,10 +43,12 @@ import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
 import com.ecp.gsy.dcs.zirkapp.app.util.listener.FragmentIterationListener;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.SinchService;
 import com.ecp.gsy.dcs.zirkapp.app.util.sinch.SinchBaseActivity;
 //import com.facebook.appevents.AppEventsLogger;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.NavigationProfileTask;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -69,32 +74,18 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
 
     public static MainActivity instance = null;
 
-    //TOTAL FRAGMENTS
-    private static final int FRAGMENT_COUNT = 3;
-
-    //ARRAY FRAGMENTS
-    private Fragment[] fragments = new Fragment[FRAGMENT_COUNT];
-
     //Toolbar
     private Toolbar toolbar;
     //Drawer
     private DrawerLayout drawerNavigation;
     private NavigationView navigationView;
 
-    private ActionBarDrawerToggle drawerToggle;
-    private ListView navListView;
-    private String[] navTitles;
-    private TypedArray navIcons;
-    private ArrayList<ItemListDrawer> navItems;
-    private NavigationAdapter navAdapter;
     private View headerDrawer;
     private ImageView avatar;
     //Fragments
     private int indexBackOrDefaultFragment;
     //Usuario de Parse
     private ParseUser currentUser = null;
-    //Respuesta del welcome
-    private int inputWelcomeRequestCode = 10;
     //Respuesta del edit profile
     private int inputEditProfileRequestCode = 20;
 
@@ -103,7 +94,6 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
     //GCM
     private GoogleCloudMessaging gcm;
     private String regId;
-    private BroadcastReceiver broadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,36 +122,10 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
 
         initComponentsUI();
 
-        //Manipulando Fragments
-        /*FragmentManager fm = getFragmentManager();
-        //fragments[HOME] = fm.findFragmentById(R.id.f_chat);
-        fragments[ZIMESS] = fm.findFragmentById(R.id.f_zimess);
-        fragments[CHAT] = fm.findFragmentById(R.id.f_users);
-        fragments[NOTI] = fm.findFragmentById(R.id.f_notify);
-
-        FragmentTransaction ft = fm.beginTransaction();
-        for (int i = 0; i < fragments.length; i++) {
-            ft.hide(fragments[i]);
-        }
-        ft.commit();
-
-        //Fragment a Mostrar en caso de un CALL a la Activity
-        indexBackOrDefaultFragment = getIntent().getIntExtra("posicion", 1);
-
-        //Crea el menú Lateral
-        initComponentsUI();
-
-        //Fragment por Default
-        if (savedInstanceState == null) {
-            selectItemDrawer(0);
-        } else {
-            selectItemDrawer(indexBackOrDefaultFragment);
+        if (getIntent() != null) {
+            gotoTarget(getIntent());
         }
 
-        if (currentUser != null)
-            refreshDatosDrawer();
-
-        */
         instance = this;
     }
 
@@ -192,78 +156,33 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
 
+        headerDrawer = navigationView.inflateHeaderView(R.layout.header_drawer_menu);
+
         //Seleccionar Zimess por default
         selectItemDrawer(navigationView.getMenu().getItem(0));
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
-                item.setChecked(true);
                 selectItemDrawer(item);
                 drawerNavigation.closeDrawers();
                 return false;
             }
         });
-        /*
-        //Layout Header Y Footer para la lista en Drawer
-        headerDrawer = getLayoutInflater().inflate(R.layout.header_drawer_menu, null);
-        //Config Edid Profile
-        headerDrawer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), EditProfileActivity.class);
-                startActivityForResult(intent, inputEditProfileRequestCode);
-            }
-        });
-
-        //Lista de Navegacion
-        navListView = (ListView) findViewById(R.id.left_drawer);
-        //Establecemos el header
-        navListView.addHeaderView(headerDrawer);
-        //Crea un nuevo Navigation Adapter
-        refreshDrawerAdapter();
-
-        navListView.setOnItemClickListener(new DrawerItemClickListener());
-        drawerNavigation = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerNavigation, toolbar, R.string.app_name, R.string.lblCancel) {
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                toolbar.setTitle(R.string.app_name);
-                refreshDrawerAdapter();
-                invalidateOptionsMenu();
-                syncState();
-                super.onDrawerOpened(drawerView);
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                invalidateOptionsMenu();
-                syncState();
-                super.onDrawerClosed(drawerView);
-            }
-
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                if (slideOffset < 0.3)
-                    toolbar.setAlpha(1 - slideOffset);
-            }
-        };
-        drawerToggle.setDrawerIndicatorEnabled(true);
-        drawerNavigation.setDrawerListener(drawerToggle);
-        drawerToggle.syncState();
-        */
     }
 
     private void refreshDatosDrawer() {
         //Personalizar el header.
-        avatar = (ImageView) headerDrawer.findViewById(R.id.imgAvatar);
-        TextView lblUsername = (TextView) headerDrawer.findViewById(R.id.lblUserName);
-        TextView lblNombreUsuario = (TextView) headerDrawer.findViewById(R.id.lblNombreUsuario);
-        TextView lblUsermail = (TextView) headerDrawer.findViewById(R.id.lblUserEmail);
-        lblUsername.setText(currentUser.getUsername());
-        lblUsermail.setText(currentUser.getEmail());
-        lblNombreUsuario.setText(currentUser.getString("name"));
-        globalApplication.setAvatarRoundedResize(currentUser.getParseFile("avatar"), avatar, 120, 120);
+        if (headerDrawer != null && currentUser != null) {
+            avatar = (ImageView) headerDrawer.findViewById(R.id.imgAvatar);
+            TextView lblUsername = (TextView) headerDrawer.findViewById(R.id.lblUserName);
+            TextView lblNombreUsuario = (TextView) headerDrawer.findViewById(R.id.lblNombreUsuario);
+            TextView lblUsermail = (TextView) headerDrawer.findViewById(R.id.lblUserEmail);
+            lblUsername.setText(currentUser.getUsername());
+            lblUsermail.setText(currentUser.getEmail());
+            lblNombreUsuario.setText(currentUser.getString("name"));
+            globalApplication.setAvatarRoundedResize(currentUser.getParseFile("avatar"), avatar, 120, 120);
+        }
     }
 
 
@@ -289,12 +208,21 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
                 }
                 break;*/
             case R.id.item_zimess:
+                //Titulo del fragment
+                setTitle(itemDrawer.getTitle());
+                itemDrawer.setChecked(true);
                 fragmentSelected = new ZimessFragment();
                 break;
             case R.id.item_chat:
+                //Titulo del fragment
+                setTitle(itemDrawer.getTitle());
+                itemDrawer.setChecked(true);
                 fragmentSelected = ChatFragment.newInstance(null);
                 break;
             case R.id.item_notifi:
+                //Titulo del fragment
+                setTitle(itemDrawer.getTitle());
+                itemDrawer.setChecked(true);
                 fragmentSelected = new NotificationsFragment();
                 break;
             case R.id.item_ajust: //Ajustes
@@ -327,13 +255,10 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
                     .replace(R.id.contenedor_principal, fragmentSelected)
                     .commit();
         }
-        //Titulo
-        setTitle(itemDrawer.getTitle());
+
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
+    private void gotoTarget(Intent intent) {
         if (intent.getAction() != null) {
             if (intent.getAction().equals("OPEN_FRAGMENT_USER") && globalApplication.getCustomParseUser() != null) {
                 //globalApplication.setCustomParseUser(parseUserDestino); Seteado en la notifcacion
@@ -343,22 +268,37 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
                 selectItemDrawer(navigationView.getMenu().getItem(1));
             }
             if (intent.getAction().equals("OPEN_FRAGMENT_NOTI")) {
-                NotificationsFragment frag = (NotificationsFragment) fragments[NOTI];
-                frag.findNotifications(currentUser);
-                //Noti Fragment
+//                NotificationsFragment frag = (NotificationsFragment) fragments[NOTI];
+//                frag.findNotifications(currentUser);
+//                //Noti Fragment
                 selectItemDrawer(navigationView.getMenu().getItem(2));
             }
             if (intent.getAction().equals("OPEN_FRAGMENT_CHAT")) {
                 //Chat Fragment
                 selectItemDrawer(navigationView.getMenu().getItem(1));
             }
-            Log.d("onNewIntent", intent.getAction());
+            if (intent.getAction().equals("OPEN_PROFILE_USER")) {
+                //Ir la perfil del usuario
+                new NavigationProfileTask(MainActivity.this).execute(intent.getStringExtra("targetId"));
+            }
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        gotoTarget(intent);
     }
 
     @Override
     public void onFragmentIteration(Bundle params) {
 
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        refreshDatosDrawer();
     }
 
     @Override

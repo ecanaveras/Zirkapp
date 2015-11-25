@@ -81,7 +81,7 @@ public class ManagerWelcome extends Activity {
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
         //builder.setTitle("Zirkapp...");
-        builder.setMessage("Seguro que te vas?")
+        builder.setMessage("Seguro te vas?")
                 .setCancelable(false)
                 .setPositiveButton("Si", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {

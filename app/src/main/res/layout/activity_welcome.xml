@@ -23,4 +23,5 @@
         android:layout_height="wrap_content"
         android:background="@color/default_primary_color"
         android:padding="10dip" />
+
 </LinearLayout>

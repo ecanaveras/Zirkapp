@@ -1,8 +1,10 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.task;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
@@ -29,6 +31,8 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
     public static final int PUSH_COMMENT = 2;
     public static final int PUSH_ZIMESS = 3;
     public static final int PUSH_QUOTE = 4;
+    public static final int PUSH_ZISS = 5;
+    public static final int PUSH_FAVORITE = 6;
 
     private List<PushPair> pushPairs;
     private String targetId;
@@ -46,12 +50,12 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
      *
      * @param title
      * @param message
-     * @param receptorId
+     * @param receptorUser
      * @param typeNotify
      */
-    public SendPushTask(String targetId, String receptorId, String senderId, String title, String message, int typeNotify) {
+    public SendPushTask(String targetId, ParseUser receptorUser, String senderId, String title, String message, int typeNotify) {
         this.targetId = targetId;
-        this.receptorId = receptorId;
+        this.receptorUser = receptorUser;
         this.senderId = senderId;
         this.title = title;
         this.message = message;
@@ -59,15 +63,15 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
     }
 
     /**
-     * Envia una notificacion
+     * Envia una notificacion especial para Ziss
      *
+     * @param receptorUser
+     * @param senderId
      * @param title
      * @param message
-     * @param receptorUser
      * @param typeNotify
      */
-    public SendPushTask(String targetId, ParseUser receptorUser, String senderId, String title, String message, int typeNotify) {
-        this.targetId = targetId;
+    public SendPushTask(ParseUser receptorUser, String senderId, String title, String message, int typeNotify) {
         this.receptorUser = receptorUser;
         this.senderId = senderId;
         this.title = title;
@@ -140,7 +144,12 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
                 //Pasar sender como titulo
                 data.put("title", title);
                 //Datos para el manejo de la notificacion
-                if (targetId != null) data.put("targetId", targetId); //Objeto afectado
+                if (targetId != null) {
+                    data.put("targetId", targetId); //Objeto afectado
+                } else {
+                    targetId = senderId;
+                    data.put("targetId", senderId); //Usuario que mostrara al abrir la notificacion
+                }
                 if (receptorId != null) data.put("receptorId", receptorId); //Quien recibe
                 if (senderId != null)
                     data.put("senderId", senderId); //Quien produce la notificacion
@@ -159,16 +168,31 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
                 });
 
                 //Guardar la notificacion
-                if (typeNotify == SendPushTask.PUSH_COMMENT || typeNotify == SendPushTask.PUSH_QUOTE) {
-                    String titleNoti = "%s de %s";
+                if (typeNotify != SendPushTask.PUSH_CHAT && typeNotify != SendPushTask.PUSH_ZIMESS) {
                     ParseUser senderUser = findParseUser(senderId);
                     String senderName = senderUser.getString("name") != null ? senderUser.getString("name") : senderUser.getUsername();
                     ParseZNotifi notifi = new ParseZNotifi();
                     notifi.setTypeNoti(typeNotify);
                     notifi.setDetailNoti(message);
-                    notifi.setSummaryNoti(String.format(titleNoti, typeNotify == SendPushTask.PUSH_COMMENT ? "Nuevo comentario" : "Nueva respuesta", senderName));
+
+                    String formatTitleNoti = "%s";
+                    switch (typeNotify) {
+                        case SendPushTask.PUSH_COMMENT:
+                            formatTitleNoti = "%s comentó tu Zimess";
+                            break;
+                        case SendPushTask.PUSH_QUOTE:
+                            formatTitleNoti = "%s te mencionó en un comentario";
+                            break;
+                        case SendPushTask.PUSH_ZISS:
+                            formatTitleNoti = "%s te dió un Ziss";
+                            break;
+                        case SendPushTask.PUSH_FAVORITE:
+                            formatTitleNoti = "A %s le gustó tu Zimess";
+                            break;
+                    }
+                    notifi.setSummaryNoti(String.format(formatTitleNoti, senderName));
                     //Guardar Notificacion
-                    saveNotificacion(notifi, senderUser, findParseUser(receptorId));
+                    saveNotificacion(notifi, senderUser, receptorUser != null ? receptorUser : findParseUser(receptorId));
                 }
             } catch (JSONException e) {
                 Log.e("json.exception", e.getMessage());
@@ -191,10 +215,7 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
                 case SendPushTask.PUSH_CHAT:
                     noti.put("userTarget", ParseObject.createWithoutData("user", targetId));
                     break;
-                case SendPushTask.PUSH_COMMENT:
-                    noti.put(ParseZNotifi.ZIMESS_TARGET, ParseObject.createWithoutData(ParseZimess.class, targetId));
-                    break;
-                case SendPushTask.PUSH_QUOTE:
+                default:
                     noti.put(ParseZNotifi.ZIMESS_TARGET, ParseObject.createWithoutData(ParseZimess.class, targetId));
                     break;
             }
@@ -209,6 +230,7 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
      * @param objectId
      * @return
      */
+
     private ParseUser findParseUser(String objectId) {
         return DataParseHelper.findUser(objectId);
     }

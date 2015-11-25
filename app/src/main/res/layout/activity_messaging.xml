@@ -72,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:src="@drawable/ic_send_white_48dp"
+            android:src="@drawable/ic_send_white_24dp"
             android:adjustViewBounds="false"
             android:scaleType="fitCenter" />
         <!--android:background="@drawable/button_send"-->

@@ -34,6 +34,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessRecyclerAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
+import com.parse.ParseUser;
 
 /**
  * Created by Elder on 23/02/2015.
@@ -54,6 +55,8 @@ public class ZimessFragment extends Fragment {
     private AlertDialog sortDialog;
     private TextView lblRangoZimess;
     private ImageView avatar;
+    private SharedPreferences preferences;
+    private ParseUser currentUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,6 +64,7 @@ public class ZimessFragment extends Fragment {
         setHasOptionsMenu(true);
 
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
+        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         inicializarCompUI(view);
 
@@ -86,7 +90,7 @@ public class ZimessFragment extends Fragment {
             @Override
             protected String doInBackground(Void... params) {
                 try {
-                    Thread.sleep(2000); // 4 segundos
+                    Thread.sleep(2000); // 2 segundos
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -157,7 +161,6 @@ public class ZimessFragment extends Fragment {
             layoutGpsOff.setVisibility(View.GONE);
             layoutZimessDefault.setVisibility(View.GONE);
             //Tomar valores de las preferencias de usuarios
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             int dist_min = Integer.parseInt(preferences.getString("min_dist_list", "-1"));
             int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "10"));
 
@@ -232,8 +235,8 @@ public class ZimessFragment extends Fragment {
                         android.location.Location tmpLocation = locationService.getCurrentLocation();
                         if (tmpLocation != null) {
                             location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
-                            Log.d("Zimess, Latitude", tmpLocation.getLatitude()+"");
-                            Log.d("Zimess, Longitude", tmpLocation.getLongitude()+"");
+                            Log.d("Zimess, Latitude", tmpLocation.getLatitude() + "");
+                            Log.d("Zimess, Longitude", tmpLocation.getLongitude() + "");
                         }
                     }
                 } else {
@@ -287,7 +290,7 @@ public class ZimessFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
-        inflater.inflate(R.menu.menu_fragment_zimess, menu);
+        inflater.inflate(R.menu.menu_zimess_fragment, menu);
         menuList = menu;
         super.onCreateOptionsMenu(menu, inflater);
     }
