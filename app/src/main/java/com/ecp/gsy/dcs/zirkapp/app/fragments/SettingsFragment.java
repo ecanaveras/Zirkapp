@@ -30,6 +30,7 @@ import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.AboutActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerLogin;
+import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerWizard;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
@@ -129,6 +130,16 @@ public class SettingsFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Intent intent = new Intent(getActivity(), AboutActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
+
+        Preference pref_edit_profile = findPreference("go_to_profile");
+        pref_edit_profile.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(getActivity(), ManagerWizard.class);
                 startActivity(intent);
                 return false;
             }

@@ -178,16 +178,16 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
                     String formatTitleNoti = "%s";
                     switch (typeNotify) {
                         case SendPushTask.PUSH_COMMENT:
-                            formatTitleNoti = "%s comentó tu Zimess";
+                            formatTitleNoti = "%s ha comentado tu Zimess";
                             break;
                         case SendPushTask.PUSH_QUOTE:
-                            formatTitleNoti = "%s te mencionó en un comentario";
+                            formatTitleNoti = "%s te ha mencionado en un comentario";
                             break;
                         case SendPushTask.PUSH_ZISS:
-                            formatTitleNoti = "%s te dió un Ziss";
+                            formatTitleNoti = "%s te ha dado un Ziss";
                             break;
                         case SendPushTask.PUSH_FAVORITE:
-                            formatTitleNoti = "A %s le gustó tu Zimess";
+                            formatTitleNoti = "A %s le gusta tu Zimess";
                             break;
                     }
                     notifi.setSummaryNoti(String.format(formatTitleNoti, senderName));

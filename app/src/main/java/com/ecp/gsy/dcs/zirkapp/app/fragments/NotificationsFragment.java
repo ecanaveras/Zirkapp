@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Switch;
@@ -43,16 +44,29 @@ import java.util.List;
 public class NotificationsFragment extends Fragment {
 
     private static NotificationsFragment instance = null;
+    public static final String TAG = "NotificationsFragment";
+
     private ListView listNotifi;
     private ProgressBar progressBar;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView lblNotiNotFound;
     private ParseUser currentUser;
     private GlobalApplication globalApplication;
+    private LinearLayout layoutInternertOff;
+
+    public static NotificationsFragment newInstance(Bundle arguments) {
+        NotificationsFragment notificationsFragment = new NotificationsFragment();
+        if (arguments != null) {
+            notificationsFragment.setArguments(arguments);
+        }
+        return notificationsFragment;
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_notifications, container, false);
+        setHasOptionsMenu(true);
 
         currentUser = ParseUser.getCurrentUser();
 
@@ -76,6 +90,7 @@ public class NotificationsFragment extends Fragment {
         progressBar = (ProgressBar) view.findViewById(R.id.progressLoad);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshNoti);
         lblNotiNotFound = (TextView) view.findViewById(R.id.lblNotiNotFound);
+        layoutInternertOff = (LinearLayout) view.findViewById(R.id.layoutInternetOff);
 
         listNotifi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -107,7 +122,14 @@ public class NotificationsFragment extends Fragment {
     }
 
     public void findNotifications(ParseUser recpetorUser) {
-        new RefreshDataNotifiTask(getActivity(), recpetorUser, listNotifi, swipeRefreshLayout, progressBar, lblNotiNotFound).execute();
+        if (globalApplication.isConectedToInternet()) {
+            layoutInternertOff.setVisibility(View.GONE);
+            new RefreshDataNotifiTask(getActivity(), recpetorUser, listNotifi, swipeRefreshLayout, progressBar, lblNotiNotFound).execute();
+        } else {
+            swipeRefreshLayout.setRefreshing(false);
+            layoutInternertOff.setVisibility(View.VISIBLE);
+            globalApplication.networkShowSettingsAlert();
+        }
     }
 
     /**
@@ -136,6 +158,7 @@ public class NotificationsFragment extends Fragment {
             if (item.getZimessTarget() != null) {
                 Activity activity = getActivity();
                 Intent intent = new Intent(activity, DetailZimessActivity.class);
+                intent.putExtra("zimess_preloaded", false);
                 globalApplication.setTempZimess(item.getZimessTarget());
                 activity.startActivityForResult(intent, 105);
             } else {
@@ -189,14 +212,8 @@ public class NotificationsFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_notifications_fragment, menu);
+        menu.clear();
         super.onCreateOptionsMenu(menu, inflater);
     }
 }

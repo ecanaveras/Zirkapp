@@ -68,7 +68,6 @@ public class UsersFragment extends Fragment {
     private ParseUser currentUser;
 
     private GlobalApplication globalApplication;
-    private Menu menu;
 
     private CountMessagesReceiver countMessagesReceiver;
     private SinchConnectReceiver sinchConnectReceiver;
@@ -153,91 +152,11 @@ public class UsersFragment extends Fragment {
         userRecyclerView.setLayoutManager(layoutManager);
 
 
-        /*
-        Button btnFiltro = (Button) view.findViewById(R.id.btnFilter);
-        btnFiltro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showFilterDialog();
-            }
-        });
-
-        Button btnHistory = (Button) view.findViewById(R.id.btnHistory);
-        btnHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), ChatHistoryActivity.class);
-                startActivity(intent);
-            }
-        });
-        */
-
         lblInfoChat = (TextView) view.findViewById(R.id.lblInfoChat);
 
         ImageView imageView = (ImageView) view.findViewById(R.id.imgLogoZirkapp);
         Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.fade);
         imageView.startAnimation(animation);
-
-        //ListView
-        /*listViewUserOnline = (ListView) view.findViewById(R.id.usersListView);
-        registerForContextMenu(listViewUserOnline);
-        listViewUserOnline.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ((TextView) view.findViewById(R.id.lblCantMessages)).setText(null);
-                ParseUser parseUser = (ParseUser) adapterView.getAdapter().getItem(i);
-                abrirConversa(parseUser);
-            }
-        });*/
-
-
-
-
-        /*listViewUserOnline.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView absListView, int i) {
-            }
-
-            @Override
-            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                int topRowVerticalPosition = (listViewUserOnline == null || listViewUserOnline.getChildCount() == 0) ? 0 : listViewUserOnline.getChildAt(0).getTop();
-                swipeRefreshLayout.setEnabled(firstVisibleItem == 0 && topRowVerticalPosition >= 0);
-                if (firstVisibleItem == 0 && topRowVerticalPosition >= 0) {
-                    //Show
-                    layoutMenu.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
-                    swipeRefreshLayout.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
-
-                } else {
-                    //Hidden
-                    layoutMenu.animate().translationY(-layoutMenu.getHeight()).setInterpolator(new AccelerateInterpolator(2));
-                    swipeRefreshLayout.animate().translationY(-layoutMenu.getHeight()).setInterpolator(new AccelerateInterpolator(2));
-                }
-                *//*new AsyncTask<Boolean, Void, Boolean>() {
-
-                    @Override
-                    protected Boolean doInBackground(Boolean... params) {
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        return params[0];
-                    }
-
-                    @Override
-                    protected void onPostExecute(Boolean show) {
-                        if (show) {
-                            layoutMenu.setVisibility(View.VISIBLE);
-                        } else {
-                            layoutMenu.setVisibility(View.GONE);
-                        }
-                    }
-                }.execute(firstVisibleItem == 0 && topRowVerticalPosition >= 0);*//*
-
-            }
-        });*/
-
-
     }
 
     @Override
@@ -535,8 +454,8 @@ public class UsersFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.menu_chat_fragment, menu);
-        this.menu = menu;
         MenuItem item = menu.findItem(R.id.switchUsersOnline);
         item.setActionView(R.layout.component_switch);
         final SwitchCompat switchConected = (SwitchCompat) item.getActionView().findViewById(R.id.switch_on_off);

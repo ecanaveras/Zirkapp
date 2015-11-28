@@ -83,6 +83,9 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
     private View headerDrawer;
     private ImageView avatar;
     //Fragments
+    private ZimessFragment zimessFragment;
+    private ChatFragment chatFragment;
+    private NotificationsFragment notificationsFragment;
     private int indexBackOrDefaultFragment;
     //Usuario de Parse
     private ParseUser currentUser = null;
@@ -94,12 +97,14 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
     //GCM
     private GoogleCloudMessaging gcm;
     private String regId;
+    private Bundle savedInstanceState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        this.savedInstanceState = savedInstanceState;
         //KeyHash
         //this.getKeyHash();
 
@@ -107,11 +112,8 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         globalApplication.setContext(this);
 
         //User Parse
-        try {
-            currentUser = ParseUser.getCurrentUser().fetch();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        currentUser = ParseUser.getCurrentUser();
+
         if (currentUser != null) {
             globalApplication.storeParseInstallation();
             ParsePush.subscribeInBackground("");
@@ -119,6 +121,10 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
             //Login
             startActivity(new Intent(this, ManagerWelcome.class));
         }
+
+        zimessFragment = ZimessFragment.newInstance(null);
+        //chatFragment = ChatFragment.newInstance(null);
+        notificationsFragment = NotificationsFragment.newInstance(null);
 
         initComponentsUI();
 
@@ -157,6 +163,13 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         headerDrawer = navigationView.inflateHeaderView(R.layout.header_drawer_menu);
+        headerDrawer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ManagerWizard.class);
+                startActivity(intent);
+            }
+        });
 
         //Seleccionar Zimess por default
         selectItemDrawer(navigationView.getMenu().getItem(0));
@@ -195,35 +208,28 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         Fragment fragmentSelected = null;
         FragmentManager fragmentManager = getFragmentManager();
         //Reemplazar el content_frame
-        //fragmentManager.beginTransaction().replace(R.id.content_frame, fragmentAdapter.getItem(position)).commit();
-        invalidateOptionsMenu();
+        String fragmentTag = null;
         switch (itemDrawer.getItemId()) {
-            /*case R.id.item_zimess:
-                if (getIntent().getAction() != null && getIntent().getAction().equals("OPEN_FRAGMENT_USER")) {
-                    toolbar.setTitle(R.string.title_fragment_chat);
-                    showFragment(CHAT, false);
-                } else {
-                    toolbar.setTitle(R.string.title_fragment_zimess);
-                    showFragment(ZIMESS, false);
-                }
-                break;*/
             case R.id.item_zimess:
                 //Titulo del fragment
                 setTitle(itemDrawer.getTitle());
                 itemDrawer.setChecked(true);
-                fragmentSelected = new ZimessFragment();
+                fragmentSelected = zimessFragment;
+                fragmentTag = ZimessFragment.TAG;
                 break;
             case R.id.item_chat:
                 //Titulo del fragment
                 setTitle(itemDrawer.getTitle());
                 itemDrawer.setChecked(true);
                 fragmentSelected = ChatFragment.newInstance(null);
+                fragmentTag = ChatFragment.TAG;
                 break;
             case R.id.item_notifi:
                 //Titulo del fragment
                 setTitle(itemDrawer.getTitle());
                 itemDrawer.setChecked(true);
-                fragmentSelected = new NotificationsFragment();
+                fragmentSelected = notificationsFragment;
+                fragmentTag = NotificationsFragment.TAG;
                 break;
             case R.id.item_ajust: //Ajustes
                 Intent intent = new Intent(this, CustomSettingsActivity.class);
@@ -252,7 +258,7 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
 
         if (fragmentSelected != null) {
             fragmentManager.beginTransaction()
-                    .replace(R.id.contenedor_principal, fragmentSelected)
+                    .replace(R.id.contenedor_principal, fragmentSelected, fragmentTag)
                     .commit();
         }
 

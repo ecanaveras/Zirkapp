@@ -3,9 +3,11 @@ package com.ecp.gsy.dcs.zirkapp.app.activities;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,11 +19,13 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -32,7 +36,9 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.Zimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
+import com.ecp.gsy.dcs.zirkapp.app.util.locations.ManagerDistance;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
@@ -49,6 +55,7 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -74,9 +81,13 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
             lblUsername,
             lblAliasUsuario, lblCantComments;
     private ProgressBar progressBar;
-    private Button btnSendComment;
+    private ImageButton btnSendComment;
     private Toolbar toolbar;
     private String contextClass = null;
+    private SharedPreferences preferences;
+    private ImageView imgFav;
+    private TextView lblCantFavs;
+    private boolean isZimessPreloaded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +96,10 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
 
         globalApplication = (GlobalApplication) getApplicationContext();
         currentUser = ParseUser.getCurrentUser();
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        isZimessPreloaded = getIntent().getBooleanExtra("zimess_preloaded", true);
 
         zimessDetail = globalApplication.getTempZimess();
 
@@ -117,6 +132,9 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
         lblTimePass = (TextView) findViewById(R.id.txtTiempo);
         lblCantComments = (TextView) findViewById(R.id.lblCantComments);
         imgComment = (ImageView) findViewById(R.id.imgComment);
+        //Fav
+        imgFav = (ImageView) findViewById(R.id.imgFav);
+        lblCantFavs = (TextView) findViewById(R.id.lblCantFavs);
 
         txtComment = (EditText) findViewById(R.id.txtZimessComment);
         listComment = (ListView) findViewById(R.id.listZComments);
@@ -166,7 +184,14 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
             }
         });
 
-        btnSendComment = (Button) findViewById(R.id.btnSendZimessComment);
+        imgFav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addFavorite(zimessDetail);
+            }
+        });
+
+        btnSendComment = (ImageButton) findViewById(R.id.btnSendZimessComment);
         btnSendComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -185,23 +210,44 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
         //Estableciendo Imagen;
         globalApplication.setAvatarRoundedResize(zimess.getUser().getParseFile("avatar"), imgAvatar, 100, 100);
 
-        lblAliasUsuario.setText(zimess.getUser().getString("name"));
+        lblMessage.setText(zimess.getZimessText());
+
+        String name = zimess.getUser().getString("name") != null ? zimess.getUser().getString("name") : zimess.getUser().getUsername();
+        lblAliasUsuario.setText(name);
         lblUsername.setText(zimess.getUser().getUsername());
         lblCantComments.setText(Integer.toString(zimess.getCantComment()));
+        lblCantFavs.setText(zimess.getCantFavorite() > 0 ? Integer.toString(zimess.getCantFavorite()) : "");
 
         //cambiar icono cuando hay comentarios
-        if (zimess.getCantComment() > 0)
+        if (zimess.getCantComment() > 0) {
             imgComment.setImageResource(R.drawable.ic_icon_response_color);
-        else
+        } else {
             imgComment.setImageResource(R.drawable.ic_icon_response);
+        }
+
+        //cambiar icono cuando es favorito
+        if (zimess.isMyFavorite(currentUser.getObjectId())) {
+            imgFav.setImageResource(R.drawable.ic_icon_fav_color);
+        } else {
+            imgFav.setImageResource(R.drawable.ic_icon_fav);
+        }
         //Manejando tiempos transcurridos
         String tiempoTranscurrido = globalApplication.getTimepass(zimess.getCreatedAt());
         lblTimePass.setText(tiempoTranscurrido);
 
         //lblCreatedAt.setText(globalApplication.getDescFechaPublicacion(zimess.getCreateAt()));
-
-        lblDistance.setText(zimess.getDescDistancia());
-        lblMessage.setText(zimess.getZimessText());
+        if (!isZimessPreloaded) {
+            //Calcular distancia del Zimess remoto
+            Location zimessLocation = new Location(zimess.getLocation().getLatitude(), zimess.getLocation().getLongitude());
+            ManagerDistance mDistance = new ManagerDistance(getCurrentLocation(), zimessLocation);
+            zimess.setDescDistancia(mDistance.getDistanciaToString());
+            zimess.setValueDistancia(mDistance.getDistancia());
+            lblDistance.setText(zimess.getDescDistancia());
+            lblDistance.setBackgroundResource(getResourceRibbon(mDistance.getDistancia()));
+        } else {
+            lblDistance.setText(zimess.getDescDistancia());
+            lblDistance.setBackgroundResource(getResourceRibbon(zimess.getValueDistancia()));
+        }
     }
 
     /**
@@ -385,6 +431,52 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
     }
 
     /**
+     * Permite agregar y quitar el fav
+     *
+     * @param zimess
+     */
+    private void addFavorite(ParseZimess zimess) {
+        HashMap params = new HashMap<String, Object>();
+        params.put("zimessId", zimess.getObjectId());
+        //Marcar/desmarcar como favorito
+        if (zimess != null && zimess.isMyFavorite(currentUser.getObjectId())) {
+            zimess.removeFavorites(Arrays.asList(currentUser.getObjectId()));
+            zimess.saveInBackground();
+            callParseFunction("DelZimessFavorite", params);
+
+            imgFav.setImageResource(R.drawable.ic_icon_fav);
+            if (zimess.getCantFavorite() <= 1) {
+                lblCantFavs.setText("");
+            } else {
+                lblCantFavs.setText(Integer.toString(zimess.getCantFavorite() - 1));
+            }
+        } else {
+            //Actualizar los datos del Zimess
+            zimess.addFavorites(currentUser.getObjectId());
+            zimess.saveInBackground();
+
+            callParseFunction("AddZimessFavorite", params);
+
+            lblCantFavs.setText(Integer.toString(zimess.getCantFavorite() + 1));
+            imgFav.setImageResource(R.drawable.ic_icon_fav_color);
+
+            if (!zimess.getUser().equals(currentUser)) {
+                String nameCurrentUser = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+                new SendPushTask(zimess.getObjectId(), zimess.getUser(), currentUser.getObjectId(), String.format("%s le gusta tu Zimes", nameCurrentUser), String.format("%s...", zimess.getZimessText().length() > 60 ? zimess.getZimessText().substring(0, 60) : zimess.getZimessText()), SendPushTask.PUSH_FAVORITE).execute();
+            }
+        }
+        try {
+            //Actualizar el Zimess
+            zimess.fetch();
+            //Toast.makeText(context, "Add favorite", Toast.LENGTH_SHORT).show();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        //view.playSoundEffect(SoundEffectConstants.CLICK);
+    }
+
+
+    /**
      * retorna la Ubicacion actual
      *
      * @return
@@ -397,6 +489,32 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
             location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
         }
         return location;
+    }
+
+    private void callParseFunction(final String nameFunction, HashMap<String, Object> params) {
+        ParseCloud.callFunctionInBackground(nameFunction, params, new FunctionCallback<String>() {
+            public void done(String result, ParseException e) {
+                if (e != null) {
+                    Log.e("Parse.Cloud." + nameFunction, e.getMessage());
+                }
+            }
+        });
+    }
+
+    private int getResourceRibbon(double distancia) {
+        Double rango = getRango();
+        if (distancia <= rango) { //Verde
+            return R.drawable.ic_ribbon_green;
+        } else if (distancia > rango && distancia <= (rango * 2)) {
+            return R.drawable.ic_ribbon_yellow;
+        }
+        return R.drawable.ic_ribbon_red;
+    }
+
+    private double getRango() {
+        int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "10"));
+        double rango = (dist_max * 1000) / 3;
+        return rango;
     }
 
     @Override
@@ -443,14 +561,16 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        ParseZComment parseZComment = null;
         if (v.getId() == R.id.listZComments) {
             AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) menuInfo;
+            parseZComment = (ParseZComment) listComment.getAdapter().getItem(acmi.position);
         }
         this.getMenuInflater().inflate(R.menu.menu_contextual_comments, menu);
-        if (menu == null) {
+        if (menu == null || parseZComment == null) {
             return;
         }
-        if (currentUser.equals(zimessUser)) {
+        if (parseZComment.getUser().equals(currentUser) || currentUser.equals(zimessUser)) {
             menu.setGroupVisible(R.id.menuGroupDelete, true);
         } else {
             menu.setGroupVisible(R.id.menuGroupDelete, false);

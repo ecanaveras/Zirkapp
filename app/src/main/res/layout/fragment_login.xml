@@ -47,14 +47,16 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="6dp"
+                    android:layout_height="18dp"
+                    android:layout_marginBottom="4dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center_vertical|center_horizontal"
                     android:text="@string/lblLoginZirkapp"
-                    android:textColor="@color/accent_color"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:background="@color/accent_color"
+                    android:textColor="@color/text_primary_color"
+                    android:textSize="12sp"
+                    android:textAllCaps="true"
+                     />
 
                 <EditText
                     android:id="@+id/txtUserLogin"
@@ -89,8 +91,9 @@
                     android:layout_marginTop="10dp"
                     android:clickable="true"
                     android:text="Crea tu cuenta Zirkapp"
-                    android:textColor="#2A363C"
+                    android:textColor="@color/default_primary_color"
                     android:textSize="18sp"/>
+
             </LinearLayout>
 
 

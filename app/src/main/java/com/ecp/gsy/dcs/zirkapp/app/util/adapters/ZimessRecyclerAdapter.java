@@ -100,6 +100,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         Location zimessLocation = new Location(zimess.getLocation().getLatitude(), zimess.getLocation().getLongitude());
         ManagerDistance mDistance = new ManagerDistance(currentLocation, zimessLocation);
         zimess.setDescDistancia(mDistance.getDistanciaToString());
+        zimess.setValueDistancia(mDistance.getDistancia());
         zimessViewHolder.lblDistance.setText(zimess.getDescDistancia());
         zimessViewHolder.lblDistance.setBackgroundResource(getResourceRibbon(mDistance.getDistancia()));
     }
@@ -152,8 +153,10 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
                     lblCantFavs.setText(Integer.toString(zimess.getCantFavorite() + 1));
                     imgFav.setImageResource(R.drawable.ic_icon_fav_color);
 
-                    String nameCurrentUser = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
-                    new SendPushTask(zimess.getObjectId(), zimess.getUser(), currentUser.getObjectId(), String.format("%s le gusta tu Zimes", nameCurrentUser), String.format("%s...", zimess.getZimessText().length() > 60 ? zimess.getZimessText().substring(0, 60) : zimess.getZimessText()), SendPushTask.PUSH_FAVORITE).execute();
+                    if (!zimess.getUser().equals(currentUser)) {
+                        String nameCurrentUser = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+                        new SendPushTask(zimess.getObjectId(), zimess.getUser(), currentUser.getObjectId(), String.format("%s le gusta tu Zimes", nameCurrentUser), String.format("%s...", zimess.getZimessText().length() > 60 ? zimess.getZimessText().substring(0, 60) : zimess.getZimessText()), SendPushTask.PUSH_FAVORITE).execute();
+                    }
                 }
                 try {
                     //Actualizar el Zimess

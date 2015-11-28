@@ -42,6 +42,7 @@ import com.parse.ParseUser;
 public class ZimessFragment extends Fragment {
 
     private static ZimessFragment instance = null;
+    public static final String TAG = "ZimessFragment";
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -58,10 +59,20 @@ public class ZimessFragment extends Fragment {
     private SharedPreferences preferences;
     private ParseUser currentUser;
 
+    public static ZimessFragment newInstance(Bundle arguments) {
+        ZimessFragment zimessFragment = new ZimessFragment();
+        if (arguments != null) {
+            zimessFragment.setArguments(arguments);
+        }
+        return zimessFragment;
+    }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_zimess, container, false);
         setHasOptionsMenu(true);
+        setRetainInstance(true);
 
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());

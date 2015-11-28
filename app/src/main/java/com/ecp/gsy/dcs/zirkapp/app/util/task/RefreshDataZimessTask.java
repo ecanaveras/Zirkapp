@@ -143,7 +143,7 @@ public class RefreshDataZimessTask extends AsyncTask<Integer, Void, List<ParseZi
 
     @Override
     protected void onPostExecute(List<ParseZimess> zimessList) {
-        if (!findUniqueZimess) {
+        if (!findUniqueZimess && context != null) {
             zReciclerAdapter = new ZimessRecyclerAdapter(context, zimessList, currentLocation);
             recyclerView.setAdapter(zReciclerAdapter);
             zReciclerAdapter.notifyDataSetChanged();

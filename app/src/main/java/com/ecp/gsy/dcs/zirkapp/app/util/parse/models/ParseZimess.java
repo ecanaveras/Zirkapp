@@ -29,6 +29,7 @@ public class ParseZimess extends ParseObject {
 
     private boolean myFavorite = false;
     private String descDistancia;
+    private Double valueDistancia;
 
     //<editor-fold desc="METHODS GETTERS">
     public ParseUser getUser() {
@@ -56,8 +57,17 @@ public class ParseZimess extends ParseObject {
     }
 
     public String getDescDistancia() {
-        return descDistancia;
+        if (descDistancia != null) {
+            return descDistancia;
+        } else {
+            return "";
+        }
     }
+
+    public Double getValueDistancia() {
+        return valueDistancia;
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="METHODS SETTERS">
@@ -92,6 +102,11 @@ public class ParseZimess extends ParseObject {
     public void setDescDistancia(String descDistancia) {
         this.descDistancia = descDistancia;
     }
+
+    public void setValueDistancia(Double valueDistancia) {
+        this.valueDistancia = valueDistancia;
+    }
+
     //</editor-fold>
 
     public boolean isMyFavorite(String currentId) {

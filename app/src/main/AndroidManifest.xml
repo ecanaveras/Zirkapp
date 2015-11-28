@@ -110,13 +110,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
         </activity>
-        <activity
-            android:name=".activities.ChatHistoryActivity"
-            android:label="@string/title_activity_chat_history">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainActivity" />
-        </activity>
 
         <activity
             android:name=".activities.AboutActivity"

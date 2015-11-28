@@ -26,10 +26,11 @@
     <string name="lblWelcomeMsg3">Encuentra amigos donde quiera que vayas!</string>
 
     <!-- Login Y SingUp -->
-    <string name="lblWelcomeLogin">Bienvenido, nos alegra que estes aqui!</string><!-->Ingresa con tu cuenta favorita-->
+    <string name="lblWelcomeLogin">Bienvenido, nos alegra que estes aqui!</string>
+    <!-->Ingresa con tu cuenta favorita-->
     <string name="lblLogin">Iniciar Sesion</string>
     <string name="lblSingUp">Registrarse</string>
-    <string name="lblCreateCount">Crea tu cuenta</string>
+    <string name="lblCreateCount">Crea tu cuenta Zirkapp</string>
     <string name="lblRecuPass">Recuperar Contraseña</string>
     <string name="lblPassword">Contraseña</string>
     <string name="lblPasswordConfirm">Confirmar contraseña</string>
@@ -213,10 +214,13 @@
     <string name="InfoNotAvailable">...</string>
 
     <!--Formatos-->
-    <string name="formatPushFavorite" formatted="false">A %1$s le gustó tu Zimess</string>
-    <string name="formatPushComment" formatted="false">%1$ comentó tu Zimess</string>
-    <string name="formatPushQuote" formatted="false">%1$ te mencionó en un comentario</string>
-    <string name="formatPushZiss" formatted="false">%1$ te dió un Ziss</string>
+    <string name="formatPushFavorite" formatted="false">A %1$s le gusta tu Zimess</string>
+    <string name="formatPushComment" formatted="false">%1$ ha comentado tu Zimess</string>
+    <string name="formatPushQuote" formatted="false">%1$ te ha mencionado en un comentario</string>
+    <string name="formatPushZiss" formatted="false">%1$ te ha dado un Ziss</string>
+    <string name="lblUrlWebZirkapp">Visita <a href="http://www.zirkapp.com">www.zirkapp.com</a></string>
+    <string name="lblUrlWebFacebook">Danos me gusta en <a href="https://www.facebook.com/zirkapp">www.facebook.com/zirkapp</a></string>
+    <string name="lblUrlWebTwitter">Siguenos en <a href="https://twitter.com/zirkapp">www.twitter.com/zirkapp</a></string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

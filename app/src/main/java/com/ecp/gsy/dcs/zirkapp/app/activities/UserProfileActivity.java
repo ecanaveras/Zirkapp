@@ -6,11 +6,14 @@ import android.app.ActivityOptions;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -104,8 +107,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         //Tabs
         tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setTabTextColors(Color.parseColor("#FFFFFF"), Color.parseColor("#FFFFFF"));
-        tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#FFFFFF"));
+        tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#F44336"));
 
         viewPager = (ViewPager) findViewById(R.id.pager);
         //Setear View Pager
@@ -130,20 +132,28 @@ public class UserProfileActivity extends AppCompatActivity {
         btnOpenChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Ir la perfil del usuario
-                globalApplication.setCustomParseUser(parseUser);
-                Intent intent = new Intent(UserProfileActivity.this, MessagingActivity.class);
-                startActivity(intent);
+                if (!currentUser.equals(parseUser)) {
+                    //Ir la perfil del usuario
+                    globalApplication.setCustomParseUser(parseUser);
+                    Intent intent = new Intent(UserProfileActivity.this, MessagingActivity.class);
+                    startActivity(intent);
+                } else {
+                    Snackbar.make(v, String.format("Hey, es tu perfil, no puedes hacer eso!"), Snackbar.LENGTH_SHORT).show();
+                }
             }
         });
 
         btnSendZiss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nameCurrentUser = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
-                String nameReceptorUser = parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername();
-                new SendPushTask(parseUser, currentUser.getObjectId(), "Ziiiss", String.format("%s ha dado un toque en tu perfil...", nameCurrentUser), SendPushTask.PUSH_ZISS).execute();
-                Toast.makeText(UserProfileActivity.this, String.format("Has dado un Ziss a %s", nameReceptorUser), Toast.LENGTH_SHORT).show();
+                if (!currentUser.equals(parseUser)) {
+                    String nameCurrentUser = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+                    String nameReceptorUser = parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername();
+                    new SendPushTask(parseUser, currentUser.getObjectId(), "Ziiiss", String.format("%s ha dado un toque en tu perfil...", nameCurrentUser), SendPushTask.PUSH_ZISS).execute();
+                    Snackbar.make(v, String.format("Has dado un Ziss a %s", nameReceptorUser), Snackbar.LENGTH_SHORT).show();
+                } else {
+                    Snackbar.make(v, String.format("Hey, es tu perfil, no puedes hacer eso!"), Snackbar.LENGTH_SHORT).show();
+                }
             }
         });
 

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/default_background_color"
     android:minHeight="60dp"
     android:orientation="vertical">
 
@@ -38,14 +39,13 @@
                     android:id="@+id/swipeRefreshComment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp">
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp">
 
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <!--<com.github.ksoichiro.android.observablescrollview.ObservableListView-->
                         <ListView
                             android:id="@+id/listZComments"
                             android:layout_width="match_parent"
@@ -78,19 +78,22 @@
 
         <EditText
             android:id="@+id/txtZimessComment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/custom_edit_text"
             android:layout_gravity="bottom"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="4dp"
             android:layout_weight="1"
             android:hint="@string/msgReply"
             android:inputType="textCapSentences|text"
             android:singleLine="false" />
 
-        <Button
+        <ImageButton
             android:id="@+id/btnSendZimessComment"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:text="@string/lblSend" />
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_send_white_24dp"
+            android:text="@string/lblSend"
+            android:layout_gravity="center_vertical"/>
     </LinearLayout>
 
 

@@ -509,10 +509,14 @@ public class GlobalApplication extends Application {
 
     //ALERTAS
 
+    public void gpsShowSettingsAlert() {
+        gpsShowSettingsAlert(context);
+    }
+
     /**
      * Muestra una alerta en caso que esten desabilitados los accesorios de ubicacion
      */
-    public void gpsShowSettingsAlert() {
+    public void gpsShowSettingsAlert(final Context context) {
         if (context == null || isShowGpsAlert) {
             return;
         }
@@ -542,10 +546,14 @@ public class GlobalApplication extends Application {
 
     }
 
+    public void networkShowSettingsAlert() {
+        networkShowSettingsAlert(context);
+    }
+
     /**
      * Muestra una alerta en caso que esten desabilitados los datos (wifi, movil)
      */
-    public void networkShowSettingsAlert() {
+    public void networkShowSettingsAlert(final Context context) {
         if (context == null || isShowNetworkAlert) {
             return;
         }

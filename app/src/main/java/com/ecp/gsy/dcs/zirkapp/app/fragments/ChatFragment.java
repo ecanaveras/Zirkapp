@@ -26,13 +26,14 @@ import java.util.List;
  */
 public class ChatFragment extends Fragment {
 
-    private AppBarLayout appBar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
     private static ChatFragment instance = null;
     public static final String TAG = "ChatFragment";
     private FragmentIterationListener mCallback = null;
+    private UsersFragment usersFragment;
+    private AdaptadorSecciones adapter;
 
     public static ChatFragment newInstance(Bundle arguments) {
         ChatFragment chatFragment = new ChatFragment();
@@ -40,9 +41,6 @@ public class ChatFragment extends Fragment {
             chatFragment.setArguments(arguments);
         }
         return chatFragment;
-    }
-
-    public ChatFragment() {
     }
 
     public static ChatFragment getInstance() {
@@ -57,51 +55,35 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
-        initComponentsUI(container, view);
+        usersFragment = UsersFragment.newInstance(null);
+
+        adapter = new AdaptadorSecciones(getFragmentManager());
+        adapter.addFragment(usersFragment, getString(R.string.title_tab_user_online));
+        adapter.addFragment(new ChatHistoryFragment(), getString(R.string.title_tab_messages));
+
+        initComponentsUI(view);
 
         instance = this;
 
         return view;
     }
 
-    private void initComponentsUI(ViewGroup container, View view_fragment) {
-        View main = (View) container.getParent();
-        appBar = (AppBarLayout) main.findViewById(R.id.appbar);
-        tabLayout = new TabLayout(getActivity());
-        tabLayout.setTabTextColors(Color.parseColor("#FFFFFF"), Color.parseColor("#FFFFFF"));
+    private void initComponentsUI(View view_fragment) {
+        tabLayout = (TabLayout) view_fragment.findViewById(R.id.tabs);
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#FFFFFF"));
-        appBar.addView(tabLayout);
+
 
         viewPager = (ViewPager) view_fragment.findViewById(R.id.pager);
         //Setear View Pager
-        AdaptadorSecciones adapter = new AdaptadorSecciones(getFragmentManager());
-        adapter.addFragment(new UsersFragment(), getString(R.string.title_tab_user_online));
-        adapter.addFragment(new ChatHistoryFragment(), getString(R.string.title_tab_messages));
         viewPager.setAdapter(adapter);
         //Setear ViewPager en TabLayout
         tabLayout.setupWithViewPager(viewPager);
     }
 
-    @Override
-    public void onAttach(Context activity) {
-        super.onAttach(activity);
-        try {
-            mCallback = (FragmentIterationListener) activity;
-        } catch (ClassCastException ex) {
-            Log.e(TAG, "El activity debe implementar la interfaz FragmentIterationListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        mCallback = null;
-        super.onDetach();
-    }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        appBar.removeView(tabLayout);
     }
 
     /**

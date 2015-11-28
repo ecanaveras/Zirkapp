@@ -1,194 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_background_color"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@color/default_background_color">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="8dp"
-        android:text="@string/lblAboutMe"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/default_primary_color" />
-
-    <!-- Card about -->
-    <android.support.v7.widget.CardView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        card_view:cardCornerRadius="2dp"
-        card_view:cardUseCompatPadding="true">
+        android:layout_height="match_parent"
 
-        <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:text="@string/lblAboutMe"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/default_primary_color" />
+
+        <!-- Card about -->
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp">
-
-            <!--Texto de ejemplo-->
-            <TextView
-                android:id="@+id/txtAboutMe"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec id maximus eros, quis luctus enim."
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@color/primary_text_color" />
-
-            <TextView
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:gravity="center_vertical|left"
-                android:text="@string/lblLikeMe"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/primary_text_color" />
-
-            <TextView
-                android:id="@+id/txtLikeMe"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="14dp"
-                android:padding="6dp"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec id maximus eros, quis luctus enim."
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@color/primary_text_color" />
-
-            <TextView
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:gravity="center_vertical|left"
-                android:text="@string/lblLiveIn"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/primary_text_color" />
-
-            <TextView
-                android:id="@+id/txtUserCity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="14dp"
-                android:padding="6dp"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec id maximus eros, quis luctus enim."
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@color/primary_text_color" />
-
-
-        </LinearLayout>
-
-    </android.support.v7.widget.CardView>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="8dp"
-        android:text="@string/lblPopularity"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/default_primary_color" />
-
-    <!-- Card Popularidad -->
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="105dp"
-        card_view:cardCornerRadius="2dp"
-        card_view:cardUseCompatPadding="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:layout_marginBottom="8dp"
+            card_view:cardCornerRadius="2dp"
+            card_view:cardUseCompatPadding="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <!--Texto de ejemplo-->
+                <TextView
+                    android:id="@+id/txtAboutMe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec id maximus eros, quis luctus enim."
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="@color/primary_text_color" />
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center_vertical|left"
+                    android:text="@string/lblLikeMe"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/primary_text_color" />
+
+                <TextView
+                    android:id="@+id/txtLikeMe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:padding="6dp"
+                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec id maximus eros, quis luctus enim."
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="@color/primary_text_color" />
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center_vertical|left"
+                    android:text="@string/lblLiveIn"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/primary_text_color" />
+
+                <TextView
+                    android:id="@+id/txtUserCity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:padding="6dp"
+                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec id maximus eros, quis luctus enim."
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="@color/primary_text_color" />
+
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:text="@string/lblPopularity"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/default_primary_color" />
+
+        <!-- Card Popularidad -->
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="105dp"
+            card_view:cardCornerRadius="2dp"
+            card_view:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif"
-                        android:text="Zimess"
-                        android:textColor="@color/primary_text_color"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/txtCountZimess"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:fontFamily="sans-serif"
-                        android:gravity="center"
-                        android:text="0"
-                        android:textColor="@color/default_primary_color"
-                        android:textSize="30sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="60dp">
-
-                    <View
-                        android:id="@+id/viewCenter"
-                        style="@style/line_divider_v"
-                        android:layout_gravity="center" />
-
-                    <ProgressBar
-                        android:id="@+id/progressLoad"
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:background="@android:color/transparent"
-                        android:visibility="gone" />
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
 
-                </FrameLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif"
+                            android:text="Zimess"
+                            android:textColor="@color/primary_text_color"
+                            android:textSize="18sp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/txtCountZimess"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:fontFamily="sans-serif"
+                            android:gravity="center"
+                            android:text="0"
+                            android:textColor="@color/default_primary_color"
+                            android:textSize="30sp"
+                            android:textStyle="bold" />
 
-                    <TextView
+                    </LinearLayout>
+
+                    <FrameLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif"
-                        android:text="@string/lblVisitas"
-                        android:textColor="@color/primary_text_color"
-                        android:textSize="18sp" />
+                        android:layout_height="60dp">
 
-                    <TextView
-                        android:id="@+id/txtCountVisit"
+                        <View
+                            android:id="@+id/viewCenter"
+                            style="@style/line_divider_v"
+                            android:layout_gravity="center" />
+
+                        <ProgressBar
+                            android:id="@+id/progressLoad"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@android:color/transparent"
+                            android:visibility="gone" />
+
+                    </FrameLayout>
+
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:fontFamily="sans-serif"
-                        android:gravity="center"
-                        android:text="0"
-                        android:textColor="@color/default_primary_color"
-                        android:textSize="30sp"
-                        android:textStyle="bold" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif"
+                            android:text="@string/lblVisitas"
+                            android:textColor="@color/primary_text_color"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/txtCountVisit"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:fontFamily="sans-serif"
+                            android:gravity="center"
+                            android:text="0"
+                            android:textColor="@color/default_primary_color"
+                            android:textSize="30sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
             </LinearLayout>
 
-        </LinearLayout>
+        </android.support.v7.widget.CardView>
 
-    </android.support.v7.widget.CardView>
-
-</LinearLayout>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

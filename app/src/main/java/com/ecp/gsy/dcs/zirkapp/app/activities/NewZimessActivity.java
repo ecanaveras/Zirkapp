@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,7 +49,7 @@ public class NewZimessActivity extends AppCompatActivity {
     private ParseUser currentUser;
 
     private EditText message;
-    private Button btnSendZimess;
+    private ImageButton btnSendZimess;
     private TextView txtIndicadorConn;
     private TextView lblCurrentLocation;
 
@@ -55,7 +57,7 @@ public class NewZimessActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private Activity activity;
     private Toolbar toolbar;
-    private Location currentLocation;
+    private Location currentLocation = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,11 +72,32 @@ public class NewZimessActivity extends AppCompatActivity {
 
         currentUser = globalApplication.getCurrentUser();
 
-        currentLocation = getCurrentLocation();
-        //Name Location
-        if (LocationService.isRunning()) {
-            new RefreshDataAddressTask(this, currentLocation, lblCurrentLocation, progressBar).execute();
-        }
+        callLocation();
+
+    }
+
+    private void callLocation() {
+        new AsyncTask<Void, Void, String>() {
+
+            @Override
+            protected String doInBackground(Void... params) {
+                try {
+                    Thread.sleep(2000); // 2 segundos
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                currentLocation = getCurrentLocation();
+                //Name Location
+                if (LocationService.isRunning()) {
+                    new RefreshDataAddressTask(NewZimessActivity.this, currentLocation, lblCurrentLocation, progressBar).execute();
+                }
+            }
+        }.execute();
     }
 
     private void inicializarCompUI() {
@@ -105,7 +128,7 @@ public class NewZimessActivity extends AppCompatActivity {
             }
         });
 
-        btnSendZimess = (Button) findViewById(R.id.btnSendZmess);
+        btnSendZimess = (ImageButton) findViewById(R.id.btnSendZmess);
         btnSendZimess.setEnabled(false);
         btnSendZimess.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,6 +203,7 @@ public class NewZimessActivity extends AppCompatActivity {
         } else {
             btnSendZimess.setEnabled(true);
             Toast.makeText(this, getResources().getString(R.string.msgLocationUnknownTry), Toast.LENGTH_LONG).show();
+            dialog.dismiss();
         }
 
     }
@@ -191,10 +215,18 @@ public class NewZimessActivity extends AppCompatActivity {
      */
     private Location getCurrentLocation() {
         Location location = null;
-        if (LocationService.isRunning()) {
-            LocationService locationService = LocationService.getInstance();
-            android.location.Location tmpLocation = locationService.getCurrentLocation();
-            location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+        if (globalApplication.isConectedToInternet()) {
+            if (globalApplication.isEnabledGetLocation()) {
+                if (LocationService.isRunning()) {
+                    LocationService locationService = LocationService.getInstance();
+                    android.location.Location tmpLocation = locationService.getCurrentLocation();
+                    location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+                }
+            } else {
+                globalApplication.gpsShowSettingsAlert(this);
+            }
+        } else {
+            globalApplication.networkShowSettingsAlert(this);
         }
         return location;
     }
