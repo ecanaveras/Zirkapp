@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -30,6 +29,8 @@ import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersTask;
 import com.parse.FindCallback;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -37,9 +38,9 @@ import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 
 /**
  * Created by Elder on 11/04/2015.
@@ -64,6 +65,9 @@ public class ChatHistoryFragment extends Fragment {
 
         iniciarlizarCompUI(view);
         findParseMessageHistory();
+
+        HashMap params = new HashMap<String, Object>();
+        callParseFunction("getTotalMessagesNoRead", params);
 
         return view;
     }
@@ -93,26 +97,45 @@ public class ChatHistoryFragment extends Fragment {
         if (globalApplication.isConectedToInternet()) {
             layoutInternetOff.setVisibility(View.GONE);
 
-            final ArrayList<String> sendersId = new ArrayList<>();
+            final ArrayList<ParseUser> sendersId = new ArrayList<>();
 
             ParseQuery<ParseZHistory> innerQuery = ParseQuery.getQuery(ParseZHistory.class);
             innerQuery.whereEqualTo(ParseZHistory.USER, currentUser);
 
-            ParseUser[] userIds = {currentUser};
+            final ParseUser[] userIds = {currentUser};
             ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
             query.whereMatchesKeyInQuery(ParseZMessage.SINCH_ID, ParseZHistory.SINCH_ID, innerQuery);
+            query.include(ParseZMessage.SENDER_ID);
+            query.include(ParseZMessage.RECIPIENT_ID);
+            query.orderByDescending("createdAt");
 
             query.findInBackground(new FindCallback<ParseZMessage>() {
                 @Override
                 public void done(List<ParseZMessage> zzMessages, ParseException e) {
                     if (e == null) {
+                        int index = 0;
                         for (ParseZMessage parseObj : zzMessages) {
-                            sendersId.add(parseObj.getSenderId().getObjectId());
-                            sendersId.add(parseObj.getRecipientId().getObjectId());
+
+                            if (!sendersId.contains(parseObj.getSenderId())) {
+                                sendersId.add(parseObj.getSenderId());
+                                HashMap params = new HashMap<String, Object>();
+                                params.put("sender", parseObj.getSenderId().getObjectId());
+                                params.put("recipient", parseObj.getRecipientId().getObjectId());
+                                callParseFunction("getMessagesNoRead", params);
+                            }
+                            if (!sendersId.contains(parseObj.getRecipientId())) {
+                                sendersId.add(parseObj.getRecipientId());
+                            }
+
+                            index++;
                         }
-                        sendersId.removeAll(Arrays.asList(new String[]{currentUser.getObjectId()}));
-                        Set<String> uniqueSenders = new HashSet<String>(sendersId);
-                        new RefreshDataUsersTask(getActivity(), currentUser, new ArrayList<String>(uniqueSenders), listViewHistory, lblChatNoFound, layoudHistoryFinder).execute();
+                        for (int i = 0; i < sendersId.size(); i++) {
+                            //Log.d("userMessage", sendersId.get(i) + " mensajesNoRead ");
+                        }
+
+                        sendersId.removeAll(Arrays.asList(currentUser));
+                        //Set<ParseUser> uniqueSenders = new HashSet<ParseUser>(sendersId); //new ArrayList<ParseUser>(uniqueSenders)
+                        new RefreshDataUsersTask(getActivity(), currentUser, sendersId, listViewHistory, lblChatNoFound, layoudHistoryFinder).execute();
                     } else {
                         Log.e("Parse.chat.history", e.getMessage());
                     }
@@ -187,6 +210,19 @@ public class ChatHistoryFragment extends Fragment {
         alert.show();
     }
 
+
+    private Integer callParseFunction(final String nameFunction, HashMap<String, Object> params) {
+        final int canMessages = 0;
+        ParseCloud.callFunctionInBackground(nameFunction, params, new FunctionCallback<Integer>() {
+            public void done(Integer result, ParseException e) {
+                if (e != null) {
+                    Log.e("Parse.Cloud." + nameFunction, e.getMessage());
+                    Log.e("Parse.Cloud." + nameFunction, String.valueOf(result));
+                }
+            }
+        });
+        return canMessages;
+    }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {

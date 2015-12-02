@@ -1,5 +1,6 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments.wizard;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -38,6 +39,7 @@ public class WizardFirstFragment extends Fragment {
     private static EditText txtFecha;
     private ParseUser currentUser;
     private RadioButton rbtnM, rbtnF;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -179,6 +181,7 @@ public class WizardFirstFragment extends Fragment {
 
         private Date fecha;
 
+        @SuppressLint("ValidFragment")
         public DatePickerFragment(Date fecha) {
             this.fecha = fecha;
         }

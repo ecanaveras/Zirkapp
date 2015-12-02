@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUser>> {
     private boolean searching;
-    private ArrayList<String> userList;
+    private ArrayList<ParseUser> userList;
     private Location currentLocation;
     private ParseUser currentUser;
     private LinearLayout layoutUsersNoFound, layoutUsersFinder;
@@ -70,7 +70,7 @@ public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUse
         this.gender = gender;
     }
 
-    public RefreshDataUsersTask(Context context, ParseUser currentUser, ArrayList<String> userList, ListView listHistory, TextView lblChatNoFound, LinearLayout layoutUsersFinder) {
+    public RefreshDataUsersTask(Context context, ParseUser currentUser, ArrayList<ParseUser> userList, ListView listHistory, TextView lblChatNoFound, LinearLayout layoutUsersFinder) {
         this.context = context;
         this.currentUser = currentUser;
         this.isSearchHistory = true;
@@ -93,7 +93,8 @@ public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUse
     @Override
     protected List<ParseUser> doInBackground(Integer... integers) {
         if (isSearchHistory)
-            return DataParseHelper.findUsersList(userList);
+            return userList;
+        //return DataParseHelper.findUsersList(userList);
 
         //Actualizar la ubicacion del usuario
         ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());

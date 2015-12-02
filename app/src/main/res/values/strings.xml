@@ -231,6 +231,7 @@
         <item>Compartir</item>
     </string-array>
 
+    <!--
     <array name="navigations_icons">
         <item>@drawable/ic_icon_radar_new</item>
         <item>@drawable/ic_icon_chat</item>
@@ -239,5 +240,6 @@
         <item>@drawable/ic_icon_star</item>
         <item>@drawable/ic_icon_share</item>
     </array>
+    -->
 
 </resources>
