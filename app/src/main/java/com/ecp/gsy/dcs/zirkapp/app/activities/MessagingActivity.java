@@ -4,6 +4,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -56,6 +59,7 @@ import java.util.Map;
 public class MessagingActivity extends SinchBaseActivity implements MessageClientListener {
 
     private static final String TAG = MessagingActivity.class.getSimpleName();
+    private static MessagingActivity instance = null;
 
     private String receptorId, receptorUsername, receptorName;
     private EditText txtMessageBodyField;
@@ -66,6 +70,14 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
     private MessageAdapter adapterMessage;
     private ImageButton btnSendMessage;
 
+
+    public static MessagingActivity getInstance() {
+        return instance;
+    }
+
+    public static boolean isRunning() {
+        return instance != null;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -424,6 +436,9 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
     @Override
     public void onIncomingMessage(MessageClient messageClient, Message message) {
         adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING);
+        Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), sound);
+        r.play();
     }
 
     @Override
@@ -458,28 +473,10 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
             String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
             new SendPushTask(receptorUser, currentUser.getObjectId(), name, message.getTextBody(), pushPairs, SendPushTask.PUSH_CHAT).execute();
         }
-        Log.d("onShouldSendPushData", "success");
-        //use an async task to make the http request
-        /*
-        class SendPushTask extends AsyncTask<Void, Void, Void> {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                HttpClient httpclient = new DefaultHttpClient();
-                //url of where your backend is hosted, can't be local!
-                HttpPost httppost = new HttpPost("http://www.zirkapp.com?reg_id=" + regId);
-                try {
-                    HttpResponse response = httpclient.execute(httppost);
-                    ResponseHandler<String> handler = new BasicResponseHandler();
-                    Log.d("HttpResponse", handler.handleResponse(response));
-                } catch (ClientProtocolException e) {
-                    Log.d("ClientProtocolException", e.toString());
-                } catch (IOException e) {
-                    Log.d("IOException", e.toString());
-                }
-                return null;
-            }
-        }
-        new SendPushTask().execute();
-        */
+        //Log.d("onShouldSendPushData", "success");
+    }
+
+    public ParseUser getReceptorUser() {
+        return receptorUser;
     }
 }

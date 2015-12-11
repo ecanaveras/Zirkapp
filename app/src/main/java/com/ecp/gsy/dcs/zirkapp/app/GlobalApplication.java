@@ -60,7 +60,7 @@ public class GlobalApplication extends Application {
     private Context context;
 
     //Controla si el chat esta habilidado
-    private static boolean chatEnabled = false;
+    private static boolean chatEnabled = true;
 
     //Controla los mensajes de GPS y NETWORK
     private static boolean isShowNetworkAlert = false;

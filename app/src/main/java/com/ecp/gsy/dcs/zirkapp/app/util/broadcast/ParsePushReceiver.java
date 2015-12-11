@@ -16,6 +16,7 @@ import android.util.Log;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.MessagingActivity;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
@@ -107,8 +108,11 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                     intent.putExtra("tab", "mensajes");
                     //Manejar Noti
                     GlobalApplication app = (GlobalApplication) context.getApplicationContext();
-                    if (app.isListeningNotifi() && app.getMessagingParseUser() != null && senderId.equals(app.getMessagingParseUser().getObjectId())) {
-                        notificar = false;
+                    if (MessagingActivity.isRunning()) {
+                        MessagingActivity m = MessagingActivity.getInstance();
+                        if (m.getReceptorUser().getObjectId().equals(senderId) && !app.isListeningNotifi()) {
+                            notificar = false;
+                        }
                     }
                     typeNotiString = "[Chat]";
                     break;

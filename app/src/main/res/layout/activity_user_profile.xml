@@ -53,61 +53,40 @@
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
+        android:background="@color/very_dark_gray"
+        android:minHeight="60dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <!--Contenido desplazable -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:gravity="bottom|center_vertical"
+            android:minHeight="60dp"
+            android:orientation="vertical"
+            android:padding="8dp">
 
-            <!--Contenido desplazable -->
-            <LinearLayout
+            <TextView
+                android:id="@+id/txtWall"
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="50dp"
+                android:maxLines="3"
+                android:text="I'm using Zirkapp"
+                android:textColor="@color/text_primary_color"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/txtEdad"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:text="20 años"
+                android:textColor="@color/text_primary_color"
+                android:textSize="10dp" />
 
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/very_dark_gray"
-                    android:minHeight="60dp"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="bottom|center_vertical"
-                        android:minHeight="50dp"
-                        android:orientation="vertical"
-                        android:padding="8dp">
-
-                        <TextView
-                            android:id="@+id/txtWall"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginRight="50dp"
-                            android:maxLines="3"
-                            android:text="I'm using Zirkapp"
-                            android:textColor="@color/text_primary_color"
-                            android:textSize="12dp" />
-
-                        <TextView
-                            android:id="@+id/txtEdad"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="20 años"
-                            android:textColor="@color/text_primary_color"
-                            android:textSize="10dp" />
-
-                    </LinearLayout>
-                </LinearLayout>
-
-            </LinearLayout>
         </LinearLayout>
+
 
     </android.support.v4.widget.NestedScrollView>
 
@@ -137,12 +116,12 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_margin="16dp"
+        android:backgroundTint="@color/default_primary_color"
         android:src="@drawable/ic_chat_white_24dp"
         app:borderWidth="0dp"
         app:elevation="6dp"
         app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|right|end"
-        app:rippleColor="@color/default_primary_color" />
+        app:layout_anchorGravity="bottom|right|end" />
 
 
 </android.support.design.widget.CoordinatorLayout>

@@ -290,6 +290,10 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
             }
             if (intent.getAction().equals("OPEN_FRAGMENT_NOTI")) {
 //                //Noti Fragment
+                if (NotificationsFragment.isRunning()) {
+                    NotificationsFragment n = NotificationsFragment.getInstance();
+                    n.findNotifications(currentUser);
+                }
                 selectItemDrawer(navigationView.getMenu().getItem(2));
             }
             if (intent.getAction().equals("OPEN_PROFILE_USER")) {

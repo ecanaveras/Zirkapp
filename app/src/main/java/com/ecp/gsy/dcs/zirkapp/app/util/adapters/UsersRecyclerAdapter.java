@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
@@ -73,7 +74,7 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
         ParseUser parseUser = userList.get(position);
         Intent intent;
         switch (view.getId()) {
-            case R.id.imgAvatar:
+            case R.id.lyUser:
                 //Ir la perfil del usuario
                 application.setProfileParseUser(parseUser);
                 intent = new Intent(context, UserProfileActivity.class);
@@ -118,16 +119,18 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
         public TextView lblNombreUsuario;
         public TextView lblEdad;
         public ImageView imgAvatar;
+        public LinearLayout lyUser;
 
         public UserViewHolder(View itemView, ItemClickListener listener) {
             super(itemView);
 
+            lyUser = (LinearLayout) itemView.findViewById(R.id.lyUser);
             lblNombreUsuario = (TextView) itemView.findViewById(R.id.lblNombreUsuario);
             lblEdad = (TextView) itemView.findViewById(R.id.lblEdad);
             imgAvatar = (ImageView) itemView.findViewById(R.id.imgAvatar);
             ImageButton btnOpenChat = (ImageButton) itemView.findViewById(R.id.btnOpenChat);
 
-            imgAvatar.setOnClickListener(this);
+            lyUser.setOnClickListener(this);
             btnOpenChat.setOnClickListener(this);
 
             this.listener = listener;
