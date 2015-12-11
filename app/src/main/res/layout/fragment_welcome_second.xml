@@ -3,7 +3,7 @@
     android:layout_height="match_parent"
     android:background="@color/default_primary_color"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:paddingTop="60dp">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -16,10 +16,13 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginRight="4dp"
+        android:layout_marginLeft="4dp"
         android:layout_gravity="center"
         android:layout_weight="1"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginBottom="40dp">
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -38,7 +41,7 @@
                 android:layout_height="fill_parent"
                 android:gravity="fill_horizontal|left|fill_vertical"
                 android:text="@string/lblWelcomeMsg1"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/text_primary_color"
                 android:textStyle="italic"
                 android:typeface="sans" />
@@ -59,7 +62,7 @@
                 android:layout_weight="1"
                 android:gravity="right|fill_vertical"
                 android:text="@string/lblWelcomeMsg2"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/text_primary_color"
                 android:textStyle="italic"
                 android:typeface="sans" />
@@ -89,7 +92,7 @@
                 android:layout_height="fill_parent"
                 android:gravity="fill_horizontal|left|fill_vertical"
                 android:text="@string/lblWelcomeMsg3"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/text_primary_color"
                 android:textStyle="italic"
                 android:typeface="sans" />

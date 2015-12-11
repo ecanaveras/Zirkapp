@@ -4,8 +4,8 @@ import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZFavorite;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
-import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZVisit;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
@@ -23,8 +23,6 @@ import java.util.List;
  */
 public class DataParseHelper {
 
-    private static boolean deleteOk;
-
     /**
      * Busca Usuarios de acuerdo a la posicion
      *
@@ -32,7 +30,7 @@ public class DataParseHelper {
      * @param cantKmAround
      * @return
      */
-    public static List<ParseUser> findUsersLocation(ParseUser currentUser, Location currentLocation, int cantKmAround) {
+    public static List<ParseUser> findUsersLocation(ParseUser currentUser, Location currentLocation, int cantKmAround, String gender) {
         List<ParseUser> listUsers = new ArrayList<>();
         //Buscar Usuarios
         ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
@@ -44,7 +42,10 @@ public class DataParseHelper {
         //Buscar usuarios en el rango de Km
         query.whereWithinKilometers("location", parseGeoPoint, cantKmAround);
         query.whereEqualTo("online", true);
-        query.orderByAscending("name");
+        query.whereNear("location", parseGeoPoint);
+        if (gender != null) {
+            query.whereEqualTo("gender", gender);
+        }
         try {
             listUsers = query.find();
         } catch (ParseException e) {
@@ -96,6 +97,50 @@ public class DataParseHelper {
         }
 
         return listParseComments;
+    }
+
+    /**
+     * Busca los favoritos de un Usuario
+     *
+     * @param parseUser
+     * @return
+     */
+    public static List<ParseZFavorite> findFavorites(ParseUser parseUser) {
+        List<ParseZFavorite> listParseFavorites = new ArrayList<>();
+        //Buscar por Zimess
+        ParseQuery<ParseZFavorite> query = ParseQuery.getQuery(ParseZFavorite.class);
+        query.whereEqualTo(ParseZFavorite.USER, parseUser);
+        query.orderByAscending("createdAt");
+        try {
+            listParseFavorites = query.find();
+        } catch (ParseException e) {
+            Log.e("Parse.Favorites", e.getMessage());
+        }
+
+        return listParseFavorites;
+    }
+
+
+    /**
+     * Retorna el favorito de un zimess y usuario
+     *
+     * @param zimess
+     * @param currentUser
+     * @return
+     */
+    public static ParseZFavorite findFavorite(ParseZimess zimess, ParseUser currentUser) {
+        //Buscar por Zimess
+        ParseQuery<ParseZFavorite> query = ParseQuery.getQuery(ParseZFavorite.class);
+        query.whereEqualTo(ParseZFavorite.ZIMESS_ID, zimess);
+        query.whereEqualTo(ParseZFavorite.USER, currentUser);
+        query.setLimit(1);
+        try {
+            return query.getFirst();
+        } catch (ParseException e) {
+            Log.e("Parse.Favorites", e.getMessage());
+        }
+
+        return null;
     }
 
     /**
@@ -158,6 +203,9 @@ public class DataParseHelper {
                 break;
         }
 
+        //Limite de Zimess
+        query.setLimit(200);
+
         try {
             query.include(ParseZimess.USER);
             listZimess = query.find();
@@ -207,47 +255,6 @@ public class DataParseHelper {
         }
 
         return listZimess;
-    }
-
-    /**
-     * Devuelve la cantidad Zimess de acuerdo al usuario
-     *
-     * @param parseUser
-     * * @deprecated No se usa, estos datos ahora se almacenan en ParseUser
-     * @return
-     */
-    public static Integer findCountZimess(ParseUser parseUser) {
-        Integer cantZimess = 0;
-        //Buscar Zimess
-        ParseQuery<ParseZimess> query = ParseQuery.getQuery(ParseZimess.class);
-        query.whereEqualTo(ParseZimess.USER, parseUser);
-        try {
-            cantZimess = query.count();
-        } catch (ParseException e) {
-            Log.e("Parse.Count.Zimess", e.getMessage());
-        }
-
-        return cantZimess;
-    }
-
-    /**
-     * Busca los datos de la visita del perfil
-     *
-     * @param parseUser
-     * @deprecated No se usa, estos datos ahora se almacenan en ParseUser
-     * @return
-     */
-    public static ParseZVisit findDataVisit(ParseUser parseUser) {
-        List<ParseZVisit> listVisita = new ArrayList<>();
-        ParseQuery<ParseZVisit> query = ParseQuery.getQuery(ParseZVisit.class);
-        query.whereEqualTo("user", parseUser);
-        try {
-            listVisita = query.find();
-        } catch (ParseException e) {
-            Log.e("Parse.Visita", e.getMessage());
-        }
-
-        return listVisita.size() > 0 ? listVisita.get(0) : null;
     }
 
 
@@ -300,8 +307,7 @@ public class DataParseHelper {
      *
      * @return
      */
-    public static boolean deleteDataZimess(final ParseZimess zimess) {
-        deleteOk = false;
+    public static boolean deleteDataZimess(ParseZimess zimess) {
         if (zimess != null) {
             //Buscar los comentarios. No necesario porque se usa ParseCloud
             /*List<ParseZComment> listParseComments = findComments(zimess);
@@ -321,11 +327,37 @@ public class DataParseHelper {
                         }
                     }
                 });
-                deleteOk = true;
+                return true;
             } catch (ParseException e1) {
                 Log.e("Parse.delete.Zimess", e1.getMessage());
             }
         }
-        return deleteOk;
+        return false;
+    }
+
+
+    /**
+     * Elimina el favorito de un Zimess
+     *
+     * @return
+     */
+    public static boolean deleteZFavorite(ParseZFavorite zFavorite) {
+        if (zFavorite != null) {
+            try {
+                zFavorite.delete();
+                //Usando ParseCloud
+                ParseCloud.callFunctionInBackground("ParseZFavorite", new HashMap<String, Object>(), new FunctionCallback<String>() {
+                    public void done(String result, ParseException e) {
+                        if (e != null) {
+                            Log.e("Parse.Cloud.Favorite", e.getMessage());
+                        }
+                    }
+                });
+                return true;
+            } catch (ParseException e1) {
+                Log.e("Parse.delete.Favorite", e1.getMessage());
+            }
+        }
+        return false;
     }
 }

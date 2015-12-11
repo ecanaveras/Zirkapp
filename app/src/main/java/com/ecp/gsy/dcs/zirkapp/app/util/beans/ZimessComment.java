@@ -20,15 +20,6 @@ public class ZimessComment {
     private Date createAt;
     private Bitmap avatar;
 
-    /**
-     * Retorna la imagen del usuario
-     *
-     * @return
-     */
-    public RoundedBitmapDrawable getAvatar() {
-        return GlobalApplication.getAvatar(userComment);
-    }
-
     public String getCommentId() {
         return commentId;
     }

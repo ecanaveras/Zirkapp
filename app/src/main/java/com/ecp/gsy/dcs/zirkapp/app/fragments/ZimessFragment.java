@@ -4,10 +4,13 @@ import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.LayerDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,15 +28,22 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MyZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.NewZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.util.Utils;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessRecyclerAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.CounterNotificationsTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+
+import java.util.HashMap;
 
 /**
  * Created by Elder on 23/02/2015.
@@ -41,6 +51,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
 public class ZimessFragment extends Fragment {
 
     private static ZimessFragment instance = null;
+    public static final String TAG = ZimessFragment.class.getSimpleName();
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -51,16 +62,29 @@ public class ZimessFragment extends Fragment {
     private LinearLayout layoutZimessNoFound, layoutInternetOff, layoutZimessFinder, layoutGpsOff, layoutZimessDefault;
     private GlobalApplication globalApplication;
 
-    private AlertDialogPro sortDialog;
+    private AlertDialog sortDialog;
     private TextView lblRangoZimess;
     private ImageView avatar;
+    private SharedPreferences preferences;
+    private ParseUser currentUser;
+
+    public static ZimessFragment newInstance(Bundle arguments) {
+        ZimessFragment zimessFragment = new ZimessFragment();
+        if (arguments != null) {
+            zimessFragment.setArguments(arguments);
+        }
+        return zimessFragment;
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_zimess, container, false);
         setHasOptionsMenu(true);
+//        setRetainInstance(true);
 
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
+        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         inicializarCompUI(view);
 
@@ -86,7 +110,7 @@ public class ZimessFragment extends Fragment {
             @Override
             protected String doInBackground(Void... params) {
                 try {
-                    Thread.sleep(4000); // 4 segundos
+                    Thread.sleep(0); // 2 segundos
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -111,6 +135,15 @@ public class ZimessFragment extends Fragment {
         ImageView imageView = (ImageView) view.findViewById(R.id.imgLogoZirkapp);
         Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.fade);
         imageView.startAnimation(animation);
+
+        FloatingActionButton btnNewZimess = (FloatingActionButton) view.findViewById(R.id.btnNewZimess);
+        btnNewZimess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), NewZimessActivity.class);
+                startActivity(intent);
+            }
+        });
 
         lblRangoZimess = (TextView) view.findViewById(R.id.lblInfoRango);
 
@@ -157,7 +190,6 @@ public class ZimessFragment extends Fragment {
             layoutGpsOff.setVisibility(View.GONE);
             layoutZimessDefault.setVisibility(View.GONE);
             //Tomar valores de las preferencias de usuarios
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             int dist_min = Integer.parseInt(preferences.getString("min_dist_list", "-1"));
             int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "10"));
 
@@ -193,7 +225,7 @@ public class ZimessFragment extends Fragment {
     private void showSortDialog() {
         sortDialog = null;
         final CharSequence[] optionsSort = {getResources().getString(R.string.msgMoreRecents), getResources().getString(R.string.mgsMoreNear)};
-        AlertDialogPro.Builder builder = new AlertDialogPro.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
         builder.setTitle("Ordenar...");
         builder.setSingleChoiceItems(optionsSort, globalApplication.getSortZimess(), new DialogInterface.OnClickListener() {
             @Override
@@ -230,8 +262,11 @@ public class ZimessFragment extends Fragment {
                     LocationService locationService = LocationService.getInstance();
                     if (locationService != null) {
                         android.location.Location tmpLocation = locationService.getCurrentLocation();
-                        if (tmpLocation != null)
+                        if (tmpLocation != null) {
                             location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+                            Log.d("Zimess, Latitude", tmpLocation.getLatitude() + "");
+                            Log.d("Zimess, Longitude", tmpLocation.getLongitude() + "");
+                        }
                     }
                 } else {
                     Log.i("ZimessGetLocation", LocationService.class.getSimpleName() + " not running");
@@ -284,8 +319,19 @@ public class ZimessFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
-        inflater.inflate(R.menu.menu_fragment_zimess, menu);
+        inflater.inflate(R.menu.menu_zimess_fragment, menu);
         menuList = menu;
+        MenuItem itemGoNoti = menu.findItem(R.id.action_bar_go_noti);
+        MenuItem itemGoInbox = menu.findItem(R.id.action_bar_go_inbox);
+        //Obtener Drawable del icon
+        LayerDrawable iconNoti = (LayerDrawable) itemGoNoti.getIcon();
+        LayerDrawable iconMessages = (LayerDrawable) itemGoInbox.getIcon();
+        Utils.setBadgeCount(getActivity(), iconNoti, 0);
+        Utils.setBadgeCount(getActivity(), iconMessages, 0);
+        //Task para contar mensajes y notificaciones sin leer
+        new CounterNotificationsTask(getActivity(), iconNoti, CounterNotificationsTask.MENU_ITEM_NOTIFI).execute();
+        new CounterNotificationsTask(getActivity(), iconMessages, CounterNotificationsTask.MENU_ITEM_MESSAGES).execute();
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -293,10 +339,19 @@ public class ZimessFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         //Manejar seleccion en el menú
         Intent intent;
+        MainActivity mainActivity;
         switch (item.getItemId()) {
             case R.id.action_bar_new_zimess:
                 intent = new Intent(getActivity(), NewZimessActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.action_bar_go_inbox:
+                mainActivity = (MainActivity) getActivity();
+                mainActivity.selectItemDrawer(mainActivity.getNavItem(1), 1);
+                break;
+            case R.id.action_bar_go_noti:
+                mainActivity = (MainActivity) getActivity();
+                mainActivity.selectItemDrawer(mainActivity.getNavItem(2));
                 break;
             case R.id.action_bar_my_zimess:
                 intent = new Intent(getActivity(), MyZimessActivity.class);

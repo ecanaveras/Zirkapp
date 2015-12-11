@@ -37,10 +37,6 @@ public class LocationService extends Service {
      */
     public static final int TIME_DIFFERENCE_THRESHOLD = 1 * 60 * 1000;
 
-    //public static long TIME_LAST_LOCATION;
-
-
-    //private final Handler handler = new Handler();
 
     protected LocationManager locationManager;
 
@@ -48,46 +44,17 @@ public class LocationService extends Service {
     public void onCreate() {
         instance = this;
         globalApplication = (GlobalApplication) this.getApplicationContext();
-//        getCurrentLocation();
-        //getLocation();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "started");
-        //handler.post(getLocation);
         return super.onStartCommand(intent, flags, startId);
     }
-
-    /*private final Runnable getLocation = new Runnable() {
-        @Override
-        public void run() {
-            if (intent == null) intent = new Intent(LocationReceiver.ACTION_LISTENER);
-            getCurrentLocation();
-        }
-    };*/
 
     public static boolean isRunning() {
         return instance != null;
     }
-
-    /*public void startAutomaticLocation() {
-        handler.post(getLocation);
-    }*/
-
-    /*private void getLocation() {
-        isAutomatic = true;
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        String provider = getProviderName(locationManager);
-        Location location = locationManager.getLastKnownLocation(provider);
-        listener = new MyLocationListener();
-//        if (location != null) {
-//            listener.onLocationChanged(location);
-//        }
-        locationManager.requestLocationUpdates(provider, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, listener);
-        Log.d("provider.location", provider);
-    }
-*/
 
     /**
      * Retorna la ubicacion actual del dispositivo
@@ -142,7 +109,6 @@ public class LocationService extends Service {
             listener = new MyLocationListener();
             locationManager.requestLocationUpdates(provider, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, listener);
         }
-        //TIME_LAST_LOCATION = System.currentTimeMillis();
         return location;
     }
 
@@ -196,34 +162,12 @@ public class LocationService extends Service {
             return true;
         }
         return false;
-
-        /*if (oldLocation == null) {
-            return true;
-        }
-
-        //Comprobar si la nueva ubicacion es mas reciente
-        boolean isNewer = newLocation.getTime() > oldLocation.getTime();
-
-        //Comprobar si la nueva ubicacion es mas precisa, la precision es el radio en metrios, menos mejor.
-        boolean isMoreAccurate = newLocation.getAccuracy() < oldLocation.getAccuracy();
-
-        if (isMoreAccurate && isNewer) {
-            //Mas precisa y mas reciente
-            return true;
-        } else if (isMoreAccurate && !isNewer) {
-            //Mas precisa, pero desactualizada debido a movimientos del usuario
-            //Establecemos un umbral para determinar la viabilidad de la ubicacion
-            long timeDiff = newLocation.getTime() - oldLocation.getTime();
-            if (timeDiff > -TIME_DIFFERENCE_THRESHOLD) {
-                return true;
-            }
-        }
-
-        return false;*/
     }
 
 
-    /** Checks whether two providers are the same */
+    /**
+     * Checks whether two providers are the same
+     */
     private boolean isSameProvider(String provider1, String provider2) {
         if (provider1 == null) {
             return provider2 == null;
@@ -274,13 +218,14 @@ public class LocationService extends Service {
 
         @Override
         public void onLocationChanged(Location location) {
+            sendItent(location);
             //Comprobar si la nueva ubicacion es mejor
-            if (isBetterLocation(oldLocation, location)) { //Se envia la mejor ubicacion
+            /*if (isBetterLocation(oldLocation, location)) { //Se envia la mejor ubicacion
                 sendItent(location);
                 oldLocation = location;
             } else {
                 sendItent(oldLocation);
-            }
+            }*/
         }
 
         @Override

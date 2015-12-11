@@ -44,14 +44,24 @@
             android:name=".activities.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.ManagerLogin"
             android:label="@string/lblLogin"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity android:name=".activities.MessagingActivity">
+            android:windowSoftInputMode="stateHidden|adjustResize"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.ManagerWizard"
+            android:label="@string/lblWelcome"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="stateHidden|adjustResize"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.MessagingActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
@@ -100,13 +110,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
         </activity>
-        <activity
-            android:name=".activities.ChatHistoryActivity"
-            android:label="@string/title_activity_chat_history">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainActivity" />
-        </activity>
 
         <activity
             android:name=".activities.AboutActivity"
@@ -125,21 +128,20 @@
                 android:value=".activities.MainActivity" />
         </activity>
 
-        <!-- Fcebook -->
+        <!-- Fcebook - ->
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            -->
 
         <!--Servicios-->
-        <service android:name=".util.services.MessageService" />
         <service android:name=".util.services.LocationService" />
+        <service android:name=".util.services.SinchService" />
 
         <!--Receivers-->
-        <receiver
-            android:name=".util.broadcast.LocationReceiver"
-            android:exported="false">
+        <receiver android:name=".util.broadcast.LocationReceiver">
             <intent-filter>
                 <action android:name="broadcast.gps.location.change" />
             </intent-filter>
@@ -172,7 +174,6 @@
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                <!-- IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name. -->
                 <category android:name="com.ecp.gsy.dcs.zirkapp" />
             </intent-filter>
         </receiver>
@@ -197,10 +198,10 @@
             android:value="id:323224512527" />;
         <!-- FIN PARSE -->
 
-        <!-- Facebook -->
+        <!-- Facebook - ->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id" />
+            android:value="@string/facebook_app_id" /> -->
 
         <meta-data
             android:name="com.google.android.gms.version"

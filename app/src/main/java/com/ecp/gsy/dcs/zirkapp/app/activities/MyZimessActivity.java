@@ -3,7 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,7 +28,7 @@ import com.parse.ParseUser;
 /**
  * Created by Elder on 21/03/2015.
  */
-public class MyZimessActivity extends ActionBarActivity {
+public class MyZimessActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private ZimessRecyclerAdapter zReciclerAdapter;
@@ -135,7 +135,7 @@ public class MyZimessActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_activity_my_zimess, menu);
+        //getMenuInflater().inflate(R.menu.menu_activity_my_zimess, menu);
         return true;
     }
 

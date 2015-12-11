@@ -12,6 +12,8 @@ import android.widget.TextView;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
+import com.ecp.gsy.dcs.zirkapp.app.util.picasso.CircleTransform;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.List;
  */
 public class NotifiAdapter extends BaseAdapter {
 
+    private final GlobalApplication globalApplication;
     private List<ParseZNotifi> notificationArrayList;
     private Context context;
     private int cantNotiNoRead = 0;
@@ -28,6 +31,7 @@ public class NotifiAdapter extends BaseAdapter {
     public NotifiAdapter(Context context, List<ParseZNotifi> notifiList) {
         this.notificationArrayList = notifiList;
         this.context = context;
+        globalApplication = (GlobalApplication) context.getApplicationContext();
     }
 
     @Override
@@ -73,8 +77,10 @@ public class NotifiAdapter extends BaseAdapter {
                 icon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_icon_location));
                 break;
         }*/
-        //La imagen debe ser cuadrada
-        avatar.setImageDrawable(GlobalApplication.getAvatar(item.getSenderUser()));
+        //La imgAvatar debe ser cuadrada
+        globalApplication.setAvatarRoundedResize(item.getSenderUser().getParseFile("avatar"), avatar, 100, 100);
+
+        //avatar.setImageDrawable(GlobalApplication.getAvatar(item.getUserMessage()));
         summary.setText(item.getSummaryNoti());
         detail.setText(item.getDetailNoti());
         createdAt.setText(new SimpleDateFormat("dd/MM/yyyy hh:mm a").format(item.getCreatedAt()));

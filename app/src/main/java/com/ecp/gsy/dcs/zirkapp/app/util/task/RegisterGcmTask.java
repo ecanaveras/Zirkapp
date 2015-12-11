@@ -1,11 +1,10 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.task;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
-import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.IOException;
@@ -16,49 +15,47 @@ import java.io.IOException;
 
 public class RegisterGcmTask extends AsyncTask<Void, Void, String> {
 
-    private GlobalApplication globalApplication;
+    private GlobalApplication application;
     private Context context;
     private GoogleCloudMessaging gcm;
+    private String username;
 
-    public RegisterGcmTask(GoogleCloudMessaging gcm, Context applicationContext) {
+    public RegisterGcmTask(GoogleCloudMessaging gcm, String username, Context applicationContext) {
         this.gcm = gcm;
+        this.username = username;
         this.context = applicationContext;
-        globalApplication = (GlobalApplication) context.getApplicationContext();
+        application = (GlobalApplication) context.getApplicationContext();
     }
 
     @Override
     protected String doInBackground(Void... params) {
-        if (gcm == null) {
-            gcm = GoogleCloudMessaging.getInstance(context);
-        }
 
-        String msg = "";
+        String regId = "";
         try {
-            String regId = gcm.register(globalApplication.SENDER_ID);
-            msg = regId;
-
-            globalApplication.storeRegistrationId(context, regId);
-            if (regId != null) {
-                globalApplication.storeParseInstallation();
-            }
+            //Obtenemos el id de la instalacion
+            regId = gcm.register(application.SENDER_ID);
+            //Guardamos los datos de la instalacion
+            application.storeRegistrationId(context, regId, username);
+            //Info del gcm id
+            Log.d("GCM regID", "Registrado en GCM: registration_id=" + regId);
 
         } catch (IOException e) {
-            msg = "Error :" + e.getMessage();
-            globalApplication.storeParseInstallation();
+            Log.e("Error registro GCM:", e.getMessage());
         }
 
-        return msg;
+        return regId;
     }
 
     @Override
     protected void onPostExecute(String _msg) {
         if (context != null) {
             //Iniciar SINCH
-            if (GlobalApplication.isChatEnabled()) {
+            /*if (GlobalApplication.isChatEnabled()) {
                 Intent serviceIntent = new Intent(context.getApplicationContext(), MessageService.class);
                 serviceIntent.putExtra("regId", _msg);
                 context.startService(serviceIntent);
             }
+            */
         }
     }
 }

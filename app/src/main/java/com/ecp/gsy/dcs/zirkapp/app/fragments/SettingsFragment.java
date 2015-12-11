@@ -1,6 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,16 +18,19 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
-import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.AboutActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerLogin;
+import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerWizard;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
@@ -100,11 +104,11 @@ public class SettingsFragment extends PreferenceFragment {
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_options_distance);
 
-        // Add 'notifications' preferences, and a corresponding header.
+        /* // Add 'notifications' preferences, and a corresponding header.
         fakeHeader = new PreferenceCategory(getActivity());
         fakeHeader.setTitle(R.string.pref_header_notifications);
         getPreferenceScreen().addPreference(fakeHeader);
-        addPreferencesFromResource(R.xml.pref_options_notification);
+        addPreferencesFromResource(R.xml.pref_options_notification);*/
 
        /* // Add 'data and sync' preferences, and a corresponding header.
         fakeHeader = new PreferenceCategory(getActivity());
@@ -131,6 +135,16 @@ public class SettingsFragment extends PreferenceFragment {
             }
         });
 
+        Preference pref_edit_profile = findPreference("go_to_profile");
+        pref_edit_profile.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(getActivity(), ManagerWizard.class);
+                startActivity(intent);
+                return false;
+            }
+        });
+
 
         //USERS LOCK
         Preference pref_users_lock = findPreference("users_lock");
@@ -149,7 +163,7 @@ public class SettingsFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 //Deteniendo los servicios Sinch
-                AlertDialogPro.Builder alert = new AlertDialogPro.Builder(getActivity());
+                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle);
                 alert.setMessage(getString(R.string.msgLogout2));
                 alert.setPositiveButton(getString(R.string.lblOk), new DialogInterface.OnClickListener() {
                     @Override
@@ -167,10 +181,17 @@ public class SettingsFragment extends PreferenceFragment {
                         Toast toast = Toast.makeText(getActivity(), getResources().getString(R.string.msgLogoutOk), Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 10, 0);
                         toast.show();
-                        getActivity().moveTaskToBack(false);
-                        getActivity().finish();
+
+                        if (MainActivity.instance != null) {
+                            MainActivity.instance.finish();
+                        }
+
                         Intent intent = new Intent(getActivity(), ManagerLogin.class);
                         intent.putExtra("logout", true);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                        ActivityCompat.finishAffinity(getActivity());
                         startActivity(intent);
                     }
                 });
@@ -203,7 +224,7 @@ public class SettingsFragment extends PreferenceFragment {
         // to reflect the new value, per the Android Design guidelines.
         bindPreferenceSummaryToValue(findPreference("min_dist_list"));
         bindPreferenceSummaryToValue(findPreference("max_dist_list"));
-        bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
+        //bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
         //bindPreferenceSummaryToValue(findPreference("sync_frequency"));
 
     }
@@ -362,7 +383,7 @@ public class SettingsFragment extends PreferenceFragment {
      * This fragment shows notification preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    /*@TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class NotificationPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -375,7 +396,7 @@ public class SettingsFragment extends PreferenceFragment {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
         }
-    }
+    }*/
 
     /**
      * This fragment shows data and sync preferences only. It is used when the

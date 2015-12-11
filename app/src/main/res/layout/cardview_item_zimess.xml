@@ -1,145 +1,206 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="4dp"
-    android:layout_marginRight="4dp"
-    android:background="@color/text_primary_color"
-    android:minHeight="80dp"
-    android:orientation="vertical"
-    card_view:cardCornerRadius="3dp"
-    card_view:cardElevation="1dp"
-    card_view:cardUseCompatPadding="true">
+    android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:id="@+id/layoutBodyZimess"
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginRight="6dp"
-        android:layout_marginTop="4dp">
+        android:layout_marginBottom="1dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="4dp"
+        android:orientation="vertical"
+        card_view:cardCornerRadius="3dp"
+        card_view:cardElevation="1dp"
+        card_view:cardUseCompatPadding="false">
 
-        <!--Avatar y Distancia-->
+
         <LinearLayout
-            android:layout_width="72dp"
-            android:layout_height="75dp"
-            android:layout_margin="4dp"
-            android:orientation="vertical">
+            android:id="@+id/layoutBodyZimess"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="4dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="4dp">
 
-            <ImageView
-                android:id="@+id/imgAvatarItem"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:adjustViewBounds="true"
-                android:clickable="true"
-                android:src="@drawable/ic_user_male" />
-
-        </LinearLayout>
-
-        <!--Datos del perfil, y Zimess-->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
+            <!--Avatar y Distancia-->
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="22dp">
+                android:layout_width="72dp"
+                android:layout_height="75dp"
+                android:layout_margin="2dp"
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/lblNombreUsuario"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="4dp"
-                    android:gravity="bottom"
-                    android:text="Zirkapp"
-                    android:textColor="@color/accent_color"
-                    android:textSize="18dp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/lblUserName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1px"
-                    android:gravity="bottom"
-                    android:textColor="@color/divider_color"
-                    android:textSize="14dp" />
+                <ImageView
+                    android:id="@+id/imgAvatarItem"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:clickable="true"
+                    android:src="@drawable/ic_user_male"
+                    android:transitionName="profile_image" />
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/lblZimess"
+            <!--Datos del perfil, y Zimess-->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
                 android:layout_marginTop="2dp"
                 android:layout_weight="1"
-                android:fontFamily="sans-serif"
-                android:text="body"
-                android:textColor="@color/secondary_text_color"
-                android:textSize="16dp" />
+                android:orientation="vertical">
 
-            <!--Otros datos-->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="18dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="2dp">
+                <LinearLayout
+                    android:layout_width="226dp"
+                    android:layout_height="22dp">
 
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:gravity="center_vertical"
-                    android:src="@drawable/ic_icon_location" />
+                    <TextView
+                        android:id="@+id/lblNombreUsuario"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="4dp"
+                        android:gravity="bottom"
+                        android:text="Zirkapp"
+                        android:textColor="@color/thirty_text_color"
+                        android:textSize="18dp"
+                        android:textStyle="bold"
+                        android:singleLine="true"/>
 
-                <TextView
-                    android:id="@+id/lblDistance"
-                    style="@style/mini_text"
-                    android:layout_width="60dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="1dp"
-                    android:text="0m" />
+                    <TextView
+                        android:id="@+id/lblUserName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="1px"
+                        android:gravity="bottom"
+                        android:textColor="@color/divider_color"
+                        android:textSize="14dp"
+                        android:visibility="gone" />
 
-                <ImageView
-                    android:id="@+id/imgComment"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:gravity="center_vertical"
-                    android:src="@drawable/ic_icon_response" />
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/lblCantComments"
-                    style="@style/mini_text"
-                    android:layout_width="60dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="1dp"
-                    android:gravity="center_vertical"
-                    android:text="0" />
+                    android:id="@+id/lblZimess"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="sans-serif"
+                    android:minHeight="40dp"
+                    android:maxLength="300"
+                    android:singleLine="false"
+                    android:text="Lorem ipsum dolor sit amet"
+                    android:textColor="@color/secondary_text_color"
+                    android:textIsSelectable="false"
+                    android:textSize="16dp" />
 
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:gravity="center_vertical"
-                    android:src="@drawable/ic_icon_time" />
+                <View
+                    style="@style/line_divider_h_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp" />
 
-                <TextView
-                    android:id="@+id/txtTiempo"
-                    style="@style/mini_text"
-                    android:layout_width="60dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="1dp"
-                    android:gravity="center_vertical"
-                    android:text="1h" />
+                <!--Otros datos-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="18dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginTop="2dp"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:id="@+id/lyFavorito"
+                        android:layout_width="wrap_content"
+                        android:layout_height="16dp"
+                        android:clickable="true">
+
+                        <ImageView
+                            android:id="@+id/imgFav"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_icon_fav" />
+
+                        <TextView
+                            android:id="@+id/lblCantFavs"
+                            style="@style/mini_text"
+                            android:layout_width="60dp"
+                            android:layout_height="16dp"
+                            android:layout_marginLeft="1dp" />
+
+                    </LinearLayout>
+
+                    <!--<ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center_vertical"
+                        android:src="@drawable/ic_icon_location" />
+
+                    <TextView
+                        android:id="@+id/lblDistance2"
+                        style="@style/mini_text"
+                        android:layout_width="60dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="1dp"
+                        android:text="0m" />-->
+
+                    <ImageView
+                        android:id="@+id/imgComment"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_icon_response" />
+
+                    <TextView
+                        android:id="@+id/lblCantComments"
+                        style="@style/mini_text"
+                        android:layout_width="60dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="1dp" />
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:gravity="center_vertical"
+                        android:src="@drawable/ic_icon_time" />
+
+                    <TextView
+                        android:id="@+id/txtTiempo"
+                        style="@style/mini_text"
+                        android:layout_width="60dp"
+                        android:layout_height="16dp"
+                        android:layout_marginLeft="1dp"
+                        android:text="1h" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
         </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="60dp"
+        android:layout_height="35dp"
+        android:layout_gravity="right"
+        android:layout_marginRight="-2dp"
+        android:layout_marginTop="14dp"
+        android:elevation="6dp"
+        android:translationZ="3dp">
+
+        <TextView
+            android:id="@+id/lblDistance"
+            style="@style/mini_text"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/ic_ribbon_red"
+            android:gravity="center_horizontal"
+            android:paddingTop="3dp"
+            android:text="1.2 Km"
+            android:textColor="@color/text_primary_color" />
 
     </LinearLayout>
 
-</android.support.v7.widget.CardView>
+</FrameLayout>

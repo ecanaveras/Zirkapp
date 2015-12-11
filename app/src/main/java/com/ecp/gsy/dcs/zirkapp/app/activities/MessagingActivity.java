@@ -1,21 +1,21 @@
 package com.ecp.gsy.dcs.zirkapp.app.activities;
 
 import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -23,13 +23,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
-import com.ecp.gsy.dcs.zirkapp.app.util.services.MessageService;
+import com.ecp.gsy.dcs.zirkapp.app.util.sinch.SinchBaseActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -43,16 +43,19 @@ import com.sinch.android.rtc.messaging.MessageClient;
 import com.sinch.android.rtc.messaging.MessageClientListener;
 import com.sinch.android.rtc.messaging.MessageDeliveryInfo;
 import com.sinch.android.rtc.messaging.MessageFailureInfo;
-import com.sinch.android.rtc.messaging.WritableMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Elder on 21/02/2015.
  */
-public class MessagingActivity extends ActionBarActivity {
+public class MessagingActivity extends SinchBaseActivity implements MessageClientListener {
+
+    private static final String TAG = MessagingActivity.class.getSimpleName();
 
     private String receptorId, receptorUsername, receptorName;
     private EditText txtMessageBodyField;
@@ -60,13 +63,8 @@ public class MessagingActivity extends ActionBarActivity {
     private ListView listMessage;
     private GlobalApplication globalApplication;
     private ProgressBar progressBar;
-    private WritableMessage writableMessage;
     private MessageAdapter adapterMessage;
-
-    //Sinch
-    private MessageService.MessageServiceInterface messageService;
-    private ServiceConnection serviceConnection = new MyServiceConnection();
-    private MyMessageClientListener messageClientListener = new MyMessageClientListener();
+    private ImageButton btnSendMessage;
 
 
     @Override
@@ -74,18 +72,24 @@ public class MessagingActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messaging);
 
-        bindService(new Intent(this, MessageService.class), serviceConnection, BIND_AUTO_CREATE);
-
         globalApplication = (GlobalApplication) getApplicationContext();
         //Usuario actual
-        currentUser = globalApplication.getCurrentUser();
+        currentUser = ParseUser.getCurrentUser();
 
         //Usuario receptor
-        receptorUser = globalApplication.getCustomParseUser();
+        receptorUser = globalApplication.getMessagingParseUser();
+
         if (receptorUser != null) {
             receptorId = receptorUser.getObjectId();
             receptorUsername = receptorUser.getUsername();
             receptorName = receptorUser.getString("name");
+            Log.i("SinchReceptor", receptorUser.getObjectId());
+        } else {
+            finish();
+        }
+
+        if (getSinchServiceInterface() != null) {
+            getSinchServiceInterface().addMessageClientListener(this);
         }
 
         initComponentUI();
@@ -108,7 +112,9 @@ public class MessagingActivity extends ActionBarActivity {
 
         txtMessageBodyField = (EditText) findViewById(R.id.txtMessageBodyField);
 
-        findViewById(R.id.btnSendMessage).setOnClickListener(new View.OnClickListener() {
+        btnSendMessage = (ImageButton) findViewById(R.id.btnSendMessage);
+
+        btnSendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendMessage();
@@ -128,14 +134,7 @@ public class MessagingActivity extends ActionBarActivity {
 
             View customView = getLayoutInflater().inflate(R.layout.actionbar_user_title, null);
             ImageView imageView = (ImageView) customView.findViewById(R.id.imgAvatar);
-            imageView.setImageDrawable(GlobalApplication.getAvatar(receptorUser));
-           /* imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    view.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.anim_image_click));
-                    onBackPressed();
-                }
-            });*/
+            globalApplication.setAvatarRoundedResize(receptorUser.getParseFile("avatar"), imageView, 100, 100);
             LinearLayout layoutActionBarTitle = (LinearLayout) customView.findViewById(R.id.layoutActionbarTitle);
             TextView titleBar = (TextView) customView.findViewById(R.id.actionbarTitle);
             TextView subTitleBar = (TextView) customView.findViewById(R.id.actionbarSubTitle);
@@ -151,7 +150,7 @@ public class MessagingActivity extends ActionBarActivity {
                     view.startAnimation(AnimationUtils.loadAnimation(MessagingActivity.this, R.anim.anim_image_click));
                     Intent intent = new Intent(MessagingActivity.this, UserProfileActivity.class);
                     //intent.putExtra("activityfrom", MessagingActivity.class.getSimpleName());
-                    globalApplication.setCustomParseUser(receptorUser);
+                    globalApplication.setProfileParseUser(receptorUser);
                     MessagingActivity.this.startActivity(intent);
                 }
             });
@@ -166,7 +165,7 @@ public class MessagingActivity extends ActionBarActivity {
             return;
         }
 
-        messageService.sendMessage(receptorId, messageBody);
+        getSinchServiceInterface().sendMessage(receptorId, messageBody);
         txtMessageBodyField.setText("");
     }
 
@@ -174,42 +173,46 @@ public class MessagingActivity extends ActionBarActivity {
      * Guarda el historial del chat de forma local
      *
      * @param message
-     * @param writableMessage
-     * @param senderId
      * @param messageDirection
      */
-    private void saveParseMessage(final Message message, final WritableMessage writableMessage, final String senderId, final Integer messageDirection) {
-        adapterMessage.addMessage(writableMessage, messageDirection, receptorId);
-
+    private void saveParseMessage(final Message message, final Integer messageDirection) {
         //Guardar al enviar el mensaje
         if (MessageAdapter.DIRECTION_OUTGOING == messageDirection) {
             //Agrega el mensaje en parse si no existe.
-            ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
-            query.whereEqualTo(ParseZMessage.SINCH_ID, message.getMessageId());
-            query.findInBackground(new FindCallback<ParseZMessage>() {
+            new AsyncTask<String, String, String>() {
+
                 @Override
-                public void done(List<ParseZMessage> zMessages, ParseException e) {
-                    if (e == null) {
-                        if (zMessages.size() == 0) {
-                            final ParseZMessage parseZMessage = new ParseZMessage();
-                            parseZMessage.setSinchId(writableMessage.getMessageId());
-                            parseZMessage.setSenderId(currentUser);
-                            parseZMessage.setRecipientId(receptorUser);
-                            parseZMessage.setMessageText(writableMessage.getTextBody());
-                            parseZMessage.setMessageRead(false);
-                            parseZMessage.saveInBackground(new SaveCallback() {
-                                @Override
-                                public void done(ParseException e) {
-                                    if (e == null) {
-                                        saveParseHistory(parseZMessage, writableMessage, currentUser); //Usuario que envia el mensaje
-                                        saveParseHistory(parseZMessage, writableMessage, receptorUser); //Usuario que recibe el mensaje
-                                    }
+                protected String doInBackground(String... strings) {
+                    ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
+                    query.whereEqualTo(ParseZMessage.SINCH_ID, message.getMessageId());
+                    query.findInBackground(new FindCallback<ParseZMessage>() {
+                        @Override
+                        public void done(List<ParseZMessage> zMessages, ParseException e) {
+                            if (e == null) {
+                                if (zMessages.size() == 0) {
+                                    final ParseZMessage parseZMessage = new ParseZMessage();
+                                    parseZMessage.setSinchId(message.getMessageId());
+                                    parseZMessage.setSenderId(currentUser);
+                                    parseZMessage.setRecipientId(receptorUser);
+                                    parseZMessage.setMessageText(message.getTextBody());
+                                    parseZMessage.setMessageRead(false);
+                                    parseZMessage.saveInBackground(new SaveCallback() {
+                                        @Override
+                                        public void done(ParseException e) {
+                                            if (e == null) {
+                                                saveParseHistory(parseZMessage, message, currentUser); //Usuario que envia el mensaje
+                                                saveParseHistory(parseZMessage, message, receptorUser); //Usuario que recibe el mensaje
+                                            }
+                                        }
+                                    });
                                 }
-                            });
+                            }
                         }
-                    }
+                    });
+                    return null;
                 }
-            });
+            }.execute();
+
         }
     }
 
@@ -217,13 +220,13 @@ public class MessagingActivity extends ActionBarActivity {
      * Guarda el historial en Parse
      *
      * @param zMessage
-     * @param writableMessage
+     * @param message
      * @param user
      */
-    private void saveParseHistory(ParseZMessage zMessage, WritableMessage writableMessage, ParseUser user) {
+    private void saveParseHistory(ParseZMessage zMessage, Message message, ParseUser user) {
         ParseZHistory parseZHistory = new ParseZHistory();
         parseZHistory.setUser(user);
-        parseZHistory.setSinchId(writableMessage.getMessageId());
+        parseZHistory.setSinchId(message.getMessageId());
         parseZHistory.setZMessageId(zMessage);
         parseZHistory.saveInBackground();
     }
@@ -237,6 +240,7 @@ public class MessagingActivity extends ActionBarActivity {
         //Buscar los sinchId del usuario actual
         ParseQuery<ParseZHistory> innerQuery = ParseQuery.getQuery(ParseZHistory.class);
         innerQuery.whereEqualTo(ParseZHistory.USER, currentUser);
+        innerQuery.setLimit(100);
 
         ParseUser[] userIds = {currentUser, receptorUser};
         ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
@@ -251,16 +255,56 @@ public class MessagingActivity extends ActionBarActivity {
                 if (e == null) {
                     List<ParseObject> messageLeidos = new ArrayList<>();
                     for (ParseZMessage parseZmessa : zMessages) {
-                        WritableMessage message = new WritableMessage(parseZmessa.getRecipientId().getObjectId(), parseZmessa.getMessageText());
+                        final ParseZMessage copyZmessa = parseZmessa;
+                        final Message message = new Message() {
+                            @Override
+                            public String getMessageId() {
+                                return copyZmessa.getSinchId();
+                            }
+
+                            @Override
+                            public Map<String, String> getHeaders() {
+                                return null;
+                            }
+
+                            @Override
+                            public String getTextBody() {
+                                return copyZmessa.getMessageText();
+                            }
+
+                            @Override
+                            public List<String> getRecipientIds() {
+                                return new ArrayList<>(Arrays.asList(new String[]{copyZmessa.getRecipientId().getObjectId()}));
+                            }
+
+                            @Override
+                            public String getSenderId() {
+                                return copyZmessa.getSenderId().getObjectId();
+                            }
+
+                            @Override
+                            public Date getTimestamp() {
+                                return copyZmessa.getCreatedAt();
+                            }
+                        };
                         if (parseZmessa.getSenderId().equals(currentUser)) {
-                            adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING, currentUser.getUsername());
+                            adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING);
                         } else {
-                            adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING, receptorUsername);
-                            parseZmessa.setMessageRead(true);
-                            messageLeidos.add(parseZmessa);
+                            adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING);
+                            if (!parseZmessa.isMessageRead()) {
+                                parseZmessa.setMessageRead(true);
+                                messageLeidos.add(parseZmessa);
+                            }
                         }
                     }
                     ParseObject.saveAllInBackground(messageLeidos);
+                    if (messageLeidos.size() > 0) {
+                        //Actualiza la cantidad de mensajes no leidos en el tab Mensajes - Chatfragment
+                        if (ChatFragment.isRunning()) {
+                            ChatFragment parent = ChatFragment.getInstance();
+                            parent.setupCountTabMessages();
+                        }
+                    }
                 } else {
                     Log.e("Parse.chat.history", e.getMessage());
                 }
@@ -273,7 +317,7 @@ public class MessagingActivity extends ActionBarActivity {
      * Elimina los mensajes almacenados en parse
      */
     private void deleteParseMessageHistory() {
-        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(this);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
         alert.setMessage(getString(R.string.msgByeChat));
         alert.setPositiveButton(getString(R.string.lblDelete), new DialogInterface.OnClickListener() {
             @Override
@@ -332,15 +376,27 @@ public class MessagingActivity extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         globalApplication.setListeningNotifi(true);
-        globalApplication.setCustomParseUser(null);
-        messageService.removeMessageClientListener(messageClientListener);
-        unbindService(serviceConnection);
+        globalApplication.setMessagingParseUser(null);
+        if (getSinchServiceInterface() != null) {
+            getSinchServiceInterface().removeMessageClientListener(this);
+        }
         super.onDestroy();
     }
 
     @Override
+    public void onServiceConnected() {
+        getSinchServiceInterface().addMessageClientListener(this);
+        btnSendMessage.setEnabled(true);
+    }
+
+    @Override
+    public void onServiceDisconnected() {
+        btnSendMessage.setEnabled(false);
+    }
+
+    @Override
     public void onBackPressed() {
-        globalApplication.setCustomParseUser(null);
+        globalApplication.setMessagingParseUser(null);
         super.onBackPressed();
     }
 
@@ -365,63 +421,65 @@ public class MessagingActivity extends ActionBarActivity {
         return true;
     }
 
-    private class MyServiceConnection implements ServiceConnection {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            messageService = (MessageService.MessageServiceInterface) iBinder;
-            messageService.addMessageClientListener(messageClientListener);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            messageService = null;
-        }
+    @Override
+    public void onIncomingMessage(MessageClient messageClient, Message message) {
+        adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING);
     }
 
-    private class MyMessageClientListener implements MessageClientListener {
-        @Override
-        public void onIncomingMessage(MessageClient messageClient, Message message) {
-            if (message.getSenderId().equals(receptorId)) {
-                final WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
+    @Override
+    public void onMessageSent(MessageClient messageClient, Message message, String s) {
+        adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING);
+        //Enviar notificacion
+        String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+        new SendPushTask(receptorUser, currentUser.getObjectId(), name, message.getTextBody(), null, SendPushTask.PUSH_CHAT).execute();
+        //Guardar historial en parse.
+        saveParseMessage(message, MessageAdapter.DIRECTION_OUTGOING);
+    }
 
-                adapterMessage.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING, receptorId);
-                //Log.i("incoming.message", message.getTextBody());
+    @Override
+    public void onMessageFailed(MessageClient messageClient, Message message, MessageFailureInfo messageFailureInfo) {
+        Toast.makeText(MessagingActivity.this, "Out!!! Tu mensaje no pudo ser enviado.", Toast.LENGTH_LONG).show();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Sending failed: ")
+                .append(messageFailureInfo.getSinchError().getMessage());
+        Log.d(TAG, sb.toString());
+    }
+
+    @Override
+    public void onMessageDelivered(MessageClient messageClient, MessageDeliveryInfo messageDeliveryInfo) {
+        //Log.d(TAG, "onDelivered");
+    }
+
+    @Override
+    public void onShouldSendPushData(MessageClient messageClient, Message message, List<PushPair> pushPairs) {
+        //final String regId = new String(pushPairs.get(0).getPushData());
+        //Enviar notificacion.
+        if (receptorUser != null && message != null) {
+            String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+            new SendPushTask(receptorUser, currentUser.getObjectId(), name, message.getTextBody(), pushPairs, SendPushTask.PUSH_CHAT).execute();
+        }
+        Log.d("onShouldSendPushData", "success");
+        //use an async task to make the http request
+        /*
+        class SendPushTask extends AsyncTask<Void, Void, Void> {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                HttpClient httpclient = new DefaultHttpClient();
+                //url of where your backend is hosted, can't be local!
+                HttpPost httppost = new HttpPost("http://www.zirkapp.com?reg_id=" + regId);
+                try {
+                    HttpResponse response = httpclient.execute(httppost);
+                    ResponseHandler<String> handler = new BasicResponseHandler();
+                    Log.d("HttpResponse", handler.handleResponse(response));
+                } catch (ClientProtocolException e) {
+                    Log.d("ClientProtocolException", e.toString());
+                } catch (IOException e) {
+                    Log.d("IOException", e.toString());
+                }
+                return null;
             }
         }
-
-        @Override
-        public void onMessageSent(MessageClient messageClient, Message message, String s) {
-            writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
-
-            //Guardar historial en parse.
-            saveParseMessage(message, writableMessage, currentUser.getObjectId(), MessageAdapter.DIRECTION_OUTGOING);
-
-            //Enviar notificacion.
-            if (receptorId != null && message != null && !globalApplication.isListeningNotifi()) {
-                String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
-                new SendPushTask(currentUser.getObjectId(), receptorId, currentUser.getObjectId(), name, message.getTextBody(), SendPushTask.PUSH_CHAT).execute();
-            }
-        }
-
-        @Override
-        public void onMessageFailed(MessageClient messageClient, Message message, MessageFailureInfo messageFailureInfo) {
-            Toast.makeText(MessagingActivity.this, "Tu mensaje no pudo ser enviado.", Toast.LENGTH_LONG).show();
-        }
-
-        @Override
-        public void onMessageDelivered(MessageClient messageClient, MessageDeliveryInfo messageDeliveryInfo) {
-            //Entregado
-        }
-
-        @Override
-        public void onShouldSendPushData(MessageClient messageClient, final Message message, final List<PushPair> pushPairs) {
-
-            //Enviar notificacion.
-//            if (receptorId != null && pushPairs.size() > 0 && message != null) {
-//                String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getParseUser();
-//                new SendPushTask(currentUser.getObjectId(), receptorId, currentUser.getObjectId(), name, message.getTextBody(), pushPairs, SendPushTask.PUSH_CHAT).execute();
-//            }
-
-        }
+        new SendPushTask().execute();
+        */
     }
 }

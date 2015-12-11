@@ -2,7 +2,6 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -11,15 +10,16 @@ import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
-import com.gc.materialdesign.views.ButtonRectangle;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.parse.ParseException;
@@ -37,14 +37,12 @@ import java.util.List;
  */
 public class SignupFragment extends Fragment {
 
-    private Activity activity;
     private DatabaseHelper databaseHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_singup, container, false);
         inicializarCompUI(view);
-        activity = getActivity();
 
         //Database
         databaseHelper = OpenHelperManager.getHelper(getActivity(), DatabaseHelper.class);
@@ -54,7 +52,7 @@ public class SignupFragment extends Fragment {
 
     private void inicializarCompUI(View view) {
 
-        ButtonRectangle btnSingUp = (ButtonRectangle) view.findViewById(R.id.btnSingUp);
+        Button btnSingUp = (Button) view.findViewById(R.id.btnSingUp);
         final EditText txtCorreo = (EditText) view.findViewById(R.id.txtUserEmail);
         final EditText txtUsername = (EditText) view.findViewById(R.id.txtUserSignUp);
         final EditText txtPassword1 = (EditText) view.findViewById(R.id.txtPassSignUp1);
@@ -135,6 +133,7 @@ public class SignupFragment extends Fragment {
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
+                            saveSessionActive(true);
                             saveInfoWelcome();
                         } else {
                             Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
@@ -167,7 +166,7 @@ public class SignupFragment extends Fragment {
     private void saveInfoWelcome() {
 //        Intent intent = new Intent();
 //        intent.putExtra("loginOk", true);
-//        activity.setResult(Activity.RESULT_OK, intent);
+//        getActivity().setResult(Activity.RESULT_OK, intent);
 
         List<Welcomedb> listWdb = new ArrayList<Welcomedb>();
 
@@ -195,7 +194,47 @@ public class SignupFragment extends Fragment {
                 Log.e("Ormlite", "Error creando welcome");
             }
         }
-        activity.finish();
+        getActivity().finish();
+    }
+
+    private void saveSessionActive(boolean sessionActive) {
+        List<HandlerLogindb> listHldb = new ArrayList<>();
+
+        Dao dao = null;
+        try {
+            dao = databaseHelper.getHandlerLogindbDao();
+            listHldb = dao.queryForAll();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        boolean guardar = true;
+
+        //Si existe un registro se actualiza y no se crea uno nuevo
+        for (HandlerLogindb row : listHldb) {
+            if (dao != null) {
+                try {
+                    row.setSessionActive(sessionActive);
+                    dao.update(row);
+                } catch (SQLException e) {
+                    Log.e("Ormlite", "Error actualizando handlerLogin");
+                }
+            }
+            guardar = false;
+            break;
+        }
+
+        //Guardar si no existen registro
+        if (guardar) {
+            if (dao != null) {
+                try {
+                    HandlerLogindb ldb = new HandlerLogindb(sessionActive);
+                    dao.create(ldb);
+                } catch (SQLException e) {
+                    Log.e("Ormlite", "Error creando handlerLogin");
+                }
+            }
+        }
     }
 
     @Override
@@ -230,5 +269,4 @@ public class SignupFragment extends Fragment {
             return null;
         }
     }
-
 }

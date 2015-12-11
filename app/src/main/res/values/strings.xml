@@ -3,6 +3,7 @@
 
     <string name="app_name">Zirkapp</string>
     <string name="gcm_sender_id">323224512527</string>
+    <string name="gcm_api_key">AIzaSyBu7IT1aUw9PzU_EfVbxNkCGj97oX-p--Y</string>
     <string name="facebook_app_id">2009083782565906</string>
     <string name="twitter_api_key">HKNgH8O9c7QSXTIOaWxuBvBEW</string>
     <string name="twitter_api_secret">5co4OWxU9F51rxJ1QJIoIMPrz2B0Pzh8hWauZPnWluEoGeGXbl</string>
@@ -25,10 +26,11 @@
     <string name="lblWelcomeMsg3">Encuentra amigos donde quiera que vayas!</string>
 
     <!-- Login Y SingUp -->
-    <string name="lblWelcomeLogin">Ingresa con tu cuenta favorita</string>
+    <string name="lblWelcomeLogin">Bienvenido, nos alegra que estes aqui!</string>
+    <!-->Ingresa con tu cuenta favorita-->
     <string name="lblLogin">Iniciar Sesion</string>
     <string name="lblSingUp">Registrarse</string>
-    <string name="lblCreateCount">Crea tu cuenta</string>
+    <string name="lblCreateCount">Crea tu cuenta Zirkapp</string>
     <string name="lblRecuPass">Recuperar Contraseña</string>
     <string name="lblPassword">Contraseña</string>
     <string name="lblPasswordConfirm">Confirmar contraseña</string>
@@ -37,7 +39,7 @@
     <string name="lblEmail">Correo electrónico</string>
     <string name="msgLoginError">Usuario y/o contraseña no válidos</string>
     <string name="msgLoginEmpty">Usuario y/o contraseña necesarios</string>
-    <string name="msgSignUpEmailEmpty">El correo es necesario</string>
+    <string name="msgSignUpEmailEmpty">tu correo es necesario</string>
     <string name="msgSignUpUserEmpty">El usuario es necesario</string>
     <string name="msgSignUpPassEmpty">La contraseña es necesaria</string>
     <string name="msgSignUpErrorEmpty">Por favor diligencia todos los datos</string>
@@ -83,7 +85,7 @@
     <string name="lblVersion">Versión</string>
     <string name="lblEstado">Tu estado</string>
     <string name="lblName">Nombres</string>
-    <string name="lblCity">Ciudad</string>
+    <string name="lblCity">En que ciudad vives?</string>
 
     <!-- Custom Msg -->
     <string name="msgNoAmygos">No tienes amygos</string>
@@ -149,7 +151,7 @@
     <string name="msgHelpMenuDrawer">Edita tu perfil tocando la parte superior del menú, mira la cantidad de Zimess, Usuarios Online, y Notificaciones, Toca una de las opciones para navegar, tambien puedes ir a los Ajustes, Calificar y Compartir Zirkapp</string>
     <string name="msgHelpIconMenu">Despliega y oculta el menu lateral, usando el icono de tres lineas, tambien puedes hacerlo deslizando tu dedo hacia la derecha e izquierda.</string>
     <string name="titleHelpNavigation">Navegar en Zirkapp</string>
-    <string name="msgHelpNewZimess">Crea nuevos Zimess usando el icono resaltado en la imagén, Un Zimess es público y pueden verlo los usuarios que estan cerca. Tambien puedes ver todos tus Zimess entrando en el menú "Mis Zimess".</string>
+    <string name="msgHelpNewZimess">Un Zimess es público y pueden verlo los usuarios que estan cerca, crea nuevos Zimess usando el icono resaltado en la imagén. Tambien puedes ver todos tus Zimess entrando en el menú "Mis Zimess".</string>
     <string name="msgHelpUpdateZimess">Cuando estes viendo Zimess o en el Chat, sobre la pantalla, desliza tu debo hacia abajo para actualizar. Toca una foto para ir a el perfil de usuario, o cualquier parte del Zimess para ver sus detalles, y demás.</string>
     <string name="imgNameTransition">imgAvatar</string>
     <string name="msgMoreRecents">Mas Recientes</string>
@@ -180,6 +182,49 @@
     <string name="msgZimessNoFound">Zimess no encontrado</string>
     <string name="msgUsersAround">A chatear...</string>
     <string name="msgUsersAround2">nuevos usuarios cerca!</string>
+    <string name="usingZirkapp">I\' m using Zirkapp</string>
+    <string name="lblBirthday">Fecha de Nacimiento</string>
+    <string name="lblGenderM">Masculino</string>
+    <string name="lblGenderF">Femenino</string>
+    <string name="lblNext">Siguiente</string>
+    <string name="lblBack">Atras</string>
+    <string name="lblFinish">Finalizar</string>
+    <string name="lblLikes">Que te gusta?</string>
+    <string name="msgProfiBirthdayEmty">Tu fecha de nacimiento es necesaria...</string>
+    <string name="action_bar_filter">Filtro</string>
+    <string name="msgViewAll">Todos los Usuarios</string>
+    <string name="mgsViewGirls">Solo chicas</string>
+    <string name="mgsViewBoys">Solo chicos</string>
+    <string name="lblYears">Años</string>
+    <string name="lblNavZimess">Zimess</string>
+    <string name="lblNavChat">Chat</string>
+    <string name="lblNavNotifi">Notificaciones</string>
+    <string name="lblNavAjust">Ajustes</string>
+    <string name="lblNavQuali">Calificar</string>
+    <string name="lblNavShare">Compartir</string>
+    <string name="title_tab_user_online">Online</string>
+    <string name="title_tab_messages">Mensajes</string>
+    <string name="title_tab_info_user">Inf. del usuario</string>
+    <string name="title_tab_social_user">Redes sociales</string>
+    <string name="lblAboutMe">Sobre mi...</string>
+    <string name="lblLikeMe">Me gusta:</string>
+    <string name="lblLiveIn">Vivo en:</string>
+    <string name="lblPopularity">Popularidad</string>
+    <string name="lblSocialNetwork">Mis Redes...</string>
+    <string name="InfoNotAvailable">...</string>
+
+    <!--Formatos-->
+    <string name="formatPushFavorite" formatted="false">A %1$s le gusta tu Zimess</string>
+    <string name="formatPushComment" formatted="false">%1$s ha comentado tu Zimess</string>
+    <string name="formatPushQuote" formatted="false">%1$s te ha mencionado en un comentario</string>
+    <string name="formatPushZiss" formatted="false">%1$s te ha dado un Ziss</string>
+    <string name="formatOldYears" formatted="false">%1$d Años</string>
+    <string name="lblUrlWebZirkapp">Visita <a href="http://www.zirkapp.com">www.zirkapp.com</a></string>
+    <string name="lblUrlWebFacebook">Danos me gusta en <a href="https://www.facebook.com/zirkapp">www.facebook.com/zirkapp</a></string>
+    <string name="lblUrlWebTwitter">Siguenos en <a href="https://twitter.com/zirkapp">www.twitter.com/zirkapp</a></string>
+    <string name="lblYesterday">Ayer</string>
+    <string name="action_bar_send_ziss">Dar un Ziss</string>
+    <string name="action_bar_go_messages">Ir a Mensajes</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>
@@ -190,6 +235,7 @@
         <item>Compartir</item>
     </string-array>
 
+    <!--
     <array name="navigations_icons">
         <item>@drawable/ic_icon_radar_new</item>
         <item>@drawable/ic_icon_chat</item>
@@ -198,5 +244,6 @@
         <item>@drawable/ic_icon_star</item>
         <item>@drawable/ic_icon_share</item>
     </array>
+    -->
 
 </resources>

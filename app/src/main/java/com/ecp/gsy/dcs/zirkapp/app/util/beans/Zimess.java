@@ -24,15 +24,6 @@ public class Zimess implements Serializable {
     private Integer cantComment;
     private String descDistancia;
 
-    /**
-     * Retorna la imagen del usuario
-     *
-     * @return
-     */
-    public RoundedBitmapDrawable getAvatar() {
-        return GlobalApplication.getAvatar(user);
-    }
-
     public String getZimessId() {
         return zimessId;
     }

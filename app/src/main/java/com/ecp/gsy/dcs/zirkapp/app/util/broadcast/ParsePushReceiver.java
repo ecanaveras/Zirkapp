@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.os.Bundle;
@@ -20,14 +21,14 @@ import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
+import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParsePushBroadcastReceiver;
 import com.parse.ParseUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 /**
  * Created by Elder on 24/04/2015.
@@ -39,11 +40,10 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
     private String targetId;
     private String receptorId;
     private String senderId;
-    private ParseZNotifi itemNotifi;
-    private ParseUser senderUser;
-    private GlobalApplication globalApplication;
     private int typeNotify = 0;
-    private boolean notificar = true;
+    private boolean notificar;
+    private String message;
+    private String title;
 
     @Override
     protected Notification getNotification(Context context, Intent intent) {
@@ -54,10 +54,11 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
     protected void onPushReceive(Context context, Intent intent) {
         Bundle bundle = intent.getExtras();
         JSONObject data = null;
+        notificar = true;
         try {
             data = new JSONObject(bundle.getString("com.parse.Data"));
-            String message = data.getString("alert");
-            String title = data.getString("title");
+            message = data.getString("alert");
+            title = data.getString("title");
             typeNotify = data.getInt("type");
             targetId = data.getString("targetId");
             receptorId = data.getString("receptorId");
@@ -94,85 +95,89 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent intent = new Intent(context, MainActivity.class);
         intent.setFlags(0);//Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        String titleNoti = "%s de %s";
+        intent.putExtra("typeNotify", typeNotify);
         String bodyNoti = "%s %s";
-        String summary = null, senderName = null, typeNotiString = null;
-        senderUser = findParseUser(senderId);
+        String typeNotiString = null;
+        //senderUser = findParseUser(senderId);
         if (senderId != null) {
             switch (typeNotify) {
                 case SendPushTask.PUSH_CHAT:
-                    //Receiver
-                    Intent broad = new Intent();
-                    broad.setAction(CountMessagesReceiver.ACTION_LISTENER);
-                    broad.putExtra("senderId", senderId);
-                    broad.putExtra("recipientId", receptorId);
-                    context.sendBroadcast(broad);
-
-                    intent.setAction("OPEN_FRAGMENT_USER"); //Notificacion desde chat
-                    intent.putExtra("targetId", targetId);
-                    intent.putExtra("receptorId", receptorId);
-                    intent.putExtra("senderId", senderId);
+                    intent.setAction("OPEN_MESSAGING_USER"); //Notificacion desde chat
+                    intent.putExtra("senderId", senderId); //IdUsuario que envia el chat
+                    intent.putExtra("tab", "mensajes");
                     //Manejar Noti
-                    if (UsersFragment.isRunning()) {
-                        globalApplication = (GlobalApplication) context.getApplicationContext();
-                        if (senderUser != null && !senderUser.equals(globalApplication.getCustomParseUser()) || globalApplication.isListeningNotifi()) {
-                            globalApplication.setCustomParseUser(senderUser);
-                        } else {
-                            //No notificar
-                            notificar = false;
-                        }
+                    GlobalApplication app = (GlobalApplication) context.getApplicationContext();
+                    if (app.isListeningNotifi() && app.getMessagingParseUser() != null && senderId.equals(app.getMessagingParseUser().getObjectId())) {
+                        notificar = false;
                     }
                     typeNotiString = "[Chat]";
                     break;
 
                 case SendPushTask.PUSH_COMMENT:
                     intent.setAction("OPEN_FRAGMENT_NOTI"); //Notificacion desde comentarios
-                    intent.putExtra("targetId", targetId);
-                    intent.putExtra("receptorId", receptorId);
-                    intent.putExtra("senderId", senderId);
-                    //Manejar Noti
-                    itemNotifi = new ParseZNotifi();
-                    itemNotifi.setTypeNoti(SendPushTask.PUSH_COMMENT);
-                    summary = "Nuevo comentario";
-                    typeNotiString = "[Coment]";
-                    //Buscar Nombre de usuario
-                    senderName = senderUser.getString("name") != null ? senderUser.getString("name") : senderUser.getUsername();
+                    intent.putExtra("targetId", targetId); //ZImess comentado
+                    intent.putExtra("receptorId", receptorId); //Usuario creador de ZImess
+                    intent.putExtra("senderId", senderId); //Usuario que envia el comentario
+
+                    typeNotiString = "[Comment]";
                     break;
 
                 case SendPushTask.PUSH_QUOTE:
                     intent.setAction("OPEN_FRAGMENT_NOTI"); //Notificacion desde comentarios
+                    intent.putExtra("targetId", targetId); //Usuario o ZImess
+                    intent.putExtra("receptorId", receptorId); //Usuario que recibe la respuesta
+                    intent.putExtra("senderId", senderId);//USuario que envia la respuesta
+
+                    typeNotiString = "[Resp]";
+                    break;
+
+                case SendPushTask.PUSH_ZISS:
+                    intent.setAction("OPEN_PROFILE_USER");//Notificacion para ver perfil
+                    intent.putExtra("targetId", senderId);//Usuario que envia el Ziss
+
+                    typeNotiString = "[Ziss]";
+                    break;
+
+                case SendPushTask.PUSH_FAVORITE:
+                    intent.setAction("OPEN_FRAGMENT_NOTI"); //Notificacion desde comentarios
                     intent.putExtra("targetId", targetId);
                     intent.putExtra("receptorId", receptorId);
                     intent.putExtra("senderId", senderId);
-                    //Manejar Noti
-                    itemNotifi = new ParseZNotifi();
-                    itemNotifi.setTypeNoti(SendPushTask.PUSH_QUOTE);
-                    summary = "Nueva respuesta";
-                    typeNotiString = "[Resp]";
-                    //Buscar Nombre de usuario
-                    senderName = senderUser.getString("name") != null ? senderUser.getString("name") : senderUser.getUsername();
+
+                    typeNotiString = "[Fav]";
                     break;
 
                 default:
                     typeNotiString = "[Gral]";
-                    itemNotifi = null;
                     break;
             }
-            //imgLargeIcon = GlobalApplication.getAvatar(senderUser);
         } else {
-            typeNotiString = "[Gral]";
-            itemNotifi = null;
+            typeNotiString = "";
         }
 
         if (notificar) {
+            Bitmap bitmap = null;
+            /*if (senderUser != null && senderUser.getParseFile("avatar") != null) {
+                ParseFile parseFile = senderUser.getParseFile("avatar");
+                try {
+                    if (parseFile != null) {
+                        byte[] byteImage = parseFile.getData();
+                        if (byteImage != null) {
+                            bitmap = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
+                        }
+                    }
+                } catch (ParseException e) {
+                    Log.e("Parse.avatar.exception", e.getMessage());
+                }
+            }*/
 
             PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             NotificationCompat.Builder nBuilder = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.ic_zirkapp_noti)
-                    .setLargeIcon(imgLargeIcon != null ? imgLargeIcon.getBitmap() : BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher))
+                    .setLargeIcon(bitmap != null ? bitmap : BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher))
                     .setDefaults(Notification.DEFAULT_ALL)
-                    .setContentTitle(title != null ? title : "Zirkapp")
+                    .setContentTitle(title != null ? title : context.getString(R.string.app_name))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(String.format(bodyNoti, typeNotiString, msg)))
                     .setContentText(String.format(bodyNoti, typeNotiString, msg))
                     .setAutoCancel(true)
@@ -182,60 +187,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
             nBuilder.setContentIntent(contentIntent);
             notificationManager.notify(typeNotify, nBuilder.build());
 
-            if (itemNotifi != null) {
-                itemNotifi.setSummaryNoti(String.format(titleNoti, summary, senderName));
-                itemNotifi.setDetailNoti(msg);
-
-                //Guardar la Noti
-                //saveNotificacion(itemNotifi, findParseUser(receptorId));
-
-            }
         }
-    }
-
-    /**
-     * Guarda la notificacion
-     *
-     * @param noti
-     */
-    private void saveNotificacion(ParseZNotifi noti, ParseUser receptorUser) {
-        if (noti != null && senderUser != null && targetId != null && receptorUser != null) {
-            noti.put(ParseZNotifi.SENDER_USER, senderUser);
-            noti.put(ParseZNotifi.RECEPTOR_USER, receptorUser);
-            switch (noti.getTypeNoti()) {
-                case SendPushTask.PUSH_CHAT:
-                    noti.put("userTarget", ParseObject.createWithoutData("user", targetId));
-                    break;
-                case SendPushTask.PUSH_COMMENT:
-                    noti.put(ParseZNotifi.ZIMESS_TARGET, ParseObject.createWithoutData(ParseZimess.class, targetId));
-                    break;
-                case SendPushTask.PUSH_QUOTE:
-                    noti.put(ParseZNotifi.ZIMESS_TARGET, ParseObject.createWithoutData(ParseZimess.class, targetId));
-                    break;
-            }
-            noti.put(ParseZNotifi.READ_NOTI, false);
-            noti.saveInBackground();
-        }
-    }
-
-    /**
-     * Busca usuario del objectId
-     *
-     * @param objectId
-     * @return
-     */
-    private ParseUser findParseUser(String objectId) {
-        return DataParseHelper.findUser(objectId);
-    }
-
-    /**
-     * Busca usuario del parseUser
-     *
-     * @param username
-     * @return
-     */
-    private ParseUser findParseUsername(String username) {
-        return DataParseHelper.findUserName(username);
     }
 }
 

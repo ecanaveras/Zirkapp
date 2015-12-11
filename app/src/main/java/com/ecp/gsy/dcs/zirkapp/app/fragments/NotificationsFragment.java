@@ -14,15 +14,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.DetailZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.activities.UserProfileActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.NavigationProfileTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataNotifiTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.FindCallback;
@@ -40,12 +44,24 @@ import java.util.List;
 public class NotificationsFragment extends Fragment {
 
     private static NotificationsFragment instance = null;
+    public static final String TAG = "NotificationsFragment";
+
     private ListView listNotifi;
     private ProgressBar progressBar;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView lblNotiNotFound;
     private ParseUser currentUser;
     private GlobalApplication globalApplication;
+    private LinearLayout layoutInternertOff;
+
+    public static NotificationsFragment newInstance(Bundle arguments) {
+        NotificationsFragment notificationsFragment = new NotificationsFragment();
+        if (arguments != null) {
+            notificationsFragment.setArguments(arguments);
+        }
+        return notificationsFragment;
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,11 +90,14 @@ public class NotificationsFragment extends Fragment {
         progressBar = (ProgressBar) view.findViewById(R.id.progressLoad);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshNoti);
         lblNotiNotFound = (TextView) view.findViewById(R.id.lblNotiNotFound);
+        layoutInternertOff = (LinearLayout) view.findViewById(R.id.layoutInternetOff);
 
         listNotifi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ParseZNotifi item = (ParseZNotifi) parent.getAdapter().getItem(position);
+                LinearLayout layoutItemNoti = (LinearLayout) view.findViewById(R.id.layoutItemNoti);
+                layoutItemNoti.setBackgroundResource(R.color.text_primary_color);
                 if (!item.isReadNoti()) saveReadNotificacion(item);
                 goToTarget(item);
             }
@@ -105,7 +124,14 @@ public class NotificationsFragment extends Fragment {
     }
 
     public void findNotifications(ParseUser recpetorUser) {
-        new RefreshDataNotifiTask(getActivity(), recpetorUser, listNotifi, swipeRefreshLayout, progressBar, lblNotiNotFound).execute();
+        if (globalApplication.isConectedToInternet()) {
+            layoutInternertOff.setVisibility(View.GONE);
+            new RefreshDataNotifiTask(getActivity(), recpetorUser, listNotifi, swipeRefreshLayout, progressBar, lblNotiNotFound).execute();
+        } else {
+            swipeRefreshLayout.setRefreshing(false);
+            layoutInternertOff.setVisibility(View.VISIBLE);
+            globalApplication.networkShowSettingsAlert();
+        }
     }
 
     /**
@@ -114,18 +140,42 @@ public class NotificationsFragment extends Fragment {
      * @param item
      */
     private void goToTarget(ParseZNotifi item) {
-        if (item.getTypeNoti() == SendPushTask.PUSH_COMMENT || item.getTypeNoti() == SendPushTask.PUSH_QUOTE) {
+        boolean gotoZimess = false;
+        boolean gotoProfile = false;
+        switch (item.getTypeNoti()) {
+            case SendPushTask.PUSH_COMMENT:
+                gotoZimess = true;
+                break;
+            case SendPushTask.PUSH_QUOTE:
+                gotoZimess = true;
+                break;
+            case SendPushTask.PUSH_ZISS:
+                gotoProfile = true;
+                break;
+            case SendPushTask.PUSH_FAVORITE:
+                gotoZimess = true;
+                break;
+        }
+        if (gotoZimess) {
             if (item.getZimessTarget() != null) {
                 Activity activity = getActivity();
                 Intent intent = new Intent(activity, DetailZimessActivity.class);
+                intent.putExtra("zimess_preloaded", false);
                 globalApplication.setTempZimess(item.getZimessTarget());
                 activity.startActivityForResult(intent, 105);
-                NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-                manager.cancel(item.getTypeNoti());
             } else {
                 Toast.makeText(getActivity(), getResources().getString(R.string.msgZimessNoFound), Toast.LENGTH_SHORT).show();
             }
         }
+        if (gotoProfile) {
+            globalApplication.setProfileParseUser(item.getSenderUser());
+            Intent intentProf = new Intent(getActivity(), UserProfileActivity.class);
+            getActivity().startActivity(intentProf);
+            //new NavigationProfileTask(getActivity()).execute(item.getUserMessage().getObjectId());
+        }
+        //Cancelar la notificacion
+        NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.cancel(item.getTypeNoti());
     }
 
     /**
@@ -137,7 +187,7 @@ public class NotificationsFragment extends Fragment {
         if (item != null) {
             //Busca el marca como leidas todas las notificaciones que conducen al mismo Zimess
             ParseQuery<ParseZNotifi> query = ParseQuery.getQuery(ParseZNotifi.class);
-            query.whereEqualTo(ParseZNotifi.ZIMESS_TARGET, item.getZimessTarget());
+            query.whereEqualTo("objectId", item.getObjectId());
             query.whereEqualTo(ParseZNotifi.READ_NOTI, false);
             query.findInBackground(new FindCallback<ParseZNotifi>() {
                 @Override
@@ -163,9 +213,9 @@ public class NotificationsFragment extends Fragment {
         }
     }
 
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         super.onCreateOptionsMenu(menu, inflater);
     }
 }

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_bar_go_noti"
+        android:layout_marginRight="10dp"
+        android:icon="@drawable/icon_bar_notification"
+        android:orderInCategory="180"
+        android:title="@string/action_bar_go_messages"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_bar_go_inbox"
+        android:icon="@drawable/icon_bar_messages"
+        android:orderInCategory="190"
+        android:title="@string/action_bar_go_messages"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_bar_new_zimess"
+        android:icon="@drawable/ic_note_add_white_24dp"
+        android:orderInCategory="200"
+        android:title="@string/action_bar_new_zimess"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_bar_my_zimess"
+        android:orderInCategory="210"
+        android:title="@string/action_bar_my_zimess"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_bar_sort_zimess"
+        android:orderInCategory="220"
+        android:title="@string/action_bar_sort_zimess"
+        app:showAsAction="never" />
+
+</menu>

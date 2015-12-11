@@ -5,7 +5,7 @@
         android:key="go_to_profile"
         android:title="@string/msgMyProfile"
         android:summary="@string/msgSummaryMyProfile">
-        <intent android:action="action.EDIT_PROFILE" />
+        <!--<intent android:action="action.EDIT_PROFILE" />-->
     </Preference>
 
     <Preference

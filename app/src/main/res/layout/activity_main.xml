@@ -1,74 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:fitsSystemWindows="false">
 
-    <include layout="@layout/component_toolbar" />
+    <!-- Contenido Principal -->
+    <include layout="@layout/layout_content_drawer" />
 
-    <android.support.v4.widget.DrawerLayout
-        android:id="@+id/drawer_layout"
-        android:layout_width="match_parent"
+    <!-- Menú Deslizante -->
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="false">
-
-        <!-- Contenido Principal -->
-        <FrameLayout
-            android:id="@+id/content_frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        android:layout_gravity="start"
+        app:menu="@menu/menu_drawer" />
 
 
-        <!--Fragments en la app-->
-        <!--<fragment
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/fhome"
-            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.HomeFragment"
-            tools:layout="@layout/fragment_home" />-->
-
-        <!--<fragment
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/f_chat"
-            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.ChatFragment"
-            tools:layout="@layout/fragment_chat_tabs" />-->
-
-        <fragment
-            android:id="@+id/f_zimess"
-            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:layout="@layout/fragment_zimess" />
-
-        <fragment
-            android:id="@+id/f_users"
-            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:layout="@layout/fragment_users" />
-
-        <fragment
-            android:id="@+id/f_notify"
-            android:name="com.ecp.gsy.dcs.zirkapp.app.fragments.NotificationsFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:layout="@layout/fragment_notifications" />
-
-        <!-- Lista de Navegacion -->
-        <ListView
-            android:id="@+id/left_drawer"
-            android:layout_width="280dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:background="@color/text_primary_color"
-            android:choiceMode="singleChoice"
-            android:dividerHeight="1dp" />
+</android.support.v4.widget.DrawerLayout>
 
 
-        <!--android:divider="@android:color/transparent">-->
-    </android.support.v4.widget.DrawerLayout>
-
-</LinearLayout>
 

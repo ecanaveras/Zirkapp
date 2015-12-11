@@ -8,39 +8,43 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.widget.ImageView;
 
-import com.alertdialogpro.AlertDialogPro;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatHistoryFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
-import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZVisit;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
+import com.ecp.gsy.dcs.zirkapp.app.util.picasso.CircleTransform;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.parse.Parse;
-import com.parse.ParseException;
-import com.parse.ParseFacebookUtils;
+import com.parse.ParseCrashReporting;
 import com.parse.ParseFile;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
-import com.parse.ParseTwitterUtils;
 import com.parse.ParseUser;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+
+//import com.parse.ParseFacebookUtils;
+//import com.parse.ParseTwitterUtils;
 
 /**
  * Created by Elder on 15/07/2014.
@@ -48,13 +52,15 @@ import java.util.TimeZone;
 public class GlobalApplication extends Application {
 
     //Key GCM
-    public final String SENDER_ID = "323224512527"; //Key GCM
+    public static final String SENDER_ID = "323224512527"; //Key GCM
     public static final String PROPERTY_REG_ID = "registration_id";
+    private static final String PROPERTY_APP_VERSION = "appVersion";
+    private static final String PROPERTY_USER = "user";
 
     private Context context;
 
     //Controla si el chat esta habilidado
-    private static boolean chatEnabled = true;
+    private static boolean chatEnabled = false;
 
     //Controla los mensajes de GPS y NETWORK
     private static boolean isShowNetworkAlert = false;
@@ -62,25 +68,23 @@ public class GlobalApplication extends Application {
 
     //Parse
     private ParseUser currentUser;
-    private ParseUser customParseUser;
+    private ParseUser messagingParseUser;
+    private ParseUser profileParseUser;
     private ParseZimess tempZimess;
 
     //Cantidades para el drawer
     private static Integer cantZimess;
     private static Integer cantUsersOnline;
     private static Integer cantNotifications;
-    private static Resources resources;
+    //private static Resources resources;
 
     //Order Zimess
     private int sortZimess;
     private boolean listeningNotifi = true;
 
-
     @Override
     public void onCreate() {
         super.onCreate();
-
-        resources = this.getResources();
 
         //Iniciar servicio de ubicacion
         Intent intentService = new Intent(this, LocationService.class);
@@ -95,15 +99,50 @@ public class GlobalApplication extends Application {
         ParseObject.registerSubclass(ParseZMessage.class);
         ParseObject.registerSubclass(ParseZHistory.class);
         ParseObject.registerSubclass(ParseZNotifi.class);
-        ParseObject.registerSubclass(ParseZVisit.class);
+
+
+        //Crash Reporting
+        ParseCrashReporting.enable(this);
 
         //Iniciar Parse
         Parse.initialize(this, getResources().getString(R.string.parse_api_id), getResources().getString(R.string.parse_api_key));
 
+
         //Facebook
-        ParseFacebookUtils.initialize(this);
+        //ParseFacebookUtils.initialize(this);
         //Twitter
-        ParseTwitterUtils.initialize(getResources().getString(R.string.twitter_api_key), getResources().getString(R.string.twitter_api_secret));
+        //ParseTwitterUtils.initialize(getResources().getString(R.string.twitter_api_key), getResources().getString(R.string.twitter_api_secret));
+    }
+
+    /**
+     * Busca en las prefencias si existe un registro posterior
+     *
+     * @param context
+     * @param user
+     * @return
+     */
+    public String getRegistrationId(Context context, String user) {
+        SharedPreferences pref = getGCMPreferences();
+        String registrationId = pref.getString(PROPERTY_REG_ID, "");
+        if (registrationId.isEmpty()) {
+            Log.d("GCM regId", "Registro GCM no encontrado");
+            return "";
+        }
+
+        String registeredUser = pref.getString(PROPERTY_USER, "user");
+        int registeredVersion = pref.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
+
+        Log.d("GCM", "Registro GCM encontrado (usuario=" + registeredUser + ", version=" + registeredVersion + ")");
+
+        int currentVersion = getAppVersionCode(context);
+        if (registeredVersion != currentVersion) {
+            Log.d("GCM", "Nueva versión de la aplicación.");
+            return "";
+        } else if (!user.equals(registeredUser)) {
+            Log.d("GCM", "Nuevo lblNombreUsuario de usuario.");
+            return "";
+        }
+        return registrationId;
     }
 
 
@@ -114,13 +153,14 @@ public class GlobalApplication extends Application {
      * @param context application's context.
      * @param regId   registration ID
      */
-    public void storeRegistrationId(Context context, String regId) {
+    public void storeRegistrationId(Context context, String regId, String user) {
         final SharedPreferences prefs = getGCMPreferences();
         int appVersion = getAppVersionCode(context);
         Log.i("GCM", "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PROPERTY_REG_ID, regId);
-        editor.putInt(getAppVersionName(context), appVersion);
+        editor.putString(PROPERTY_USER, user);
+        editor.putInt(PROPERTY_APP_VERSION, appVersion);
         editor.commit();
     }
 
@@ -176,44 +216,114 @@ public class GlobalApplication extends Application {
         return this.currentUser;
     }
 
-    /**
-     * Retorna la imagen del usuario
-     *
-     * @return
-     */
-    public static RoundedBitmapDrawable getAvatar(ParseUser currentUser) {
-        if (currentUser != null) {
-            ParseFile parseFile = currentUser.getParseFile("avatar");
-            try {
-                if (parseFile != null && parseFile.getData().length > 0) {
-                    byte[] byteImage;
-                    byteImage = parseFile.getData();
-                    if (byteImage != null) {
-                        Bitmap bitmap = decodeSampledBitmapFromResource(byteImage, 100, 100);
-                        if (bitmap != null)
-                            //Cuadrar imagen
-                            if (bitmap != null && bitmap.getWidth() > bitmap.getHeight()) {
-                                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getHeight(), bitmap.getHeight());
-                            } else if (bitmap != null && bitmap.getHeight() > bitmap.getWidth()) {
-                                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getWidth());
-                            }
-                        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, bitmap);
-                        //corner radius
-                        roundedBitmapDrawable.setCornerRadius(bitmap.getHeight());
-                        return roundedBitmapDrawable;
-                    }
+    public void setAvatarParse(ParseFile parseFile, ImageView imageViewRender, boolean rounded) {
+        if (imageViewRender != null) {
+            if (parseFile != null) {
+                if (rounded) {
+                    Picasso.with(this)
+                            .load(parseFile.getUrl())
+                            .transform(new CircleTransform())
+                            .into(imageViewRender);
+                } else {
+                    Picasso.with(this)
+                            .load(parseFile.getUrl())
+                            .into(imageViewRender);
                 }
-            } catch (ParseException e) {
-                Log.e("Parse.avatar.exception", e.getMessage());
-            } catch (OutOfMemoryError e) {
-                Log.e("Parse.avatar.outmemory", e.toString());
+            } else {
+                if (rounded) {
+                    Picasso.with(this)
+                            .load(R.drawable.ic_user_male)
+                            .transform(new CircleTransform())
+                            .into(imageViewRender);
+                } else {
+                    Picasso.with(this)
+                            .load(R.drawable.ic_user_male)
+                            .into(imageViewRender);
+
+                }
             }
         }
-        //Si no hay imagen se retorna una imagen por defecto.
-        Bitmap bitmapDefault = BitmapFactory.decodeResource(resources, R.drawable.ic_user_male);
-        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, bitmapDefault);
-        return roundedBitmapDrawable;
+
     }
+
+    /**
+     * Dibuja la imgAvatar del parseFile en el ImageView
+     *
+     * @param parseFile
+     * @param imageViewRender
+     */
+    public void setAvatarRounded(ParseFile parseFile, ImageView imageViewRender) {
+        this.setAvatarParse(parseFile, imageViewRender, true);
+
+    }
+
+
+    /**
+     * Dibuja y redimensiona la imgAvatar del parseFile en el ImageView
+     *
+     * @param parseFile
+     * @param imageViewRender
+     * @param width
+     * @param height
+     */
+    public void setAvatarRoundedResize(ParseFile parseFile, ImageView imageViewRender, int width, int height) {
+        if (imageViewRender != null) {
+            if (parseFile != null) {
+                Picasso.with(this)
+                        .load(parseFile.getUrl())
+                        .transform(new CircleTransform())
+                        .resize(width, height)
+                        .centerCrop()
+                        .into(imageViewRender);
+            } else {
+                Picasso.with(this)
+                        .load(R.drawable.ic_user_male)
+                        .transform(new CircleTransform())
+                        .resize(width, height)
+                        .centerCrop()
+                        .into(imageViewRender);
+            }
+        }
+    }
+
+    /**
+     * Retorna la imgAvatar del usuario
+     *
+     * @return
+     * /
+    public static RoundedBitmapDrawable getAvatar(ParseUser currentUser) {
+    if (currentUser != null) {
+    ParseFile parseFile = currentUser.getParseFile("avatar");
+    try {
+    if (parseFile != null && parseFile.getData().length > 0) {
+    byte[] byteImage;
+    byteImage = parseFile.getData();
+    if (byteImage != null) {
+    Bitmap bitmap = decodeSampledBitmapFromResource(byteImage, 100, 100);
+    if (bitmap != null)
+    //Cuadrar imgAvatar
+    if (bitmap != null && bitmap.getWidth() > bitmap.getHeight()) {
+    bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getHeight(), bitmap.getHeight());
+    } else if (bitmap != null && bitmap.getHeight() > bitmap.getWidth()) {
+    bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getWidth());
+    }
+    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, bitmap);
+    //corner radius
+    roundedBitmapDrawable.setCornerRadius(bitmap.getHeight());
+    return roundedBitmapDrawable;
+    }
+    }
+    } catch (ParseException e) {
+    Log.e("Parse.avatar.exception", e.getMessage());
+    } catch (OutOfMemoryError e) {
+    Log.e("Parse.avatar.outmemory", e.toString());
+    }
+    }
+    //Si no hay imgAvatar se retorna una imgAvatar por defecto.
+    Bitmap bitmapDefault = BitmapFactory.decodeResource(resources, R.drawable.ic_user_male);
+    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, bitmapDefault);
+    return roundedBitmapDrawable;
+    } */
 
 
     /**
@@ -277,12 +387,20 @@ public class GlobalApplication extends Application {
         this.tempZimess = tempZimess;
     }
 
-    public ParseUser getCustomParseUser() {
-        return customParseUser;
+    public ParseUser getMessagingParseUser() {
+        return messagingParseUser;
     }
 
-    public void setCustomParseUser(ParseUser customParseUser) {
-        this.customParseUser = customParseUser;
+    public void setMessagingParseUser(ParseUser messagingParseUser) {
+        this.messagingParseUser = messagingParseUser;
+    }
+
+    public ParseUser getProfileParseUser() {
+        return profileParseUser;
+    }
+
+    public void setProfileParseUser(ParseUser profileParseUser) {
+        this.profileParseUser = profileParseUser;
     }
 
     public static Integer getCantZimess() {
@@ -353,9 +471,6 @@ public class GlobalApplication extends Application {
      * @return
      */
     public static String getTimepass(Date createAt) {
-        long MILLSECS_PER_MINUTES = 60 * 1000; //Minutos
-        long MILLSECS_PER_HOUR = 60 * 60 * 1000; //Horas
-        long MILLSECS_PER_DAY = 24 * 60 * 60 * 1000; //Milisegundos al dia
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(createAt);
         calendar.set(Calendar.HOUR, 0);
@@ -363,14 +478,21 @@ public class GlobalApplication extends Application {
         Long time = (currentDate.getTime() - createAt.getTime()); //Tiempo real
         Long timeDay = (currentDate.getTime() - calendar.getTime().getTime()); //Tiempo con hora 0
         String result = "";
-        if ((timeDay / MILLSECS_PER_DAY) >= 1.0) {
-            result = new Double(timeDay / MILLSECS_PER_DAY).intValue() + "d";
-        } else if ((time / MILLSECS_PER_HOUR) < 24.0 && (time / MILLSECS_PER_HOUR) > 1.0) {
-            result = new Double(time / MILLSECS_PER_HOUR).intValue() + "h";
-        } else if ((time / MILLSECS_PER_MINUTES) <= 60.0 && (time / MILLSECS_PER_MINUTES) >= 1.0) {
-            result = new Double(time / MILLSECS_PER_MINUTES).intValue() + "m";
-        } else if ((time / 1000) <= 60.0) {
-            result = ((time / 1000)) + "s";
+        if (TimeUnit.DAYS.convert(timeDay, TimeUnit.MILLISECONDS) > 30) {
+            //MESES
+            result = "+" + String.valueOf(TimeUnit.DAYS.convert(time, TimeUnit.MILLISECONDS) / 30) + "M";
+        } else if (TimeUnit.DAYS.convert(timeDay, TimeUnit.MILLISECONDS) > 1 && TimeUnit.DAYS.convert(timeDay, TimeUnit.MILLISECONDS) < 30) {
+            //DIAS
+            result = String.valueOf(TimeUnit.DAYS.convert(time, TimeUnit.MILLISECONDS)) + "d";
+        } else if (TimeUnit.HOURS.convert(time, TimeUnit.MILLISECONDS) > 1 && TimeUnit.HOURS.convert(time, TimeUnit.MILLISECONDS) < 24) {
+            //HORAS
+            result = String.valueOf(TimeUnit.HOURS.convert(time, TimeUnit.MILLISECONDS)) + "h";
+        } else if (TimeUnit.MINUTES.convert(time, TimeUnit.MILLISECONDS) > 1 && TimeUnit.MINUTES.convert(time, TimeUnit.MILLISECONDS) < 60) {
+            //MINUTOS
+            result = String.valueOf(TimeUnit.MINUTES.convert(time, TimeUnit.MILLISECONDS)) + "m";
+        } else if (TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS) < 60) {
+            //SEGUNDOS
+            result = String.valueOf(TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS)) + "s";
         }
         return result;
     }
@@ -403,15 +525,19 @@ public class GlobalApplication extends Application {
 
     //ALERTAS
 
+    public void gpsShowSettingsAlert() {
+        gpsShowSettingsAlert(context);
+    }
+
     /**
      * Muestra una alerta en caso que esten desabilitados los accesorios de ubicacion
      */
-    public void gpsShowSettingsAlert() {
+    public void gpsShowSettingsAlert(final Context context) {
         if (context == null || isShowGpsAlert) {
             return;
         }
         isShowGpsAlert = true;
-        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(context);
+        AlertDialog.Builder alert = new AlertDialog.Builder(context, R.style.AppCompatAlertDialogStyle);
 
         alert.setTitle(getResources().getString(R.string.lblSettingGPS));
         alert.setMessage(getResources().getString(R.string.msgGPSdisabled));
@@ -436,16 +562,20 @@ public class GlobalApplication extends Application {
 
     }
 
+    public void networkShowSettingsAlert() {
+        networkShowSettingsAlert(context);
+    }
+
     /**
      * Muestra una alerta en caso que esten desabilitados los datos (wifi, movil)
      */
-    public void networkShowSettingsAlert() {
+    public void networkShowSettingsAlert(final Context context) {
         if (context == null || isShowNetworkAlert) {
             return;
         }
 
         isShowNetworkAlert = true;
-        AlertDialogPro.Builder alert = new AlertDialogPro.Builder(context);
+        AlertDialog.Builder alert = new AlertDialog.Builder(context, R.style.AppCompatAlertDialogStyle);
 
         alert.setTitle(getResources().getString(R.string.lblSettingNetwork));
         alert.setMessage(getResources().getString(R.string.msgNetworkDisabled));
@@ -478,6 +608,7 @@ public class GlobalApplication extends Application {
         this.listeningNotifi = listeningNotifi;
     }
 
+
     public static boolean isChatEnabled() {
         return chatEnabled;
     }
@@ -493,6 +624,4 @@ public class GlobalApplication extends Application {
     public void setContext(Context context) {
         this.context = context;
     }
-
-
 }

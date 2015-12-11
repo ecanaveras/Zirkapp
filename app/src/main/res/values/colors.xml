@@ -1,22 +1,24 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    
+
     <!-- basic colors -->
     <color name="dark_primary_color">#D32F2F</color>
     <color name="default_primary_color">#F44336</color>
     <color name="light_primary_color">#FFCDD2</color>
     <color name="text_primary_color">#FFFFFF</color>
-    <color name="accent_color">#607D8B</color>
+    <color name="accent_color">#3D3D3D</color>
+    <!--#607D8B-->
     <color name="primary_text_color">#212121</color>
     <color name="secondary_text_color">#727272</color>
-    <color name="light_back_color">#E3F3E3</color>
-    <color name="light_back_color_2">#F1F9F1</color>
+    <color name="thirty_text_color">#5C5C5C</color>
+
     <color name="divider_color">#B6B6B6</color>
     <color name="divider_color_2">#EBEBEB</color>
 
+    <color name="default_background_color">#E0E0E0</color>
+    <color name="very_dark_gray">#3D3D3D</color>
+
     <!--Messages-->
-    <color name="sinch_purple">#ff63029d</color>
     <color name="off_white">#fffafafa</color>
     <color name="dark_gray">#ffb3b3b3</color>
-    <color name="very_dark_gray">#636363</color>
-    
+
 </resources>

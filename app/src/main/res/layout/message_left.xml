@@ -8,32 +8,32 @@
     <android.support.v7.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
         android:layout_marginRight="15dp"
-        card_view:cardCornerRadius="6dp"
-        card_view:cardElevation="1dp"
-        card_view:cardUseCompatPadding="true"
-        card_view:cardBackgroundColor="@color/text_primary_color"
         android:minWidth="40dp"
         android:paddingLeft="6dp"
-        android:layout_marginLeft="6dp">
+        card_view:cardBackgroundColor="@color/text_primary_color"
+        card_view:cardCornerRadius="6dp"
+        card_view:cardElevation="1dp"
+        card_view:cardUseCompatPadding="true">
 
         <TextView
             android:id="@+id/txtDate"
-            android:layout_alignParentRight="true"
-            android:textColor="@color/sinch_purple"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingRight="2dp"
+            android:layout_alignBottom="@+id/txtSender"
+            android:layout_alignParentRight="true"
             android:paddingBottom="6dp"
-            android:textSize="12sp"
+            android:paddingRight="2dp"
             android:text=""
-            android:layout_alignBottom="@+id/txtSender" />
+            android:textColor="@color/divider_color"
+            android:textSize="12sp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/txtSender"
             android:layout_alignParentLeft="true"
+            android:layout_below="@+id/txtSender"
             android:padding="8dp">
             <!--android:background="@drawable/grey_bubble"-->
 
@@ -41,9 +41,9 @@
                 android:id="@+id/txtMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Hello"
                 android:textColor="@color/primary_text_color"
-                android:textSize="14sp"
-                android:text="Hello" />
+                android:textSize="14sp" />
 
         </RelativeLayout>
     </android.support.v7.widget.CardView>

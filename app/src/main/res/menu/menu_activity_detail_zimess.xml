@@ -8,7 +8,7 @@
             android:title="@string/action_delete_zimess"
             android:orderInCategory="200"
             app:showAsAction="always"
-            android:icon="@drawable/ic_action_delete" />
+            android:icon="@drawable/ic_delete_white_24dp" />
     </group>
     <group android:id="@+id/menuGroupDenounce">
         <item

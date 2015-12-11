@@ -8,12 +8,13 @@
         <item name="windowActionBar">false</item>
         <item name="android:colorButtonNormal">@color/default_primary_color</item>
 
-        <!--<item name="alertDialogProTheme">@style/Theme.AlertDialogPro.Material.Light</item>-->
-        <item name="alertDialogProTheme">@style/FlavoredMaterialLight</item>
+        <item name="alertDialogTheme">@style/AppCompatAlertDialogStyle</item>
     </style>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="AppTheme.Base" />
+    <style name="AppTheme" parent="AppTheme.Base">
+
+    </style>
 
     <style name="My.Button" parent="android:style/Widget.Material.Button">
         <item name="android:background">@drawable/raised_button_background</item>
@@ -21,22 +22,20 @@
     </style>
 
     <style name="ToolbarTheme" parent="Theme.AppCompat">
-        <item name="android:textColorPrimary">@color/abc_primary_text_material_dark</item>
+        <item name="android:textColorPrimary">@color/text_primary_color</item>
         <item name="actionMenuTextColor">@color/abc_primary_text_material_dark</item>
         <item name="android:textColorSecondary">@color/abc_primary_text_material_dark</item>
     </style>
 
-    <style name="FlavoredMaterialLight" parent="Theme.AlertDialogPro.Material.Light">
-        <item name="adpButtonBarPositiveButtonStyle">@style/ButtonDialog</item>
-        <item name="adpButtonBarNegativeButtonStyle">@style/ButtonDialog</item>
-    </style>
-
-    <style name="ButtonDialog" parent="Widget.AlertDialogPro.Material.Light.Button">
-        <item name="android:textColor">@color/dark_primary_color</item>
-    </style>
-
-    <style name="ButtonAppTheme" parent="android:Widget.Material.Button">
+    <style name="ButtonAppTheme" parent="android:style/Widget.Material.Button">
         <item name="android:background">@drawable/raised_button_background</item>
+        <item name="android:textColor">@color/text_primary_color</item>
+    </style>
+
+    <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/dark_primary_color</item>
+        <item name="android:textColorPrimary">@color/primary_text_color</item>
+        <item name="android:background">@color/text_primary_color</item>
     </style>
 
 
@@ -44,6 +43,12 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:background">@color/divider_color_2</item>
+    </style>
+
+    <style name="line_divider_h_2">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">#F4F4F4</item>
     </style>
 
     <style name="line_divider_v">
@@ -67,6 +72,18 @@
         <item name="android:layout_marginBottom">4dp</item>
         <item name="android:layout_marginRight">8dp</item>
         <item name="android:layout_marginLeft">8dp</item>
+    </style>
+
+    <style name="custom_edit_text">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/bg_edittext</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:textColor">@color/accent_color</item>
+    </style>
+
+    <style name="custom_edit_text_disable" parent="custom_edit_text">
+        <item name="android:textColor">@color/divider_color</item>
     </style>
 
     <style name="mini_text">

@@ -47,40 +47,40 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="18dp"
+                    android:layout_marginBottom="4dp"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center_vertical|center_horizontal"
                     android:text="@string/lblLoginZirkapp"
-                    android:textColor="@color/accent_color"
-                    android:textSize="18sp" />
+                    android:background="@color/accent_color"
+                    android:textColor="@color/text_primary_color"
+                    android:textSize="12sp"
+                    android:textAllCaps="true"
+                     />
 
                 <EditText
                     android:id="@+id/txtUserLogin"
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
+                    style="@style/custom_edit_text"
                     android:hint="@string/lblUser"
                     android:imeOptions="actionNext"
                     android:inputType="textVisiblePassword|textNoSuggestions" />
 
                 <EditText
                     android:id="@+id/txtPassLogin"
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
+                    style="@style/custom_edit_text"
                     android:ems="10"
                     android:hint="@string/lblPassword"
                     android:imeOptions="actionNext"
                     android:inputType="textPassword" />
 
 
-                <com.gc.materialdesign.views.ButtonRectangle
+                <Button
                     android:id="@+id/btnLogin"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@color/default_primary_color"
-                    android:drawableLeft="@drawable/ic_zirkapp_noti"
+                    android:layout_height="wrap_content"
                     android:imeOptions="actionSend"
                     android:text="@string/lblLogin"
-                    android:textAllCaps="true"/>
+                    android:textAllCaps="true" />
 
 
                 <TextView
@@ -90,9 +90,10 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="10dp"
                     android:clickable="true"
-                    android:text="Crear mi cuenta Zirkapp"
-                    android:textColor="@color/link_text_material_dark"
-                    android:textSize="18sp" />
+                    android:text="Crea tu cuenta Zirkapp"
+                    android:textColor="@color/default_primary_color"
+                    android:textSize="18sp"/>
+
             </LinearLayout>
 
 
@@ -113,7 +114,7 @@
                     android:layout_gravity="center_vertical"
                     android:text="Google+" />-->
 
-                <!--Facebook-->
+                <!--Facebook- ->
                 <Button
                     android:id="@+id/btnLoginFacebook"
                     android:layout_width="match_parent"
@@ -129,8 +130,9 @@
                     android:textSize="@dimen/com_facebook_likeview_text_size"
                     android:textStyle="bold"
                     android:textAllCaps="true"/>
+                    -->
 
-                <!--Twitter-->
+                <!--Twitter- ->
                 <Button
                     android:id="@+id/btnLoginTwitter"
                     android:layout_width="match_parent"
@@ -145,6 +147,7 @@
                     android:textSize="@dimen/com_facebook_likeview_text_size"
                     android:textStyle="bold"
                     android:textAllCaps="true"/>
+                    -->
 
             </LinearLayout>
         </LinearLayout>

@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/default_background_color">
 
     <include layout="@layout/component_toolbar" />
 
@@ -47,36 +48,34 @@
     <RelativeLayout
         android:id="@+id/relSendMessage"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/white"
-        android:paddingLeft="10dp">
-
+        android:background="@android:color/white">
 
         <EditText
             android:id="@+id/txtMessageBodyField"
+            style="@style/custom_edit_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignBottom="@+id/btnSendMessage"
             android:layout_alignTop="@+id/btnSendMessage"
-            android:layout_marginBottom="-4dp"
-            android:layout_marginRight="10dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="4dp"
             android:layout_toLeftOf="@+id/btnSendMessage"
-            android:background="@android:color/white"
-            android:textColor="@android:color/black"
-            android:textSize="14sp"
-            android:inputType="textCapSentences"/>
+            android:layout_weight="1"
+            android:inputType="textCapSentences|text"
+            android:singleLine="false" />
         <!-- android:hint="@string/message_elipses" -->
 
-        <com.gc.materialdesign.views.ButtonRectangle
+        <ImageButton
             android:id="@+id/btnSendMessage"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:background="@color/default_primary_color"
-            android:text="@string/lblSend" />
+            android:adjustViewBounds="false"
+            android:src="@drawable/ic_send_white_24dp" />
         <!--android:background="@drawable/button_send"-->
-
 
     </RelativeLayout>
 

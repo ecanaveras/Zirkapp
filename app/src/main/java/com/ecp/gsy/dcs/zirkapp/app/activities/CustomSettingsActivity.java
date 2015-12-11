@@ -1,6 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.activities;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.v7.widget.Toolbar;
@@ -30,6 +31,7 @@ public class CustomSettingsActivity extends PreferenceActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setClickable(true);
         toolbar.setTitle(R.string.title_activity_settings);
+        toolbar.setTitleTextColor(Color.parseColor("#FFFFFF"));
         toolbar.setNavigationIcon(getResIdFromAttribute(this, R.attr.homeAsUpIndicator));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

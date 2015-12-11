@@ -2,59 +2,74 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/default_background_color"
     android:minHeight="60dp"
     android:orientation="vertical">
 
     <include layout="@layout/component_toolbar" />
 
-    <LinearLayout
-        android:id="@+id/layoutBodyZimess"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <!--Zimess-->
-        <include layout="@layout/cardview_item_zimess" />
+        android:layout_weight="1"
+        android:fillViewport="true">
 
-        <ImageView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:layout_marginTop="-5dp"
-            android:scaleType="fitCenter"
-            android:src="@android:drawable/arrow_down_float" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    </LinearLayout>
-
-    <!--Comentarios-->
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshComment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_weight="1">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <!--<com.github.ksoichiro.android.observablescrollview.ObservableListView-->
-            <ListView
-                android:id="@+id/listZComments"
+            <LinearLayout
+                android:id="@+id/layoutBodyZimess"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:stackFromBottom="true"
-                android:transcriptMode="alwaysScroll" />
-
-            <ProgressBar
-                android:id="@+id/progressLoad"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:orientation="vertical">
+                <!--Zimess-->
+                <include layout="@layout/cardview_item_zimess" />
 
-        </FrameLayout>
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="-5dp"
+                    android:scaleType="fitCenter"
+                    android:src="@android:drawable/arrow_down_float" />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+                <!--Comentarios-->
+                <android.support.v4.widget.SwipeRefreshLayout
+                    android:id="@+id/swipeRefreshComment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp">
 
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ListView
+                            android:id="@+id/listZComments"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:stackFromBottom="true"
+                            android:transcriptMode="alwaysScroll" />
+
+                        <ProgressBar
+                            android:id="@+id/progressLoad"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center" />
+
+                    </FrameLayout>
+
+                </android.support.v4.widget.SwipeRefreshLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!--footer-->
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -63,20 +78,22 @@
 
         <EditText
             android:id="@+id/txtZimessComment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/custom_edit_text"
             android:layout_gravity="bottom"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="4dp"
             android:layout_weight="1"
             android:hint="@string/msgReply"
             android:inputType="textCapSentences|text"
             android:singleLine="false" />
 
-        <com.gc.materialdesign.views.ButtonRectangle
+        <ImageButton
             android:id="@+id/btnSendZimessComment"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:background="@color/default_primary_color"
-            android:text="@string/lblSend" />
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_send_white_24dp"
+            android:text="@string/lblSend"
+            android:layout_gravity="center_vertical"/>
     </LinearLayout>
 
 

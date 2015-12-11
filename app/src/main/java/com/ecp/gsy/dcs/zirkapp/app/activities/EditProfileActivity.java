@@ -16,6 +16,7 @@ import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -23,13 +24,14 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
+import com.ecp.gsy.dcs.zirkapp.app.util.picasso.CircleTransform;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataAddressTask;
-import com.gc.materialdesign.views.ButtonRectangle;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -104,7 +106,7 @@ public class EditProfileActivity extends ActionBarActivity {
             }
         });
 
-        ButtonRectangle btnSend = (ButtonRectangle) findViewById(R.id.btnUpdateProfile);
+        Button btnSend = (Button) findViewById(R.id.btnUpdateProfile);
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -119,7 +121,10 @@ public class EditProfileActivity extends ActionBarActivity {
         progressDialog.show();
         if (currentUser != null) {
             if (currentUser.getParseFile("avatar") != null) {
-                imgAvatar.setImageDrawable(GlobalApplication.getAvatar(currentUser));
+                Picasso.with(EditProfileActivity.this)
+                        .load(currentUser.getParseFile("avatar").getUrl())
+                        .transform(new CircleTransform())
+                        .into(imgAvatar);
             }
             txtNombres.setText(currentUser.getString("name"));
             txtEstado.setText(currentUser.getString("wall"));
@@ -208,7 +213,7 @@ public class EditProfileActivity extends ActionBarActivity {
     }
 
     /**
-     * Cambiar imagen
+     * Cambiar imgAvatar
      *
      * @param view
      */
@@ -228,7 +233,7 @@ public class EditProfileActivity extends ActionBarActivity {
     }
 
     /**
-     * Corta la imagen
+     * Corta la imgAvatar
      */
     private void cropImage() {
         if (mImageCaptureUri == null) {
