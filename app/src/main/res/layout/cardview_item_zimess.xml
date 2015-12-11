@@ -11,7 +11,6 @@
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginTop="4dp"
-        android:minHeight="80dp"
         android:orientation="vertical"
         card_view:cardCornerRadius="3dp"
         card_view:cardElevation="1dp"
@@ -21,7 +20,7 @@
         <LinearLayout
             android:id="@+id/layoutBodyZimess"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginBottom="4dp"
             android:layout_marginRight="6dp"
             android:layout_marginTop="4dp">
@@ -66,7 +65,8 @@
                         android:text="Zirkapp"
                         android:textColor="@color/thirty_text_color"
                         android:textSize="18dp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:singleLine="true"/>
 
                     <TextView
                         android:id="@+id/lblUserName"
@@ -86,11 +86,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:layout_marginRight="8dp"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="6dp"
                     android:fontFamily="sans-serif"
+                    android:minHeight="40dp"
                     android:maxLength="300"
                     android:singleLine="false"
-                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec id maximus eros, quis luctus enim. Curabitur auctor elit ut metus tempor condimentum. Etiam at diam sapien. Sed tellus ipsum, lobortis ut sapien a, bibendum porta est. Quisque ornare egestas semper. Duis tristique quis sapien in tempor."
+                    android:text="Lorem ipsum dolor sit amet"
                     android:textColor="@color/secondary_text_color"
                     android:textIsSelectable="false"
                     android:textSize="16dp" />
@@ -183,8 +184,8 @@
         android:layout_width="60dp"
         android:layout_height="35dp"
         android:layout_gravity="right"
-        android:layout_marginRight="-4dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginRight="-2dp"
+        android:layout_marginTop="14dp"
         android:elevation="6dp"
         android:translationZ="3dp">
 

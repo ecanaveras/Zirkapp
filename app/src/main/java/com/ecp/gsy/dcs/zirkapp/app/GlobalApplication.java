@@ -19,6 +19,9 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatHistoryFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
@@ -38,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 //import com.parse.ParseFacebookUtils;
 //import com.parse.ParseTwitterUtils;
@@ -64,7 +68,8 @@ public class GlobalApplication extends Application {
 
     //Parse
     private ParseUser currentUser;
-    private ParseUser customParseUser;
+    private ParseUser messagingParseUser;
+    private ParseUser profileParseUser;
     private ParseZimess tempZimess;
 
     //Cantidades para el drawer
@@ -76,7 +81,6 @@ public class GlobalApplication extends Application {
     //Order Zimess
     private int sortZimess;
     private boolean listeningNotifi = true;
-
 
     @Override
     public void onCreate() {
@@ -383,12 +387,20 @@ public class GlobalApplication extends Application {
         this.tempZimess = tempZimess;
     }
 
-    public ParseUser getCustomParseUser() {
-        return customParseUser;
+    public ParseUser getMessagingParseUser() {
+        return messagingParseUser;
     }
 
-    public void setCustomParseUser(ParseUser customParseUser) {
-        this.customParseUser = customParseUser;
+    public void setMessagingParseUser(ParseUser messagingParseUser) {
+        this.messagingParseUser = messagingParseUser;
+    }
+
+    public ParseUser getProfileParseUser() {
+        return profileParseUser;
+    }
+
+    public void setProfileParseUser(ParseUser profileParseUser) {
+        this.profileParseUser = profileParseUser;
     }
 
     public static Integer getCantZimess() {
@@ -459,9 +471,6 @@ public class GlobalApplication extends Application {
      * @return
      */
     public static String getTimepass(Date createAt) {
-        long MILLSECS_PER_MINUTES = 60 * 1000; //Minutos
-        long MILLSECS_PER_HOUR = 60 * 60 * 1000; //Horas
-        long MILLSECS_PER_DAY = 24 * 60 * 60 * 1000; //Milisegundos al dia
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(createAt);
         calendar.set(Calendar.HOUR, 0);
@@ -469,14 +478,21 @@ public class GlobalApplication extends Application {
         Long time = (currentDate.getTime() - createAt.getTime()); //Tiempo real
         Long timeDay = (currentDate.getTime() - calendar.getTime().getTime()); //Tiempo con hora 0
         String result = "";
-        if ((timeDay / MILLSECS_PER_DAY) >= 1.0) {
-            result = new Double(timeDay / MILLSECS_PER_DAY).intValue() + "d";
-        } else if ((time / MILLSECS_PER_HOUR) < 24.0 && (time / MILLSECS_PER_HOUR) > 1.0) {
-            result = new Double(time / MILLSECS_PER_HOUR).intValue() + "h";
-        } else if ((time / MILLSECS_PER_MINUTES) <= 60.0 && (time / MILLSECS_PER_MINUTES) >= 1.0) {
-            result = new Double(time / MILLSECS_PER_MINUTES).intValue() + "m";
-        } else if ((time / 1000) <= 60.0) {
-            result = ((time / 1000)) + "s";
+        if (TimeUnit.DAYS.convert(timeDay, TimeUnit.MILLISECONDS) > 30) {
+            //MESES
+            result = "+" + String.valueOf(TimeUnit.DAYS.convert(time, TimeUnit.MILLISECONDS) / 30) + "M";
+        } else if (TimeUnit.DAYS.convert(timeDay, TimeUnit.MILLISECONDS) > 1 && TimeUnit.DAYS.convert(timeDay, TimeUnit.MILLISECONDS) < 30) {
+            //DIAS
+            result = String.valueOf(TimeUnit.DAYS.convert(time, TimeUnit.MILLISECONDS)) + "d";
+        } else if (TimeUnit.HOURS.convert(time, TimeUnit.MILLISECONDS) > 1 && TimeUnit.HOURS.convert(time, TimeUnit.MILLISECONDS) < 24) {
+            //HORAS
+            result = String.valueOf(TimeUnit.HOURS.convert(time, TimeUnit.MILLISECONDS)) + "h";
+        } else if (TimeUnit.MINUTES.convert(time, TimeUnit.MILLISECONDS) > 1 && TimeUnit.MINUTES.convert(time, TimeUnit.MILLISECONDS) < 60) {
+            //MINUTOS
+            result = String.valueOf(TimeUnit.MINUTES.convert(time, TimeUnit.MILLISECONDS)) + "m";
+        } else if (TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS) < 60) {
+            //SEGUNDOS
+            result = String.valueOf(TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS)) + "s";
         }
         return result;
     }
@@ -608,6 +624,4 @@ public class GlobalApplication extends Application {
     public void setContext(Context context) {
         this.context = context;
     }
-
-
 }

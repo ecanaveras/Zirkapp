@@ -25,34 +25,14 @@ import java.util.List;
  */
 public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUser>> {
     private boolean searching;
-    private ArrayList<ParseUser> userList;
     private Location currentLocation;
     private ParseUser currentUser;
     private LinearLayout layoutUsersNoFound, layoutUsersFinder;
 
     private SwipeRefreshLayout swipeRefreshLayout;
-    private ListView listUsersOnline;
     private RecyclerView recyclerView;
     private Context context;
-    private boolean isSearchHistory;
-    private TextView lblChatNoFound;
     private String gender;
-
-    /**
-     * Busca los usuarios que esten cerca y online
-     *
-     * @param context
-     * @param currentUser
-     * @param currentLocation
-     * @param listUsersOnline
-     */
-    public RefreshDataUsersTask(Context context, ParseUser currentUser, Location currentLocation, ListView listUsersOnline, String gender) {
-        this.context = context;
-        this.currentUser = currentUser;
-        this.currentLocation = currentLocation;
-        this.listUsersOnline = listUsersOnline;
-        this.gender = gender;
-    }
 
     /**
      * Busca los usuarios que esten cerca y online
@@ -70,16 +50,6 @@ public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUse
         this.gender = gender;
     }
 
-    public RefreshDataUsersTask(Context context, ParseUser currentUser, ArrayList<ParseUser> userList, ListView listHistory, TextView lblChatNoFound, LinearLayout layoutUsersFinder) {
-        this.context = context;
-        this.currentUser = currentUser;
-        this.isSearchHistory = true;
-        this.userList = userList;
-        this.listUsersOnline = listHistory;
-        this.lblChatNoFound = lblChatNoFound;
-        this.layoutUsersFinder = layoutUsersFinder;
-    }
-
     @Override
     protected void onPreExecute() {
         if (layoutUsersFinder != null)
@@ -92,10 +62,6 @@ public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUse
 
     @Override
     protected List<ParseUser> doInBackground(Integer... integers) {
-        if (isSearchHistory)
-            return userList;
-        //return DataParseHelper.findUsersList(userList);
-
         //Actualizar la ubicacion del usuario
         ParseGeoPoint parseGeoPoint = new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud());
         ParseUser parseUser = currentUser;
@@ -111,15 +77,8 @@ public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUse
             UsersRecyclerAdapter adapter = new UsersRecyclerAdapter(context, parseUsers);
             recyclerView.setAdapter(adapter);
         }
-        if (listUsersOnline != null) {
-            UsersAdapter usersAdapter = new UsersAdapter(context, parseUsers);
-            listUsersOnline.setAdapter(usersAdapter);
-            usersAdapter.notifyDataSetChanged();
-        }
 
-        //Cant para el drawer
-        if (!isSearchHistory)
-            GlobalApplication.setCantUsersOnline(parseUsers.size());
+        GlobalApplication.setCantUsersOnline(parseUsers.size());
 
         if (swipeRefreshLayout != null)
             swipeRefreshLayout.setRefreshing(false);
@@ -128,14 +87,6 @@ public class RefreshDataUsersTask extends AsyncTask<Integer, Void, List<ParseUse
 
         if (layoutUsersFinder != null)
             layoutUsersFinder.setVisibility(View.GONE);
-
-        if (lblChatNoFound != null) {
-            if (!usersFound) {
-                lblChatNoFound.setVisibility(View.VISIBLE);
-            } else {
-                lblChatNoFound.setVisibility(View.GONE);
-            }
-        }
 
         if (layoutUsersNoFound != null) {
             if (usersFound) { //Si hay Usuarios

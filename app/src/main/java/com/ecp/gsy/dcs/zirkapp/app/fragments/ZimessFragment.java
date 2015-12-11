@@ -4,9 +4,11 @@ import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.LayerDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -28,13 +30,20 @@ import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MyZimessActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.NewZimessActivity;
+import com.ecp.gsy.dcs.zirkapp.app.util.Utils;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.ZimessRecyclerAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.CounterNotificationsTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
 import com.parse.ParseUser;
+
+import java.util.HashMap;
 
 /**
  * Created by Elder on 23/02/2015.
@@ -42,7 +51,7 @@ import com.parse.ParseUser;
 public class ZimessFragment extends Fragment {
 
     private static ZimessFragment instance = null;
-    public static final String TAG = "ZimessFragment";
+    public static final String TAG = ZimessFragment.class.getSimpleName();
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -72,7 +81,7 @@ public class ZimessFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_zimess, container, false);
         setHasOptionsMenu(true);
-        setRetainInstance(true);
+//        setRetainInstance(true);
 
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -101,7 +110,7 @@ public class ZimessFragment extends Fragment {
             @Override
             protected String doInBackground(Void... params) {
                 try {
-                    Thread.sleep(2000); // 2 segundos
+                    Thread.sleep(0); // 2 segundos
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -126,6 +135,15 @@ public class ZimessFragment extends Fragment {
         ImageView imageView = (ImageView) view.findViewById(R.id.imgLogoZirkapp);
         Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.fade);
         imageView.startAnimation(animation);
+
+        FloatingActionButton btnNewZimess = (FloatingActionButton) view.findViewById(R.id.btnNewZimess);
+        btnNewZimess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), NewZimessActivity.class);
+                startActivity(intent);
+            }
+        });
 
         lblRangoZimess = (TextView) view.findViewById(R.id.lblInfoRango);
 
@@ -303,6 +321,17 @@ public class ZimessFragment extends Fragment {
         menu.clear();
         inflater.inflate(R.menu.menu_zimess_fragment, menu);
         menuList = menu;
+        MenuItem itemGoNoti = menu.findItem(R.id.action_bar_go_noti);
+        MenuItem itemGoInbox = menu.findItem(R.id.action_bar_go_inbox);
+        //Obtener Drawable del icon
+        LayerDrawable iconNoti = (LayerDrawable) itemGoNoti.getIcon();
+        LayerDrawable iconMessages = (LayerDrawable) itemGoInbox.getIcon();
+        Utils.setBadgeCount(getActivity(), iconNoti, 0);
+        Utils.setBadgeCount(getActivity(), iconMessages, 0);
+        //Task para contar mensajes y notificaciones sin leer
+        new CounterNotificationsTask(getActivity(), iconNoti, CounterNotificationsTask.MENU_ITEM_NOTIFI).execute();
+        new CounterNotificationsTask(getActivity(), iconMessages, CounterNotificationsTask.MENU_ITEM_MESSAGES).execute();
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -310,10 +339,19 @@ public class ZimessFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         //Manejar seleccion en el menú
         Intent intent;
+        MainActivity mainActivity;
         switch (item.getItemId()) {
             case R.id.action_bar_new_zimess:
                 intent = new Intent(getActivity(), NewZimessActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.action_bar_go_inbox:
+                mainActivity = (MainActivity) getActivity();
+                mainActivity.selectItemDrawer(mainActivity.getNavItem(1), 1);
+                break;
+            case R.id.action_bar_go_noti:
+                mainActivity = (MainActivity) getActivity();
+                mainActivity.selectItemDrawer(mainActivity.getNavItem(2));
                 break;
             case R.id.action_bar_my_zimess:
                 intent = new Intent(getActivity(), MyZimessActivity.class);

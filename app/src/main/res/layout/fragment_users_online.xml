@@ -125,31 +125,6 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-
-                <LinearLayout
-                    android:id="@+id/layoutInitService"
-                    android:layout_width="match_parent"
-                    android:layout_height="25dp"
-                    android:background="@color/accent_color"
-                    android:gravity="center"
-                    android:visibility="gone">
-
-                    <ProgressBar
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_marginRight="4dp"
-                        android:maxHeight="22dp"
-                        android:minHeight="22dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Iniciando chat, espera..."
-                        android:textColor="@color/text_primary_color"
-                        android:textSize="18sp" />
-
-                </LinearLayout>
-
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/usersRecyView"
                     android:layout_width="match_parent"

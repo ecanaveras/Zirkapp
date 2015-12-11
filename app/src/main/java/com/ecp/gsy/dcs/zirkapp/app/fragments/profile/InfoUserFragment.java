@@ -35,7 +35,7 @@ public class InfoUserFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_info_user, container, false);
 
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
-        parseUser = globalApplication.getCustomParseUser();
+        parseUser = globalApplication.getProfileParseUser();
 
         inicializarCompUI(view);
 

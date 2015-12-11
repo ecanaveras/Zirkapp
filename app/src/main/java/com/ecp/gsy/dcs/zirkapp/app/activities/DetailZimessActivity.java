@@ -179,7 +179,7 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
                 String transitionName = getResources().getString(R.string.imgNameTransition);
                 ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(DetailZimessActivity.this, view, transitionName);
                 Intent intent = new Intent(view.getContext(), UserProfileActivity.class);
-                globalApplication.setCustomParseUser(zimessDetail.getUser());
+                globalApplication.setProfileParseUser(zimessDetail.getUser());
                 ActivityCompat.startActivity(DetailZimessActivity.this, intent, optionsCompat.toBundle());
             }
         });
@@ -595,7 +595,7 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
         switch (item.getItemId()) {
             case R.id.ctx_view_profile:
                 if (parseZComment != null) {
-                    globalApplication.setCustomParseUser(parseZComment.getUser());
+                    globalApplication.setProfileParseUser(parseZComment.getUser());
                     Intent intent = new Intent(this, UserProfileActivity.class);
                     startActivity(intent);
                 }

@@ -2,7 +2,6 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -33,8 +32,6 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MessagingActivity;
-import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.CountMessagesReceiver;
-import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.SinchConnectReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.listener.FragmentIterationListener;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
@@ -58,19 +55,15 @@ public class UsersFragment extends Fragment {
     private static UsersFragment instance = null;
 
     public static final String TAG = "UsersFragment";
-    private FragmentIterationListener mCallback = null;
 
     //private ListView listViewUserOnline;
     private RecyclerView userRecyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private LinearLayout layoutUsersNoFound, layoutUsersFinder, layoutChatOffline, layoutInitService, layoutGpsOff;
+    private LinearLayout layoutUsersNoFound, layoutUsersFinder, layoutChatOffline, layoutGpsOff;
 
     private ParseUser currentUser;
 
     private GlobalApplication globalApplication;
-
-    private CountMessagesReceiver countMessagesReceiver;
-    private SinchConnectReceiver sinchConnectReceiver;
 
     public boolean isConnectedUser;
     private TextView lblInfoChat;
@@ -123,7 +116,7 @@ public class UsersFragment extends Fragment {
             @Override
             protected String doInBackground(Void... params) {
                 try {
-                    Thread.sleep(2000); // 2 segundos
+                    Thread.sleep(0); // 2 segundos
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -145,7 +138,6 @@ public class UsersFragment extends Fragment {
         layoutUsersFinder = (LinearLayout) view.findViewById(R.id.layoutUsersFinder);
         layoutChatOffline = (LinearLayout) view.findViewById(R.id.layoutChatOffline);
         layoutGpsOff = (LinearLayout) view.findViewById(R.id.layoutGpsOff);
-        layoutInitService = (LinearLayout) view.findViewById(R.id.layoutInitService);
 
         userRecyclerView = (RecyclerView) view.findViewById(R.id.usersRecyView);
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
@@ -203,17 +195,6 @@ public class UsersFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onAttach(Context activity) {
-        super.onAttach(activity);
-        try {
-            mCallback = (FragmentIterationListener) activity;
-        } catch (ClassCastException ex) {
-            Log.e(TAG, "El activity debe implementar la interfaz FragmentIterationListener");
-        }
-    }
-
-
     /**
      * Actualiza la ubicacion del usuario actual y busca los usuarios en Linea y que esten en cerca
      */
@@ -265,6 +246,8 @@ public class UsersFragment extends Fragment {
      */
     public void conectarChat(Location currentLocation) {
         if (currentUser != null) {
+            currentUser.put("online", false);
+            currentUser.saveInBackground();
             isConnectedUser = true;
             findUsersOnline(currentLocation);
         } else {
@@ -280,9 +263,8 @@ public class UsersFragment extends Fragment {
             return;
         }
         if (globalApplication.isConectedToInternet()) {
-            ParseUser parseUser = currentUser;
-            parseUser.put("online", false);
-            parseUser.saveInBackground();
+            currentUser.put("online", false);
+            currentUser.saveInBackground();
             isConnectedUser = false;
             userRecyclerView.setAdapter(null);
             layoutChatOffline.setVisibility(View.VISIBLE);
@@ -291,17 +273,6 @@ public class UsersFragment extends Fragment {
         } else {
             Toast.makeText(getActivity(), getResources().getString(R.string.msgInternetOff), Toast.LENGTH_SHORT).show();
         }
-    }
-
-    /**
-     * Abre la conversacionde un usuario
-     *
-     * @param parseUserDestino
-     */
-    private void abrirConversa(ParseUser parseUserDestino) {
-        globalApplication.setCustomParseUser(parseUserDestino);
-        Intent intent = new Intent(getActivity(), MessagingActivity.class);
-        startActivity(intent);
     }
 
     /**
@@ -361,14 +332,12 @@ public class UsersFragment extends Fragment {
      * @param gender
      */
     private void saveGenderPreference(String gender) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("filter_user_gender", gender);
         editor.commit();
     }
 
     private String getGenderPreference() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return preferences.getString("filter_user_gender", null);
     }
 
@@ -431,22 +400,6 @@ public class UsersFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        //Registrar los Broadcast
-        //getActivity().registerReceiver(countMessagesReceiver, new IntentFilter(CountMessagesReceiver.ACTION_LISTENER));
-        //getActivity().registerReceiver(sinchConnectReceiver, new IntentFilter("app.fragments.UsersFragment"));
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        //getActivity().unregisterReceiver(countMessagesReceiver);
-        //getActivity().unregisterReceiver(sinchConnectReceiver);
-        super.onPause();
-    }
-
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
@@ -482,6 +435,8 @@ public class UsersFragment extends Fragment {
             case R.id.action_bar_filter_users:
                 showFilterDialog();
                 break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -502,7 +457,7 @@ public class UsersFragment extends Fragment {
             case R.id.ctx_view_profile:
                 ParseUser receptorUser = (ParseUser) listViewUserOnline.getAdapter().getItem(acmi.position);
                 Intent intent = new Intent(getActivity(), UserProfileActivity.class);
-                globalApplication.setCustomParseUser(receptorUser);
+                globalApplication.setProfileParseUser(receptorUser);
                 startActivity(intent);
                 return true;
             case R.id.ctx_delete_chat:
@@ -517,12 +472,6 @@ public class UsersFragment extends Fragment {
         }*/
 
         return super.onContextItemSelected(item);
-    }
-
-    @Override
-    public void onDetach() {
-        mCallback = null;
-        super.onDetach();
     }
 }
 

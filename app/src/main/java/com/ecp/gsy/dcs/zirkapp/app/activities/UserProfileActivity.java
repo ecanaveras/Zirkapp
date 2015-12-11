@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentPagerAdapter;
@@ -23,8 +24,10 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -48,6 +51,8 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -80,7 +85,7 @@ public class UserProfileActivity extends AppCompatActivity {
         currentUser = ParseUser.getCurrentUser();
 
         globalApplication = (GlobalApplication) getApplicationContext();
-        parseUser = globalApplication.getCustomParseUser();
+        parseUser = globalApplication.getProfileParseUser();
 
         inicializarCompUI();
 
@@ -124,9 +129,8 @@ public class UserProfileActivity extends AppCompatActivity {
         txtWall = (TextView) findViewById(R.id.txtWall);
         txtEdad = (TextView) findViewById(R.id.txtEdad);
 
-        //Botones
-        ImageButton btnOpenChat = (ImageButton) findViewById(R.id.btnOpenChat);
-        ImageButton btnSendZiss = (ImageButton) findViewById(R.id.btnSendZiss);
+        //Boton Chat
+        FloatingActionButton btnOpenChat = (FloatingActionButton) findViewById(R.id.btnOpenChat);
 
         //Accion Botones
         btnOpenChat.setOnClickListener(new View.OnClickListener() {
@@ -134,23 +138,9 @@ public class UserProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!currentUser.equals(parseUser)) {
                     //Ir la perfil del usuario
-                    globalApplication.setCustomParseUser(parseUser);
+                    globalApplication.setMessagingParseUser(parseUser);
                     Intent intent = new Intent(UserProfileActivity.this, MessagingActivity.class);
                     startActivity(intent);
-                } else {
-                    Snackbar.make(v, String.format("Hey, es tu perfil, no puedes hacer eso!"), Snackbar.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        btnSendZiss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!currentUser.equals(parseUser)) {
-                    String nameCurrentUser = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
-                    String nameReceptorUser = parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername();
-                    new SendPushTask(parseUser, currentUser.getObjectId(), "Ziiiss", String.format("%s ha dado un toque en tu perfil...", nameCurrentUser), SendPushTask.PUSH_ZISS).execute();
-                    Snackbar.make(v, String.format("Has dado un Ziss a %s", nameReceptorUser), Snackbar.LENGTH_SHORT).show();
                 } else {
                     Snackbar.make(v, String.format("Hey, es tu perfil, no puedes hacer eso!"), Snackbar.LENGTH_SHORT).show();
                 }
@@ -162,13 +152,16 @@ public class UserProfileActivity extends AppCompatActivity {
 
         int edad = calcEdad(parseUser.getDate("birthday"));
         if (edad > 0)
-            txtEdad.setText(edad + " " + getString(R.string.lblYears));
+            txtEdad.setText(String.format(getString(R.string.formatOldYears), edad));
         else {
             txtEdad.setText(null);
             txtEdad.setVisibility(View.GONE);
         }
     }
 
+    /**
+     * Guarda la información de la visita
+     */
     private void saveInfoVisit() {
         if (currentUser.equals(parseUser)) { //Solo usuarios de otro perfil aumentan visitas
             return;
@@ -185,6 +178,17 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void sendZiss() {
+        if (!currentUser.equals(parseUser)) {
+            String nameCurrentUser = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+            String nameReceptorUser = parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername();
+            new SendPushTask(parseUser, currentUser.getObjectId(), "Ziiiss", String.format("%s ha dado un toque en tu perfil...", nameCurrentUser), SendPushTask.PUSH_ZISS).execute();
+            Snackbar.make(findViewById(android.R.id.content), String.format("Has dado un Ziss a %s", nameReceptorUser), Snackbar.LENGTH_SHORT).show();
+        } else {
+            Snackbar.make(findViewById(android.R.id.content), String.format("Hey, es tu perfil, no puedes hacer eso!"), Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     private int calcEdad(Date birthday) {
@@ -220,14 +224,9 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+    protected void onDestroy() {
+        super.onDestroy();
+        globalApplication.setProfileParseUser(null);
     }
 
     public static void launch(Activity context, int position, View sharedView) {
@@ -245,6 +244,27 @@ public class UserProfileActivity extends AppCompatActivity {
                 context.startActivity(intent, options0.toBundle());
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.action_bar_send_ziss:
+                sendZiss();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_activity_user_profile, menu);
+        return true;
     }
 
     private class UserProfileTask extends AsyncTask<ParseUser, Void, ParseUser> {

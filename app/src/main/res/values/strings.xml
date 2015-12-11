@@ -39,7 +39,7 @@
     <string name="lblEmail">Correo electrónico</string>
     <string name="msgLoginError">Usuario y/o contraseña no válidos</string>
     <string name="msgLoginEmpty">Usuario y/o contraseña necesarios</string>
-    <string name="msgSignUpEmailEmpty">El correo es necesario</string>
+    <string name="msgSignUpEmailEmpty">tu correo es necesario</string>
     <string name="msgSignUpUserEmpty">El usuario es necesario</string>
     <string name="msgSignUpPassEmpty">La contraseña es necesaria</string>
     <string name="msgSignUpErrorEmpty">Por favor diligencia todos los datos</string>
@@ -215,12 +215,16 @@
 
     <!--Formatos-->
     <string name="formatPushFavorite" formatted="false">A %1$s le gusta tu Zimess</string>
-    <string name="formatPushComment" formatted="false">%1$ ha comentado tu Zimess</string>
-    <string name="formatPushQuote" formatted="false">%1$ te ha mencionado en un comentario</string>
-    <string name="formatPushZiss" formatted="false">%1$ te ha dado un Ziss</string>
+    <string name="formatPushComment" formatted="false">%1$s ha comentado tu Zimess</string>
+    <string name="formatPushQuote" formatted="false">%1$s te ha mencionado en un comentario</string>
+    <string name="formatPushZiss" formatted="false">%1$s te ha dado un Ziss</string>
+    <string name="formatOldYears" formatted="false">%1$d Años</string>
     <string name="lblUrlWebZirkapp">Visita <a href="http://www.zirkapp.com">www.zirkapp.com</a></string>
     <string name="lblUrlWebFacebook">Danos me gusta en <a href="https://www.facebook.com/zirkapp">www.facebook.com/zirkapp</a></string>
     <string name="lblUrlWebTwitter">Siguenos en <a href="https://twitter.com/zirkapp">www.twitter.com/zirkapp</a></string>
+    <string name="lblYesterday">Ayer</string>
+    <string name="action_bar_send_ziss">Dar un Ziss</string>
+    <string name="action_bar_go_messages">Ir a Mensajes</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

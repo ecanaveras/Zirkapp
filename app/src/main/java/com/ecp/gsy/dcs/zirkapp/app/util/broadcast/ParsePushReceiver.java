@@ -41,7 +41,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
     private String receptorId;
     private String senderId;
     private int typeNotify = 0;
-    private boolean notificar = true;
+    private boolean notificar;
     private String message;
     private String title;
 
@@ -54,6 +54,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
     protected void onPushReceive(Context context, Intent intent) {
         Bundle bundle = intent.getExtras();
         JSONObject data = null;
+        notificar = true;
         try {
             data = new JSONObject(bundle.getString("com.parse.Data"));
             message = data.getString("alert");
@@ -101,52 +102,38 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
         if (senderId != null) {
             switch (typeNotify) {
                 case SendPushTask.PUSH_CHAT:
-                    //Receiver
-                    Intent broad = new Intent();
-                    broad.setAction(CountMessagesReceiver.ACTION_LISTENER);
-                    broad.putExtra("senderId", senderId);
-                    broad.putExtra("recipientId", receptorId);
-                    context.sendBroadcast(broad);
-
-                    intent.setAction("OPEN_FRAGMENT_USER"); //Notificacion desde chat
-                    intent.putExtra("targetId", targetId);
-                    intent.putExtra("receptorId", receptorId);
-                    intent.putExtra("senderId", senderId);
+                    intent.setAction("OPEN_MESSAGING_USER"); //Notificacion desde chat
+                    intent.putExtra("senderId", senderId); //IdUsuario que envia el chat
+                    intent.putExtra("tab", "mensajes");
                     //Manejar Noti
-                    /*if (UsersFragment.isRunning()) {
-                        globalApplication = (GlobalApplication) context.getApplicationContext();
-                        if (senderUser != null && !senderUser.equals(globalApplication.getCustomParseUser()) || globalApplication.isListeningNotifi()) {
-                            globalApplication.setCustomParseUser(senderUser);
-                        } else {
-                            //No notificar
-                            notificar = false;
-                        }
-                    }*/
+                    GlobalApplication app = (GlobalApplication) context.getApplicationContext();
+                    if (app.isListeningNotifi() && app.getMessagingParseUser() != null && senderId.equals(app.getMessagingParseUser().getObjectId())) {
+                        notificar = false;
+                    }
                     typeNotiString = "[Chat]";
                     break;
 
                 case SendPushTask.PUSH_COMMENT:
                     intent.setAction("OPEN_FRAGMENT_NOTI"); //Notificacion desde comentarios
-                    intent.putExtra("targetId", targetId);
-                    intent.putExtra("receptorId", receptorId);
-                    intent.putExtra("senderId", senderId);
+                    intent.putExtra("targetId", targetId); //ZImess comentado
+                    intent.putExtra("receptorId", receptorId); //Usuario creador de ZImess
+                    intent.putExtra("senderId", senderId); //Usuario que envia el comentario
 
                     typeNotiString = "[Comment]";
                     break;
 
                 case SendPushTask.PUSH_QUOTE:
                     intent.setAction("OPEN_FRAGMENT_NOTI"); //Notificacion desde comentarios
-                    intent.putExtra("targetId", targetId);
-                    intent.putExtra("receptorId", receptorId);
-                    intent.putExtra("senderId", senderId);
+                    intent.putExtra("targetId", targetId); //Usuario o ZImess
+                    intent.putExtra("receptorId", receptorId); //Usuario que recibe la respuesta
+                    intent.putExtra("senderId", senderId);//USuario que envia la respuesta
 
                     typeNotiString = "[Resp]";
                     break;
 
                 case SendPushTask.PUSH_ZISS:
                     intent.setAction("OPEN_PROFILE_USER");//Notificacion para ver perfil
-                    intent.putExtra("targetId", senderId);
-                    intent.putExtra("receptorId", receptorId);
+                    intent.putExtra("targetId", senderId);//Usuario que envia el Ziss
 
                     typeNotiString = "[Ziss]";
                     break;
@@ -201,27 +188,6 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
             notificationManager.notify(typeNotify, nBuilder.build());
 
         }
-    }
-
-
-    /**
-     * Busca usuario del objectId
-     *
-     * @param objectId
-     * @return
-     */
-    private ParseUser findParseUser(String objectId) {
-        return DataParseHelper.findUser(objectId);
-    }
-
-    /**
-     * Busca usuario del parseUser
-     *
-     * @param username
-     * @return
-     */
-    private ParseUser findParseUsername(String username) {
-        return DataParseHelper.findUserName(username);
     }
 }
 

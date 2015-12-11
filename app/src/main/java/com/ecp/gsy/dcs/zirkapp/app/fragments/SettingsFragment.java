@@ -104,11 +104,11 @@ public class SettingsFragment extends PreferenceFragment {
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_options_distance);
 
-        // Add 'notifications' preferences, and a corresponding header.
+        /* // Add 'notifications' preferences, and a corresponding header.
         fakeHeader = new PreferenceCategory(getActivity());
         fakeHeader.setTitle(R.string.pref_header_notifications);
         getPreferenceScreen().addPreference(fakeHeader);
-        addPreferencesFromResource(R.xml.pref_options_notification);
+        addPreferencesFromResource(R.xml.pref_options_notification);*/
 
        /* // Add 'data and sync' preferences, and a corresponding header.
         fakeHeader = new PreferenceCategory(getActivity());
@@ -224,7 +224,7 @@ public class SettingsFragment extends PreferenceFragment {
         // to reflect the new value, per the Android Design guidelines.
         bindPreferenceSummaryToValue(findPreference("min_dist_list"));
         bindPreferenceSummaryToValue(findPreference("max_dist_list"));
-        bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
+        //bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
         //bindPreferenceSummaryToValue(findPreference("sync_frequency"));
 
     }
@@ -383,7 +383,7 @@ public class SettingsFragment extends PreferenceFragment {
      * This fragment shows notification preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    /*@TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class NotificationPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -396,7 +396,7 @@ public class SettingsFragment extends PreferenceFragment {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
         }
-    }
+    }*/
 
     /**
      * This fragment shows data and sync preferences only. It is used when the

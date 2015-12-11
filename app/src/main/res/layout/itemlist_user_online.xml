@@ -18,7 +18,7 @@
         android:layout_marginTop="-6dp"
         android:background="@color/very_dark_gray"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="12dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -36,15 +36,14 @@
                 android:singleLine="true"
                 android:text="Name"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@color/text_primary_color"
-                android:textStyle="bold" />
+                android:textColor="@color/text_primary_color" />
 
             <TextView
                 android:id="@+id/lblEdad"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Edad"
-                android:textColor="@color/text_primary_color"
+                android:textColor="@color/default_primary_color"
                 android:textSize="12sp" />
 
         </LinearLayout>
@@ -55,7 +54,8 @@
             android:layout_height="wrap_content"
             android:background="@drawable/highlight_effect"
             android:clickable="true"
-            android:src="@drawable/ic_action_chat" />
+            android:padding="8dp"
+            android:src="@drawable/ic_chat_white_24dp" />
 
     </LinearLayout>
 </LinearLayout>

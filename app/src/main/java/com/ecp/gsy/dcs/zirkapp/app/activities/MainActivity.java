@@ -49,6 +49,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.services.SinchService;
 import com.ecp.gsy.dcs.zirkapp.app.util.sinch.SinchBaseActivity;
 //import com.facebook.appevents.AppEventsLogger;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.NavigationProfileTask;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.OpenMessagingTask;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -84,7 +85,6 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
     private ImageView avatar;
     //Fragments
     private ZimessFragment zimessFragment;
-    private ChatFragment chatFragment;
     private NotificationsFragment notificationsFragment;
     private int indexBackOrDefaultFragment;
     //Usuario de Parse
@@ -123,7 +123,6 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         }
 
         zimessFragment = ZimessFragment.newInstance(null);
-        //chatFragment = ChatFragment.newInstance(null);
         notificationsFragment = NotificationsFragment.newInstance(null);
 
         initComponentsUI();
@@ -205,6 +204,15 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
      * @param itemDrawer
      */
     public void selectItemDrawer(MenuItem itemDrawer) {
+        selectItemDrawer(itemDrawer, null);
+    }
+
+    /**
+     * Reemplaza el contenido principal del Drawer
+     *
+     * @param itemDrawer
+     */
+    public void selectItemDrawer(MenuItem itemDrawer, Integer tabSelected) {
         Fragment fragmentSelected = null;
         FragmentManager fragmentManager = getFragmentManager();
         //Reemplazar el content_frame
@@ -221,7 +229,11 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
                 //Titulo del fragment
                 setTitle(itemDrawer.getTitle());
                 itemDrawer.setChecked(true);
-                fragmentSelected = ChatFragment.newInstance(null);
+                Bundle bundle = new Bundle();
+                if (tabSelected != null) {
+                    bundle.putInt("tabSelected", 1);
+                }
+                fragmentSelected = ChatFragment.newInstance(bundle);
                 fragmentTag = ChatFragment.TAG;
                 break;
             case R.id.item_notifi:
@@ -259,6 +271,7 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         if (fragmentSelected != null) {
             fragmentManager.beginTransaction()
                     .replace(R.id.contenedor_principal, fragmentSelected, fragmentTag)
+                    .addToBackStack(ZimessFragment.TAG)
                     .commit();
         }
 
@@ -266,22 +279,18 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
 
     private void gotoTarget(Intent intent) {
         if (intent.getAction() != null) {
-            if (intent.getAction().equals("OPEN_FRAGMENT_USER") && globalApplication.getCustomParseUser() != null) {
-                //globalApplication.setCustomParseUser(parseUserDestino); Seteado en la notifcacion
-                Intent intent1 = new Intent(this, MessagingActivity.class);
-                startActivity(intent1);
+            if (intent.getAction().equals("OPEN_FRAGMENT_CHAT")) {
+//                //Chat Fragment
+                selectItemDrawer(navigationView.getMenu().getItem(1));
+            }
+            if (intent.getAction().equals("OPEN_MESSAGING_USER")) {
+                new OpenMessagingTask(MainActivity.this).execute(intent.getStringExtra("senderId"));
                 //Chat Fragment
                 selectItemDrawer(navigationView.getMenu().getItem(1));
             }
             if (intent.getAction().equals("OPEN_FRAGMENT_NOTI")) {
-//                NotificationsFragment frag = (NotificationsFragment) fragments[NOTI];
-//                frag.findNotifications(currentUser);
 //                //Noti Fragment
                 selectItemDrawer(navigationView.getMenu().getItem(2));
-            }
-            if (intent.getAction().equals("OPEN_FRAGMENT_CHAT")) {
-                //Chat Fragment
-                selectItemDrawer(navigationView.getMenu().getItem(1));
             }
             if (intent.getAction().equals("OPEN_PROFILE_USER")) {
                 //Ir la perfil del usuario
@@ -289,6 +298,14 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
             }
         }
     }
+
+    public MenuItem getNavItem(int index) {
+        if (navigationView != null) {
+            return navigationView.getMenu().getItem(index);
+        }
+        return null;
+    }
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -308,32 +325,20 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        /*if (!LocationService.isRunning()) {
-            Log.i("starServiceOnResume", LocationService.class.getSimpleName());
-            startService(new Intent(MainActivity.this, LocationService.class));
-        }*/
-        globalApplication.setListeningNotifi(false);
-
-        //FACEBOOK
-        // Logs 'install' and 'app activate' App Events.
-        //AppEventsLogger.activateApp(this);
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
         globalApplication.setListeningNotifi(true);
-
-        //FACEBOOK
-        // Logs 'app deactivate' App Event.
-        //AppEventsLogger.deactivateApp(this);
     }
 
     @Override
     public void onBackPressed() {
-        moveTaskToBack(true);
+        if (getNavItem(0).isChecked()) {
+            super.onBackPressed();
+        } else {
+            //Ir a Zimess
+            selectItemDrawer(getNavItem(0));
+        }
+        //moveTaskToBack(true);
     }
 
     @Override
@@ -363,7 +368,8 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
     @Override
     protected void onDestroy() {
         globalApplication.setListeningNotifi(true);
-        globalApplication.setCustomParseUser(null);
+        globalApplication.setMessagingParseUser(null);
+        globalApplication.setProfileParseUser(null);
         stopService(new Intent(this, LocationService.class));
         if (getSinchServiceInterface() != null) {
             getSinchServiceInterface().stopClient();
@@ -382,7 +388,7 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
 
     @Override
     protected void onServiceConnected() {
-        if (currentUser != null && GlobalApplication.isChatEnabled() && !getSinchServiceInterface().isStarted() && checkPlayServices()) {
+        if (currentUser != null && !getSinchServiceInterface().isStarted()) { //&& checkPlayServices()
             gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
             regId = globalApplication.getRegistrationId(getApplicationContext(), currentUser.getUsername());
             //Si regId no existe, Registrarlo
@@ -409,13 +415,17 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
 
                     @Override
                     protected void onPostExecute(String regId) {
-                        getSinchServiceInterface().startClient(currentUser.getObjectId(), regId);
-                        getSinchServiceInterface().setStartListener(MainActivity.this);
+                        if (GlobalApplication.isChatEnabled()) {
+                            getSinchServiceInterface().startClient(currentUser.getObjectId(), regId);
+                            getSinchServiceInterface().setStartListener(MainActivity.this);
+                        }
                     }
                 }.execute();
             } else {
-                getSinchServiceInterface().startClient(currentUser.getObjectId(), regId);
-                getSinchServiceInterface().setStartListener(MainActivity.this);
+                if (GlobalApplication.isChatEnabled()) {
+                    getSinchServiceInterface().startClient(currentUser.getObjectId(), regId);
+                    getSinchServiceInterface().setStartListener(MainActivity.this);
+                }
             }
 
         }

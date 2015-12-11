@@ -1,9 +1,9 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +15,12 @@ import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MessagingActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.UserProfileActivity;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemChatHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.listener.ItemClickListener;
-import com.ecp.gsy.dcs.zirkapp.app.util.listener.RecyclerItemListener;
 import com.parse.ParseUser;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -53,7 +55,8 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
         holder.lblNombreUsuario.setText(name);
         int edad = calcEdad(parseUser.getDate("birthday"));
         if (edad > 0) {
-            holder.lblEdad.setText(String.valueOf(edad) + " " + R.string.lblYears);
+            holder.lblEdad.setText(String.format(context.getString(R.string.formatOldYears), edad));
+            holder.lblEdad.setVisibility(View.VISIBLE);
         } else {
             holder.lblEdad.setVisibility(View.GONE);
         }
@@ -72,12 +75,12 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
         switch (view.getId()) {
             case R.id.imgAvatar:
                 //Ir la perfil del usuario
-                application.setCustomParseUser(parseUser);
+                application.setProfileParseUser(parseUser);
                 intent = new Intent(context, UserProfileActivity.class);
                 context.startActivity(intent);
                 break;
             case R.id.btnOpenChat:
-                application.setCustomParseUser(parseUser);
+                application.setMessagingParseUser(parseUser);
                 intent = new Intent(context, MessagingActivity.class);
                 context.startActivity(intent);
                 break;

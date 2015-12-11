@@ -9,7 +9,7 @@ android {
         multiDexEnabled true
         minSdkVersion 14
         targetSdkVersion 23
-        versionName '1.2.67'
+        versionName '1.2.68'
         applicationId 'com.ecp.gsy.dcs.zirkapp'
         versionCode 10
     }

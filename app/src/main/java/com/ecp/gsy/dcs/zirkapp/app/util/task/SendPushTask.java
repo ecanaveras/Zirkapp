@@ -116,16 +116,12 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
                 //1. Buscar las instalaciones del usuario a notificar
                 query.whereEqualTo("user", receptorUser);
                 Log.d("PushFindUserFast", "true");
-            }
-
-            //Si viene el userId y no el parseUser
-            if (receptorId != null && receptorUser == null) {
+            } else if (receptorId != null) { //Si viene el userId y no el parseUser
                 //1. Buscar el usuario a notificar
                 ParseQuery userQuery = ParseUser.getQuery();
                 userQuery.whereEqualTo("objectId", receptorId);
                 //2. Buscar las instalaciones del usuario a notificar
                 query.whereMatchesQuery("user", userQuery);
-                Log.d("PushFindUserSLow", "true");
             }
 
             //3. Establecer query de filtro
@@ -138,7 +134,6 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
             try {
                 JSONObject data = new JSONObject();
                 data.put("alert", String.format(messageBody, message.length() < 100 ? message : message.substring(0, 100).concat("..."), typeNotify));
-                data.put("badge", "Increment");
                 data.put("sound", "default"); //Todo obtener Tono de preferencias
                 data.put("type", typeNotify);
                 //Pasar sender como titulo
@@ -146,9 +141,6 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
                 //Datos para el manejo de la notificacion
                 if (targetId != null) {
                     data.put("targetId", targetId); //Objeto afectado
-                } else {
-                    targetId = senderId;
-                    data.put("targetId", senderId); //Usuario que mostrara al abrir la notificacion
                 }
                 if (receptorId != null) data.put("receptorId", receptorId); //Quien recibe
                 if (senderId != null)

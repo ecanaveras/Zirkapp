@@ -8,6 +8,8 @@ import android.os.AsyncTask;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.activities.UserProfileActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 /**
@@ -39,7 +41,7 @@ public class NavigationProfileTask extends AsyncTask<String, String, ParseUser> 
     @Override
     protected void onPostExecute(ParseUser parseUser) {
         dialog.dismiss();
-        globalApplication.setCustomParseUser(parseUser);
+        globalApplication.setProfileParseUser(parseUser);
         Intent intentProf = new Intent(context, UserProfileActivity.class);
         context.startActivity(intentProf);
     }

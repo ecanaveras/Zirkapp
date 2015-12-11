@@ -80,7 +80,7 @@ public class NotifiAdapter extends BaseAdapter {
         //La imgAvatar debe ser cuadrada
         globalApplication.setAvatarRoundedResize(item.getSenderUser().getParseFile("avatar"), avatar, 100, 100);
 
-        //avatar.setImageDrawable(GlobalApplication.getAvatar(item.getSenderUser()));
+        //avatar.setImageDrawable(GlobalApplication.getAvatar(item.getUserMessage()));
         summary.setText(item.getSummaryNoti());
         detail.setText(item.getDetailNoti());
         createdAt.setText(new SimpleDateFormat("dd/MM/yyyy hh:mm a").format(item.getCreatedAt()));

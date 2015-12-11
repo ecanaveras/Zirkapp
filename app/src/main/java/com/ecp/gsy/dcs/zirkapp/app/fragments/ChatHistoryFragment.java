@@ -25,8 +25,10 @@ import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MessagingActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.UserProfileActivity;
+import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemChatHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersHistoryTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersTask;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
@@ -66,9 +68,6 @@ public class ChatHistoryFragment extends Fragment {
         iniciarlizarCompUI(view);
         findParseMessageHistory();
 
-        HashMap params = new HashMap<String, Object>();
-        callParseFunction("getTotalMessagesNoRead", params);
-
         return view;
     }
 
@@ -81,8 +80,11 @@ public class ChatHistoryFragment extends Fragment {
         listViewHistory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ParseUser parseUser = (ParseUser) adapterView.getAdapter().getItem(i);
-                abrirConversa(parseUser);
+                ItemChatHistory chatHistory = (ItemChatHistory) adapterView.getAdapter().getItem(i);
+                TextView textView = (TextView) view.findViewById(R.id.lblCantMessages);
+                abrirConversa(chatHistory.getUserMessage());
+                textView.setText(null);
+                textView.setVisibility(View.GONE);
             }
         });
 
@@ -98,6 +100,7 @@ public class ChatHistoryFragment extends Fragment {
             layoutInternetOff.setVisibility(View.GONE);
 
             final ArrayList<ParseUser> sendersId = new ArrayList<>();
+            final ArrayList<ItemChatHistory> chatHistories = new ArrayList<>();
 
             ParseQuery<ParseZHistory> innerQuery = ParseQuery.getQuery(ParseZHistory.class);
             innerQuery.whereEqualTo(ParseZHistory.USER, currentUser);
@@ -113,29 +116,25 @@ public class ChatHistoryFragment extends Fragment {
                 @Override
                 public void done(List<ParseZMessage> zzMessages, ParseException e) {
                     if (e == null) {
-                        int index = 0;
                         for (ParseZMessage parseObj : zzMessages) {
 
-                            if (!sendersId.contains(parseObj.getSenderId())) {
+                            if (!parseObj.getSenderId().equals(currentUser) && !sendersId.contains(parseObj.getSenderId())) {
                                 sendersId.add(parseObj.getSenderId());
-                                HashMap params = new HashMap<String, Object>();
-                                params.put("sender", parseObj.getSenderId().getObjectId());
-                                params.put("recipient", parseObj.getRecipientId().getObjectId());
-                                callParseFunction("getMessagesNoRead", params);
+                                ItemChatHistory chatHistory = new ItemChatHistory();
+                                chatHistory.setUserMessage(parseObj.getSenderId());
+                                chatHistory.setLastMessage(parseObj);
+                                chatHistory.setCantMessagesNoRead(!parseObj.isMessageRead() ? getCantMessages(parseObj.getSenderId().getObjectId(), parseObj.getRecipientId().getObjectId()) : null);
+                                chatHistories.add(chatHistory);
                             }
-                            if (!sendersId.contains(parseObj.getRecipientId())) {
+                            if (!parseObj.getRecipientId().equals(currentUser) && !sendersId.contains(parseObj.getRecipientId())) {
                                 sendersId.add(parseObj.getRecipientId());
+                                ItemChatHistory chatHistory = new ItemChatHistory();
+                                chatHistory.setUserMessage(parseObj.getRecipientId());
+                                chatHistory.setLastMessage(parseObj);
+                                chatHistories.add(chatHistory);
                             }
-
-                            index++;
                         }
-                        for (int i = 0; i < sendersId.size(); i++) {
-                            //Log.d("userMessage", sendersId.get(i) + " mensajesNoRead ");
-                        }
-
-                        sendersId.removeAll(Arrays.asList(currentUser));
-                        //Set<ParseUser> uniqueSenders = new HashSet<ParseUser>(sendersId); //new ArrayList<ParseUser>(uniqueSenders)
-                        new RefreshDataUsersTask(getActivity(), currentUser, sendersId, listViewHistory, lblChatNoFound, layoudHistoryFinder).execute();
+                        new RefreshDataUsersHistoryTask(getActivity(), chatHistories, listViewHistory, lblChatNoFound, layoudHistoryFinder).execute();
                     } else {
                         Log.e("Parse.chat.history", e.getMessage());
                     }
@@ -153,7 +152,7 @@ public class ChatHistoryFragment extends Fragment {
      * @param parseUserDestino
      */
     private void abrirConversa(ParseUser parseUserDestino) {
-        globalApplication.setCustomParseUser(parseUserDestino);
+        globalApplication.setMessagingParseUser(parseUserDestino);
         Intent intent = new Intent(getActivity().getApplicationContext(), MessagingActivity.class);
         startActivity(intent);
     }
@@ -210,18 +209,23 @@ public class ChatHistoryFragment extends Fragment {
         alert.show();
     }
 
-
-    private Integer callParseFunction(final String nameFunction, HashMap<String, Object> params) {
-        final int canMessages = 0;
-        ParseCloud.callFunctionInBackground(nameFunction, params, new FunctionCallback<Integer>() {
-            public void done(Integer result, ParseException e) {
-                if (e != null) {
-                    Log.e("Parse.Cloud." + nameFunction, e.getMessage());
-                    Log.e("Parse.Cloud." + nameFunction, String.valueOf(result));
-                }
-            }
-        });
-        return canMessages;
+    /**
+     * Invoca una funcion en Parse que devuelve la cantidad de mensajes entre los Id's enviados
+     *
+     * @param senderId
+     * @param recipientId
+     * @return
+     */
+    private Integer getCantMessages(String senderId, String recipientId) {
+        HashMap params = new HashMap<String, Object>();
+        params.put("sender", senderId);
+        params.put("recipient", recipientId);
+        try {
+            return (Integer) ParseCloud.callFunction("getMessagesNoRead", params);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
@@ -253,7 +257,7 @@ public class ChatHistoryFragment extends Fragment {
             case R.id.ctx_view_profile:
                 ParseUser receptorUser = (ParseUser) listViewHistory.getAdapter().getItem(acmi.position);
                 Intent intent = new Intent(getActivity(), UserProfileActivity.class);
-                globalApplication.setCustomParseUser(receptorUser);
+                globalApplication.setProfileParseUser(receptorUser);
                 startActivity(intent);
                 return true;
             case R.id.ctx_delete_chat:

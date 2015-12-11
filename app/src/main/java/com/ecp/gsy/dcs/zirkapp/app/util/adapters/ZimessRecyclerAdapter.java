@@ -39,6 +39,7 @@ import java.util.List;
  */
 public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAdapter.ZimessViewHolder> implements ItemClickListener {
 
+    private final SharedPreferences preferences;
     private List<ParseZimess> zimessList;
     private Location currentLocation;
     private Context context;
@@ -52,6 +53,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         this.currentLocation = currentLocation;
         globalApplication = (GlobalApplication) context.getApplicationContext();
         this.currentUser = ParseUser.getCurrentUser();
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         rango = getRango();
     }
 
@@ -115,7 +117,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
     public void onItemClick(View view, int position) {
         ParseZimess zimess = zimessList.get(position);
 //        View sharedImage = view.findViewById(R.id.imgAvatarItem);
-//        globalApplication.setCustomParseUser(zimess.getUser());
+//        globalApplication.setProfileParseUser(zimess.getUser());
 //        UserProfileActivity.launch(
 //                (Activity) context, position, sharedImage);
         ImageView imgFav = (ImageView) view.findViewById(R.id.imgFav);
@@ -123,7 +125,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
         switch (view.getId()) {
             case R.id.imgAvatarItem:
                 //Ir la perfil del usuario
-                globalApplication.setCustomParseUser(zimess.getUser());
+                globalApplication.setProfileParseUser(zimess.getUser());
                 Intent intent = new Intent(context, UserProfileActivity.class);
                 context.startActivity(intent);
                 break;
@@ -200,7 +202,6 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
     }
 
     private double getRango() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "10"));
         double rango = (dist_max * 1000) / 3;
         return rango;

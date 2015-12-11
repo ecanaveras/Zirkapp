@@ -35,6 +35,7 @@
                 android:id="@+id/lblNombreUsuario"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:singleLine="true"
                 android:text="Zirkapp"
                 android:textColor="@color/accent_color"
                 android:textSize="16dp"
@@ -67,20 +68,42 @@
                 android:layout_marginBottom="4dp"
                 android:layout_marginTop="2dp"
                 android:fontFamily="sans-serif"
+                android:singleLine="true"
                 android:text="I'm using Zirkapp!"
-                android:textColor="@color/primary_text_color" />
+                android:textColor="@color/divider_color" />
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/lblCantMessages"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginRight="16dp"
-            android:textColor="@color/dark_primary_color"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+
+        <FrameLayout
+            android:layout_width="70dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/lblCantMessages"
+                android:layout_width="22dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="40dp"
+                android:background="@drawable/bg_circle_red"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="0"
+                android:textColor="@color/text_primary_color"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/lblDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginRight="6dp"
+                android:layout_marginTop="4dp"
+                android:text="10/03/2015"
+                android:textColor="@color/divider_color"
+                android:textSize="10dp" />
+        </FrameLayout>
+
 
     </LinearLayout>
 

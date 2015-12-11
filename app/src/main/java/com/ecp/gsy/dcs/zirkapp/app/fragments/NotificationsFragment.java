@@ -96,6 +96,8 @@ public class NotificationsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ParseZNotifi item = (ParseZNotifi) parent.getAdapter().getItem(position);
+                LinearLayout layoutItemNoti = (LinearLayout) view.findViewById(R.id.layoutItemNoti);
+                layoutItemNoti.setBackgroundResource(R.color.text_primary_color);
                 if (!item.isReadNoti()) saveReadNotificacion(item);
                 goToTarget(item);
             }
@@ -166,10 +168,10 @@ public class NotificationsFragment extends Fragment {
             }
         }
         if (gotoProfile) {
-            globalApplication.setCustomParseUser(item.getSenderUser());
+            globalApplication.setProfileParseUser(item.getSenderUser());
             Intent intentProf = new Intent(getActivity(), UserProfileActivity.class);
             getActivity().startActivity(intentProf);
-            //new NavigationProfileTask(getActivity()).execute(item.getSenderUser().getObjectId());
+            //new NavigationProfileTask(getActivity()).execute(item.getUserMessage().getObjectId());
         }
         //Cancelar la notificacion
         NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);

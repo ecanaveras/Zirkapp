@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
@@ -76,7 +77,8 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
         currentUser = ParseUser.getCurrentUser();
 
         //Usuario receptor
-        receptorUser = globalApplication.getCustomParseUser();
+        receptorUser = globalApplication.getMessagingParseUser();
+
         if (receptorUser != null) {
             receptorId = receptorUser.getObjectId();
             receptorUsername = receptorUser.getUsername();
@@ -148,7 +150,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                     view.startAnimation(AnimationUtils.loadAnimation(MessagingActivity.this, R.anim.anim_image_click));
                     Intent intent = new Intent(MessagingActivity.this, UserProfileActivity.class);
                     //intent.putExtra("activityfrom", MessagingActivity.class.getSimpleName());
-                    globalApplication.setCustomParseUser(receptorUser);
+                    globalApplication.setProfileParseUser(receptorUser);
                     MessagingActivity.this.startActivity(intent);
                 }
             });
@@ -296,6 +298,13 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                         }
                     }
                     ParseObject.saveAllInBackground(messageLeidos);
+                    if (messageLeidos.size() > 0) {
+                        //Actualiza la cantidad de mensajes no leidos en el tab Mensajes - Chatfragment
+                        if (ChatFragment.isRunning()) {
+                            ChatFragment parent = ChatFragment.getInstance();
+                            parent.setupCountTabMessages();
+                        }
+                    }
                 } else {
                     Log.e("Parse.chat.history", e.getMessage());
                 }
@@ -367,7 +376,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
     @Override
     protected void onDestroy() {
         globalApplication.setListeningNotifi(true);
-        globalApplication.setCustomParseUser(null);
+        globalApplication.setMessagingParseUser(null);
         if (getSinchServiceInterface() != null) {
             getSinchServiceInterface().removeMessageClientListener(this);
         }
@@ -387,7 +396,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
 
     @Override
     public void onBackPressed() {
-        globalApplication.setCustomParseUser(null);
+        globalApplication.setMessagingParseUser(null);
         super.onBackPressed();
     }
 
