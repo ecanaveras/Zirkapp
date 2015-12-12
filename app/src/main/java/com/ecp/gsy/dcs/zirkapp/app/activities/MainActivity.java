@@ -284,7 +284,9 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
                 selectItemDrawer(navigationView.getMenu().getItem(1));
             }
             if (intent.getAction().equals("OPEN_MESSAGING_USER")) {
-                new OpenMessagingTask(MainActivity.this).execute(intent.getStringExtra("senderId"));
+                if (globalApplication.isConectedToInternet()) {
+                    new OpenMessagingTask(MainActivity.this).execute(intent.getStringExtra("senderId"));
+                }
                 //Chat Fragment
                 selectItemDrawer(navigationView.getMenu().getItem(1));
             }
@@ -298,9 +300,15 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
             }
             if (intent.getAction().equals("OPEN_PROFILE_USER")) {
                 //Ir la perfil del usuario
-                new NavigationProfileTask(MainActivity.this).execute(intent.getStringExtra("targetId"));
+                if (globalApplication.isConectedToInternet()) {
+                    new NavigationProfileTask(MainActivity.this).execute(intent.getStringExtra("targetId"));
+                } else {
+                    //Chat Fragment
+                    selectItemDrawer(navigationView.getMenu().getItem(1));
+                }
             }
         }
+
     }
 
     public MenuItem getNavItem(int index) {

@@ -72,6 +72,7 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
      * @param typeNotify
      */
     public SendPushTask(ParseUser receptorUser, String senderId, String title, String message, int typeNotify) {
+        this.targetId = senderId;
         this.receptorUser = receptorUser;
         this.senderId = senderId;
         this.title = title;
@@ -200,7 +201,7 @@ public class SendPushTask extends AsyncTask<Void, Void, Void> {
      * @param noti
      */
     private void saveNotificacion(ParseZNotifi noti, ParseUser senderUser, ParseUser receptorUser) {
-        if (noti != null && targetId != null && receptorUser != null) {
+        if (noti != null && receptorUser != null) {
             noti.put(ParseZNotifi.SENDER_USER, senderUser);
             noti.put(ParseZNotifi.RECEPTOR_USER, receptorUser);
             switch (noti.getTypeNoti()) {

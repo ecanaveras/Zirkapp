@@ -92,8 +92,6 @@ public class ChatFragment extends Fragment {
         //Select Tab
         TabLayout.Tab tab = tabLayout.getTabAt(tabSelected);
         tab.select();
-
-
     }
 
     @Override
@@ -143,6 +141,7 @@ public class ChatFragment extends Fragment {
                         count.setVisibility(View.GONE);
                     }
                     //Set View in Tab
+                    tab.setCustomView(null);
                     tab.setCustomView(customTabView);
                 }
 

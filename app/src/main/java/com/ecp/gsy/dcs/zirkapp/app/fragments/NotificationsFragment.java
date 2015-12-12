@@ -44,7 +44,7 @@ import java.util.List;
 public class NotificationsFragment extends Fragment {
 
     private static NotificationsFragment instance = null;
-    public static final String TAG = "NotificationsFragment";
+    public static final String TAG = NotificationsFragment.class.getSimpleName();
 
     private ListView listNotifi;
     private ProgressBar progressBar;
@@ -62,6 +62,13 @@ public class NotificationsFragment extends Fragment {
         return notificationsFragment;
     }
 
+    public static boolean isRunning() {
+        return instance != null;
+    }
+
+    public static NotificationsFragment getInstance() {
+        return instance;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -73,17 +80,13 @@ public class NotificationsFragment extends Fragment {
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
 
         inicializarCompUI(view);
+        cancelNotification();
         findNotifications(currentUser);
+
+        instance = this;
         return view;
     }
 
-    public static boolean isRunning() {
-        return instance != null;
-    }
-
-    public static NotificationsFragment getInstance() {
-        return instance;
-    }
 
     private void inicializarCompUI(View view) {
         listNotifi = (ListView) view.findViewById(R.id.listNotifi);
@@ -209,8 +212,13 @@ public class NotificationsFragment extends Fragment {
                     }
                 }
             });
-
         }
+    }
+
+    private void cancelNotification() {
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager nMgr = (NotificationManager) getActivity().getSystemService(ns);
+        nMgr.cancel(100);
     }
 
     @Override

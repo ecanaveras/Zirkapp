@@ -1,9 +1,12 @@
 package com.ecp.gsy.dcs.zirkapp.app.activities;
 
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -29,6 +32,7 @@ import android.widget.Toast;
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatHistoryFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
@@ -105,8 +109,10 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
         }
 
         initComponentUI();
-
+        cancelNotification();
         findParseMessageHistory();
+
+        instance = this;
     }
 
     private void initComponentUI() {
@@ -252,14 +258,14 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
         //Buscar los sinchId del usuario actual
         ParseQuery<ParseZHistory> innerQuery = ParseQuery.getQuery(ParseZHistory.class);
         innerQuery.whereEqualTo(ParseZHistory.USER, currentUser);
-        innerQuery.setLimit(100);
+        innerQuery.setLimit(200);
 
         ParseUser[] userIds = {currentUser, receptorUser};
         ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
         query.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
         query.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
         query.whereMatchesKeyInQuery(ParseZMessage.SINCH_ID, ParseZHistory.SINCH_ID, innerQuery);
-        query.setLimit(100);
+        query.setLimit(200);
         query.orderByAscending("createdAt");
         query.findInBackground(new FindCallback<ParseZMessage>() {
             @Override
@@ -316,6 +322,10 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                             ChatFragment parent = ChatFragment.getInstance();
                             parent.setupCountTabMessages();
                         }
+                        if (ChatHistoryFragment.isRunning()) {
+                            ChatHistoryFragment c = ChatHistoryFragment.getInstance();
+                            c.findParseMessageHistory();
+                        }
                     }
                 } else {
                     Log.e("Parse.chat.history", e.getMessage());
@@ -371,6 +381,12 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
             }
         });
         alert.show();
+    }
+
+    private void cancelNotification() {
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager nMgr = (NotificationManager) this.getSystemService(ns);
+        nMgr.cancel(receptorId, 200);
     }
 
     @Override
@@ -436,9 +452,8 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
     @Override
     public void onIncomingMessage(MessageClient messageClient, Message message) {
         adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING);
-        Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), sound);
-        r.play();
+        /*MediaPlayer mp = MediaPlayer.create(this, R.raw.new_message);
+        mp.start();*/
     }
 
     @Override

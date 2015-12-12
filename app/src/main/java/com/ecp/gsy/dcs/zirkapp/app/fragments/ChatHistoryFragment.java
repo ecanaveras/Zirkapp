@@ -1,7 +1,9 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.app.Fragment;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -49,12 +51,30 @@ import java.util.Objects;
  */
 public class ChatHistoryFragment extends Fragment {
 
+    private static ChatHistoryFragment instance = null;
+
     private ParseUser currentUser;
     private ListView listViewHistory;
     private LinearLayout layoudHistoryFinder;
     private TextView lblChatNoFound;
     private GlobalApplication globalApplication;
     private LinearLayout layoutInternetOff;
+
+    public static ChatHistoryFragment newInstance(Bundle arguments) {
+        ChatHistoryFragment chatHistoryFragment = new ChatHistoryFragment();
+        if (arguments != null) {
+            chatHistoryFragment.setArguments(arguments);
+        }
+        return chatHistoryFragment;
+    }
+
+    public static ChatHistoryFragment getInstance() {
+        return instance;
+    }
+
+    public static boolean isRunning() {
+        return instance != null;
+    }
 
     @Nullable
     @Override
@@ -67,6 +87,8 @@ public class ChatHistoryFragment extends Fragment {
 
         iniciarlizarCompUI(view);
         findParseMessageHistory();
+
+        instance = this;
 
         return view;
     }
@@ -95,7 +117,7 @@ public class ChatHistoryFragment extends Fragment {
     /**
      * Busca los mensajes previos en Parse
      */
-    private void findParseMessageHistory() {
+    public void findParseMessageHistory() {
         if (globalApplication.isConectedToInternet()) {
             layoutInternetOff.setVisibility(View.GONE);
 

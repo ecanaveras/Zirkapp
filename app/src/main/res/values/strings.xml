@@ -225,6 +225,7 @@
     <string name="lblYesterday">Ayer</string>
     <string name="action_bar_send_ziss">Dar un Ziss</string>
     <string name="action_bar_go_messages">Ir a Mensajes</string>
+    <string name="lblEditProfile">Editar Perfil</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

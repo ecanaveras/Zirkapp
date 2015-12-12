@@ -2,12 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/action_bar_send_ziss"
-        android:title="@string/action_bar_send_ziss"
-        android:icon="@drawable/ic_ziss_on_white_24dp"
-        android:orderInCategory="100"
-        app:showAsAction="always" />
-    />
+    <group android:id="@+id/menuGroupEdit">
+        <item
+            android:id="@+id/action_bar_go_edit_profile"
+            android:icon="@drawable/ic_edit_white_24dp"
+            android:orderInCategory="10"
+            android:title="@string/lblEditProfile"
+            app:showAsAction="always" />
+    </group>
+
+    <group android:id="@+id/menuGroupZiss">
+        <item
+            android:id="@+id/action_bar_send_ziss"
+            android:icon="@drawable/ic_ziss_on_white_24dp"
+            android:orderInCategory="100"
+            android:title="@string/action_bar_send_ziss"
+            app:showAsAction="always" />
+        />
+    </group>
 
 </menu>

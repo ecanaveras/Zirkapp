@@ -47,7 +47,7 @@ public class CounterNotificationsTask extends AsyncTask<Integer, Void, Integer> 
 
     @Override
     protected void onPostExecute(Integer result) {
-        if (icon != null && context != null) {
+        if (icon != null && context != null && result != null) {
             //Actualizar el contador
             Utils.setBadgeCount(context, icon, result);
         }

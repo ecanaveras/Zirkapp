@@ -4,7 +4,7 @@
     android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="false">
 
     <!-- App Bar -->
     <android.support.design.widget.AppBarLayout
@@ -53,15 +53,14 @@
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         android:background="@color/very_dark_gray"
-        android:minHeight="60dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <!--Contenido desplazable -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="bottom|center_vertical"
             android:minHeight="60dp"
             android:orientation="vertical"
@@ -72,6 +71,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginRight="50dp"
+                android:layout_weight="1"
+                android:gravity="bottom"
                 android:maxLines="3"
                 android:text="I'm using Zirkapp"
                 android:textColor="@color/text_primary_color"
@@ -116,8 +117,8 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_margin="16dp"
-        android:backgroundTint="@color/default_primary_color"
         android:src="@drawable/ic_chat_white_24dp"
+        app:backgroundTint="@color/default_primary_color"
         app:borderWidth="0dp"
         app:elevation="6dp"
         app:layout_anchor="@id/app_bar"

@@ -1,6 +1,8 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -64,9 +66,9 @@ public class ZimessFragment extends Fragment {
 
     private AlertDialog sortDialog;
     private TextView lblRangoZimess;
-    private ImageView avatar;
     private SharedPreferences preferences;
     private ParseUser currentUser;
+    private MenuItem itemGoNoti, itemGoInbox;
 
     public static ZimessFragment newInstance(Bundle arguments) {
         ZimessFragment zimessFragment = new ZimessFragment();
@@ -76,6 +78,13 @@ public class ZimessFragment extends Fragment {
         return zimessFragment;
     }
 
+    public static boolean isRunning() {
+        return instance != null;
+    }
+
+    public static ZimessFragment getInstance() {
+        return instance;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -94,14 +103,6 @@ public class ZimessFragment extends Fragment {
         instance = this;
 
         return view;
-    }
-
-    public static boolean isRunning() {
-        return instance != null;
-    }
-
-    public static ZimessFragment getInstance() {
-        return instance;
     }
 
     private void callLocation() {
@@ -308,12 +309,39 @@ public class ZimessFragment extends Fragment {
         return maxD;
     }
 
+    /**
+     * Busca cantidad de notificaciones y mensasajes en Parse
+     */
+    public void findNotifications() {
+        //Task para contar mensajes y notificaciones sin leer
+        if (itemGoNoti != null) {
+            Utils.setBadgeCount(getActivity(), getMenuIconDrawable(itemGoNoti), 0);
+            new CounterNotificationsTask(getActivity(), getMenuIconDrawable(itemGoNoti), CounterNotificationsTask.MENU_ITEM_NOTIFI).execute();
+        }
+        if (itemGoInbox != null) {
+            Utils.setBadgeCount(getActivity(), getMenuIconDrawable(itemGoInbox), 0);
+            new CounterNotificationsTask(getActivity(), getMenuIconDrawable(itemGoInbox), CounterNotificationsTask.MENU_ITEM_MESSAGES).execute();
+        }
+    }
+
+
+    /**
+     * Devuelve el icon del menuItem
+     *
+     * @param item
+     * @return
+     */
+    private LayerDrawable getMenuIconDrawable(MenuItem item) {
+        if (item != null) {
+            return (LayerDrawable) item.getIcon();
+        }
+        return null;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-//        if (zReciclerAdapter != null && zReciclerAdapter.getItemCount() == 0) {
-//            findZimessAround(getCurrentLocation(false), globalApplication.getSortZimess());
-//        }
+        //findNotifications();
     }
 
     @Override
@@ -321,16 +349,10 @@ public class ZimessFragment extends Fragment {
         menu.clear();
         inflater.inflate(R.menu.menu_zimess_fragment, menu);
         menuList = menu;
-        MenuItem itemGoNoti = menu.findItem(R.id.action_bar_go_noti);
-        MenuItem itemGoInbox = menu.findItem(R.id.action_bar_go_inbox);
-        //Obtener Drawable del icon
-        LayerDrawable iconNoti = (LayerDrawable) itemGoNoti.getIcon();
-        LayerDrawable iconMessages = (LayerDrawable) itemGoInbox.getIcon();
-        Utils.setBadgeCount(getActivity(), iconNoti, 0);
-        Utils.setBadgeCount(getActivity(), iconMessages, 0);
-        //Task para contar mensajes y notificaciones sin leer
-        new CounterNotificationsTask(getActivity(), iconNoti, CounterNotificationsTask.MENU_ITEM_NOTIFI).execute();
-        new CounterNotificationsTask(getActivity(), iconMessages, CounterNotificationsTask.MENU_ITEM_MESSAGES).execute();
+        itemGoNoti = menu.findItem(R.id.action_bar_go_noti);
+        itemGoInbox = menu.findItem(R.id.action_bar_go_inbox);
+
+        findNotifications();
 
         super.onCreateOptionsMenu(menu, inflater);
     }

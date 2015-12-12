@@ -76,6 +76,7 @@ public class UserProfileActivity extends AppCompatActivity {
     private TextView txtEdad;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private boolean isSameUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +87,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         globalApplication = (GlobalApplication) getApplicationContext();
         parseUser = globalApplication.getProfileParseUser();
+        isSameUser = currentUser.equals(parseUser);
 
         inicializarCompUI();
 
@@ -93,9 +95,6 @@ public class UserProfileActivity extends AppCompatActivity {
 
         //Guardar visitar
         saveInfoVisit();
-        //Cargar info de visistas y Zimess
-        new UserProfileTask().execute(parseUser);
-
     }
 
     private void inicializarCompUI() {
@@ -131,18 +130,23 @@ public class UserProfileActivity extends AppCompatActivity {
 
         //Boton Chat
         FloatingActionButton btnOpenChat = (FloatingActionButton) findViewById(R.id.btnOpenChat);
+        if (isSameUser) {
+            btnOpenChat.setImageResource(R.drawable.ic_edit_white_24dp);
+        }
 
         //Accion Botones
         btnOpenChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!currentUser.equals(parseUser)) {
-                    //Ir la perfil del usuario
+                if (!isSameUser) {
+                    //Ir la perfil del usuario visitado
                     globalApplication.setMessagingParseUser(parseUser);
                     Intent intent = new Intent(UserProfileActivity.this, MessagingActivity.class);
                     startActivity(intent);
                 } else {
-                    Snackbar.make(v, String.format("Hey, es tu perfil, no puedes hacer eso!"), Snackbar.LENGTH_SHORT).show();
+                    Intent intent = new Intent(UserProfileActivity.this, ManagerWizard.class);
+                    startActivity(intent);
+                    //Snackbar.make(v, String.format("Hey, es tu perfil, no puedes hacer eso!"), Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
@@ -163,7 +167,7 @@ public class UserProfileActivity extends AppCompatActivity {
      * Guarda la información de la visita
      */
     private void saveInfoVisit() {
-        if (currentUser.equals(parseUser)) { //Solo usuarios de otro perfil aumentan visitas
+        if (isSameUser) { //Solo usuarios de otro perfil aumentan visitas
             return;
         }
 
@@ -181,7 +185,7 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void sendZiss() {
-        if (!currentUser.equals(parseUser)) {
+        if (!isSameUser) {
             String nameCurrentUser = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
             String nameReceptorUser = parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername();
             new SendPushTask(parseUser, currentUser.getObjectId(), "Ziiiss", String.format("%s ha dado un toque en tu perfil...", nameCurrentUser), SendPushTask.PUSH_ZISS).execute();
@@ -255,6 +259,10 @@ public class UserProfileActivity extends AppCompatActivity {
             case R.id.action_bar_send_ziss:
                 sendZiss();
                 return true;
+            case R.id.action_bar_go_edit_profile:
+                Intent intent = new Intent(this, ManagerWizard.class);
+                startActivity(intent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -264,44 +272,19 @@ public class UserProfileActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_activity_user_profile, menu);
+        if (menu == null) {
+            return true;
+        }
+
+        if (isSameUser) {
+            menu.setGroupVisible(R.id.menuGroupEdit, false);
+            menu.setGroupVisible(R.id.menuGroupZiss, false);
+        } else {
+            menu.setGroupVisible(R.id.menuGroupEdit, false);
+            menu.setGroupVisible(R.id.menuGroupZiss, true);
+        }
+
         return true;
-    }
-
-    private class UserProfileTask extends AsyncTask<ParseUser, Void, ParseUser> {
-
-        private Integer cantZimess;
-
-        @Override
-        protected void onPreExecute() {
-            //progressBarLoad.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected ParseUser doInBackground(ParseUser... parseUsers) {
-            ParseUser userTemp = null;
-            try {
-                userTemp = parseUsers[0].fetch();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return userTemp;
-        }
-
-        @Override
-        protected void onPostExecute(ParseUser parseUser) {
-            if (parseUser != null) {
-                globalApplication.setAvatarParse(parseUser.getParseFile("avatar"), avatar, false);
-                //txtUserNombres.setText(parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername());
-                txtWall.setText(parseUser.getString("wall") != null && !parseUser.getString("wall").isEmpty() ? parseUser.getString("wall") : getString(R.string.usingZirkapp));
-                //txtCantVisitas.setText(String.valueOf(parseUser.getInt("count_visit")));
-                //txtCantZimess.setText(String.valueOf(parseUser.getInt("count_zimess")));
-            } else {
-                //txtCantVisitas.setText("0");
-                //txtCantZimess.setText("0");
-            }
-            //progressBarLoad.setVisibility(View.INVISIBLE);
-
-        }
     }
 
     /**

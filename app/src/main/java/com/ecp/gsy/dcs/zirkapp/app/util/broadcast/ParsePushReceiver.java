@@ -17,7 +17,9 @@ import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MessagingActivity;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatHistoryFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
@@ -42,6 +44,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
     private String receptorId;
     private String senderId;
     private int typeNotify = 0;
+    private int idNotify = 100;
     private boolean notificar;
     private String message;
     private String title;
@@ -94,9 +97,13 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
         msg = msg.contains("-:-") ? msg.substring(0, msg.length() - 4) : msg; //Limpiar mensaje
         //Notificacion
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        //Manejar destino de la notificacion
         Intent intent = new Intent(context, MainActivity.class);
         intent.setFlags(0);//Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.putExtra("typeNotify", typeNotify);
+        //Broad Actualizar iconos de mensajes
+        Intent broad = new Intent(CounterNotifiReceiver.ACTION_LISTENER);
+
         String bodyNoti = "%s %s";
         String typeNotiString = null;
         //senderUser = findParseUser(senderId);
@@ -114,7 +121,10 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                             notificar = false;
                         }
                     }
+                    broad.putExtra("isMessage", true);
+
                     typeNotiString = "[Chat]";
+                    idNotify = 200;
                     break;
 
                 case SendPushTask.PUSH_COMMENT:
@@ -137,7 +147,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
 
                 case SendPushTask.PUSH_ZISS:
                     intent.setAction("OPEN_PROFILE_USER");//Notificacion para ver perfil
-                    intent.putExtra("targetId", senderId);//Usuario que envia el Ziss
+                    intent.putExtra("targetId", targetId);//Usuario que envia el Ziss
 
                     typeNotiString = "[Ziss]";
                     break;
@@ -155,6 +165,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                     typeNotiString = "[Gral]";
                     break;
             }
+            context.sendBroadcast(broad);
         } else {
             typeNotiString = "";
         }
@@ -189,7 +200,11 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                     .setWhen(System.currentTimeMillis());
 
             nBuilder.setContentIntent(contentIntent);
-            notificationManager.notify(typeNotify, nBuilder.build());
+            if (typeNotify == SendPushTask.PUSH_CHAT) {
+                notificationManager.notify(senderId, idNotify, nBuilder.build());
+            } else {
+                notificationManager.notify(idNotify, nBuilder.build());
+            }
 
         }
     }
