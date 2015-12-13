@@ -70,7 +70,7 @@ public class ChatFragment extends Fragment {
 
         adapter = new AdaptadorSecciones(getFragmentManager());
         adapter.addFragment(UsersFragment.newInstance(null), getString(R.string.title_tab_user_online));
-        adapter.addFragment(new ChatHistoryFragment(), getString(R.string.title_tab_messages));
+        adapter.addFragment(ChatHistoryFragment.newInstance(null), getString(R.string.title_tab_messages));
 
         initComponentsUI(view);
 

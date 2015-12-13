@@ -15,6 +15,7 @@ public class ParseZMessage extends ParseObject {
     public static final String RECIPIENT_ID = "recipientId";
     public static final String MESSAGE_TEXT = "messageText";
     public static final String MESSAGE_READ = "messageRead";
+    public static final String CANT_HIST_DELETE = "cant_hist_delete";
 
     //<editor-fold desc="METHODS GETTER">
     public String getSinchId() {
@@ -58,6 +59,11 @@ public class ParseZMessage extends ParseObject {
     public void setMessageRead(boolean messageRead) {
         put(MESSAGE_READ, messageRead);
     }
+
+    public void setCantHistDelete(int cantHistDelete) {
+        put(CANT_HIST_DELETE, cantHistDelete);
+    }
+
     //</editor-fold>
 
 }

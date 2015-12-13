@@ -126,10 +126,12 @@ public class ChatHistoryFragment extends Fragment {
 
             ParseQuery<ParseZHistory> innerQuery = ParseQuery.getQuery(ParseZHistory.class);
             innerQuery.whereEqualTo(ParseZHistory.USER, currentUser);
+            innerQuery.setLimit(1000);
 
             final ParseUser[] userIds = {currentUser};
             ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
             query.whereMatchesKeyInQuery(ParseZMessage.SINCH_ID, ParseZHistory.SINCH_ID, innerQuery);
+            query.whereLessThan(ParseZMessage.CANT_HIST_DELETE, 2);
             query.include(ParseZMessage.SENDER_ID);
             query.include(ParseZMessage.RECIPIENT_ID);
             query.orderByDescending("createdAt");
@@ -277,13 +279,13 @@ public class ChatHistoryFragment extends Fragment {
         AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
             case R.id.ctx_view_profile:
-                ParseUser receptorUser = (ParseUser) listViewHistory.getAdapter().getItem(acmi.position);
+                ParseUser receptorUser = ((ItemChatHistory) listViewHistory.getAdapter().getItem(acmi.position)).getUserMessage();
                 Intent intent = new Intent(getActivity(), UserProfileActivity.class);
                 globalApplication.setProfileParseUser(receptorUser);
                 startActivity(intent);
                 return true;
             case R.id.ctx_delete_chat:
-                ParseUser parseUser = (ParseUser) listViewHistory.getAdapter().getItem(acmi.position);
+                ParseUser parseUser = ((ItemChatHistory) listViewHistory.getAdapter().getItem(acmi.position)).getUserMessage();
                 if (parseUser != null) {
                     deleteParseMessageHistory(parseUser);
                 }

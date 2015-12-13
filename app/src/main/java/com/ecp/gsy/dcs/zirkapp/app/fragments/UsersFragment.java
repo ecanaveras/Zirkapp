@@ -246,7 +246,7 @@ public class UsersFragment extends Fragment {
      */
     public void conectarChat(Location currentLocation) {
         if (currentUser != null) {
-            currentUser.put("online", false);
+            currentUser.put("online", true);
             currentUser.saveInBackground();
             isConnectedUser = true;
             findUsersOnline(currentLocation);

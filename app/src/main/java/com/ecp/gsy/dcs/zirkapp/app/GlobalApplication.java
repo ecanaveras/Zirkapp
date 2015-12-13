@@ -30,7 +30,6 @@ import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.ecp.gsy.dcs.zirkapp.app.util.picasso.CircleTransform;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.parse.Parse;
-import com.parse.ParseCrashReporting;
 import com.parse.ParseFile;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
@@ -99,10 +98,6 @@ public class GlobalApplication extends Application {
         ParseObject.registerSubclass(ParseZMessage.class);
         ParseObject.registerSubclass(ParseZHistory.class);
         ParseObject.registerSubclass(ParseZNotifi.class);
-
-
-        //Crash Reporting
-        ParseCrashReporting.enable(this);
 
         //Iniciar Parse
         Parse.initialize(this, getResources().getString(R.string.parse_api_id), getResources().getString(R.string.parse_api_key));

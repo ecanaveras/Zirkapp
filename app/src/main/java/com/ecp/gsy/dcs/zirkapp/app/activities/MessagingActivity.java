@@ -7,9 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -19,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -39,6 +35,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.sinch.SinchBaseActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -73,7 +70,6 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
     private ProgressBar progressBar;
     private MessageAdapter adapterMessage;
     private ImageButton btnSendMessage;
-
 
     public static MessagingActivity getInstance() {
         return instance;
@@ -194,44 +190,77 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
      * @param messageDirection
      */
     private void saveParseMessage(final Message message, final Integer messageDirection) {
-        //Guardar al enviar el mensaje
-        if (MessageAdapter.DIRECTION_OUTGOING == messageDirection) {
-            //Agrega el mensaje en parse si no existe.
-            new AsyncTask<String, String, String>() {
+        //Agrega el mensaje en parse si no existe.
+        new AsyncTask<String, String, String>() {
 
-                @Override
-                protected String doInBackground(String... strings) {
-                    ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
-                    query.whereEqualTo(ParseZMessage.SINCH_ID, message.getMessageId());
-                    query.findInBackground(new FindCallback<ParseZMessage>() {
+            @Override
+            protected String doInBackground(String... strings) {
+                if (messageDirection == MessageAdapter.DIRECTION_OUTGOING) {
+                    createParseMessage(message);
+                }
+                if (messageDirection == MessageAdapter.DIRECTION_INCOMING) {
+                    updateParseMessageRead();
+                }
+                return null;
+            }
+        }.execute();
+    }
+
+    /**
+     * Crea un nuevo ParseZMessage en Parse
+     *
+     * @param message
+     */
+    private void createParseMessage(final Message message) {
+        ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
+        query.whereEqualTo(ParseZMessage.SINCH_ID, message.getMessageId());
+        query.getFirstInBackground(new GetCallback<ParseZMessage>() {
+            @Override
+            public void done(ParseZMessage getParseZMessage, ParseException e) {
+                if (getParseZMessage == null) { //Guardar al enviar el mensaje si no existe en Parse
+                    final ParseZMessage parseZMessage = new ParseZMessage();
+                    parseZMessage.setSinchId(message.getMessageId());
+                    parseZMessage.setSenderId(currentUser);
+                    parseZMessage.setRecipientId(receptorUser);
+                    parseZMessage.setMessageText(message.getTextBody());
+                    parseZMessage.setMessageRead(false);
+                    parseZMessage.setCantHistDelete(0);
+                    parseZMessage.saveInBackground(new SaveCallback() {
                         @Override
-                        public void done(List<ParseZMessage> zMessages, ParseException e) {
+                        public void done(ParseException e) {
                             if (e == null) {
-                                if (zMessages.size() == 0) {
-                                    final ParseZMessage parseZMessage = new ParseZMessage();
-                                    parseZMessage.setSinchId(message.getMessageId());
-                                    parseZMessage.setSenderId(currentUser);
-                                    parseZMessage.setRecipientId(receptorUser);
-                                    parseZMessage.setMessageText(message.getTextBody());
-                                    parseZMessage.setMessageRead(false);
-                                    parseZMessage.saveInBackground(new SaveCallback() {
-                                        @Override
-                                        public void done(ParseException e) {
-                                            if (e == null) {
-                                                saveParseHistory(parseZMessage, message, currentUser); //Usuario que envia el mensaje
-                                                saveParseHistory(parseZMessage, message, receptorUser); //Usuario que recibe el mensaje
-                                            }
-                                        }
-                                    });
-                                }
+                                saveParseHistory(parseZMessage, message, currentUser); //Usuario que envia el mensaje
+                                saveParseHistory(parseZMessage, message, receptorUser); //Usuario que recibe el mensaje
                             }
                         }
                     });
-                    return null;
                 }
-            }.execute();
+            }
+        });
+    }
 
-        }
+    /**
+     * Marca todos mensaje del chat en Parse, como leidos
+     */
+    private void updateParseMessageRead() {
+        ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
+        query.whereEqualTo(ParseZMessage.SENDER_ID, receptorUser);
+        query.whereEqualTo(ParseZMessage.RECIPIENT_ID, currentUser);
+        query.whereEqualTo(ParseZMessage.MESSAGE_READ, false);
+        query.whereLessThan(ParseZMessage.CANT_HIST_DELETE, 2);
+        query.findInBackground(new FindCallback<ParseZMessage>() {
+            @Override
+            public void done(List<ParseZMessage> list, ParseException e) {
+                if (e == null) {
+                    List<ParseObject> messageLeidos = new ArrayList<>();
+                    for (ParseZMessage message : list) {
+                        message.setMessageRead(true);
+                        messageLeidos.add(message);
+                    }
+                    ParseObject.saveAllInBackground(messageLeidos);
+                }
+            }
+        });
     }
 
     /**
@@ -265,7 +294,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
         query.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
         query.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
         query.whereMatchesKeyInQuery(ParseZMessage.SINCH_ID, ParseZHistory.SINCH_ID, innerQuery);
-        query.setLimit(200);
+        query.whereLessThan(ParseZMessage.CANT_HIST_DELETE, 2);
         query.orderByAscending("createdAt");
         query.findInBackground(new FindCallback<ParseZMessage>() {
             @Override
@@ -355,6 +384,9 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                 ParseQuery<ParseZMessage> innerQuery = ParseQuery.getQuery(ParseZMessage.class);
                 innerQuery.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
                 innerQuery.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
+                innerQuery.whereLessThan(ParseZMessage.CANT_HIST_DELETE, 2);
+                innerQuery.setLimit(500);
+                innerQuery.orderByAscending("createdAt");
 
                 //Buscar los sinchId de usuario actual
                 ParseQuery<ParseZHistory> query = ParseQuery.getQuery(ParseZHistory.class);
@@ -366,11 +398,16 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                         if (e == null) {
                             ParseObject.deleteAllInBackground(zHistories);
                             Toast.makeText(MessagingActivity.this, getResources().getString(R.string.msgChatDeleteOk), Toast.LENGTH_SHORT).show();
+                            if (ChatHistoryFragment.isRunning()) {
+                                ChatHistoryFragment c = ChatHistoryFragment.getInstance();
+                                c.findParseMessageHistory();
+                            }
                         }
                         dialog.dismiss();
                         onBackPressed();
                     }
                 });
+
             }
         });
 
@@ -398,11 +435,15 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
     @Override
     protected void onResume() {
         globalApplication.setListeningNotifi(false);
+        cancelNotification();
         super.onResume();
     }
 
     @Override
     protected void onDestroy() {
+        //Marcar mensajes como leidos en parse.
+        saveParseMessage(null, MessageAdapter.DIRECTION_INCOMING);
+        cancelNotification();
         globalApplication.setListeningNotifi(true);
         globalApplication.setMessagingParseUser(null);
         if (getSinchServiceInterface() != null) {
@@ -424,6 +465,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
 
     @Override
     public void onBackPressed() {
+        saveParseMessage(null, MessageAdapter.DIRECTION_INCOMING);
         globalApplication.setMessagingParseUser(null);
         super.onBackPressed();
     }
@@ -451,9 +493,15 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
 
     @Override
     public void onIncomingMessage(MessageClient messageClient, Message message) {
-        adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING);
-        /*MediaPlayer mp = MediaPlayer.create(this, R.raw.new_message);
-        mp.start();*/
+        if (message.getSenderId().equals(receptorId)) {
+            adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING);
+            MediaPlayer mp = MediaPlayer.create(MessagingActivity.this, R.raw.add_message);
+            mp.start();
+        }
+
+        /*Uri sound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.new_message);
+        RingtoneManager.setActualDefaultRingtoneUri(MessagingActivity.this, RingtoneManager.TYPE_NOTIFICATION, sound);
+        */
     }
 
     @Override
@@ -482,13 +530,11 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
 
     @Override
     public void onShouldSendPushData(MessageClient messageClient, Message message, List<PushPair> pushPairs) {
-        //final String regId = new String(pushPairs.get(0).getPushData());
         //Enviar notificacion.
         if (receptorUser != null && message != null) {
             String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
             new SendPushTask(receptorUser, currentUser.getObjectId(), name, message.getTextBody(), pushPairs, SendPushTask.PUSH_CHAT).execute();
         }
-        //Log.d("onShouldSendPushData", "success");
     }
 
     public ParseUser getReceptorUser() {

@@ -2,8 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/default_background_color">
+    android:background="@color/default_background_color"
+    android:orientation="vertical">
 
     <include layout="@layout/component_toolbar" />
 
@@ -70,10 +70,10 @@
 
         <ImageButton
             android:id="@+id/btnSendMessage"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:adjustViewBounds="false"
+            android:adjustViewBounds="true"
             android:src="@drawable/ic_send_white_24dp" />
         <!--android:background="@drawable/button_send"-->
 
