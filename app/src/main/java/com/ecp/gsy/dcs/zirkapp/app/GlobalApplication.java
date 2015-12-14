@@ -19,11 +19,9 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatFragment;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatHistoryFragment;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZLastMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
@@ -98,6 +96,7 @@ public class GlobalApplication extends Application {
         ParseObject.registerSubclass(ParseZMessage.class);
         ParseObject.registerSubclass(ParseZHistory.class);
         ParseObject.registerSubclass(ParseZNotifi.class);
+        ParseObject.registerSubclass(ParseZLastMessage.class);
 
         //Iniciar Parse
         Parse.initialize(this, getResources().getString(R.string.parse_api_id), getResources().getString(R.string.parse_api_key));
@@ -280,46 +279,6 @@ public class GlobalApplication extends Application {
             }
         }
     }
-
-    /**
-     * Retorna la imgAvatar del usuario
-     *
-     * @return
-     * /
-    public static RoundedBitmapDrawable getAvatar(ParseUser currentUser) {
-    if (currentUser != null) {
-    ParseFile parseFile = currentUser.getParseFile("avatar");
-    try {
-    if (parseFile != null && parseFile.getData().length > 0) {
-    byte[] byteImage;
-    byteImage = parseFile.getData();
-    if (byteImage != null) {
-    Bitmap bitmap = decodeSampledBitmapFromResource(byteImage, 100, 100);
-    if (bitmap != null)
-    //Cuadrar imgAvatar
-    if (bitmap != null && bitmap.getWidth() > bitmap.getHeight()) {
-    bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getHeight(), bitmap.getHeight());
-    } else if (bitmap != null && bitmap.getHeight() > bitmap.getWidth()) {
-    bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getWidth());
-    }
-    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, bitmap);
-    //corner radius
-    roundedBitmapDrawable.setCornerRadius(bitmap.getHeight());
-    return roundedBitmapDrawable;
-    }
-    }
-    } catch (ParseException e) {
-    Log.e("Parse.avatar.exception", e.getMessage());
-    } catch (OutOfMemoryError e) {
-    Log.e("Parse.avatar.outmemory", e.toString());
-    }
-    }
-    //Si no hay imgAvatar se retorna una imgAvatar por defecto.
-    Bitmap bitmapDefault = BitmapFactory.decodeResource(resources, R.drawable.ic_user_male);
-    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(resources, bitmapDefault);
-    return roundedBitmapDrawable;
-    } */
-
 
     /**
      * Code by http://developer.android.com/intl/es/training/displaying-bitmaps/load-bitmap.html

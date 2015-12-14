@@ -7,7 +7,8 @@
 
     <item
         android:id="@+id/ctx_delete_chat"
-        android:title="@string/msgDeleteChat" />
+        android:title="@string/msgDeleteChat"
+        android:visible="false" />
 
     <item
         android:id="@+id/ctx_lock_user"

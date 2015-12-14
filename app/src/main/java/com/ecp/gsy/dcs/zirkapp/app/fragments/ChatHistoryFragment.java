@@ -29,16 +29,19 @@ import com.ecp.gsy.dcs.zirkapp.app.activities.MessagingActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.UserProfileActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemChatHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZLastMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersHistoryTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersTask;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
+import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,6 +62,7 @@ public class ChatHistoryFragment extends Fragment {
     private TextView lblChatNoFound;
     private GlobalApplication globalApplication;
     private LinearLayout layoutInternetOff;
+    private boolean findHistory;
 
     public static ChatHistoryFragment newInstance(Bundle arguments) {
         ChatHistoryFragment chatHistoryFragment = new ChatHistoryFragment();
@@ -118,43 +122,48 @@ public class ChatHistoryFragment extends Fragment {
      * Busca los mensajes previos en Parse
      */
     public void findParseMessageHistory() {
+        if (findHistory) {//Controla si se está buscando info
+            return;
+        }
         if (globalApplication.isConectedToInternet()) {
+            findHistory = true;
             layoutInternetOff.setVisibility(View.GONE);
 
             final ArrayList<ParseUser> sendersId = new ArrayList<>();
             final ArrayList<ItemChatHistory> chatHistories = new ArrayList<>();
 
-            ParseQuery<ParseZHistory> innerQuery = ParseQuery.getQuery(ParseZHistory.class);
-            innerQuery.whereEqualTo(ParseZHistory.USER, currentUser);
-            innerQuery.setLimit(1000);
+            ParseQuery<ParseZLastMessage> querySender = ParseQuery.getQuery(ParseZLastMessage.class);
+            querySender.whereEqualTo(ParseZLastMessage.SENDER_ID, currentUser);
 
-            final ParseUser[] userIds = {currentUser};
-            ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
-            query.whereMatchesKeyInQuery(ParseZMessage.SINCH_ID, ParseZHistory.SINCH_ID, innerQuery);
-            query.whereLessThan(ParseZMessage.CANT_HIST_DELETE, 2);
-            query.include(ParseZMessage.SENDER_ID);
-            query.include(ParseZMessage.RECIPIENT_ID);
-            query.orderByDescending("createdAt");
+            ParseQuery<ParseZLastMessage> queryRecipient = ParseQuery.getQuery(ParseZLastMessage.class);
+            queryRecipient.whereEqualTo(ParseZLastMessage.RECIPIENT_ID, currentUser);
 
-            query.findInBackground(new FindCallback<ParseZMessage>() {
+            String[] userId = {currentUser.getObjectId()};
+            ParseQuery<ParseZLastMessage> query = ParseQuery.or(Arrays.asList(querySender, queryRecipient));
+            query.whereNotContainedIn(ParseZLastMessage.DELETE_FOR, Arrays.asList(userId));
+            query.include(ParseZLastMessage.SENDER_ID);
+            query.include(ParseZLastMessage.RECIPIENT_ID);
+            query.include(ParseZLastMessage.ZMESSAGE_ID);
+            query.orderByDescending("updatedAt");
+            query.findInBackground(new FindCallback<ParseZLastMessage>() {
                 @Override
-                public void done(List<ParseZMessage> zzMessages, ParseException e) {
+                public void done(List<ParseZLastMessage> zMessages, ParseException e) {
                     if (e == null) {
-                        for (ParseZMessage parseObj : zzMessages) {
-
+                        for (ParseZLastMessage parseObj : zMessages) {
                             if (!parseObj.getSenderId().equals(currentUser) && !sendersId.contains(parseObj.getSenderId())) {
                                 sendersId.add(parseObj.getSenderId());
                                 ItemChatHistory chatHistory = new ItemChatHistory();
                                 chatHistory.setUserMessage(parseObj.getSenderId());
-                                chatHistory.setLastMessage(parseObj);
-                                chatHistory.setCantMessagesNoRead(!parseObj.isMessageRead() ? getCantMessages(parseObj.getSenderId().getObjectId(), parseObj.getRecipientId().getObjectId()) : null);
+                                chatHistory.setLastMessage(parseObj.getZMessageId());
+                                chatHistory.setCantMessagesNoRead(getCantMessages(parseObj.getSenderId().getObjectId(), parseObj.getRecipientId().getObjectId()));
                                 chatHistories.add(chatHistory);
                             }
                             if (!parseObj.getRecipientId().equals(currentUser) && !sendersId.contains(parseObj.getRecipientId())) {
                                 sendersId.add(parseObj.getRecipientId());
                                 ItemChatHistory chatHistory = new ItemChatHistory();
                                 chatHistory.setUserMessage(parseObj.getRecipientId());
-                                chatHistory.setLastMessage(parseObj);
+                                chatHistory.setLastMessage(parseObj.getZMessageId());
+                                chatHistory.setIsSender(true);
                                 chatHistories.add(chatHistory);
                             }
                         }
@@ -168,6 +177,7 @@ public class ChatHistoryFragment extends Fragment {
             layoudHistoryFinder.setVisibility(View.GONE);
             layoutInternetOff.setVisibility(View.VISIBLE);
         }
+        findHistory = false;
     }
 
     /**
@@ -199,12 +209,15 @@ public class ChatHistoryFragment extends Fragment {
                 dialog.setMessage(getResources().getString(R.string.msgDeleting));
                 dialog.show();
 
-                ParseUser[] userIds = {currentUser, userChat};
+                final ParseUser[] userIds = {currentUser, userChat};
 
                 //Buscar los sinchId de los mensajes de la conversacion
-                ParseQuery<ParseZMessage> innerQuery = ParseQuery.getQuery(ParseZMessage.class);
+                final ParseQuery<ParseZMessage> innerQuery = ParseQuery.getQuery(ParseZMessage.class);
                 innerQuery.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
                 innerQuery.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
+                innerQuery.whereLessThan(ParseZMessage.CANT_HIST_DELETE, 2);
+                innerQuery.setLimit(500);
+                innerQuery.orderByAscending("createdAt");
 
                 //Buscar los sinchId de usuario actual
                 ParseQuery<ParseZHistory> query = ParseQuery.getQuery(ParseZHistory.class);
@@ -215,10 +228,34 @@ public class ChatHistoryFragment extends Fragment {
                     public void done(List<ParseZHistory> zHistories, ParseException e) {
                         if (e == null) {
                             ParseObject.deleteAllInBackground(zHistories);
+
                             Toast.makeText(getActivity(), getResources().getString(R.string.msgChatDeleteOk), Toast.LENGTH_SHORT).show();
-                            findParseMessageHistory();
+                            //Buscar y actualizar LastMessage
+                            ParseQuery<ParseZLastMessage> lastQuery = ParseQuery.getQuery(ParseZLastMessage.class);
+                            lastQuery.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
+                            lastQuery.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
+                            lastQuery.findInBackground(new FindCallback<ParseZLastMessage>() {
+                                @Override
+                                public void done(List<ParseZLastMessage> list, ParseException e) {
+                                    if (e == null) {
+                                        for (int i = 0; i < list.size(); i++) {
+                                            list.get(i).addDeleteFor(currentUser.getObjectId());
+                                        }
+                                        ParseObject.saveAllInBackground(list, new SaveCallback() {
+                                            @Override
+                                            public void done(ParseException e) {
+                                                if (e == null) {
+                                                    findHistory = false;
+                                                    findParseMessageHistory();
+                                                }
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                    }
+                                }
+                            });
                         }
-                        dialog.dismiss();
+
                     }
                 });
             }
@@ -296,6 +333,4 @@ public class ChatHistoryFragment extends Fragment {
                 return super.onContextItemSelected(item);
         }
     }
-
-
 }

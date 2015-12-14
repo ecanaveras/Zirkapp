@@ -14,7 +14,7 @@
             android:id="@+id/cardMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
+            android:layout_marginLeft="45dp"
             android:layout_marginRight="6dp"
             android:minWidth="40dp"
             card_view:cardBackgroundColor="@color/dark_primary_color"
@@ -27,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="8dp">
+                android:padding="6dp">
 
                 <TextView
                     android:id="@+id/txtMessage"
@@ -35,7 +35,10 @@
                     android:layout_height="wrap_content"
                     android:text="I fine, thanks"
                     android:textColor="@color/text_primary_color"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:textIsSelectable="true"
+                    android:linksClickable="true"
+                    android:autoLink="all" />
 
             </LinearLayout>
 

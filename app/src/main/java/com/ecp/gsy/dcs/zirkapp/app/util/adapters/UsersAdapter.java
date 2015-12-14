@@ -20,11 +20,13 @@ import com.parse.ParseUser;
 
 import org.w3c.dom.Text;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -70,6 +72,7 @@ public class UsersAdapter extends BaseAdapter {
         ParseUser parseUser = parseUserList.get(i).getUserMessage();
         Integer cantMessages = parseUserList.get(i).getCantMessagesNoRead();
         ParseZMessage lastMessage = parseUserList.get(i).getLastMessage();
+        boolean isSender = parseUserList.get(i).isSender();
         //2. Iniciar UI de la lista
         TextView lblUserId = (TextView) vista.findViewById(R.id.lblUserId);
         ImageView imgAvatar = (ImageView) vista.findViewById(R.id.imgAvatar);
@@ -83,7 +86,7 @@ public class UsersAdapter extends BaseAdapter {
         lblUserId.setText(parseUser.getObjectId());
         lblUsername.setText(parseUser.getUsername());
         lblNameUsuario.setText(parseUser.getString("name") != null ? parseUser.getString("name") : parseUser.getUsername());
-        lblLastMessage.setText(lastMessage != null ? lastMessage.getMessageText() : "I'm using Zirkapp!");
+        lblLastMessage.setText(lastMessage != null ? ((isSender ? "Tu: " : "") + lastMessage.getMessageText()) : "I'm using Zirkapp!");
         lblDate.setText(getTimepass(lastMessage.getCreatedAt()));
 
         if (cantMessages != null && cantMessages > 0) {
@@ -101,17 +104,21 @@ public class UsersAdapter extends BaseAdapter {
 
 
     private String getTimepass(Date createAt) {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance(Locale.getDefault());
         calendar.setTime(createAt);
         calendar.set(Calendar.HOUR, 0);
         Date currentDate = new Date();
         Long time = (currentDate.getTime() - createAt.getTime()); //Tiempo real
         String result = "";
-        if (TimeUnit.DAYS.convert(time, TimeUnit.MILLISECONDS) == 0) {
-            //HORAS
-            result = new SimpleDateFormat("hh:mm a").format(createAt);
-        } else if (TimeUnit.DAYS.convert(time, TimeUnit.MILLISECONDS) == 1) {
-            result = context.getString(R.string.lblYesterday).toUpperCase();
+        DateFormat dayFormat = new SimpleDateFormat("dd");
+        if (TimeUnit.DAYS.convert(time, TimeUnit.MILLISECONDS) < 2) {
+            if (dayFormat.format(currentDate).equals(dayFormat.format(createAt))) {
+                //HORAS
+                result = new SimpleDateFormat("hh:mm a").format(createAt);
+            } else {
+                //UN DIA
+                result = context.getString(R.string.lblYesterday).toUpperCase();
+            }
         } else {
             result = new SimpleDateFormat("dd/MM/yyyy").format(createAt);
         }

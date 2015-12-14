@@ -32,6 +32,12 @@ public class MessageAdapter extends BaseAdapter {
     }
 
     public void addMessage(Message message, Integer direccion) {
+        //Verificar que no exista el mensaje, para no duplicar
+        for (Pair<Message, Integer> m : messages) {
+            if (m.first.getMessageId().equals(message.getMessageId())) {
+                return;
+            }
+        }
         messages.add(new Pair(message, direccion));
         notifyDataSetChanged();
     }

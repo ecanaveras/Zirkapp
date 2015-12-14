@@ -30,7 +30,9 @@ import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatHistoryFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
+import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.CounterNotifiReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZLastMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.sinch.SinchBaseActivity;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
@@ -106,7 +108,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
 
         initComponentUI();
         cancelNotification();
-        findParseMessageHistory();
+        findParseMesssageHistory();
 
         instance = this;
     }
@@ -198,9 +200,6 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                 if (messageDirection == MessageAdapter.DIRECTION_OUTGOING) {
                     createParseMessage(message);
                 }
-                if (messageDirection == MessageAdapter.DIRECTION_INCOMING) {
-                    updateParseMessageRead();
-                }
                 return null;
             }
         }.execute();
@@ -242,25 +241,36 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
     /**
      * Marca todos mensaje del chat en Parse, como leidos
      */
-    private void updateParseMessageRead() {
-        ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
-        query.whereEqualTo(ParseZMessage.SENDER_ID, receptorUser);
-        query.whereEqualTo(ParseZMessage.RECIPIENT_ID, currentUser);
-        query.whereEqualTo(ParseZMessage.MESSAGE_READ, false);
-        query.whereLessThan(ParseZMessage.CANT_HIST_DELETE, 2);
-        query.findInBackground(new FindCallback<ParseZMessage>() {
+    private void updateParseMessageRead(final Message message) {
+        new AsyncTask<Void, Void, String>() {
+
             @Override
-            public void done(List<ParseZMessage> list, ParseException e) {
-                if (e == null) {
-                    List<ParseObject> messageLeidos = new ArrayList<>();
-                    for (ParseZMessage message : list) {
-                        message.setMessageRead(true);
-                        messageLeidos.add(message);
-                    }
-                    ParseObject.saveAllInBackground(messageLeidos);
+            protected String doInBackground(Void... params) {
+                try {
+                    Thread.sleep(100); // Espera 100 milisegundos
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                return null;
             }
-        });
+
+            @Override
+            protected void onPostExecute(String s) {
+                ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
+                query.whereEqualTo(ParseZMessage.SINCH_ID, message.getMessageId());
+                query.whereEqualTo(ParseZMessage.MESSAGE_READ, false);
+                query.whereLessThan(ParseZMessage.CANT_HIST_DELETE, 2);
+                query.getFirstInBackground(new GetCallback<ParseZMessage>() {
+                    @Override
+                    public void done(ParseZMessage parseZMessage, ParseException e) {
+                        if (e == null && parseZMessage != null) {
+                            parseZMessage.setMessageRead(true);
+                            parseZMessage.saveInBackground();
+                        }
+                    }
+                });
+            }
+        }.execute();
     }
 
     /**
@@ -281,28 +291,29 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
     /**
      * Busca los mensajes previos en parse
      */
-    private void findParseMessageHistory() {
+    private void findParseMesssageHistory() {
         progressBar.setVisibility(View.VISIBLE);
 
-        //Buscar los sinchId del usuario actual
-        ParseQuery<ParseZHistory> innerQuery = ParseQuery.getQuery(ParseZHistory.class);
-        innerQuery.whereEqualTo(ParseZHistory.USER, currentUser);
-        innerQuery.setLimit(200);
-
         ParseUser[] userIds = {currentUser, receptorUser};
-        ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
-        query.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
-        query.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
-        query.whereMatchesKeyInQuery(ParseZMessage.SINCH_ID, ParseZHistory.SINCH_ID, innerQuery);
-        query.whereLessThan(ParseZMessage.CANT_HIST_DELETE, 2);
+        ParseQuery<ParseZMessage> innerQuery = ParseQuery.getQuery(ParseZMessage.class);
+        innerQuery.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
+        innerQuery.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
+        innerQuery.whereLessThan(ParseZMessage.CANT_HIST_DELETE, 2);
+        innerQuery.setLimit(500);
+
+        //Buscar los sinchId de usuario actual
+        ParseQuery<ParseZHistory> query = ParseQuery.getQuery(ParseZHistory.class);
+        query.whereMatchesKeyInQuery(ParseZHistory.SINCH_ID, ParseZMessage.SINCH_ID, innerQuery);
+        query.whereEqualTo(ParseZHistory.USER, currentUser);
+        query.include(ParseZHistory.ZMESSAGE_ID);
         query.orderByAscending("createdAt");
-        query.findInBackground(new FindCallback<ParseZMessage>() {
+        query.findInBackground(new FindCallback<ParseZHistory>() {
             @Override
-            public void done(List<ParseZMessage> zMessages, ParseException e) {
+            public void done(List<ParseZHistory> zHistoryList, ParseException e) {
                 if (e == null) {
                     List<ParseObject> messageLeidos = new ArrayList<>();
-                    for (ParseZMessage parseZmessa : zMessages) {
-                        final ParseZMessage copyZmessa = parseZmessa;
+                    for (ParseZHistory history : zHistoryList) {
+                        final ParseZMessage copyZmessa = history.getZMessageId();
                         final Message message = new Message() {
                             @Override
                             public String getMessageId() {
@@ -334,30 +345,23 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                                 return copyZmessa.getCreatedAt();
                             }
                         };
-                        if (parseZmessa.getSenderId().equals(currentUser)) {
+                        if (copyZmessa.getSenderId().equals(currentUser)) {
                             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING);
                         } else {
                             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING);
-                            if (!parseZmessa.isMessageRead()) {
-                                parseZmessa.setMessageRead(true);
-                                messageLeidos.add(parseZmessa);
+                            if (!copyZmessa.isMessageRead()) {
+                                copyZmessa.setMessageRead(true);
+                                messageLeidos.add(copyZmessa);
                             }
                         }
                     }
-                    ParseObject.saveAllInBackground(messageLeidos);
                     if (messageLeidos.size() > 0) {
-                        //Actualiza la cantidad de mensajes no leidos en el tab Mensajes - Chatfragment
-                        if (ChatFragment.isRunning()) {
-                            ChatFragment parent = ChatFragment.getInstance();
-                            parent.setupCountTabMessages();
-                        }
-                        if (ChatHistoryFragment.isRunning()) {
-                            ChatHistoryFragment c = ChatHistoryFragment.getInstance();
-                            c.findParseMessageHistory();
-                        }
+                        ParseObject.saveAllInBackground(messageLeidos);
+                        //Broad Actualizar iconos de mensajes y bandeja
+                        Intent broad = new Intent(CounterNotifiReceiver.ACTION_LISTENER);
+                        broad.putExtra("isMessage", true);
+                        sendBroadcast(broad);
                     }
-                } else {
-                    Log.e("Parse.chat.history", e.getMessage());
                 }
                 progressBar.setVisibility(View.GONE);
             }
@@ -378,10 +382,10 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                 dialog.setMessage(getResources().getString(R.string.msgDeleting));
                 dialog.show();
 
-                ParseUser[] userIds = {currentUser, receptorUser};
+                final ParseUser[] userIds = {currentUser, receptorUser};
 
                 //Buscar los sinchId de los mensajes de la conversacion
-                ParseQuery<ParseZMessage> innerQuery = ParseQuery.getQuery(ParseZMessage.class);
+                final ParseQuery<ParseZMessage> innerQuery = ParseQuery.getQuery(ParseZMessage.class);
                 innerQuery.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
                 innerQuery.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
                 innerQuery.whereLessThan(ParseZMessage.CANT_HIST_DELETE, 2);
@@ -397,11 +401,26 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                     public void done(List<ParseZHistory> zHistories, ParseException e) {
                         if (e == null) {
                             ParseObject.deleteAllInBackground(zHistories);
-                            Toast.makeText(MessagingActivity.this, getResources().getString(R.string.msgChatDeleteOk), Toast.LENGTH_SHORT).show();
                             if (ChatHistoryFragment.isRunning()) {
                                 ChatHistoryFragment c = ChatHistoryFragment.getInstance();
                                 c.findParseMessageHistory();
                             }
+                            Toast.makeText(MessagingActivity.this, getResources().getString(R.string.msgChatDeleteOk), Toast.LENGTH_SHORT).show();
+                            //Buscar y actualizar LastMessage
+                            ParseQuery<ParseZLastMessage> lastQuery = ParseQuery.getQuery(ParseZLastMessage.class);
+                            lastQuery.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
+                            lastQuery.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
+                            lastQuery.findInBackground(new FindCallback<ParseZLastMessage>() {
+                                @Override
+                                public void done(List<ParseZLastMessage> list, ParseException e) {
+                                    if (e == null) {
+                                        for (int i = 0; i < list.size(); i++) {
+                                            list.get(i).addDeleteFor(currentUser.getObjectId());
+                                        }
+                                        ParseObject.saveAllInBackground(list);
+                                    }
+                                }
+                            });
                         }
                         dialog.dismiss();
                         onBackPressed();
@@ -441,8 +460,6 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
 
     @Override
     protected void onDestroy() {
-        //Marcar mensajes como leidos en parse.
-        saveParseMessage(null, MessageAdapter.DIRECTION_INCOMING);
         cancelNotification();
         globalApplication.setListeningNotifi(true);
         globalApplication.setMessagingParseUser(null);
@@ -465,7 +482,6 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
 
     @Override
     public void onBackPressed() {
-        saveParseMessage(null, MessageAdapter.DIRECTION_INCOMING);
         globalApplication.setMessagingParseUser(null);
         super.onBackPressed();
     }
@@ -497,6 +513,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING);
             MediaPlayer mp = MediaPlayer.create(MessagingActivity.this, R.raw.add_message);
             mp.start();
+            updateParseMessageRead(message);
         }
 
         /*Uri sound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.new_message);

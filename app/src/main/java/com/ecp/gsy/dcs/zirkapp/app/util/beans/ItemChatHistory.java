@@ -11,6 +11,7 @@ public class ItemChatHistory {
     private ParseUser userMessage;
     private Integer cantMessagesNoRead;
     private ParseZMessage lastMessage;
+    private boolean isSender;
 
     public ItemChatHistory() {
     }
@@ -39,6 +40,10 @@ public class ItemChatHistory {
         return lastMessage;
     }
 
+    public boolean isSender() {
+        return isSender;
+    }
+
     //</editor-fold>
 
 
@@ -53,6 +58,10 @@ public class ItemChatHistory {
 
     public void setLastMessage(ParseZMessage lastMessage) {
         this.lastMessage = lastMessage;
+    }
+
+    public void setIsSender(boolean isSender) {
+        this.isSender = isSender;
     }
 
     //</editor-fold>

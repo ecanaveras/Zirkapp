@@ -63,7 +63,12 @@ public class ParseZMessage extends ParseObject {
     public void setCantHistDelete(int cantHistDelete) {
         put(CANT_HIST_DELETE, cantHistDelete);
     }
-
     //</editor-fold>
+
+
+    public void makeMessageRead() {
+        this.setMessageRead(true);
+        saveInBackground();
+    }
 
 }
