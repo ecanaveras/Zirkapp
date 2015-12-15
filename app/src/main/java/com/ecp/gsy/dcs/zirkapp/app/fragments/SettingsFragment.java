@@ -179,20 +179,18 @@ public class SettingsFragment extends PreferenceFragment {
                         //Guardar en db una session inactiva
                         saveSessionActive(false);
                         Toast toast = Toast.makeText(getActivity(), getResources().getString(R.string.msgLogoutOk), Toast.LENGTH_SHORT);
-                        toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 10, 0);
+                        //toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 10, 0);
                         toast.show();
 
-                        if (MainActivity.instance != null) {
-                            MainActivity.instance.finish();
-                        }
-
-                        Intent intent = new Intent(getActivity(), ManagerLogin.class);
-                        intent.putExtra("logout", true);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        getActivity().finish();
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                        ActivityCompat.finishAffinity(getActivity());
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.putExtra("EXIT", true);
                         startActivity(intent);
+
+
                     }
                 });
 

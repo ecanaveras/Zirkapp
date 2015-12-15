@@ -72,6 +72,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
     private ProgressBar progressBar;
     private MessageAdapter adapterMessage;
     private ImageButton btnSendMessage;
+    private boolean messaggingAction = false;
 
     public static MessagingActivity getInstance() {
         return instance;
@@ -147,13 +148,14 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setIcon(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
 
-
+            //Views
             View customView = getLayoutInflater().inflate(R.layout.actionbar_user_title, null);
             ImageView imageView = (ImageView) customView.findViewById(R.id.imgAvatar);
-            globalApplication.setAvatarRoundedResize(receptorUser.getParseFile("avatar"), imageView, 100, 100);
             LinearLayout layoutActionBarTitle = (LinearLayout) customView.findViewById(R.id.layoutActionbarTitle);
             TextView titleBar = (TextView) customView.findViewById(R.id.actionbarTitle);
             TextView subTitleBar = (TextView) customView.findViewById(R.id.actionbarSubTitle);
+            //Set Data
+            globalApplication.setAvatarRoundedResize(receptorUser.getParseFile("avatar"), imageView, 100, 100);
             titleBar.setText(receptorName != null ? receptorName : receptorUsername);
             if (receptorName != null) {
                 subTitleBar.setText(receptorUsername);
@@ -175,14 +177,18 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
     }
 
     private void sendMessage() {
-        String messageBody = txtMessageBodyField.getText().toString();
-        if (messageBody.isEmpty()) {
-            Toast.makeText(getApplicationContext(), getString(R.string.msgMessageEmpty), Toast.LENGTH_LONG).show();
-            return;
-        }
+        if (GlobalApplication.isChatEnabled()) {
+            String messageBody = txtMessageBodyField.getText().toString();
+            if (messageBody.isEmpty()) {
+                Toast.makeText(getApplicationContext(), getString(R.string.msgMessageEmpty), Toast.LENGTH_LONG).show();
+                return;
+            }
 
-        getSinchServiceInterface().sendMessage(receptorId, messageBody);
-        txtMessageBodyField.setText("");
+            getSinchServiceInterface().sendMessage(receptorId, messageBody);
+            txtMessageBodyField.setText("");
+        } else {
+            Toast.makeText(getApplicationContext(), getString(R.string.msgMessageChatDisabled), Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -266,6 +272,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                         if (e == null && parseZMessage != null) {
                             parseZMessage.setMessageRead(true);
                             parseZMessage.saveInBackground();
+                            messaggingAction = true;
                         }
                     }
                 });
@@ -286,6 +293,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
         parseZHistory.setSinchId(message.getMessageId());
         parseZHistory.setZMessageId(zMessage);
         parseZHistory.saveInBackground();
+        messaggingAction = true;
     }
 
     /**
@@ -310,7 +318,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
         query.findInBackground(new FindCallback<ParseZHistory>() {
             @Override
             public void done(List<ParseZHistory> zHistoryList, ParseException e) {
-                if (e == null) {
+                if (e == null && zHistoryList.size() > 0) {
                     List<ParseObject> messageLeidos = new ArrayList<>();
                     for (ParseZHistory history : zHistoryList) {
                         final ParseZMessage copyZmessa = history.getZMessageId();
@@ -345,7 +353,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                                 return copyZmessa.getCreatedAt();
                             }
                         };
-                        if (copyZmessa.getSenderId().equals(currentUser)) {
+                        if (copyZmessa.getSenderId().getObjectId().equals(currentUser.getObjectId())) {
                             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING);
                         } else {
                             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING);
@@ -357,10 +365,8 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                     }
                     if (messageLeidos.size() > 0) {
                         ParseObject.saveAllInBackground(messageLeidos);
-                        //Broad Actualizar iconos de mensajes y bandeja
-                        Intent broad = new Intent(CounterNotifiReceiver.ACTION_LISTENER);
-                        broad.putExtra("isMessage", true);
-                        sendBroadcast(broad);
+                        messaggingAction = true;
+                        sendBroadNofifiUpdate();
                     }
                 }
                 progressBar.setVisibility(View.GONE);
@@ -401,10 +407,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                     public void done(List<ParseZHistory> zHistories, ParseException e) {
                         if (e == null) {
                             ParseObject.deleteAllInBackground(zHistories);
-                            if (ChatHistoryFragment.isRunning()) {
-                                ChatHistoryFragment c = ChatHistoryFragment.getInstance();
-                                c.findParseMessageHistory();
-                            }
+                            messaggingAction = true;
                             Toast.makeText(MessagingActivity.this, getResources().getString(R.string.msgChatDeleteOk), Toast.LENGTH_SHORT).show();
                             //Buscar y actualizar LastMessage
                             ParseQuery<ParseZLastMessage> lastQuery = ParseQuery.getQuery(ParseZLastMessage.class);
@@ -426,7 +429,6 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                         onBackPressed();
                     }
                 });
-
             }
         });
 
@@ -437,6 +439,16 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
             }
         });
         alert.show();
+    }
+
+    private void sendBroadNofifiUpdate() {
+        //Broad Actualizar iconos de mensajes y bandeja
+        if (messaggingAction) {
+            Intent broad = new Intent(CounterNotifiReceiver.ACTION_LISTENER);
+            broad.putExtra("isMessage", true);
+            sendBroadcast(broad);
+        }
+        messaggingAction = false;
     }
 
     private void cancelNotification() {
@@ -460,6 +472,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
 
     @Override
     protected void onDestroy() {
+        sendBroadNofifiUpdate();
         cancelNotification();
         globalApplication.setListeningNotifi(true);
         globalApplication.setMessagingParseUser(null);
@@ -511,8 +524,10 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
     public void onIncomingMessage(MessageClient messageClient, Message message) {
         if (message.getSenderId().equals(receptorId)) {
             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING);
-            MediaPlayer mp = MediaPlayer.create(MessagingActivity.this, R.raw.add_message);
-            mp.start();
+            if (!globalApplication.isListeningNotifi()) {
+                MediaPlayer mp = MediaPlayer.create(MessagingActivity.this, R.raw.add_message);
+                mp.start();
+            }
             updateParseMessageRead(message);
         }
 
@@ -523,12 +538,14 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
 
     @Override
     public void onMessageSent(MessageClient messageClient, Message message, String s) {
-        adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING);
-        //Enviar notificacion
-        String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
-        new SendPushTask(receptorUser, currentUser.getObjectId(), name, message.getTextBody(), null, SendPushTask.PUSH_CHAT).execute();
-        //Guardar historial en parse.
-        saveParseMessage(message, MessageAdapter.DIRECTION_OUTGOING);
+        if (message.getRecipientIds().get(0).equals(receptorUser.getObjectId())) {
+            adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING);
+            //Enviar notificacion
+            String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
+            new SendPushTask(receptorUser, currentUser.getObjectId(), name, message.getTextBody(), null, SendPushTask.PUSH_CHAT).execute();
+            //Guardar historial en parse.
+            saveParseMessage(message, MessageAdapter.DIRECTION_OUTGOING);
+        }
     }
 
     @Override
@@ -548,10 +565,10 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
     @Override
     public void onShouldSendPushData(MessageClient messageClient, Message message, List<PushPair> pushPairs) {
         //Enviar notificacion.
-        if (receptorUser != null && message != null) {
+        /*if (receptorUser != null && message != null) {
             String name = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
             new SendPushTask(receptorUser, currentUser.getObjectId(), name, message.getTextBody(), pushPairs, SendPushTask.PUSH_CHAT).execute();
-        }
+        }*/
     }
 
     public ParseUser getReceptorUser() {

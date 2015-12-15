@@ -70,7 +70,7 @@ public class NewZimessActivity extends AppCompatActivity {
 
         inicializarCompUI();
 
-        currentUser = globalApplication.getCurrentUser();
+        currentUser = ParseUser.getCurrentUser();
 
         callLocation();
 

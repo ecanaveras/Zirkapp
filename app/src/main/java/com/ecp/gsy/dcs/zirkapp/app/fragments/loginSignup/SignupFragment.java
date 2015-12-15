@@ -59,7 +59,7 @@ public class SignupFragment extends Fragment {
         final EditText txtPassword2 = (EditText) view.findViewById(R.id.txtPassSignUp2);
 
         //Sugerir email
-        txtCorreo.setText(getEmailAccount());
+        //txtCorreo.setText(getEmailAccount());
 
         btnSingUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,6 +136,7 @@ public class SignupFragment extends Fragment {
                             saveSessionActive(true);
                             saveInfoWelcome();
                         } else {
+                            Log.e(SignupFragment.class.getSimpleName(), e.getMessage());
                             Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                         progressDialog.dismiss();

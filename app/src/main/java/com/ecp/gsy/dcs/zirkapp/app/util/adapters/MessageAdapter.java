@@ -1,6 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +13,14 @@ import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.sinch.android.rtc.messaging.Message;
 import com.sinch.android.rtc.messaging.WritableMessage;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Elder on 21/02/2015.
@@ -25,8 +32,10 @@ public class MessageAdapter extends BaseAdapter {
 
     private List<Pair<Message, Integer>> messages;
     private LayoutInflater layoutInflater;
+    private Context context;
 
     public MessageAdapter(Activity activity) {
+        context = activity.getApplicationContext();
         layoutInflater = activity.getLayoutInflater();
         messages = new ArrayList<Pair<Message, Integer>>();
     }
@@ -84,8 +93,32 @@ public class MessageAdapter extends BaseAdapter {
         Message message = messages.get(i).first;
 
         TextView txtMessage = (TextView) view.findViewById(R.id.txtMessage);
+        TextView txtDate = (TextView) view.findViewById(R.id.txtDate);
         txtMessage.setText(message.getTextBody());
+        txtDate.setText(getTimepass(message.getTimestamp()));
 
         return view;
+    }
+
+    private String getTimepass(Date createAt) {
+        Calendar calendar = Calendar.getInstance(Locale.getDefault());
+        calendar.setTime(createAt);
+        calendar.set(Calendar.HOUR, 0);
+        Date currentDate = new Date();
+        Long time = (currentDate.getTime() - createAt.getTime()); //Tiempo real
+        String result = "";
+        DateFormat fechaFormat = new SimpleDateFormat("dd/MM/yyyy");
+        if (fechaFormat.format(currentDate).equals(fechaFormat.format(createAt))) {
+            //HORAS
+            result = new SimpleDateFormat("hh:mm a").format(createAt);
+        } else {
+            int diffInDays = (int) ((currentDate.getTime() - createAt.getTime()) / (1000 * 60 * 60 * 24));
+            if (diffInDays == 0) {
+                result = context.getString(R.string.lblYesterday).toUpperCase();
+            } else {
+                result = fechaFormat.format(createAt);
+            }
+        }
+        return result;
     }
 }

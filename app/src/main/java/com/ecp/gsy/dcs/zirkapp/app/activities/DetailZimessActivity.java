@@ -460,19 +460,15 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
             lblCantFavs.setText(Integer.toString(zimess.getCantFavorite() + 1));
             imgFav.setImageResource(R.drawable.ic_icon_fav_color);
 
-            if (!zimess.getUser().equals(currentUser)) {
+            if (!zimess.getUser().getObjectId().equals(currentUser.getObjectId())) {
                 String nameCurrentUser = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
                 new SendPushTask(zimess.getObjectId(), zimess.getUser(), currentUser.getObjectId(), String.format("%s le gusta tu Zimes", nameCurrentUser), String.format("%s...", zimess.getZimessText().length() > 60 ? zimess.getZimessText().substring(0, 60) : zimess.getZimessText()), SendPushTask.PUSH_FAVORITE).execute();
             }
         }
-        try {
-            //Actualizar el Zimess
-            zimess.fetch();
-            //Toast.makeText(context, "Add favorite", Toast.LENGTH_SHORT).show();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        //view.playSoundEffect(SoundEffectConstants.CLICK);
+
+        //Actualizar el Zimess
+        zimess.fetchIfNeededInBackground();
+        //Toast.makeText(context, "Add favorite", Toast.LENGTH_SHORT).show();
     }
 
 

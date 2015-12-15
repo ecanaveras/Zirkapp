@@ -154,7 +154,7 @@ public class LoginFragment extends Fragment {
         ParseUser.logInInBackground(username, password, new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException e) {
-                if (user != null) {
+                if (e == null && user != null) {
                     //Conectar al chat
                     user.put("online", true);
                     user.saveInBackground();
@@ -166,6 +166,7 @@ public class LoginFragment extends Fragment {
                 } else {
                     //TODO manejar excepciones de login
                     Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.e(LoginFragment.class.getSimpleName(), e.getMessage());
                 }
                 progressDialog.dismiss();
             }
@@ -175,43 +176,41 @@ public class LoginFragment extends Fragment {
     /**
      * Realiza el logueo con FACEBOOK
      * /
-    private void loginWithFacebook() {
-        //(https://developers.facebook.com/docs/facebook-login/permissions/)
-        List<String> permisos = Arrays.asList("public_profile", "email");
+     private void loginWithFacebook() {
+     //(https://developers.facebook.com/docs/facebook-login/permissions/)
+     List<String> permisos = Arrays.asList("public_profile", "email");
 
-        ParseFacebookUtils.logInWithReadPermissionsInBackground(getActivity(), permisos, new LogInCallback() {
-            @Override
-            public void done(ParseUser parseUser, ParseException e) {
-                if (parseUser == null) {
-                    Toast.makeText(getActivity(), getResources().getString(R.string.msgNoLoginFacebook), Toast.LENGTH_SHORT).show();
-                } else {
-                    getDataFacebook(true);
-                }
-            }
-        });
+     ParseFacebookUtils.logInWithReadPermissionsInBackground(getActivity(), permisos, new LogInCallback() {
+    @Override public void done(ParseUser parseUser, ParseException e) {
+    if (parseUser == null) {
+    Toast.makeText(getActivity(), getResources().getString(R.string.msgNoLoginFacebook), Toast.LENGTH_SHORT).show();
+    } else {
+    getDataFacebook(true);
     }
+    }
+    });
+     }
      */
 
     /**
      * Realiza el logueo con TWITTER
      * /
-    private void loginWithTwitter() {
-        userLogin = null;
-        ParseTwitterUtils.logIn(getActivity(), new LogInCallback() {
-            @Override
-            public void done(ParseUser parseUser, ParseException e) {
-                if (parseUser == null) {
-                    Toast.makeText(getActivity(), getResources().getString(R.string.msgNoLoginTwitter), Toast.LENGTH_SHORT).show();
-                } else {
-                    userLogin = parseUser;
-                    Twitter twitterUser = ParseTwitterUtils.getTwitter();
-                    if (twitterUser != null) {
-                        getDataTwitter(twitterUser);
-                    }
-                }
-            }
-        });
+     private void loginWithTwitter() {
+     userLogin = null;
+     ParseTwitterUtils.logIn(getActivity(), new LogInCallback() {
+    @Override public void done(ParseUser parseUser, ParseException e) {
+    if (parseUser == null) {
+    Toast.makeText(getActivity(), getResources().getString(R.string.msgNoLoginTwitter), Toast.LENGTH_SHORT).show();
+    } else {
+    userLogin = parseUser;
+    Twitter twitterUser = ParseTwitterUtils.getTwitter();
+    if (twitterUser != null) {
+    getDataTwitter(twitterUser);
     }
+    }
+    }
+    });
+     }
      */
 
     /*
@@ -271,73 +270,71 @@ public class LoginFragment extends Fragment {
      * /
     private void getAvatarTwitter(Twitter twitter) {
 
-        //Obtener info de Twitter
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage(getResources().getString(R.string.mgsLoging));
-        progressDialog.show();
+    //Obtener info de Twitter
+    progressDialog = new ProgressDialog(getActivity());
+    progressDialog.setMessage(getResources().getString(R.string.mgsLoging));
+    progressDialog.show();
 
-        AsyncTask<Twitter, Void, Bitmap> task = new AsyncTask<Twitter, Void, Bitmap>() {
+    AsyncTask<Twitter, Void, Bitmap> task = new AsyncTask<Twitter, Void, Bitmap>() {
 
-            @Override
-            protected Bitmap doInBackground(Twitter... twitters) {
-                String urlTwitterFormat = "https://api.twitter.com/1.1/users/show.json?screen_name=%s";
-                //HttpClient client = new DefaultHttpClient();
-                AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
-                HttpGet verifyGet = new HttpGet(URI.create(String.format(urlTwitterFormat, twitters[0].getScreenName())));
-                twitters[0].signRequest(verifyGet);
-                Bitmap bitmap = null;
-                try {
-                    HttpResponse response = client.execute(verifyGet);
-                    HttpEntity entity = response.getEntity();
-                    InputStream inputStream = entity.getContent();
-                    JSONObject jsonObject = new JSONObject(convertStreamToString(inputStream));
-                    if (userLogin != null) {
-                        userLogin.put("name", jsonObject.getString("name"));
-                        userLogin.put("city", jsonObject.getString("location"));
-                    }
-                    String urlImage = jsonObject.getString("profile_image_url");
-                    urlImage = urlImage.replace("_normal", "");
-                    //Log.i("profile_image_url", urlImage);
-                    URL url = new URL(urlImage);
-                    URLConnection urlConnection = url.openConnection();
-                    urlConnection.setUseCaches(true);
-                    urlConnection.connect();
-                    InputStream is = urlConnection.getInputStream();
-                    bitmap = BitmapFactory.decodeStream(is);
-                    is.close();
-                } catch (Exception e) {
-                    Log.e("get.avatar.twitter", e.getMessage());
-                } finally {
-                    if (verifyGet != null) {
-                        verifyGet.abort();
-                    }
-                    if (client != null) {
-                        client.close();
-                    }
-                }
-                return bitmap;
-            }
-
-            @Override
-            protected void onPostExecute(Bitmap bitmap) {
-                if (bitmap != null && userLogin != null) {
-                    ParseFile parseFile = new ParseFile("ParseZAvatar", getByteAvatar(bitmap));
-                    parseFile.saveInBackground();
-                    userLogin.put("avatar", parseFile);
-                }
-                if (userLogin != null) {
-                    //Guardar informacion de usuario
-                    userLogin.saveInBackground();
-                }
-                if (progressDialog != null)
-                    progressDialog.dismiss();
-
-                activity.finish();
-            }
-
-        }.execute(twitter);
+    @Override protected Bitmap doInBackground(Twitter... twitters) {
+    String urlTwitterFormat = "https://api.twitter.com/1.1/users/show.json?screen_name=%s";
+    //HttpClient client = new DefaultHttpClient();
+    AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
+    HttpGet verifyGet = new HttpGet(URI.create(String.format(urlTwitterFormat, twitters[0].getScreenName())));
+    twitters[0].signRequest(verifyGet);
+    Bitmap bitmap = null;
+    try {
+    HttpResponse response = client.execute(verifyGet);
+    HttpEntity entity = response.getEntity();
+    InputStream inputStream = entity.getContent();
+    JSONObject jsonObject = new JSONObject(convertStreamToString(inputStream));
+    if (userLogin != null) {
+    userLogin.put("name", jsonObject.getString("name"));
+    userLogin.put("city", jsonObject.getString("location"));
     }
-    */
+    String urlImage = jsonObject.getString("profile_image_url");
+    urlImage = urlImage.replace("_normal", "");
+    //Log.i("profile_image_url", urlImage);
+    URL url = new URL(urlImage);
+    URLConnection urlConnection = url.openConnection();
+    urlConnection.setUseCaches(true);
+    urlConnection.connect();
+    InputStream is = urlConnection.getInputStream();
+    bitmap = BitmapFactory.decodeStream(is);
+    is.close();
+    } catch (Exception e) {
+    Log.e("get.avatar.twitter", e.getMessage());
+    } finally {
+    if (verifyGet != null) {
+    verifyGet.abort();
+    }
+    if (client != null) {
+    client.close();
+    }
+    }
+    return bitmap;
+    }
+
+    @Override protected void onPostExecute(Bitmap bitmap) {
+    if (bitmap != null && userLogin != null) {
+    ParseFile parseFile = new ParseFile("ParseZAvatar", getByteAvatar(bitmap));
+    parseFile.saveInBackground();
+    userLogin.put("avatar", parseFile);
+    }
+    if (userLogin != null) {
+    //Guardar informacion de usuario
+    userLogin.saveInBackground();
+    }
+    if (progressDialog != null)
+    progressDialog.dismiss();
+
+    activity.finish();
+    }
+
+    }.execute(twitter);
+    }
+     */
 
 
     /**

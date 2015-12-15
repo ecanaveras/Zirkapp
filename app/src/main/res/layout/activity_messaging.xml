@@ -10,7 +10,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/divider"
+        android:layout_above="@+id/relSendMessage"
         android:layout_marginTop="?attr/actionBarSize">
 
         <FrameLayout
@@ -38,32 +38,24 @@
         </FrameLayout>
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dip"
-        android:layout_above="@+id/relSendMessage"
-        android:background="@color/off_white" />
 
     <RelativeLayout
         android:id="@+id/relSendMessage"
         android:layout_width="wrap_content"
-        android:layout_height="45dp"
-        android:layout_alignParentBottom="true"
-        android:background="@android:color/white">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
 
         <EditText
             android:id="@+id/txtMessageBodyField"
             style="@style/custom_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/btnSendMessage"
-            android:layout_alignTop="@+id/btnSendMessage"
             android:layout_gravity="bottom"
-            android:layout_marginBottom="2dp"
             android:layout_marginLeft="4dp"
             android:layout_toLeftOf="@+id/btnSendMessage"
             android:layout_weight="1"
+            android:hint="@string/msgReadYourMessage"
             android:inputType="textCapSentences|text"
             android:singleLine="false" />
         <!-- android:hint="@string/message_elipses" -->
@@ -71,8 +63,10 @@
         <ImageButton
             android:id="@+id/btnSendMessage"
             android:layout_width="60dp"
-            android:layout_height="wrap_content"
+            android:layout_height="46dp"
             android:layout_alignParentRight="true"
+            android:layout_marginBottom="2dp"
+            android:layout_marginRight="2dp"
             android:adjustViewBounds="true"
             android:src="@drawable/ic_send_white_24dp" />
         <!--android:background="@drawable/button_send"-->

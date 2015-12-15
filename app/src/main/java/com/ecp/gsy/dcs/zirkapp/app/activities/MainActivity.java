@@ -307,6 +307,13 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
                     selectItemDrawer(navigationView.getMenu().getItem(1));
                 }
             }
+        } else {
+            if (intent.getBooleanExtra("EXIT", false)) {
+                finish();
+                Intent intent1 = new Intent(Intent.ACTION_MAIN);
+                intent1.addCategory(Intent.CATEGORY_HOME);
+                startActivity(intent1);
+            }
         }
 
     }

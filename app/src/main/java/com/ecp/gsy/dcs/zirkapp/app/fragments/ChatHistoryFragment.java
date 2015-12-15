@@ -1,9 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.app.Fragment;
-import android.app.NotificationManager;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,10 +30,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZLastMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersHistoryTask;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersTask;
 import com.parse.FindCallback;
-import com.parse.FunctionCallback;
-import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -47,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by Elder on 11/04/2015.
@@ -150,7 +144,7 @@ public class ChatHistoryFragment extends Fragment {
                 public void done(List<ParseZLastMessage> zMessages, ParseException e) {
                     if (e == null) {
                         for (ParseZLastMessage parseObj : zMessages) {
-                            if (!parseObj.getSenderId().equals(currentUser) && !sendersId.contains(parseObj.getSenderId())) {
+                            if (!parseObj.getSenderId().getObjectId().equals(currentUser.getObjectId()) && !sendersId.contains(parseObj.getSenderId())) {
                                 sendersId.add(parseObj.getSenderId());
                                 ItemChatHistory chatHistory = new ItemChatHistory();
                                 chatHistory.setUserMessage(parseObj.getSenderId());
@@ -158,7 +152,7 @@ public class ChatHistoryFragment extends Fragment {
                                 chatHistory.setCantMessagesNoRead(getCantMessages(parseObj.getSenderId().getObjectId(), parseObj.getRecipientId().getObjectId()));
                                 chatHistories.add(chatHistory);
                             }
-                            if (!parseObj.getRecipientId().equals(currentUser) && !sendersId.contains(parseObj.getRecipientId())) {
+                            if (!parseObj.getRecipientId().getObjectId().equals(currentUser.getObjectId()) && !sendersId.contains(parseObj.getRecipientId())) {
                                 sendersId.add(parseObj.getRecipientId());
                                 ItemChatHistory chatHistory = new ItemChatHistory();
                                 chatHistory.setUserMessage(parseObj.getRecipientId());

@@ -87,9 +87,6 @@ public class GlobalApplication extends Application {
         Intent intentService = new Intent(this, LocationService.class);
         startService(intentService);
 
-        // Enable Local Datastore.
-        Parse.enableLocalDatastore(this);
-
         //Registrando Modelos
         ParseObject.registerSubclass(ParseZimess.class);
         ParseObject.registerSubclass(ParseZComment.class);
@@ -200,16 +197,6 @@ public class GlobalApplication extends Application {
         parseInstallation.saveInBackground();
     }
 
-    /**
-     * Retorna el current ParseUser
-     *
-     * @return
-     */
-    public ParseUser getCurrentUser() {
-        this.currentUser = ParseUser.getCurrentUser();
-        return this.currentUser;
-    }
-
     public void setAvatarParse(ParseFile parseFile, ImageView imageViewRender, boolean rounded) {
         if (imageViewRender != null) {
             if (parseFile != null) {
@@ -237,7 +224,6 @@ public class GlobalApplication extends Application {
                 }
             }
         }
-
     }
 
     /**

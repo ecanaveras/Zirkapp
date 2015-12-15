@@ -110,17 +110,17 @@ public class UsersAdapter extends BaseAdapter {
         Date currentDate = new Date();
         Long time = (currentDate.getTime() - createAt.getTime()); //Tiempo real
         String result = "";
-        DateFormat dayFormat = new SimpleDateFormat("dd");
-        if (TimeUnit.DAYS.convert(time, TimeUnit.MILLISECONDS) < 2) {
-            if (dayFormat.format(currentDate).equals(dayFormat.format(createAt))) {
-                //HORAS
-                result = new SimpleDateFormat("hh:mm a").format(createAt);
-            } else {
-                //UN DIA
-                result = context.getString(R.string.lblYesterday).toUpperCase();
-            }
+        DateFormat fechaFormat = new SimpleDateFormat("dd/MM/yyyy");
+        if (fechaFormat.format(currentDate).equals(fechaFormat.format(createAt))) {
+            //HORAS
+            result = new SimpleDateFormat("hh:mm a").format(createAt);
         } else {
-            result = new SimpleDateFormat("dd/MM/yyyy").format(createAt);
+            int diffInDays = (int) ((currentDate.getTime() - createAt.getTime()) / (1000 * 60 * 60 * 24));
+            if (diffInDays == 0) {
+                result = context.getString(R.string.lblYesterday).toUpperCase();
+            } else {
+                result = fechaFormat.format(createAt);
+            }
         }
         return result;
     }

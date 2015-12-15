@@ -117,8 +117,12 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                     GlobalApplication app = (GlobalApplication) context.getApplicationContext();
                     if (MessagingActivity.isRunning()) {
                         MessagingActivity m = MessagingActivity.getInstance();
-                        if (m.getReceptorUser().getObjectId().equals(senderId) && !app.isListeningNotifi()) {
-                            notificar = false;
+                        if (m.getReceptorUser() != null && m.getReceptorUser().getObjectId().equals(senderId)) {
+                            if (!app.isListeningNotifi()) {
+                                notificar = false;
+                            } else {
+                                intent = new Intent(context, MessagingActivity.class);
+                            }
                         }
                     }
                     broad.putExtra("isMessage", true);

@@ -155,7 +155,7 @@ public class ZimessRecyclerAdapter extends RecyclerView.Adapter<ZimessRecyclerAd
                     lblCantFavs.setText(Integer.toString(zimess.getCantFavorite() + 1));
                     imgFav.setImageResource(R.drawable.ic_icon_fav_color);
 
-                    if (!zimess.getUser().equals(currentUser)) {
+                    if (!zimess.getUser().getObjectId().equals(currentUser.getObjectId())) {
                         String nameCurrentUser = currentUser.getString("name") != null ? currentUser.getString("name") : currentUser.getUsername();
                         new SendPushTask(zimess.getObjectId(), zimess.getUser(), currentUser.getObjectId(), String.format("%s le gusta tu Zimes", nameCurrentUser), String.format("%s...", zimess.getZimessText().length() > 60 ? zimess.getZimessText().substring(0, 60) : zimess.getZimessText()), SendPushTask.PUSH_FAVORITE).execute();
                     }

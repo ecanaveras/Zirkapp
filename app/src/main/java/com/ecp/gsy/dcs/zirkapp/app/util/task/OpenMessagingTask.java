@@ -39,9 +39,12 @@ public class OpenMessagingTask extends AsyncTask<String, String, ParseUser> {
 
     @Override
     protected void onPostExecute(ParseUser parseUser) {
+        if (parseUser != null) {
+            globalApplication.setMessagingParseUser(parseUser);
+            Intent intentProf = new Intent(context, MessagingActivity.class);
+            context.startActivity(intentProf);
+        }
+
         dialog.dismiss();
-        globalApplication.setMessagingParseUser(parseUser);
-        Intent intentProf = new Intent(context, MessagingActivity.class);
-        context.startActivity(intentProf);
     }
 }
