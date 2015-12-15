@@ -122,8 +122,10 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
             startActivity(new Intent(this, ManagerWelcome.class));
         }
 
-        zimessFragment = ZimessFragment.newInstance(null);
-        notificationsFragment = NotificationsFragment.newInstance(null);
+        if (savedInstanceState == null) {
+            zimessFragment = ZimessFragment.newInstance(null);
+            notificationsFragment = NotificationsFragment.newInstance(null);
+        }
 
         initComponentsUI();
 
@@ -394,6 +396,11 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
             getSinchServiceInterface().stopClient();
         }
         super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     @Override

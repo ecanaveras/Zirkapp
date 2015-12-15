@@ -87,7 +87,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         globalApplication = (GlobalApplication) getApplicationContext();
         parseUser = globalApplication.getProfileParseUser();
-        isSameUser = currentUser.equals(parseUser);
+        isSameUser = currentUser.getObjectId().equals(parseUser.getObjectId());
 
         inicializarCompUI();
 

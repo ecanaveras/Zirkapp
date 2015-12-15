@@ -79,6 +79,19 @@ public class UsersFragment extends Fragment {
         return usersFragment;
     }
 
+    public static boolean isRunning() {
+        return instance != null;
+    }
+
+    public static UsersFragment getInstance() {
+        return instance;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -100,14 +113,6 @@ public class UsersFragment extends Fragment {
         instance = this;
 
         return view;
-    }
-
-    public static boolean isRunning() {
-        return instance != null;
-    }
-
-    public static UsersFragment getInstance() {
-        return instance;
     }
 
     private void callLocation() {
@@ -209,6 +214,8 @@ public class UsersFragment extends Fragment {
             refresDataTask.setLayoutUsersFinder(layoutUsersFinder);
             refresDataTask.setLayoutUsersNoFound(layoutUsersNoFound);
             refresDataTask.execute(dist_max);
+
+            Log.d(UsersFragment.TAG, "findUsersOnline: success");
 
             //UI
             layoutChatOffline.setVisibility(View.GONE);

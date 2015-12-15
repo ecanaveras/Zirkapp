@@ -42,6 +42,7 @@ public class ChatFragment extends Fragment {
     public static final String TAG = ChatFragment.class.getSimpleName();
     private AdaptadorSecciones adapter;
     private int tabSelected = 0;
+    private boolean counterMessages = false;
 
     public static ChatFragment newInstance(Bundle arguments) {
         ChatFragment chatFragment = new ChatFragment();
@@ -57,6 +58,12 @@ public class ChatFragment extends Fragment {
 
     public static boolean isRunning() {
         return instance != null;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
 
     @Override
@@ -105,6 +112,9 @@ public class ChatFragment extends Fragment {
     }
 
     public void setupCountTabMessages() {
+        if (counterMessages) {
+            return;
+        }
         new AsyncTask<Void, Void, Integer>() {
 
             private View customTabView;
@@ -114,6 +124,7 @@ public class ChatFragment extends Fragment {
 
             @Override
             protected void onPreExecute() {
+                counterMessages = true;
                 //get Tab
                 tab = tabLayout.getTabAt(1); //Tab Mensajes
                 customTabView = tab.getCustomView();
@@ -144,7 +155,7 @@ public class ChatFragment extends Fragment {
                     tab.setCustomView(null);
                     tab.setCustomView(customTabView);
                 }
-
+                counterMessages = false;
             }
 
         }.execute();
@@ -156,11 +167,13 @@ public class ChatFragment extends Fragment {
      * @return
      */
     private Integer getCantMessages() {
-        HashMap params = new HashMap<String, Object>();
-        try {
-            return (Integer) ParseCloud.callFunction("getTotalMessagesNoRead", params);
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if (!counterMessages) {
+            HashMap params = new HashMap<String, Object>();
+            try {
+                return (Integer) ParseCloud.callFunction("getTotalMessagesNoRead", params);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZFavorite;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.parse.FunctionCallback;
@@ -155,6 +156,7 @@ public class DataParseHelper {
         query.whereEqualTo(ParseZNotifi.RECEPTOR_USER, receptorUser);
         query.include(ParseZNotifi.SENDER_USER);
         query.include(ParseZNotifi.ZIMESS_TARGET);
+        query.include(ParseZNotifi.ZIMESS_TARGET + ".user");
         query.orderByDescending("createdAt");
         query.setLimit(30);
         try {

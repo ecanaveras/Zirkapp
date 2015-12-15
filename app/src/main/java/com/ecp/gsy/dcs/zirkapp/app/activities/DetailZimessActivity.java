@@ -545,7 +545,7 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
         if (menu == null) {
             return true;
         }
-        if (currentUser.equals(zimessUser)) {
+        if (currentUser.getObjectId().equals(zimessUser.getObjectId())) {
             menu.setGroupVisible(R.id.menuGroupDelete, true);
             menu.setGroupVisible(R.id.menuGroupDenounce, false);
         } else {
@@ -566,7 +566,7 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
         if (menu == null || parseZComment == null) {
             return;
         }
-        if (parseZComment.getUser().equals(currentUser) || currentUser.equals(zimessUser)) {
+        if (parseZComment.getUser().getObjectId().equals(currentUser.getObjectId()) || currentUser.getObjectId().equals(zimessUser.getObjectId())) {
             menu.setGroupVisible(R.id.menuGroupDelete, true);
         } else {
             menu.setGroupVisible(R.id.menuGroupDelete, false);

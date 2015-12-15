@@ -1,6 +1,7 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
 import com.ecp.gsy.dcs.zirkapp.app.util.picasso.CircleTransform;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -61,23 +63,13 @@ public class NotifiAdapter extends BaseAdapter {
         ParseZNotifi item = notificationArrayList.get(position);
         //2. Manipular UI
         LinearLayout contentItem = (LinearLayout) vista.findViewById(R.id.layoutItemNoti);
-        ImageView avatar = (ImageView) vista.findViewById(R.id.imgIconNoti);
+        ImageView avatar = (ImageView) vista.findViewById(R.id.imgAvatar);
         TextView summary = (TextView) vista.findViewById(R.id.lblSummaryNoti);
         TextView detail = (TextView) vista.findViewById(R.id.lblDetailNoti);
         TextView createdAt = (TextView) vista.findViewById(R.id.lblCreatedAt);
+        ImageView imgIconNoti = (ImageView) vista.findViewById(R.id.imgIconNoti);
         //3. Asignar Valores
-        /*switch (item.getTypeNoti()) {
-            case SendPushTask.PUSH_CHAT:
-                icon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_icon_response));
-                break;
-            case SendPushTask.PUSH_COMMENT:
-                icon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_icon_review_comment));
-                break;
-            case SendPushTask.PUSH_ZIMESS:
-                icon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_icon_location));
-                break;
-        }*/
-        //La imgAvatar debe ser cuadrada
+        imgIconNoti.setBackground(getIconNotifi(item.getTypeNoti()));
         globalApplication.setAvatarRoundedResize(item.getSenderUser().getParseFile("avatar"), avatar, 100, 100);
 
         //avatar.setImageDrawable(GlobalApplication.getAvatar(item.getUserMessage()));
@@ -90,5 +82,30 @@ public class NotifiAdapter extends BaseAdapter {
             contentItem.setBackgroundColor(context.getResources().getColor(R.color.text_primary_color));
         }
         return vista;
+    }
+
+    private Drawable getIconNotifi(int typeNotifi) {
+        Drawable drawable = null;
+        switch (typeNotifi) {
+            case SendPushTask.PUSH_CHAT:
+                drawable = context.getResources().getDrawable(R.drawable.ic_chat_white_24dp);
+                break;
+            case SendPushTask.PUSH_COMMENT:
+                drawable = context.getResources().getDrawable(R.drawable.ic_comment_white_24dp);
+                break;
+            case SendPushTask.PUSH_ZIMESS:
+                drawable = context.getResources().getDrawable(R.drawable.ic_note_add_white_24dp);
+                break;
+            case SendPushTask.PUSH_FAVORITE:
+                drawable = context.getResources().getDrawable(R.drawable.ic_favorite_white_24dp);
+                break;
+            case SendPushTask.PUSH_ZISS:
+                drawable = context.getResources().getDrawable(R.drawable.ic_ziss_on_white_24dp);
+                break;
+            case SendPushTask.PUSH_QUOTE:
+                drawable = context.getResources().getDrawable(R.drawable.ic_quote_white_24dp);
+                break;
+        }
+        return drawable;
     }
 }
