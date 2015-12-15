@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -120,58 +121,78 @@ public class ChatHistoryFragment extends Fragment {
             return;
         }
         if (globalApplication.isConectedToInternet()) {
-            findHistory = true;
-            layoutInternetOff.setVisibility(View.GONE);
+            new AsyncTask<String, String, String>() {
 
-            final ArrayList<ParseUser> sendersId = new ArrayList<>();
-            final ArrayList<ItemChatHistory> chatHistories = new ArrayList<>();
-
-            ParseQuery<ParseZLastMessage> querySender = ParseQuery.getQuery(ParseZLastMessage.class);
-            querySender.whereEqualTo(ParseZLastMessage.SENDER_ID, currentUser);
-
-            ParseQuery<ParseZLastMessage> queryRecipient = ParseQuery.getQuery(ParseZLastMessage.class);
-            queryRecipient.whereEqualTo(ParseZLastMessage.RECIPIENT_ID, currentUser);
-
-            String[] userId = {currentUser.getObjectId()};
-            ParseQuery<ParseZLastMessage> query = ParseQuery.or(Arrays.asList(querySender, queryRecipient));
-            query.whereNotContainedIn(ParseZLastMessage.DELETE_FOR, Arrays.asList(userId));
-            query.include(ParseZLastMessage.SENDER_ID);
-            query.include(ParseZLastMessage.RECIPIENT_ID);
-            query.include(ParseZLastMessage.ZMESSAGE_ID);
-            query.orderByDescending("updatedAt");
-            query.findInBackground(new FindCallback<ParseZLastMessage>() {
                 @Override
-                public void done(List<ParseZLastMessage> zMessages, ParseException e) {
-                    if (e == null) {
-                        for (ParseZLastMessage parseObj : zMessages) {
-                            if (!parseObj.getSenderId().getObjectId().equals(currentUser.getObjectId()) && !sendersId.contains(parseObj.getSenderId())) {
-                                sendersId.add(parseObj.getSenderId());
-                                ItemChatHistory chatHistory = new ItemChatHistory();
-                                chatHistory.setUserMessage(parseObj.getSenderId());
-                                chatHistory.setLastMessage(parseObj.getZMessageId());
-                                chatHistory.setCantMessagesNoRead(getCantMessages(parseObj.getSenderId().getObjectId(), parseObj.getRecipientId().getObjectId()));
-                                chatHistories.add(chatHistory);
-                            }
-                            if (!parseObj.getRecipientId().getObjectId().equals(currentUser.getObjectId()) && !sendersId.contains(parseObj.getRecipientId())) {
-                                sendersId.add(parseObj.getRecipientId());
-                                ItemChatHistory chatHistory = new ItemChatHistory();
-                                chatHistory.setUserMessage(parseObj.getRecipientId());
-                                chatHistory.setLastMessage(parseObj.getZMessageId());
-                                chatHistory.setIsSender(true);
-                                chatHistories.add(chatHistory);
+                protected void onPreExecute() {
+                    findHistory = true;
+                    layoutInternetOff.setVisibility(View.GONE);
+                    layoudHistoryFinder.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                protected String doInBackground(String... params) {
+                    final ArrayList<ParseUser> sendersId = new ArrayList<>();
+                    final ArrayList<ItemChatHistory> chatHistories = new ArrayList<>();
+
+                    ParseQuery<ParseZLastMessage> querySender = ParseQuery.getQuery(ParseZLastMessage.class);
+                    querySender.whereEqualTo(ParseZLastMessage.SENDER_ID, currentUser);
+
+                    ParseQuery<ParseZLastMessage> queryRecipient = ParseQuery.getQuery(ParseZLastMessage.class);
+                    queryRecipient.whereEqualTo(ParseZLastMessage.RECIPIENT_ID, currentUser);
+
+                    String[] userId = {currentUser.getObjectId()};
+                    ParseQuery<ParseZLastMessage> query = ParseQuery.or(Arrays.asList(querySender, queryRecipient));
+                    query.whereNotContainedIn(ParseZLastMessage.DELETE_FOR, Arrays.asList(userId));
+                    query.include(ParseZLastMessage.SENDER_ID);
+                    query.include(ParseZLastMessage.RECIPIENT_ID);
+                    query.include(ParseZLastMessage.ZMESSAGE_ID);
+                    query.orderByDescending("updatedAt");
+                    query.findInBackground(new FindCallback<ParseZLastMessage>() {
+                        @Override
+                        public void done(List<ParseZLastMessage> zMessages, ParseException e) {
+                            if (e == null) {
+                                for (ParseZLastMessage parseObj : zMessages) {
+                                    if (!parseObj.getSenderId().getObjectId().equals(currentUser.getObjectId()) && !sendersId.contains(parseObj.getSenderId())) {
+                                        sendersId.add(parseObj.getSenderId());
+                                        ItemChatHistory chatHistory = new ItemChatHistory();
+                                        chatHistory.setUserMessage(parseObj.getSenderId());
+                                        chatHistory.setLastMessage(parseObj.getZMessageId());
+                                        chatHistory.setCantMessagesNoRead(getCantMessages(parseObj.getSenderId().getObjectId(), parseObj.getRecipientId().getObjectId()));
+                                        chatHistories.add(chatHistory);
+                                    }
+                                    if (!parseObj.getRecipientId().getObjectId().equals(currentUser.getObjectId()) && !sendersId.contains(parseObj.getRecipientId())) {
+                                        sendersId.add(parseObj.getRecipientId());
+                                        ItemChatHistory chatHistory = new ItemChatHistory();
+                                        chatHistory.setUserMessage(parseObj.getRecipientId());
+                                        chatHistory.setLastMessage(parseObj.getZMessageId());
+                                        chatHistory.setIsSender(true);
+                                        chatHistories.add(chatHistory);
+                                    }
+                                }
+                                if (chatHistories.size() > 0) {
+                                    new RefreshDataUsersHistoryTask(getActivity(), chatHistories, listViewHistory, lblChatNoFound, layoudHistoryFinder).execute();
+                                }
+                            } else {
+                                Log.e("Parse.chat.history", e.getMessage());
                             }
                         }
-                        new RefreshDataUsersHistoryTask(getActivity(), chatHistories, listViewHistory, lblChatNoFound, layoudHistoryFinder).execute();
-                    } else {
-                        Log.e("Parse.chat.history", e.getMessage());
-                    }
+                    });
+                    return null;
                 }
-            });
+
+                @Override
+                protected void onPostExecute(String s) {
+                    findHistory = false;
+                    layoudHistoryFinder.setVisibility(View.GONE);
+                }
+            }.execute();
+
+
         } else {
             layoudHistoryFinder.setVisibility(View.GONE);
             layoutInternetOff.setVisibility(View.VISIBLE);
         }
-        findHistory = false;
     }
 
     /**

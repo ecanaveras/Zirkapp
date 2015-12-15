@@ -121,6 +121,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                             if (!app.isListeningNotifi()) {
                                 notificar = false;
                             } else {
+                                app.setMessagingParseUser(m.getReceptorUser());
                                 intent = new Intent(context, MessagingActivity.class);
                             }
                         }
@@ -175,26 +176,14 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
         }
 
         if (notificar) {
-            Bitmap bitmap = null;
-            /*if (senderUser != null && senderUser.getParseFile("avatar") != null) {
-                ParseFile parseFile = senderUser.getParseFile("avatar");
-                try {
-                    if (parseFile != null) {
-                        byte[] byteImage = parseFile.getData();
-                        if (byteImage != null) {
-                            bitmap = BitmapFactory.decodeByteArray(byteImage, 0, byteImage.length);
-                        }
-                    }
-                } catch (ParseException e) {
-                    Log.e("Parse.avatar.exception", e.getMessage());
-                }
-            }*/
+            //Bitmap bitmap = null;
+            //Todo si es posible, tomar imagen del sender
 
             PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             NotificationCompat.Builder nBuilder = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.ic_zirkapp_noti)
-                    .setLargeIcon(bitmap != null ? bitmap : BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher))
+                    .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher))
                     .setDefaults(Notification.DEFAULT_ALL)
                     .setContentTitle(title != null ? title : context.getString(R.string.app_name))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(String.format(bodyNoti, typeNotiString, msg)))

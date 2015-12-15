@@ -33,7 +33,7 @@
                 android:padding="0dip"
                 android:stackFromBottom="true"
                 android:transcriptMode="alwaysScroll"
-                tools:listitem="@layout/message_left" />
+                tools:listitem="@layout/message_right" />
 
         </FrameLayout>
     </LinearLayout>

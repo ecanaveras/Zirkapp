@@ -100,6 +100,11 @@ public class MessageAdapter extends BaseAdapter {
         return view;
     }
 
+    public void clearMessages() {
+        if (messages != null)
+            messages.clear();
+    }
+
     private String getTimepass(Date createAt) {
         Calendar calendar = Calendar.getInstance(Locale.getDefault());
         calendar.setTime(createAt);

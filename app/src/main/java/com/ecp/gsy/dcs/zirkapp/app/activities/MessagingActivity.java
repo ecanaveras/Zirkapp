@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -204,44 +205,36 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
             @Override
             protected String doInBackground(String... strings) {
                 if (messageDirection == MessageAdapter.DIRECTION_OUTGOING) {
-                    createParseMessage(message);
-                }
-                return null;
-            }
-        }.execute();
-    }
-
-    /**
-     * Crea un nuevo ParseZMessage en Parse
-     *
-     * @param message
-     */
-    private void createParseMessage(final Message message) {
-        ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
-        query.whereEqualTo(ParseZMessage.SINCH_ID, message.getMessageId());
-        query.getFirstInBackground(new GetCallback<ParseZMessage>() {
-            @Override
-            public void done(ParseZMessage getParseZMessage, ParseException e) {
-                if (getParseZMessage == null) { //Guardar al enviar el mensaje si no existe en Parse
-                    final ParseZMessage parseZMessage = new ParseZMessage();
-                    parseZMessage.setSinchId(message.getMessageId());
-                    parseZMessage.setSenderId(currentUser);
-                    parseZMessage.setRecipientId(receptorUser);
-                    parseZMessage.setMessageText(message.getTextBody());
-                    parseZMessage.setMessageRead(false);
-                    parseZMessage.setCantHistDelete(0);
-                    parseZMessage.saveInBackground(new SaveCallback() {
+                    //Crea un nuevo ParseZMessage en Parse
+                    ParseQuery<ParseZMessage> query = ParseQuery.getQuery(ParseZMessage.class);
+                    query.whereEqualTo(ParseZMessage.SINCH_ID, message.getMessageId());
+                    query.getFirstInBackground(new GetCallback<ParseZMessage>() {
                         @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                saveParseHistory(parseZMessage, message, currentUser); //Usuario que envia el mensaje
-                                saveParseHistory(parseZMessage, message, receptorUser); //Usuario que recibe el mensaje
+                        public void done(ParseZMessage getParseZMessage, ParseException e) {
+                            if (getParseZMessage == null) { //Guardar al enviar el mensaje si no existe en Parse
+                                final ParseZMessage parseZMessage = new ParseZMessage();
+                                parseZMessage.setSinchId(message.getMessageId());
+                                parseZMessage.setSenderId(currentUser);
+                                parseZMessage.setRecipientId(receptorUser);
+                                parseZMessage.setMessageText(message.getTextBody());
+                                parseZMessage.setMessageRead(false);
+                                parseZMessage.setCantHistDelete(0);
+                                parseZMessage.saveInBackground(new SaveCallback() {
+                                    @Override
+                                    public void done(ParseException e) {
+                                        if (e == null) {
+                                            saveParseHistory(parseZMessage, message, currentUser); //Usuario que envia el mensaje
+                                            saveParseHistory(parseZMessage, message, receptorUser); //Usuario que recibe el mensaje
+                                        }
+                                    }
+                                });
                             }
                         }
                     });
                 }
+                return null;
             }
-        });
+        }.execute();
     }
 
     /**
@@ -300,78 +293,103 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
      * Busca los mensajes previos en parse
      */
     private void findParseMesssageHistory() {
-        progressBar.setVisibility(View.VISIBLE);
 
-        ParseUser[] userIds = {currentUser, receptorUser};
-        ParseQuery<ParseZMessage> innerQuery = ParseQuery.getQuery(ParseZMessage.class);
-        innerQuery.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
-        innerQuery.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
-        innerQuery.whereLessThan(ParseZMessage.CANT_HIST_DELETE, 2);
-        innerQuery.setLimit(500);
+        new AsyncTask<String, String, String>() {
 
-        //Buscar los sinchId de usuario actual
-        ParseQuery<ParseZHistory> query = ParseQuery.getQuery(ParseZHistory.class);
-        query.whereMatchesKeyInQuery(ParseZHistory.SINCH_ID, ParseZMessage.SINCH_ID, innerQuery);
-        query.whereEqualTo(ParseZHistory.USER, currentUser);
-        query.include(ParseZHistory.ZMESSAGE_ID);
-        query.orderByAscending("createdAt");
-        query.findInBackground(new FindCallback<ParseZHistory>() {
             @Override
-            public void done(List<ParseZHistory> zHistoryList, ParseException e) {
-                if (e == null && zHistoryList.size() > 0) {
-                    List<ParseObject> messageLeidos = new ArrayList<>();
-                    for (ParseZHistory history : zHistoryList) {
-                        final ParseZMessage copyZmessa = history.getZMessageId();
-                        final Message message = new Message() {
-                            @Override
-                            public String getMessageId() {
-                                return copyZmessa.getSinchId();
-                            }
+            protected void onPreExecute() {
+                progressBar.setVisibility(View.VISIBLE);
+            }
 
-                            @Override
-                            public Map<String, String> getHeaders() {
-                                return null;
-                            }
+            @Override
+            protected String doInBackground(String... params) {
+                ParseUser[] userIds = {currentUser, receptorUser};
+                ParseQuery<ParseZMessage> innerQuery = ParseQuery.getQuery(ParseZMessage.class);
+                innerQuery.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
+                innerQuery.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
+                innerQuery.whereLessThan(ParseZMessage.CANT_HIST_DELETE, 2);
+                innerQuery.setLimit(500);
 
-                            @Override
-                            public String getTextBody() {
-                                return copyZmessa.getMessageText();
-                            }
+                //Buscar los sinchId de usuario actual
+                ParseQuery<ParseZHistory> query = ParseQuery.getQuery(ParseZHistory.class);
+                query.whereMatchesKeyInQuery(ParseZHistory.SINCH_ID, ParseZMessage.SINCH_ID, innerQuery);
+                query.whereEqualTo(ParseZHistory.USER, currentUser);
+                query.include(ParseZHistory.ZMESSAGE_ID);
+                query.orderByAscending("createdAt");
+                query.findInBackground(new FindCallback<ParseZHistory>() {
+                    @Override
+                    public void done(List<ParseZHistory> zHistoryList, ParseException e) {
 
-                            @Override
-                            public List<String> getRecipientIds() {
-                                return new ArrayList<>(Arrays.asList(new String[]{copyZmessa.getRecipientId().getObjectId()}));
+                        if (e == null && zHistoryList.size() > 0) {
+                            Pair<Message, Integer> recientMessage = null;
+                            if (adapterMessage.getCount() > 0) {
+                                recientMessage = (Pair<Message, Integer>) adapterMessage.getItem(0);
+                                adapterMessage.clearMessages();
                             }
+                            List<ParseObject> messageLeidos = new ArrayList<>();
+                            for (ParseZHistory history : zHistoryList) {
+                                final ParseZMessage copyZmessa = history.getZMessageId();
+                                final Message message = new Message() {
+                                    @Override
+                                    public String getMessageId() {
+                                        return copyZmessa.getSinchId();
+                                    }
 
-                            @Override
-                            public String getSenderId() {
-                                return copyZmessa.getSenderId().getObjectId();
-                            }
+                                    @Override
+                                    public Map<String, String> getHeaders() {
+                                        return null;
+                                    }
 
-                            @Override
-                            public Date getTimestamp() {
-                                return copyZmessa.getCreatedAt();
+                                    @Override
+                                    public String getTextBody() {
+                                        return copyZmessa.getMessageText();
+                                    }
+
+                                    @Override
+                                    public List<String> getRecipientIds() {
+                                        return new ArrayList<>(Arrays.asList(new String[]{copyZmessa.getRecipientId().getObjectId()}));
+                                    }
+
+                                    @Override
+                                    public String getSenderId() {
+                                        return copyZmessa.getSenderId().getObjectId();
+                                    }
+
+                                    @Override
+                                    public Date getTimestamp() {
+                                        return copyZmessa.getCreatedAt();
+                                    }
+                                };
+                                if (copyZmessa.getSenderId().getObjectId().equals(currentUser.getObjectId())) {
+                                    adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING);
+                                } else {
+                                    adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING);
+                                    if (!copyZmessa.isMessageRead()) {
+                                        copyZmessa.setMessageRead(true);
+                                        messageLeidos.add(copyZmessa);
+                                    }
+                                }
                             }
-                        };
-                        if (copyZmessa.getSenderId().getObjectId().equals(currentUser.getObjectId())) {
-                            adapterMessage.addMessage(message, MessageAdapter.DIRECTION_OUTGOING);
-                        } else {
-                            adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING);
-                            if (!copyZmessa.isMessageRead()) {
-                                copyZmessa.setMessageRead(true);
-                                messageLeidos.add(copyZmessa);
+                            if (recientMessage != null) {
+                                adapterMessage.addMessage(recientMessage.first, recientMessage.second);
+                            }
+                            if (messageLeidos.size() > 0) {
+                                ParseObject.saveAllInBackground(messageLeidos);
+                                messaggingAction = true;
                             }
                         }
+
                     }
-                    if (messageLeidos.size() > 0) {
-                        ParseObject.saveAllInBackground(messageLeidos);
-                        messaggingAction = true;
-                        sendBroadNofifiUpdate();
-                    }
-                }
+                });
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
                 progressBar.setVisibility(View.GONE);
             }
-        });
+        }.execute();
+
     }
 
     /**
