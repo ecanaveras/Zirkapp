@@ -87,6 +87,9 @@ public class GlobalApplication extends Application {
         Intent intentService = new Intent(this, LocationService.class);
         startService(intentService);
 
+        // Enable Local Datastore. Mantiene el current user
+        Parse.enableLocalDatastore(this);
+
         //Registrando Modelos
         ParseObject.registerSubclass(ParseZimess.class);
         ParseObject.registerSubclass(ParseZComment.class);
@@ -97,7 +100,6 @@ public class GlobalApplication extends Application {
 
         //Iniciar Parse
         Parse.initialize(this, getResources().getString(R.string.parse_api_id), getResources().getString(R.string.parse_api_key));
-
 
         //Facebook
         //ParseFacebookUtils.initialize(this);

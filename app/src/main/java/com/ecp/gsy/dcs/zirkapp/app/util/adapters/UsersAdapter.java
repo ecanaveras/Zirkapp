@@ -102,7 +102,6 @@ public class UsersAdapter extends BaseAdapter {
         return vista;
     }
 
-
     private String getTimepass(Date createAt) {
         Calendar calendar = Calendar.getInstance(Locale.getDefault());
         calendar.setTime(createAt);
@@ -115,9 +114,16 @@ public class UsersAdapter extends BaseAdapter {
             //HORAS
             result = new SimpleDateFormat("hh:mm a").format(createAt);
         } else {
-            int diffInDays = (int) ((currentDate.getTime() - createAt.getTime()) / (1000 * 60 * 60 * 24));
-            if (diffInDays == 0) {
-                result = context.getString(R.string.lblYesterday).toUpperCase();
+            int diffInDays = (int) (TimeUnit.DAYS.convert(time, TimeUnit.MILLISECONDS));
+            if (diffInDays <= 1) {
+                DateFormat dayFormat = new SimpleDateFormat("dd");
+                int dayToday = Integer.parseInt(dayFormat.format(currentDate));
+                int dayMessage = Integer.parseInt(dayFormat.format(createAt));
+                if ((dayToday - dayMessage) <= 1) {
+                    result = context.getString(R.string.lblYesterday).toUpperCase();
+                } else {
+                    result = fechaFormat.format(createAt);
+                }
             } else {
                 result = fechaFormat.format(createAt);
             }

@@ -156,24 +156,29 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
             TextView titleBar = (TextView) customView.findViewById(R.id.actionbarTitle);
             TextView subTitleBar = (TextView) customView.findViewById(R.id.actionbarSubTitle);
             //Set Data
-            globalApplication.setAvatarRoundedResize(receptorUser.getParseFile("avatar"), imageView, 100, 100);
-            titleBar.setText(receptorName != null ? receptorName : receptorUsername);
-            if (receptorName != null) {
-                subTitleBar.setText(receptorUsername);
-            } else {
-                subTitleBar.setVisibility(View.GONE);
-            }
-            layoutActionBarTitle.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    view.startAnimation(AnimationUtils.loadAnimation(MessagingActivity.this, R.anim.anim_image_click));
-                    Intent intent = new Intent(MessagingActivity.this, UserProfileActivity.class);
-                    //intent.putExtra("activityfrom", MessagingActivity.class.getSimpleName());
-                    globalApplication.setProfileParseUser(receptorUser);
-                    MessagingActivity.this.startActivity(intent);
+            if (receptorUser != null) {
+                globalApplication.setAvatarRoundedResize(receptorUser.getParseFile("avatar"), imageView, 100, 100);
+                titleBar.setText(receptorName != null ? receptorName : receptorUsername);
+                if (receptorName != null) {
+                    subTitleBar.setText(receptorUsername);
+                } else {
+                    subTitleBar.setVisibility(View.GONE);
                 }
-            });
-            getSupportActionBar().setCustomView(customView);
+                layoutActionBarTitle.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        view.startAnimation(AnimationUtils.loadAnimation(MessagingActivity.this, R.anim.anim_image_click));
+                        Intent intent = new Intent(MessagingActivity.this, UserProfileActivity.class);
+                        //intent.putExtra("activityfrom", MessagingActivity.class.getSimpleName());
+                        globalApplication.setProfileParseUser(receptorUser);
+                        MessagingActivity.this.startActivity(intent);
+                    }
+                });
+                getSupportActionBar().setCustomView(customView);
+            } else {
+                //Si no hay receptor, finalizar la activity
+                finish();
+            }
         }
     }
 
@@ -304,7 +309,8 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                 innerQuery.whereContainedIn(ParseZMessage.SENDER_ID, Arrays.asList(userIds));
                 innerQuery.whereContainedIn(ParseZMessage.RECIPIENT_ID, Arrays.asList(userIds));
                 innerQuery.whereLessThan(ParseZMessage.CANT_HIST_DELETE, 2);
-                innerQuery.setLimit(500);
+                innerQuery.orderByDescending("createdAt");
+                innerQuery.setLimit(1000);
 
                 //Buscar los sinchId de usuario actual
                 ParseQuery<ParseZHistory> query = ParseQuery.getQuery(ParseZHistory.class);
@@ -312,6 +318,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                 query.whereEqualTo(ParseZHistory.USER, currentUser);
                 query.include(ParseZHistory.ZMESSAGE_ID);
                 query.orderByAscending("createdAt");
+                query.setLimit(1000);
                 List<ParseZHistory> zHistoryList = new ArrayList<ParseZHistory>();
                 try {
                     zHistoryList = query.find();
@@ -326,7 +333,9 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                 if (zHistoryList.size() > 0) {
                     Pair<Message, Integer> recientMessage = null;
                     if (adapterMessage.getCount() > 0) {
-                        recientMessage = (Pair<Message, Integer>) adapterMessage.getItem(0);
+                        for (int i = 0; i < adapterMessage.getCount(); i++) {
+                            recientMessage = (Pair<Message, Integer>) adapterMessage.getItem(0);
+                        }
                         adapterMessage.clearMessages();
                     }
                     List<ParseObject> messageLeidos = new ArrayList<>();
@@ -373,6 +382,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
                             }
                         }
                     }
+                    //SI existen mensajes recientes antes del historial, ubicarlos al final
                     if (recientMessage != null) {
                         adapterMessage.addMessage(recientMessage.first, recientMessage.second);
                     }
