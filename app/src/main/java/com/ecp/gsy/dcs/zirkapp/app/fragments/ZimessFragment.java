@@ -1,8 +1,6 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.app.Fragment;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -41,11 +39,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.CounterNotificationsTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataZimessTask;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 import com.parse.ParseUser;
-
-import java.util.HashMap;
 
 /**
  * Created by Elder on 23/02/2015.
@@ -116,7 +110,7 @@ public class ZimessFragment extends Fragment {
             @Override
             protected String doInBackground(Void... params) {
                 try {
-                    Thread.sleep(0); // 2 segundos
+                    Thread.sleep(200); // 2 segundos
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -323,6 +317,7 @@ public class ZimessFragment extends Fragment {
             Utils.setBadgeCount(getActivity(), getMenuIconDrawable(itemGoNoti), 0);
             new CounterNotificationsTask(getActivity(), getMenuIconDrawable(itemGoNoti), CounterNotificationsTask.MENU_ITEM_NOTIFI).execute();
         }
+        //Desabilitado itemGoInbox
         if (itemGoInbox != null) {
             Utils.setBadgeCount(getActivity(), getMenuIconDrawable(itemGoInbox), 0);
             new CounterNotificationsTask(getActivity(), getMenuIconDrawable(itemGoInbox), CounterNotificationsTask.MENU_ITEM_MESSAGES).execute();
@@ -355,7 +350,7 @@ public class ZimessFragment extends Fragment {
         inflater.inflate(R.menu.menu_zimess_fragment, menu);
         menuList = menu;
         itemGoNoti = menu.findItem(R.id.action_bar_go_noti);
-        itemGoInbox = menu.findItem(R.id.action_bar_go_inbox);
+        //itemGoInbox = menu.findItem(R.id.action_bar_go_inbox);
 
         findNotifications();
 
@@ -372,13 +367,14 @@ public class ZimessFragment extends Fragment {
                 intent = new Intent(getActivity(), NewZimessActivity.class);
                 startActivity(intent);
                 break;
-            case R.id.action_bar_go_inbox:
+            /*case R.id.action_bar_go_inbox:
                 mainActivity = (MainActivity) getActivity();
                 mainActivity.selectItemDrawer(mainActivity.getNavItem(1), 1);
                 break;
+                */
             case R.id.action_bar_go_noti:
                 mainActivity = (MainActivity) getActivity();
-                mainActivity.selectItemDrawer(mainActivity.getNavItem(2));
+                mainActivity.selectItemDrawer(mainActivity.getNavItem(1));
                 break;
             case R.id.action_bar_my_zimess:
                 intent = new Intent(getActivity(), MyZimessActivity.class);

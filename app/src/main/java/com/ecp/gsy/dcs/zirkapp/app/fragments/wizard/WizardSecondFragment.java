@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +25,6 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.sql.SQLOutput;
-import java.text.SimpleDateFormat;
 
 /**
  * Created by ecanaveras on 22/09/2015.
@@ -41,6 +39,7 @@ public class WizardSecondFragment extends Fragment {
     private ParseUser currentUser;
     private EditText txtWall;
     private boolean changeAvatar = false;
+    private FloatingActionButton imgEditAvatar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,11 +60,20 @@ public class WizardSecondFragment extends Fragment {
 
         txtWall = (EditText) view.findViewById(R.id.txtUserEstado);
         imgAvatar = (ImageView) view.findViewById(R.id.imgUserAvatar);
+        imgEditAvatar = (FloatingActionButton) view.findViewById(R.id.imgEditAvatar);
+
         imgAvatar.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 onLongClickAvatar(view);
                 return false;
+            }
+        });
+
+        imgEditAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goToChangeAvatar();
             }
         });
 
@@ -135,7 +143,7 @@ public class WizardSecondFragment extends Fragment {
             return null;
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        photo.compress(Bitmap.CompressFormat.JPEG, 80, stream);
+        photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
         return stream.toByteArray();
     }
 
@@ -147,17 +155,21 @@ public class WizardSecondFragment extends Fragment {
      */
     public void onLongClickAvatar(View view) {
         if (view.getId() == R.id.imgUserAvatar) {
-            Intent intent = new Intent();
-            //Verificar plataforma Android
-            if (Build.VERSION.SDK_INT < 20) {
-                //Android Jelly Bean 4.3 y Anteriores
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-            } else {//if (Build.VERSION.SDK_INT > 20) {
-                intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            }
-            intent.setType("image/*");
-            startActivityForResult(intent, PICK_FROM_FILE);
+            goToChangeAvatar();
         }
+    }
+
+    private void goToChangeAvatar() {
+        Intent intent = new Intent();
+        //Verificar plataforma Android
+        if (Build.VERSION.SDK_INT < 20) {
+            //Android Jelly Bean 4.3 y Anteriores
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+        } else {//if (Build.VERSION.SDK_INT > 20) {
+            intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        }
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_FROM_FILE);
     }
 
     /**

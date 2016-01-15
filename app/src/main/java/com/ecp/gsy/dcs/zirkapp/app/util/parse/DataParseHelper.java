@@ -5,7 +5,7 @@ import android.util.Log;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZComment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZFavorite;
-import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
+import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZLastMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZNotifi;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZimess;
 import com.parse.FunctionCallback;
@@ -16,6 +16,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -206,7 +207,7 @@ public class DataParseHelper {
         }
 
         //Limite de Zimess
-        query.setLimit(200);
+        query.setLimit(300);
 
         try {
             query.include(ParseZimess.USER);
@@ -298,6 +299,29 @@ public class DataParseHelper {
         }
 
         return parseUsers.size() > 0 ? parseUsers.get(0) : null;
+    }
+
+    public static List<ParseZLastMessage> findLastMessage(ParseUser currentUser) {
+        List<ParseZLastMessage> parseZLastMessages = new ArrayList<>();
+        ParseQuery<ParseZLastMessage> querySender = ParseQuery.getQuery(ParseZLastMessage.class);
+        querySender.whereEqualTo(ParseZLastMessage.SENDER_ID, currentUser);
+
+        ParseQuery<ParseZLastMessage> queryRecipient = ParseQuery.getQuery(ParseZLastMessage.class);
+        queryRecipient.whereEqualTo(ParseZLastMessage.RECIPIENT_ID, currentUser);
+
+        String[] userId = {currentUser.getObjectId()};
+        ParseQuery<ParseZLastMessage> query = ParseQuery.or(Arrays.asList(querySender, queryRecipient));
+        query.whereNotContainedIn(ParseZLastMessage.DELETE_FOR, Arrays.asList(userId));
+        query.include(ParseZLastMessage.SENDER_ID);
+        query.include(ParseZLastMessage.RECIPIENT_ID);
+        query.include(ParseZLastMessage.ZMESSAGE_ID);
+        query.orderByDescending("updatedAt");
+        try {
+            parseZLastMessages = query.find();
+        } catch (ParseException e) {
+            Log.e("Parse.LastMessage", e.getMessage());
+        }
+        return parseZLastMessages;
     }
 
     //##############################################################

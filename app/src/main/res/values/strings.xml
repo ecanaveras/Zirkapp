@@ -202,8 +202,8 @@
     <string name="lblNavAjust">Ajustes</string>
     <string name="lblNavQuali">Calificar</string>
     <string name="lblNavShare">Compartir</string>
-    <string name="title_tab_user_online">Online</string>
-    <string name="title_tab_messages">Mensajes</string>
+    <string name="title_tab_user_online">Gente Cerca</string>
+    <string name="title_tab_messages">Chats</string>
     <string name="title_tab_info_user">Inf. del usuario</string>
     <string name="title_tab_social_user">Redes sociales</string>
     <string name="lblAboutMe">Sobre mi...</string>
@@ -228,6 +228,9 @@
     <string name="lblEditProfile">Editar Perfil</string>
     <string name="msgReadYourMessage">Escribe tu mensaje...</string>
     <string name="msgMessageChatDisabled">Actualmente, no puedes enviar mensajes!</string>
+    <string name="msgHelpWall">Vas muy bien, ahora un estado para todos!</string>
+    <string name="lblNavHome">Inicio</string>
+    <string name="lblNavProfile">Mi Perfil</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

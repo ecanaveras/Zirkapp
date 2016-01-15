@@ -4,11 +4,8 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,7 +27,7 @@ import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemChatHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZLastMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataUsersHistoryTask;
+import com.ecp.gsy.dcs.zirkapp.app.util.task.RefreshDataLastMessage;
 import com.parse.FindCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -39,7 +36,6 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -106,9 +102,12 @@ public class ChatHistoryFragment extends Fragment {
         listViewHistory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ItemChatHistory chatHistory = (ItemChatHistory) adapterView.getAdapter().getItem(i);
+                ParseZLastMessage zLastMessage = (ParseZLastMessage) adapterView.getAdapter().getItem(i);
                 TextView textView = (TextView) view.findViewById(R.id.lblCantMessages);
-                abrirConversa(chatHistory.getUserMessage());
+                ParseUser parseSenderUser = zLastMessage.getSenderId();
+                ParseUser parseReceptorUser = zLastMessage.getRecipientId();
+                ParseUser parseUser = !parseSenderUser.getObjectId().equals(currentUser.getObjectId()) ? parseSenderUser : parseReceptorUser;
+                abrirConversa(parseUser);
                 textView.setText(null);
                 textView.setVisibility(View.GONE);
             }
@@ -126,72 +125,7 @@ public class ChatHistoryFragment extends Fragment {
             return;
         }
         if (globalApplication.isConectedToInternet()) {
-            new AsyncTask<String, String, ArrayList<ItemChatHistory>>() {
-
-                @Override
-                protected void onPreExecute() {
-                    findHistory = true;
-                    layoutInternetOff.setVisibility(View.GONE);
-                    lblChatNoFound.setVisibility(View.GONE);
-                    layoudHistoryFinder.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                protected ArrayList<ItemChatHistory> doInBackground(String... params) {
-                    final ArrayList<ParseUser> sendersId = new ArrayList<>();
-                    final ArrayList<ItemChatHistory> chatHistories = new ArrayList<>();
-
-                    ParseQuery<ParseZLastMessage> querySender = ParseQuery.getQuery(ParseZLastMessage.class);
-                    querySender.whereEqualTo(ParseZLastMessage.SENDER_ID, currentUser);
-
-                    ParseQuery<ParseZLastMessage> queryRecipient = ParseQuery.getQuery(ParseZLastMessage.class);
-                    queryRecipient.whereEqualTo(ParseZLastMessage.RECIPIENT_ID, currentUser);
-
-                    String[] userId = {currentUser.getObjectId()};
-                    ParseQuery<ParseZLastMessage> query = ParseQuery.or(Arrays.asList(querySender, queryRecipient));
-                    query.whereNotContainedIn(ParseZLastMessage.DELETE_FOR, Arrays.asList(userId));
-                    query.include(ParseZLastMessage.SENDER_ID);
-                    query.include(ParseZLastMessage.RECIPIENT_ID);
-                    query.include(ParseZLastMessage.ZMESSAGE_ID);
-                    query.orderByDescending("updatedAt");
-                    try {
-                        List<ParseZLastMessage> zMessages = query.find();
-                        for (ParseZLastMessage parseObj : zMessages) {
-                            if (!parseObj.getSenderId().getObjectId().equals(currentUser.getObjectId()) && !sendersId.contains(parseObj.getSenderId())) {
-                                sendersId.add(parseObj.getSenderId());
-                                ItemChatHistory chatHistory = new ItemChatHistory();
-                                chatHistory.setUserMessage(parseObj.getSenderId());
-                                chatHistory.setLastMessage(parseObj.getZMessageId());
-                                chatHistory.setCantMessagesNoRead(getCantMessages(parseObj.getSenderId().getObjectId(), parseObj.getRecipientId().getObjectId()));
-                                chatHistories.add(chatHistory);
-                            }
-                            if (!parseObj.getRecipientId().getObjectId().equals(currentUser.getObjectId()) && !sendersId.contains(parseObj.getRecipientId())) {
-                                sendersId.add(parseObj.getRecipientId());
-                                ItemChatHistory chatHistory = new ItemChatHistory();
-                                chatHistory.setUserMessage(parseObj.getRecipientId());
-                                chatHistory.setLastMessage(parseObj.getZMessageId());
-                                chatHistory.setIsSender(true);
-                                chatHistories.add(chatHistory);
-                            }
-                        }
-                    } catch (ParseException e) {
-                        Log.e(ChatHistoryFragment.class.getSimpleName() + " error findHistory: ", e.getMessage());
-                    }
-                    return chatHistories;
-                }
-
-                @Override
-                protected void onPostExecute(ArrayList<ItemChatHistory> chatHistories) {
-                    if (chatHistories.size() > 0) {
-                        new RefreshDataUsersHistoryTask(getActivity(), chatHistories, listViewHistory, lblChatNoFound, layoudHistoryFinder).execute();
-                    } else {
-                        lblChatNoFound.setVisibility(View.VISIBLE);
-                    }
-                    findHistory = false;
-                }
-            }.execute();
-
-
+            new RefreshDataLastMessage(getActivity(), listViewHistory, lblChatNoFound, layoudHistoryFinder).execute(currentUser);
         } else {
             layoudHistoryFinder.setVisibility(View.GONE);
             layoutInternetOff.setVisibility(View.VISIBLE);

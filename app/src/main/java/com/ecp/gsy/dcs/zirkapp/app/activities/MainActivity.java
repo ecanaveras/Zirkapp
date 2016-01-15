@@ -1,59 +1,40 @@
 package com.ecp.gsy.dcs.zirkapp.app.activities;
 
-import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.content.res.Configuration;
-import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatFragment;
+import com.ecp.gsy.dcs.zirkapp.app.fragments.MainFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.NotificationsFragment;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.ZimessFragment;
-import com.ecp.gsy.dcs.zirkapp.app.util.adapters.NavigationAdapter;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemListDrawer;
 import com.ecp.gsy.dcs.zirkapp.app.util.listener.FragmentIterationListener;
-import com.ecp.gsy.dcs.zirkapp.app.util.parse.DataParseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.SinchService;
 import com.ecp.gsy.dcs.zirkapp.app.util.sinch.SinchBaseActivity;
-//import com.facebook.appevents.AppEventsLogger;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.NavigationProfileTask;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.OpenMessagingTask;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.parse.ParseException;
 import com.parse.ParsePush;
 import com.parse.ParseUser;
 import com.sinch.android.rtc.SinchError;
@@ -61,18 +42,12 @@ import com.sinch.android.rtc.SinchError;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
+
+//import com.facebook.appevents.AppEventsLogger;
 
 public class MainActivity extends SinchBaseActivity implements SinchService.StartFailedListener, FragmentIterationListener {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-
-    //KEY FRAGMENT
-    //private static final int HOME = 3; //Disabled
-    private static final int ZIMESS = 0;
-    private static final int CHAT = 1;
-    private static final int NOTI = 2;
-
     public static MainActivity instance = null;
 
     //Toolbar
@@ -83,9 +58,7 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
 
     private View headerDrawer;
     private ImageView avatar;
-    //Fragments
-    private ZimessFragment zimessFragment;
-    private NotificationsFragment notificationsFragment;
+
     private int indexBackOrDefaultFragment;
     //Usuario de Parse
     private ParseUser currentUser = null;
@@ -97,14 +70,12 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
     //GCM
     private GoogleCloudMessaging gcm;
     private String regId;
-    private Bundle savedInstanceState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.savedInstanceState = savedInstanceState;
         //KeyHash
         //this.getKeyHash();
 
@@ -120,11 +91,6 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         } else {
             //Login
             startActivity(new Intent(this, ManagerWelcome.class));
-        }
-
-        if (savedInstanceState == null) {
-            zimessFragment = ZimessFragment.newInstance(null);
-            notificationsFragment = NotificationsFragment.newInstance(null);
         }
 
         initComponentsUI();
@@ -157,7 +123,6 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
-
 
         drawerNavigation = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -199,7 +164,6 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         }
     }
 
-
     /**
      * Reemplaza el contenido principal del Drawer
      *
@@ -218,32 +182,22 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         Fragment fragmentSelected = null;
         FragmentManager fragmentManager = getFragmentManager();
         //Reemplazar el content_frame
-        String fragmentTag = null;
         switch (itemDrawer.getItemId()) {
-            case R.id.item_zimess:
+            case R.id.item_home:
                 //Titulo del fragment
-                setTitle(itemDrawer.getTitle());
+                setTitle(getString(R.string.app_name));
                 itemDrawer.setChecked(true);
-                fragmentSelected = zimessFragment;
-                fragmentTag = ZimessFragment.TAG;
-                break;
-            case R.id.item_chat:
-                //Titulo del fragment
-                setTitle(itemDrawer.getTitle());
-                itemDrawer.setChecked(true);
-                Bundle bundle = new Bundle();
-                if (tabSelected != null) {
-                    bundle.putInt("tabSelected", 1);
-                }
-                fragmentSelected = ChatFragment.newInstance(bundle);
-                fragmentTag = ChatFragment.TAG;
+                fragmentSelected = new MainFragment();
                 break;
             case R.id.item_notifi:
                 //Titulo del fragment
                 setTitle(itemDrawer.getTitle());
                 itemDrawer.setChecked(true);
-                fragmentSelected = notificationsFragment;
-                fragmentTag = NotificationsFragment.TAG;
+                fragmentSelected = new NotificationsFragment();
+                break;
+            case R.id.item_profile:
+                Intent wizard = new Intent(this, ManagerWizard.class);
+                startActivity(wizard);
                 break;
             case R.id.item_ajust: //Ajustes
                 Intent intent = new Intent(this, CustomSettingsActivity.class);
@@ -272,8 +226,7 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
 
         if (fragmentSelected != null) {
             fragmentManager.beginTransaction()
-                    .replace(R.id.contenedor_principal, fragmentSelected, fragmentTag)
-                    .addToBackStack(ZimessFragment.TAG)
+                    .replace(R.id.contenedor_principal, fragmentSelected)
                     .commit();
         }
 

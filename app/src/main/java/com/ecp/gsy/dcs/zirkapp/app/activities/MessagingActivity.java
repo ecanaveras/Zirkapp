@@ -548,7 +548,7 @@ public class MessagingActivity extends SinchBaseActivity implements MessageClien
         if (message.getSenderId().equals(receptorId)) {
             adapterMessage.addMessage(message, MessageAdapter.DIRECTION_INCOMING);
             if (!globalApplication.isListeningNotifi()) {
-                MediaPlayer mp = MediaPlayer.create(MessagingActivity.this, R.raw.add_message);
+                MediaPlayer mp = MediaPlayer.create(MessagingActivity.this, R.raw.new_message);
                 mp.start();
             }
             updateParseMessageRead(message);

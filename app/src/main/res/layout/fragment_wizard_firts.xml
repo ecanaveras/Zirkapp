@@ -52,7 +52,6 @@
                 <EditText
                     android:id="@+id/txtUserEmail"
                     style="@style/custom_edit_text"
-                    android:focusable="true"
                     android:hint="@string/lblEmail"
                     android:imeOptions="actionNext"
                     android:inputType="textEmailAddress" />
@@ -60,6 +59,7 @@
                 <EditText
                     android:id="@+id/txtUserNombres"
                     style="@style/custom_edit_text"
+                    android:focusable="true"
                     android:hint="@string/lblName"
                     android:imeOptions="actionNext" />
 
@@ -77,9 +77,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
                     android:gravity="center_horizontal"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="10dp">
+                    android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/rbtnMasculino"

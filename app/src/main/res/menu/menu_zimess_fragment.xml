@@ -10,12 +10,13 @@
         android:title="@string/action_bar_go_messages"
         app:showAsAction="always" />
 
-    <item
+    <!--<item
         android:id="@+id/action_bar_go_inbox"
         android:icon="@drawable/icon_bar_messages"
         android:orderInCategory="190"
         android:title="@string/action_bar_go_messages"
         app:showAsAction="always" />
+        -->
 
     <item
         android:id="@+id/action_bar_new_zimess"

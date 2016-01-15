@@ -81,15 +81,14 @@
 
             <TextView
                 android:id="@+id/lblCantMessages"
-                android:layout_width="22dp"
+                android:layout_width="wrap_content"
                 android:layout_height="20dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="40dp"
-                android:background="@drawable/bg_circle_red"
+                android:layout_marginLeft="35dp"
                 android:gravity="center"
                 android:singleLine="true"
-                android:text="0"
-                android:textColor="@color/text_primary_color"
+                android:text="New"
+                android:textColor="@color/default_primary_color"
                 android:textStyle="bold" />
 
             <TextView

@@ -162,7 +162,7 @@
             android:layout_height="56dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_margin="12dp"
+            android:layout_margin="20dp"
             android:clickable="true"
             android:src="@drawable/ic_note_add_white_24dp"
             app:backgroundTint="@color/default_primary_color"

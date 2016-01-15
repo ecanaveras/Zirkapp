@@ -34,10 +34,11 @@ import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 //import com.parse.ParseFacebookUtils;
@@ -54,10 +55,10 @@ public class GlobalApplication extends Application {
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private static final String PROPERTY_USER = "user";
 
-    private Context context;
+    private static Context context;
 
     //Controla si el chat esta habilidado
-    private static boolean chatEnabled = true;
+    private static boolean chatEnabled = false;
 
     //Controla los mensajes de GPS y NETWORK
     private static boolean isShowNetworkAlert = false;
@@ -377,33 +378,33 @@ public class GlobalApplication extends Application {
         this.sortZimess = sortZimess;
     }
 
-    /**
-     * Describe una fecha o retorna una.
-     *
-     * @param createAt
-     * @return
-     */
-    public String getDescFechaPublicacion(Date createAt) {
-        String descFec = null;
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeZone(TimeZone.getDefault());
+    public static String getDescTimepass(Date createAt) {
+        Calendar calendar = Calendar.getInstance(Locale.getDefault());
         calendar.setTime(createAt);
-        Date dateZimess = calendar.getTime();
-
-        SimpleDateFormat sDateFormat = new SimpleDateFormat("MMM-dd-yyyy");
-        if (sDateFormat.format(dateZimess).equals(sDateFormat.format(new Date()))) { //Mismo día
-            descFec = "hoy";
+        calendar.set(Calendar.HOUR, 0);
+        Date currentDate = new Date();
+        Long time = (currentDate.getTime() - createAt.getTime()); //Tiempo real
+        String result = "";
+        DateFormat fechaFormat = new SimpleDateFormat("dd/MM/yyyy");
+        if (fechaFormat.format(currentDate).equals(fechaFormat.format(createAt))) {
+            //HORAS
+            result = new SimpleDateFormat("hh:mm a").format(createAt);
         } else {
-            calendar.setTime(new Date());
-            int diaMes = calendar.get(Calendar.DAY_OF_MONTH);
-            calendar.set(Calendar.DAY_OF_MONTH, diaMes - 1);
-            if (sDateFormat.format(dateZimess).equals(sDateFormat.format(calendar.getTime()))) {//Mismo dia
-                descFec = "ayer";
+            int diffInDays = (int) (TimeUnit.DAYS.convert(time, TimeUnit.MILLISECONDS));
+            if (diffInDays <= 1) {
+                DateFormat dayFormat = new SimpleDateFormat("dd");
+                int dayToday = Integer.parseInt(dayFormat.format(currentDate));
+                int dayMessage = Integer.parseInt(dayFormat.format(createAt));
+                if ((dayToday - dayMessage) <= 1) {
+                    result = context.getString(R.string.lblYesterday).toUpperCase();
+                } else {
+                    result = fechaFormat.format(createAt);
+                }
             } else {
-                descFec = new SimpleDateFormat("MMM-dd-yyyy hh:mm a").format(dateZimess);
+                result = fechaFormat.format(createAt);
             }
         }
-        return descFec;
+        return result;
     }
 
     /**

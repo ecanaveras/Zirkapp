@@ -159,7 +159,9 @@ public class SignupFragment extends Fragment {
         if (LocationService.isRunning()) {
             LocationService locationService = LocationService.getInstance();
             android.location.Location tmpLocation = locationService.getCurrentLocation();
-            location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+            if (tmpLocation != null) {
+                location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+            }
         }
         return location;
     }
