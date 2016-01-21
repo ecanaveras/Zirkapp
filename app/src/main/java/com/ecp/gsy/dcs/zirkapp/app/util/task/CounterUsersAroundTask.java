@@ -37,39 +37,42 @@ public class CounterUsersAroundTask extends AsyncTask<List<ParseUser>, Void, Int
 
     @Override
     protected void onPreExecute() {
-        this.databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
+        if (context != null)
+            this.databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
     }
 
     @Override
     protected Integer doInBackground(List<ParseUser>... users) {
         int cantUsersNews = 0;
-        List<UsersArounddb> listUsers = new ArrayList<>();
-        Dao dao = null;
-        try {
-            dao = databaseHelper.getUsersarounddbDao();
-            listUsers = dao.queryForAll();
-        } catch (SQLException e) {
-            Log.e("Ormlite", "Error buscando users_around");
-        }
-        //Compara los usuarios online vs los usuarios en la db para notificar los nuevos
-        if (listUsers.size() > 0) {
-            for (ParseUser user : users[0]) {
-                boolean save = true;
-                for (int i = 0; i < listUsers.size(); i++) {
-                    if (user.getObjectId().equals(listUsers.get(i).getUserId())) {
-                        save = false;
-                        break;
+        if (databaseHelper != null) {
+            List<UsersArounddb> listUsers = new ArrayList<>();
+            Dao dao = null;
+            try {
+                dao = databaseHelper.getUsersarounddbDao();
+                listUsers = dao.queryForAll();
+            } catch (SQLException e) {
+                Log.e("Ormlite", "Error buscando users_around");
+            }
+            //Compara los usuarios online vs los usuarios en la db para notificar los nuevos
+            if (listUsers.size() > 0) {
+                for (ParseUser user : users[0]) {
+                    boolean save = true;
+                    for (int i = 0; i < listUsers.size(); i++) {
+                        if (user.getObjectId().equals(listUsers.get(i).getUserId())) {
+                            save = false;
+                            break;
+                        }
+                    }
+                    if (save) {
+                        cantUsersNews++;
+                        createRow(dao, user.getObjectId());
                     }
                 }
-                if (save) {
+            } else if (dao != null) {
+                for (ParseUser user : users[0]) {
                     cantUsersNews++;
                     createRow(dao, user.getObjectId());
                 }
-            }
-        } else if (dao != null) {
-            for (ParseUser user : users[0]) {
-                cantUsersNews++;
-                createRow(dao, user.getObjectId());
             }
         }
         return cantUsersNews;
@@ -93,7 +96,7 @@ public class CounterUsersAroundTask extends AsyncTask<List<ParseUser>, Void, Int
         if (cantUsers != 0) {
             String formatMsg = "%s %d %s";
             Intent intent = new Intent(context, MainActivity.class);
-            intent.setAction("OPEN_FRAGMENT_CHAT");
+            intent.setAction("OPEN_FRAGMENT_GENTE_CERCA");
             PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
             // build notification

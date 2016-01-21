@@ -28,8 +28,6 @@ import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatFragment;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatHistoryFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.adapters.MessageAdapter;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.CounterNotifiReceiver;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;

@@ -27,7 +27,7 @@
             android:layout_gravity="top"
             android:layout_marginLeft="23dp"
             android:layout_marginTop="28dp"
-            android:background="@drawable/ic_bg_number_white_24dp"
+            android:background="@drawable/ic_bg_number_black_48dp"
             android:backgroundTint="@color/very_dark_gray" />
 
         <ImageView

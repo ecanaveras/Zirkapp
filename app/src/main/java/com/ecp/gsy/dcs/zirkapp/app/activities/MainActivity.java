@@ -187,7 +187,11 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
                 //Titulo del fragment
                 setTitle(getString(R.string.app_name));
                 itemDrawer.setChecked(true);
-                fragmentSelected = new MainFragment();
+                Bundle bundle = new Bundle();
+                if (tabSelected != null) {
+                    bundle.putInt("tabSelected", tabSelected);
+                }
+                fragmentSelected = MainFragment.newInstance(bundle);
                 break;
             case R.id.item_notifi:
                 //Titulo del fragment
@@ -234,24 +238,24 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
 
     private void gotoTarget(Intent intent) {
         if (intent.getAction() != null) {
-            if (intent.getAction().equals("OPEN_FRAGMENT_CHAT")) {
-//                //Chat Fragment
-                selectItemDrawer(navigationView.getMenu().getItem(1));
+            if (intent.getAction().equals("OPEN_FRAGMENT_GENTE_CERCA")) {
+                //Gente cerca Fragment
+                selectItemDrawer(navigationView.getMenu().getItem(0), 2);
             }
             if (intent.getAction().equals("OPEN_MESSAGING_USER")) {
                 if (globalApplication.isConectedToInternet()) {
                     new OpenMessagingTask(MainActivity.this).execute(intent.getStringExtra("senderId"));
                 }
                 //Chat Fragment
-                selectItemDrawer(navigationView.getMenu().getItem(1));
+                selectItemDrawer(navigationView.getMenu().getItem(0));
             }
             if (intent.getAction().equals("OPEN_FRAGMENT_NOTI")) {
-//                //Noti Fragment
+                //Noti Fragment
                 if (NotificationsFragment.isRunning()) {
                     NotificationsFragment n = NotificationsFragment.getInstance();
                     n.findNotifications(currentUser);
                 }
-                selectItemDrawer(navigationView.getMenu().getItem(2));
+                selectItemDrawer(navigationView.getMenu().getItem(1));
             }
             if (intent.getAction().equals("OPEN_PROFILE_USER")) {
                 //Ir la perfil del usuario
@@ -259,7 +263,7 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
                     new NavigationProfileTask(MainActivity.this).execute(intent.getStringExtra("targetId"));
                 } else {
                     //Chat Fragment
-                    selectItemDrawer(navigationView.getMenu().getItem(1));
+                    selectItemDrawer(navigationView.getMenu().getItem(0));
                 }
             }
         } else {

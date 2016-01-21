@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -85,7 +86,7 @@ public class NotificationsFragment extends Fragment {
 
         globalApplication = (GlobalApplication) getActivity().getApplicationContext();
 
-        inicializarCompUI(view);
+        inicializarCompUI(view, container);
         cancelNotification();
         findNotifications(currentUser);
 
@@ -94,7 +95,11 @@ public class NotificationsFragment extends Fragment {
     }
 
 
-    private void inicializarCompUI(View view) {
+    private void inicializarCompUI(View view, ViewGroup container) {
+        View parent = (View) container.getParent();
+        TabLayout tabLayout = (TabLayout) parent.findViewById(R.id.tabs);
+        tabLayout.setVisibility(View.GONE);
+
         listNotifi = (ListView) view.findViewById(R.id.listNotifi);
         progressBar = (ProgressBar) view.findViewById(R.id.progressLoad);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshNoti);

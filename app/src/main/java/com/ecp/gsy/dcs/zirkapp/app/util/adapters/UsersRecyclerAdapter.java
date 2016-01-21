@@ -38,7 +38,8 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
     public UsersRecyclerAdapter(Context context, List<ParseUser> userList) {
         this.userList = userList;
         this.context = context;
-        application = (GlobalApplication) context.getApplicationContext();
+        if (context != null)
+            application = (GlobalApplication) context.getApplicationContext();
     }
 
 

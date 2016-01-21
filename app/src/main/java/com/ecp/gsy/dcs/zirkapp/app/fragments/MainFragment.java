@@ -31,10 +31,18 @@ public class MainFragment extends Fragment {
 
     private static MainFragment instance = null;
     public static final String TAG = MainFragment.class.getSimpleName();
-    private AppBarLayout appBar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private boolean counterMessages;
+    private int tabSelected = 1;
+
+    public static MainFragment newInstance(Bundle arguments) {
+        MainFragment mainFragment = new MainFragment();
+        if (arguments != null) {
+            mainFragment.setArguments(arguments);
+        }
+        return mainFragment;
+    }
 
     public static MainFragment getInstance() {
         return instance;
@@ -57,6 +65,11 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
+        //Obtener el Tab a mostrar por default
+        if (this.getArguments() != null) {
+            tabSelected = this.getArguments().getInt("tabSelected", 1);
+        }
+
         if (savedInstanceState == null) {
             crearTabs(container);
 
@@ -66,7 +79,7 @@ public class MainFragment extends Fragment {
             tabLayout.setupWithViewPager(viewPager);
 
             //Select Tab
-            TabLayout.Tab tab = tabLayout.getTabAt(1);
+            TabLayout.Tab tab = tabLayout.getTabAt(tabSelected);
             tab.select();
         }
 
@@ -83,11 +96,10 @@ public class MainFragment extends Fragment {
 
     private void crearTabs(ViewGroup container) {
         View parent = (View) container.getParent();
-        appBar = (AppBarLayout) parent.findViewById(R.id.appbar);
-        tabLayout = new TabLayout(getActivity());
+        tabLayout = (TabLayout) parent.findViewById(R.id.tabs);//new TabLayout(getActivity());
+        tabLayout.setVisibility(View.VISIBLE);
         tabLayout.setTabTextColors(Color.parseColor("#FFFFFF"), Color.parseColor("#FFFFFF"));
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#FFFFFF"));
-        appBar.addView(tabLayout);
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -164,7 +176,6 @@ public class MainFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        appBar.removeView(tabLayout);
     }
 
     /**

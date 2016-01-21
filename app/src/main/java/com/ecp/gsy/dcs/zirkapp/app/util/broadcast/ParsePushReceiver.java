@@ -112,7 +112,7 @@ public class ParsePushReceiver extends ParsePushBroadcastReceiver {
                 case SendPushTask.PUSH_CHAT:
                     intent.setAction("OPEN_MESSAGING_USER"); //Notificacion desde chat
                     intent.putExtra("senderId", senderId); //IdUsuario que envia el chat
-                    intent.putExtra("tab", "mensajes");
+                    intent.putExtra("tab", "chat");
                     //Manejar Noti
                     GlobalApplication app = (GlobalApplication) context.getApplicationContext();
                     if (MessagingActivity.isRunning()) {

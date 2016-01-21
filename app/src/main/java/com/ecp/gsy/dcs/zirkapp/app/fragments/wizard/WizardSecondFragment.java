@@ -143,7 +143,7 @@ public class WizardSecondFragment extends Fragment {
             return null;
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         return stream.toByteArray();
     }
 
@@ -183,8 +183,8 @@ public class WizardSecondFragment extends Fragment {
             Intent intent = new Intent("com.android.camera.action.CROP");
             intent.setDataAndType(mImageCaptureUri, "image/*");
 
-            intent.putExtra("outputX", 200);
-            intent.putExtra("outputY", 200);
+            intent.putExtra("outputX", 500);
+            intent.putExtra("outputY", 500);
             intent.putExtra("aspectX", 1);
             intent.putExtra("aspectY", 1);
             intent.putExtra("scale", true);
