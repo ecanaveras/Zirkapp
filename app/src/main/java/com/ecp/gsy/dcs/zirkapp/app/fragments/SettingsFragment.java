@@ -1,7 +1,6 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,19 +17,16 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.AboutActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
-import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerLogin;
-import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerWizard;
+import com.ecp.gsy.dcs.zirkapp.app.activities.EditProfileWizard;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
 import com.ecp.gsy.dcs.zirkapp.app.util.services.LocationService;
@@ -139,7 +135,7 @@ public class SettingsFragment extends PreferenceFragment {
         pref_edit_profile.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(getActivity(), ManagerWizard.class);
+                Intent intent = new Intent(getActivity(), EditProfileWizard.class);
                 startActivity(intent);
                 return false;
             }

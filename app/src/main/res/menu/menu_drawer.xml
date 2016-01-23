@@ -21,7 +21,7 @@
         <item
             android:id="@+id/item_profile"
             android:icon="@drawable/ic_account_circle_white_24dp"
-            android:title="@string/lblNavProfile" />
+            android:title="@string/lblNavMyAccount" />
     </group>
 
 

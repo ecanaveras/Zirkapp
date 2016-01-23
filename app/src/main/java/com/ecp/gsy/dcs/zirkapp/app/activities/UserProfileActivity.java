@@ -1,58 +1,38 @@
 package com.ecp.gsy.dcs.zirkapp.app.activities;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v13.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.ChatHistoryFragment;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.UsersFragment;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.LoginFragment;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.loginSignup.SignupFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.profile.InfoUserFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.profile.SocialUserFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZVisit;
 import com.ecp.gsy.dcs.zirkapp.app.util.task.SendPushTask;
 import com.parse.FunctionCallback;
-import com.parse.GetCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -144,7 +124,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     Intent intent = new Intent(UserProfileActivity.this, MessagingActivity.class);
                     startActivity(intent);
                 } else {
-                    Intent intent = new Intent(UserProfileActivity.this, ManagerWizard.class);
+                    Intent intent = new Intent(UserProfileActivity.this, EditProfileWizard.class);
                     startActivity(intent);
                     //Snackbar.make(v, String.format("Hey, es tu perfil, no puedes hacer eso!"), Snackbar.LENGTH_SHORT).show();
                 }
@@ -260,7 +240,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 sendZiss();
                 return true;
             case R.id.action_bar_go_edit_profile:
-                Intent intent = new Intent(this, ManagerWizard.class);
+                Intent intent = new Intent(this, EditProfileWizard.class);
                 startActivity(intent);
                 return true;
             default:

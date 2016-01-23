@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerWizard;
+import com.ecp.gsy.dcs.zirkapp.app.activities.EditProfileWizard;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
@@ -82,8 +82,8 @@ public class WizardSecondFragment extends Fragment {
             public void onClick(View v) {
                 //Cambia el fragment
                 if (saveDataUser()) {
-                    ManagerWizard managerWizard = (ManagerWizard) getActivity();
-                    managerWizard.mViewPager.setCurrentItem(managerWizard.mViewPager.getCurrentItem() + 1);
+                    EditProfileWizard editProfileWizard = (EditProfileWizard) getActivity();
+                    editProfileWizard.mViewPager.setCurrentItem(editProfileWizard.mViewPager.getCurrentItem() + 1);
                 }
             }
         });
@@ -92,8 +92,8 @@ public class WizardSecondFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 //Cambia el fragment
-                ManagerWizard managerWizard = (ManagerWizard) getActivity();
-                managerWizard.mViewPager.setCurrentItem(managerWizard.mViewPager.getCurrentItem() - 1);
+                EditProfileWizard editProfileWizard = (EditProfileWizard) getActivity();
+                editProfileWizard.mViewPager.setCurrentItem(editProfileWizard.mViewPager.getCurrentItem() - 1);
             }
         });
     }
@@ -119,7 +119,7 @@ public class WizardSecondFragment extends Fragment {
 
             currentUser.saveInBackground();
 
-            ManagerWizard mW = (ManagerWizard) getActivity();
+            EditProfileWizard mW = (EditProfileWizard) getActivity();
             mW.setW2(true);
         }
 

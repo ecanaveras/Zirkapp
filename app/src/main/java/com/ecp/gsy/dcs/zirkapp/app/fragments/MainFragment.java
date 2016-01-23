@@ -3,6 +3,7 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -114,57 +115,58 @@ public class MainFragment extends Fragment {
         if (counterMessages) {
             return;
         }
-        new AsyncTask<Void, Void, Integer>() {
+        if (tabLayout != null)
+            new AsyncTask<Void, Void, Integer>() {
 
-            private View customTabView;
-            private TextView title;
-            private TextView count;
-            private TabLayout.Tab tab;
+                private View customTabView;
+                private TextView title;
+                private TextView count;
+                private TabLayout.Tab tab;
 
-            @Override
-            protected void onPreExecute() {
-                counterMessages = true;
-                //get Tab
-                tab = tabLayout.getTabAt(1); //Tab Mensajes
-                customTabView = tab.getCustomView();
-                if (customTabView == null) {
-                    customTabView = LayoutInflater.from(getActivity()).inflate(R.layout.tablayout_indicator, null);
-                }
-                title = (TextView) customTabView.findViewById(R.id.titleTab);
-                count = (TextView) customTabView.findViewById(R.id.countTab);
-            }
-
-            @Override
-            protected Integer doInBackground(Void... p) {
-                Integer result = null;
-                HashMap params = new HashMap<String, Object>();
-                try {
-                    result = (Integer) ParseCloud.callFunction("getTotalMessagesNoRead", params);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                return result;
-            }
-
-            @Override
-            protected void onPostExecute(Integer result) {
-                //Set customview in tablayout
-                if (result != null) {
-                    //set info Tab
-                    title.setText(tab.getText().toString().toUpperCase());
-                    if (result > 0) {
-                        count.setText(String.valueOf(result));
-                    } else {
-                        count.setVisibility(View.GONE);
+                @Override
+                protected void onPreExecute() {
+                    counterMessages = true;
+                    //get Tab
+                    tab = tabLayout.getTabAt(1); //Tab Mensajes
+                    customTabView = tab.getCustomView();
+                    if (customTabView == null) {
+                        customTabView = LayoutInflater.from(getActivity()).inflate(R.layout.tablayout_indicator, null);
                     }
-                    //Set View in Tab
-                    tab.setCustomView(null);
-                    tab.setCustomView(customTabView);
+                    title = (TextView) customTabView.findViewById(R.id.titleTab);
+                    count = (TextView) customTabView.findViewById(R.id.countTab);
                 }
-                counterMessages = false;
-            }
 
-        }.execute();
+                @Override
+                protected Integer doInBackground(Void... p) {
+                    Integer result = null;
+                    HashMap params = new HashMap<String, Object>();
+                    try {
+                        result = (Integer) ParseCloud.callFunction("getTotalMessagesNoRead", params);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    return result;
+                }
+
+                @Override
+                protected void onPostExecute(Integer result) {
+                    //Set customview in tablayout
+                    if (result != null) {
+                        //set info Tab
+                        title.setText(tab.getText().toString().toUpperCase());
+                        if (result > 0) {
+                            count.setText(String.valueOf(result));
+                        } else {
+                            count.setVisibility(View.GONE);
+                        }
+                        //Set View in Tab
+                        tab.setCustomView(null);
+                        tab.setCustomView(customTabView);
+                    }
+                    counterMessages = false;
+                }
+
+            }.execute();
     }
 
     @Override

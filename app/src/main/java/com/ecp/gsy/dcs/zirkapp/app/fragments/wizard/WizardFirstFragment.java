@@ -15,11 +15,9 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerWelcome;
-import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerWizard;
+import com.ecp.gsy.dcs.zirkapp.app.activities.EditProfileWizard;
 import com.parse.ParseUser;
 
 import java.text.ParseException;
@@ -92,8 +90,8 @@ public class WizardFirstFragment extends Fragment {
             public void onClick(View v) {
                 if (saveDataUser()) {
                     //Cambia el fragment
-                    ManagerWizard managerWizard = (ManagerWizard) getActivity();
-                    managerWizard.mViewPager.setCurrentItem(managerWizard.mViewPager.getCurrentItem() + 1);
+                    EditProfileWizard editProfileWizard = (EditProfileWizard) getActivity();
+                    editProfileWizard.mViewPager.setCurrentItem(editProfileWizard.mViewPager.getCurrentItem() + 1);
                 }
             }
         });
@@ -149,7 +147,7 @@ public class WizardFirstFragment extends Fragment {
 
             currentUser.saveInBackground();
 
-            ManagerWizard mW = (ManagerWizard) getActivity();
+            EditProfileWizard mW = (EditProfileWizard) getActivity();
             mW.setW1(true);
         }
 

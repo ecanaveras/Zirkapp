@@ -79,10 +79,22 @@ public class NewZimessActivity extends AppCompatActivity {
     private void callLocation() {
         new AsyncTask<Void, Void, String>() {
 
+            boolean findNameLocation = false;
+
+            @Override
+            protected void onPreExecute() {
+                if (!globalApplication.isConectedToInternet()) {
+                    btnSendZimess.setEnabled(false);
+                    Toast.makeText(globalApplication.getContext(), getResources().getString(R.string.msgInternetOff), Toast.LENGTH_SHORT).show();
+                } else {
+                    findNameLocation = true;
+                }
+            }
+
             @Override
             protected String doInBackground(Void... params) {
                 try {
-                    Thread.sleep(2000); // 2 segundos
+                    Thread.sleep(1000); // 1 segundos
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -91,10 +103,12 @@ public class NewZimessActivity extends AppCompatActivity {
 
             @Override
             protected void onPostExecute(String s) {
-                currentLocation = getCurrentLocation();
-                //Name Location
-                if (LocationService.isRunning()) {
-                    new RefreshDataAddressTask(NewZimessActivity.this, currentLocation, lblCurrentLocation, progressBar).execute();
+                if (findNameLocation) {
+                    currentLocation = getCurrentLocation();
+                    //Name Location
+                    if (currentLocation != null) {
+                        new RefreshDataAddressTask(NewZimessActivity.this, currentLocation, lblCurrentLocation, progressBar).execute();
+                    }
                 }
             }
         }.execute();
@@ -220,7 +234,8 @@ public class NewZimessActivity extends AppCompatActivity {
                 if (LocationService.isRunning()) {
                     LocationService locationService = LocationService.getInstance();
                     android.location.Location tmpLocation = locationService.getCurrentLocation();
-                    location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+                    if (tmpLocation != null)
+                        location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
                 }
             } else {
                 globalApplication.gpsShowSettingsAlert(this);

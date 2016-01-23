@@ -28,6 +28,12 @@ public class CustomSettingsActivity extends PreferenceActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_settings);
 
+
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setClickable(true);
         toolbar.setTitle(R.string.title_activity_settings);
@@ -41,7 +47,6 @@ public class CustomSettingsActivity extends PreferenceActivity {
         });
 
         getFragmentManager().beginTransaction().replace(R.id.content_frame, new SettingsFragment()).commit();
-
     }
 
     private static int getResIdFromAttribute(final Activity activity, final int attr) {

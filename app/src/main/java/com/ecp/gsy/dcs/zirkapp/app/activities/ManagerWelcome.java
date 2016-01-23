@@ -9,9 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeFirstFragment;
@@ -21,7 +19,6 @@ import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeThirdFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.Welcomedb;
 import com.ecp.gsy.dcs.zirkapp.app.util.database.DatabaseHelper;
-import com.ecp.gsy.dcs.zirkapp.app.util.task.DeleteDataZimessTask;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.parse.ParseUser;
@@ -137,7 +134,7 @@ public class ManagerWelcome extends Activity {
             currentUser = ParseUser.getCurrentUser();
             if (currentUser != null && isSessionActive) {
                 if (currentUser.getString("name") == null || currentUser.getParseFile("avatar") == null) { // No ha pasado por el asistente
-                    Intent wizard = new Intent(this, ManagerWizard.class);
+                    Intent wizard = new Intent(this, EditProfileWizard.class);
                     startActivity(wizard);
                 } else {
                     Intent intent = new Intent(this, MainActivity.class);

@@ -57,7 +57,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DetailZimessActivity extends AppCompatActivity { // implements ObservableScrollViewCallbacks {
+public class DetailZimessActivity extends AppCompatActivity {
 
     private GlobalApplication globalApplication;
     private ParseZimess zimessDetail;
@@ -232,17 +232,20 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
         lblTimePass.setText(tiempoTranscurrido);
 
         //lblCreatedAt.setText(globalApplication.getDescFechaPublicacion(zimess.getCreateAt()));
-        if (!isZimessPreloaded) {
-            //Calcular distancia del Zimess remoto
-            Location zimessLocation = new Location(zimess.getLocation().getLatitude(), zimess.getLocation().getLongitude());
-            ManagerDistance mDistance = new ManagerDistance(getCurrentLocation(), zimessLocation);
-            zimess.setDescDistancia(mDistance.getDistanciaToString());
-            zimess.setValueDistancia(mDistance.getDistancia());
-            lblDistance.setText(zimess.getDescDistancia());
-            lblDistance.setBackgroundResource(getResourceRibbon(mDistance.getDistancia()));
-        } else {
-            lblDistance.setText(zimess.getDescDistancia());
-            lblDistance.setBackgroundResource(getResourceRibbon(zimess.getValueDistancia()));
+        Location phoneLocation = getCurrentLocation();
+        if (phoneLocation != null) {
+            if (!isZimessPreloaded) {
+                //Calcular distancia del Zimess remoto
+                Location zimessLocation = new Location(zimess.getLocation().getLatitude(), zimess.getLocation().getLongitude());
+                ManagerDistance mDistance = new ManagerDistance(phoneLocation, zimessLocation);
+                zimess.setDescDistancia(mDistance.getDistanciaToString());
+                zimess.setValueDistancia(mDistance.getDistancia());
+                lblDistance.setText(zimess.getDescDistancia());
+                lblDistance.setBackgroundResource(getResourceRibbon(mDistance.getDistancia()));
+            } else {
+                lblDistance.setText(zimess.getDescDistancia());
+                lblDistance.setBackgroundResource(getResourceRibbon(zimess.getValueDistancia()));
+            }
         }
     }
 
@@ -478,7 +481,8 @@ public class DetailZimessActivity extends AppCompatActivity { // implements Obse
         if (LocationService.isRunning()) {
             LocationService locationService = LocationService.getInstance();
             android.location.Location tmpLocation = locationService.getCurrentLocation();
-            location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
+            if (tmpLocation != null)
+                location = new Location(tmpLocation.getLatitude(), tmpLocation.getLongitude());
         }
         return location;
     }

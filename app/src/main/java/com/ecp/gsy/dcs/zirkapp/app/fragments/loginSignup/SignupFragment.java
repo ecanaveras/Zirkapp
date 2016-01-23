@@ -122,11 +122,11 @@ public class SignupFragment extends Fragment {
                 user.setUsername(username.trim());
                 user.setPassword(password1);
                 user.setEmail(correo);
+                user.put("online", true);
                 //Conectar al chat
                 Location currentLocation = getCurrentLocation();
                 if (currentLocation != null) {
                     user.put("location", new ParseGeoPoint(currentLocation.getLatitud(), currentLocation.getLongitud()));
-                    user.put("online", true);
                 }
 
                 user.signUpInBackground(new SignUpCallback() {

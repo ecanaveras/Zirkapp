@@ -132,7 +132,7 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
         headerDrawer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ManagerWizard.class);
+                Intent intent = new Intent(MainActivity.this, EditProfileWizard.class);
                 startActivity(intent);
             }
         });
@@ -200,7 +200,7 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
                 fragmentSelected = new NotificationsFragment();
                 break;
             case R.id.item_profile:
-                Intent wizard = new Intent(this, ManagerWizard.class);
+                Intent wizard = new Intent(this, EditProfileWizard.class);
                 startActivity(wizard);
                 break;
             case R.id.item_ajust: //Ajustes
@@ -429,7 +429,5 @@ public class MainActivity extends SinchBaseActivity implements SinchService.Star
             Log.e("KeyHashNoSuchAlgorithm", e.getMessage());
         }
     }
-
-
 }
 

@@ -231,6 +231,8 @@
     <string name="msgHelpWall">Vas muy bien, ahora un estado para todos!</string>
     <string name="lblNavHome">Inicio</string>
     <string name="lblNavProfile">Mi Perfil</string>
+    <string name="title_activity_my_account">Mi Cuenta</string>
+    <string name="lblNavMyAccount">Mi Cuenta</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MainActivity;
-import com.ecp.gsy.dcs.zirkapp.app.activities.ManagerWizard;
+import com.ecp.gsy.dcs.zirkapp.app.activities.EditProfileWizard;
 import com.parse.ParseUser;
 
 /**
@@ -68,15 +68,15 @@ public class WizardThirdFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 //Cambia el fragment
-                ManagerWizard managerWizard = (ManagerWizard) getActivity();
-                managerWizard.mViewPager.setCurrentItem(managerWizard.mViewPager.getCurrentItem() - 1);
+                EditProfileWizard editProfileWizard = (EditProfileWizard) getActivity();
+                editProfileWizard.mViewPager.setCurrentItem(editProfileWizard.mViewPager.getCurrentItem() - 1);
             }
         });
     }
 
 
     private boolean saveDataUser() {
-        ManagerWizard mW = (ManagerWizard) getActivity();
+        EditProfileWizard mW = (EditProfileWizard) getActivity();
         if (!mW.isW1()) {
             mW.mViewPager.setCurrentItem(mW.mViewPager.getCurrentItem() - 2);
             Toast.makeText(getActivity(), "Hey, fijate si finalizaste esta parte!", Toast.LENGTH_LONG).show();

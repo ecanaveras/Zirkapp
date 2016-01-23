@@ -58,7 +58,7 @@ public class GlobalApplication extends Application {
     private static Context context;
 
     //Controla si el chat esta habilidado
-    private static boolean chatEnabled = true;
+    private static boolean chatEnabled = false;
 
     //Controla los mensajes de GPS y NETWORK
     private static boolean isShowNetworkAlert = false;
@@ -417,6 +417,8 @@ public class GlobalApplication extends Application {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(createAt);
         calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
         Date currentDate = new Date();
         Long time = (currentDate.getTime() - createAt.getTime()); //Tiempo real
         Long timeDay = (currentDate.getTime() - calendar.getTime().getTime()); //Tiempo con hora 0
@@ -424,19 +426,27 @@ public class GlobalApplication extends Application {
         if (TimeUnit.DAYS.convert(timeDay, TimeUnit.MILLISECONDS) > 30) {
             //MESES
             result = "+" + String.valueOf(TimeUnit.DAYS.convert(time, TimeUnit.MILLISECONDS) / 30) + "M";
-        } else if (TimeUnit.DAYS.convert(timeDay, TimeUnit.MILLISECONDS) > 1 && TimeUnit.DAYS.convert(timeDay, TimeUnit.MILLISECONDS) < 30) {
+        } else if (TimeUnit.DAYS.convert(timeDay, TimeUnit.MILLISECONDS) >= 1 && TimeUnit.DAYS.convert(timeDay, TimeUnit.MILLISECONDS) <= 30) {
             //DIAS
             result = String.valueOf(TimeUnit.DAYS.convert(time, TimeUnit.MILLISECONDS)) + "d";
-        } else if (TimeUnit.HOURS.convert(time, TimeUnit.MILLISECONDS) > 1 && TimeUnit.HOURS.convert(time, TimeUnit.MILLISECONDS) < 24) {
+        } else if (TimeUnit.HOURS.convert(time, TimeUnit.MILLISECONDS) >= 1 && TimeUnit.HOURS.convert(time, TimeUnit.MILLISECONDS) < 24) {
             //HORAS
             result = String.valueOf(TimeUnit.HOURS.convert(time, TimeUnit.MILLISECONDS)) + "h";
-        } else if (TimeUnit.MINUTES.convert(time, TimeUnit.MILLISECONDS) > 1 && TimeUnit.MINUTES.convert(time, TimeUnit.MILLISECONDS) < 60) {
+        } else if (TimeUnit.MINUTES.convert(time, TimeUnit.MILLISECONDS) >= 1 && TimeUnit.MINUTES.convert(time, TimeUnit.MILLISECONDS) < 60) {
             //MINUTOS
             result = String.valueOf(TimeUnit.MINUTES.convert(time, TimeUnit.MILLISECONDS)) + "m";
         } else if (TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS) < 60) {
             //SEGUNDOS
             result = String.valueOf(TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS)) + "s";
         }
+        //LOG
+        /*
+        Log.d("M", String.valueOf(TimeUnit.DAYS.convert(time, TimeUnit.MILLISECONDS) / 30) + "M");
+        Log.d("d",String.valueOf(TimeUnit.DAYS.convert(time, TimeUnit.MILLISECONDS)) + "d");
+        Log.d("h",String.valueOf(TimeUnit.HOURS.convert(time, TimeUnit.MILLISECONDS)) + "h");
+        Log.d("m",String.valueOf(TimeUnit.MINUTES.convert(time, TimeUnit.MILLISECONDS)) + "m");
+        Log.d("s",String.valueOf(TimeUnit.SECONDS.convert(time, TimeUnit.MILLISECONDS)) + "s");
+        */
         return result;
     }
 

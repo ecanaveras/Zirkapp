@@ -7,17 +7,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/default_primary_color"
+        android:background="@color/very_dark_gray"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical|center_horizontal"
-            android:padding="16dp"
-            android:text="Hola, completa o actualiza los datos de tu perfil..."
+            android:padding="12dp"
+            android:text="Hola, completa o actualiza los datos de tu perfil, no olvides tu genero..."
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/text_primary_color"
+            android:textSize="14dp"
             android:textStyle="italic"
             android:typeface="sans" />
     </LinearLayout>
@@ -90,7 +91,7 @@
                         android:checked="true"
                         android:text="@string/lblGenderM"
                         android:textColor="@color/accent_color"
-                        android:textSize="18sp" />
+                        android:textSize="14sp" />
 
                     <RadioButton
                         android:id="@+id/rbtnFemenino"
@@ -99,7 +100,7 @@
                         android:layout_gravity="center_horizontal"
                         android:text="@string/lblGenderF"
                         android:textColor="@color/accent_color"
-                        android:textSize="18sp" />
+                        android:textSize="14sp" />
                 </RadioGroup>
 
             </LinearLayout>

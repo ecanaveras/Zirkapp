@@ -3,7 +3,6 @@ package com.ecp.gsy.dcs.zirkapp.app.fragments;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,8 +30,6 @@ import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
-import com.ecp.gsy.dcs.zirkapp.app.activities.MessagingActivity;
-import com.ecp.gsy.dcs.zirkapp.app.util.listener.FragmentIterationListener;
 import com.ecp.gsy.dcs.zirkapp.app.util.locations.Location;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
@@ -65,7 +62,7 @@ public class UsersFragment extends Fragment {
 
     private GlobalApplication globalApplication;
 
-    public boolean isConnectedUser;
+    public boolean isUserOnline;
     private TextView lblInfoChat;
     private LinearLayout layoutUsersDefault;
     private AlertDialog filterDialog;
@@ -104,7 +101,7 @@ public class UsersFragment extends Fragment {
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         if (currentUser != null) {
-            isConnectedUser = currentUser.getBoolean("online");
+            isUserOnline = currentUser.getBoolean("online");
             callLocation();
         }
 
@@ -177,15 +174,15 @@ public class UsersFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (isConnectedUser)
+                if (isUserOnline)
                     conectarChat(getCurrentLocation());
             }
         });
-        swipeRefreshLayout.setEnabled(isConnectedUser);
+        swipeRefreshLayout.setEnabled(isUserOnline);
 
         if (globalApplication.isConectedToInternet()) {
             if (globalApplication.isEnabledGetLocation()) {
-                if (isConnectedUser) {
+                if (isUserOnline) {
                     layoutUsersDefault.setVisibility(View.VISIBLE);
                 } else {
                     layoutChatOffline.setVisibility(View.VISIBLE);
@@ -204,7 +201,7 @@ public class UsersFragment extends Fragment {
      * Actualiza la ubicacion del usuario actual y busca los usuarios en Linea y que esten en cerca
      */
     public void findUsersOnline(Location currentLocation) {
-        if (isConnectedUser && currentLocation != null) {
+        if (globalApplication.isConectedToInternet() && isUserOnline && currentLocation != null) {
             //Tomar valores de las preferencias de usuarios
             int dist_max = Integer.parseInt(preferences.getString("max_dist_list", "10"));
             String gender = preferences.getString("filter_user_gender", null);
@@ -231,7 +228,7 @@ public class UsersFragment extends Fragment {
             //2. Mostrar Layout correspondiente
             if (globalApplication.isConectedToInternet()) {
                 if (globalApplication.isEnabledGetLocation()) {
-                    if (!isConnectedUser) {
+                    if (!isUserOnline) {
                         layoutChatOffline.setVisibility(View.VISIBLE);
                         lblInfoChat.setText("Chat Offline");
                     } else {
@@ -241,8 +238,10 @@ public class UsersFragment extends Fragment {
                     layoutGpsOff.setVisibility(View.VISIBLE);
                 }
             } else {
-                layoutChatOffline.setVisibility(View.VISIBLE);
-                lblInfoChat.setText(getResources().getString(R.string.msgInternetOff));
+                if (this.getView() != null) { //Para evitar Exception que sucede en tiempo de ejecucion cuando Internet Off
+                    layoutChatOffline.setVisibility(View.VISIBLE);
+                    lblInfoChat.setText(getResources().getString(R.string.msgInternetOff));
+                }
             }
             swipeRefreshLayout.setRefreshing(false);
         }
@@ -255,7 +254,7 @@ public class UsersFragment extends Fragment {
         if (currentUser != null) {
             currentUser.put("online", true);
             currentUser.saveInBackground();
-            isConnectedUser = true;
+            isUserOnline = true;
             findUsersOnline(currentLocation);
         } else {
             swipeRefreshLayout.setRefreshing(false);
@@ -272,7 +271,7 @@ public class UsersFragment extends Fragment {
         if (globalApplication.isConectedToInternet()) {
             currentUser.put("online", false);
             currentUser.saveInBackground();
-            isConnectedUser = false;
+            isUserOnline = false;
             userRecyclerView.setAdapter(null);
             layoutChatOffline.setVisibility(View.VISIBLE);
             lblInfoChat.setText("Chat Offline");
@@ -419,7 +418,7 @@ public class UsersFragment extends Fragment {
         MenuItem item = menu.findItem(R.id.switchUsersOnline);
         item.setActionView(R.layout.component_switch);
         final SwitchCompat switchConected = (SwitchCompat) item.getActionView().findViewById(R.id.switch_on_off);
-        switchConected.setChecked(isConnectedUser);
+        switchConected.setChecked(isUserOnline);
         switchConected.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

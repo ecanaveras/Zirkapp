@@ -31,7 +31,7 @@ public class LocationReceiver extends BroadcastReceiver {
             //actualizar lista de usuarios en el chat y posicion
             if (UsersFragment.isRunning()) {
                 UsersFragment usersFragment = UsersFragment.getInstance();
-                if (usersFragment.isConnectedUser) {
+                if (usersFragment.isUserOnline) {
                     usersFragment.conectarChat(location);
                 }
                 Log.i("chat.location", "update");

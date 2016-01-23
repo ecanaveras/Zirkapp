@@ -1,16 +1,21 @@
 package com.ecp.gsy.dcs.zirkapp.app.util.services;
 
+import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.util.broadcast.LocationReceiver;
@@ -64,31 +69,36 @@ public class LocationService extends Service {
     public Location getCurrentLocation() {
         //isAutomatic = !isManual;
         if (globalApplication.isConectedToInternet()) {
-            //handler.postDelayed(getLocation, MIN_TIME_BW_UPDATES);
-            try {
-                locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                boolean isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-                boolean isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-                //Network
-                if (isEnabledNetwork) {
-                    //Log.d("provider.location", "network");
-                    //return getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    return getLastKnownLocation(getProviderName(locationManager));
-                }
-                //Gps
-                if (isEnabledGPS) {
-                    //Log.d("provider.location", "gps");
-                    //return getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    return getLastKnownLocation(getProviderName(locationManager));
-                }
+            boolean isPermissionGranted = true;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                isPermissionGranted = isPermissionGranted();
+            }
+            if (isPermissionGranted) {
+                try {
+                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    boolean isEnabledGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                    boolean isEnabledNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                    //Network
+                    if (isEnabledNetwork) {
+                        //Log.d("provider.location", "network");
+                        //return getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        return getLastKnownLocation(getProviderName(locationManager));
+                    }
+                    //Gps
+                    if (isEnabledGPS) {
+                        //Log.d("provider.location", "gps");
+                        //return getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                        return getLastKnownLocation(getProviderName(locationManager));
+                    }
 
-                //Desabilitado la RED y GPS
-                Log.d("provider.location", "disabled");
-                globalApplication.gpsShowSettingsAlert();
+                    //Desabilitado la RED y GPS
+                    Log.d("provider.location", "disabled");
+                    globalApplication.gpsShowSettingsAlert();
 
-            } catch (Exception e) {
-                stopUsingGPS();
-                Log.e("Error : Location", "Impossible to connect to LocationManager", e);
+                } catch (Exception e) {
+                    stopUsingGPS();
+                    Log.e("Error : Location", "Impossible to connect to LocationManager", e);
+                }
             }
 
         } else {
@@ -102,14 +112,41 @@ public class LocationService extends Service {
      *
      * @param provider
      */
+    @SuppressWarnings("ResourceType")
     private Location getLastKnownLocation(String provider) {
         Log.d("provider.location", provider);
-        Location location = locationManager.getLastKnownLocation(provider);
+        Location location = null;
+        boolean pedirLocation = true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            pedirLocation = isPermissionGranted();
+        }
+        if (pedirLocation) {
+            location = locationManager.getLastKnownLocation(provider);
+            setLocationListener(provider);
+        }
+        return location;
+    }
+
+    @SuppressWarnings("ResourceType")
+    private void setLocationListener(String provider) {
         if (listener == null) {
             listener = new MyLocationListener();
             locationManager.requestLocationUpdates(provider, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, listener);
         }
-        return location;
+    }
+
+    /**
+     * Verifica si la app tiene permisos para obtener la ubicacion [Aplica para Android M]
+     *
+     * @return
+     */
+    private boolean isPermissionGranted() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "Zirkapp no tiene permisos para otbener tu ubicación, fijate en tus ajustes", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
+
     }
 
 
