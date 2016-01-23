@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.ecp.gsy.dcs.zirkapp.app.activities.ManagerWelcome">
+    tools:context="com.ecp.gsy.dcs.zirkapp.app.activities.ManagerWelcome"
+    android:fitsSystemWindows="true">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
@@ -21,7 +22,7 @@
         android:id="@+id/indicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/default_primary_color"
+        android:background="@color/very_dark_gray"
         android:padding="10dip" />
 
 </LinearLayout>

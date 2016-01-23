@@ -76,7 +76,7 @@
     <string name="lblResponse">Respuestas</string>
     <string name="lblSearching">Buscando Zimess...</string>
     <string name="lblSearchingUsers">Buscando usuarios online...</string>
-    <string name="lblStart">Empecemos..</string>
+    <string name="lblStart">Empecemos...</string>
     <string name="lblZimessNoFound">No hay Zimess, empieza tu!</string>
     <string name="lblMyZimessNoFound">No has publicado Zimess... animate, empieza ya!</string>
     <string name="lblMyZimess">Mis Zimess</string>
@@ -233,6 +233,7 @@
     <string name="lblNavProfile">Mi Perfil</string>
     <string name="title_activity_my_account">Mi Cuenta</string>
     <string name="lblNavMyAccount">Mi Cuenta</string>
+    <string name="msgMyAccount">Mi Cuenta</string>
 
     <string-array name="options_drawer">
         <item>Zimess</item>

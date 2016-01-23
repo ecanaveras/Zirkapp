@@ -87,7 +87,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="actionSend"
-                    android:text="@string/lblSingUp" />
+                    android:text="@string/lblSingUp"
+                    android:textAllCaps="true"/>
 
             </LinearLayout>
         </LinearLayout>

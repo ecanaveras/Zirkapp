@@ -55,7 +55,7 @@
                         android:layout_height="180dp"
                         android:layout_gravity="top"
                         android:layout_margin="6dp"
-                        android:src="@drawable/ic_lugar" />
+                        android:src="@drawable/ic_user_male" />
 
                     <RelativeLayout
                         android:layout_width="180dp"

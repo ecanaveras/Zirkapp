@@ -13,7 +13,6 @@ import android.util.Log;
 
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeFirstFragment;
-import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeFourFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeSecondFragment;
 import com.ecp.gsy.dcs.zirkapp.app.fragments.welcome.WelcomeThirdFragment;
 import com.ecp.gsy.dcs.zirkapp.app.util.beans.HandlerLogindb;
@@ -182,9 +181,6 @@ public class ManagerWelcome extends Activity {
                     return new WelcomeSecondFragment();
                 case 2:
                     return new WelcomeThirdFragment();
-                case 3:
-                    return new WelcomeFourFragment();
-
             }
             return null;
         }
@@ -192,7 +188,7 @@ public class ManagerWelcome extends Activity {
         @Override
         public int getCount() {
             // Show 4 total pages.
-            return 4;
+            return 3;
         }
 
         @Override

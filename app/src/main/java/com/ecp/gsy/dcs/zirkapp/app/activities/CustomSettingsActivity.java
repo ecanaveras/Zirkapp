@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.MenuItem;
@@ -15,7 +16,7 @@ import com.ecp.gsy.dcs.zirkapp.app.fragments.SettingsFragment;
 /**
  * Created by Elder on 15/04/2015.
  */
-public class CustomSettingsActivity extends PreferenceActivity {
+public class CustomSettingsActivity extends AppCompatActivity {
 
     /*@Override
     public void onBuildHeaders(List<Header> target) {
@@ -28,12 +29,6 @@ public class CustomSettingsActivity extends PreferenceActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_settings);
 
-
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setClickable(true);
         toolbar.setTitle(R.string.title_activity_settings);
@@ -47,6 +42,12 @@ public class CustomSettingsActivity extends PreferenceActivity {
         });
 
         getFragmentManager().beginTransaction().replace(R.id.content_frame, new SettingsFragment()).commit();
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
     }
 
     private static int getResIdFromAttribute(final Activity activity, final int attr) {
