@@ -1,17 +1,12 @@
 package com.ecp.gsy.dcs.zirkapp.app.fragments;
 
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.ContextMenu;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,7 +23,6 @@ import com.ecp.gsy.dcs.zirkapp.app.GlobalApplication;
 import com.ecp.gsy.dcs.zirkapp.app.R;
 import com.ecp.gsy.dcs.zirkapp.app.activities.MessagingActivity;
 import com.ecp.gsy.dcs.zirkapp.app.activities.UserProfileActivity;
-import com.ecp.gsy.dcs.zirkapp.app.util.beans.ItemChatHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZHistory;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZLastMessage;
 import com.ecp.gsy.dcs.zirkapp.app.util.parse.models.ParseZMessage;
@@ -130,6 +124,7 @@ public class ChatHistoryFragment extends Fragment {
             return;
         }
         if (globalApplication.isConectedToInternet()) {
+            layoutInternetOff.setVisibility(View.GONE);
             new RefreshDataLastMessage(getActivity(), listViewHistory, lblChatNoFound, layoudHistoryFinder).execute(currentUser);
         } else {
             layoudHistoryFinder.setVisibility(View.GONE);
@@ -273,15 +268,22 @@ public class ChatHistoryFragment extends Fragment {
         AdapterView.AdapterContextMenuInfo acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
             case R.id.ctx_view_profile:
-                ParseUser receptorUser = ((ItemChatHistory) listViewHistory.getAdapter().getItem(acmi.position)).getUserMessage();
+                ParseZLastMessage zLastMessage = ((ParseZLastMessage) listViewHistory.getAdapter().getItem(acmi.position));
+                ParseUser parseSenderUser = zLastMessage.getSenderId();
+                ParseUser parseReceptorUser = zLastMessage.getRecipientId();
+                ParseUser parseUser = !parseSenderUser.getObjectId().equals(currentUser.getObjectId()) ? parseSenderUser : parseReceptorUser;
+
                 Intent intent = new Intent(getActivity(), UserProfileActivity.class);
-                globalApplication.setProfileParseUser(receptorUser);
+                globalApplication.setProfileParseUser(parseUser);
                 startActivity(intent);
                 return true;
             case R.id.ctx_delete_chat:
-                ParseUser parseUser = ((ItemChatHistory) listViewHistory.getAdapter().getItem(acmi.position)).getUserMessage();
-                if (parseUser != null) {
-                    deleteParseMessageHistory(parseUser);
+                ParseZLastMessage zLastMessageDel = ((ParseZLastMessage) listViewHistory.getAdapter().getItem(acmi.position));
+                ParseUser parseSenderUserDel = zLastMessageDel.getSenderId();
+                ParseUser parseReceptorUserDel = zLastMessageDel.getRecipientId();
+                ParseUser parseUserDel = !parseSenderUserDel.getObjectId().equals(currentUser.getObjectId()) ? parseSenderUserDel : parseReceptorUserDel;
+                if (parseUserDel != null) {
+                    deleteParseMessageHistory(parseUserDel);
                 }
                 return true;
             case R.id.ctx_lock_user:

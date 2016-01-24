@@ -36,8 +36,8 @@ public class RefreshDataLastMessage extends AsyncTask<ParseUser, Void, List<Pars
     protected void onPreExecute() {
         if (lblChatNoFound != null)
             lblChatNoFound.setVisibility(View.GONE);
-        if (layoutUsersFinder != null)
-            layoutUsersFinder.setVisibility(View.VISIBLE);
+        //if (layoutUsersFinder != null)
+            //layoutUsersFinder.setVisibility(View.VISIBLE);
         if (layoutUsersNoFound != null)
             layoutUsersNoFound.setVisibility(View.GONE);
 

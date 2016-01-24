@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class NotifiAdapter extends BaseAdapter {
 
-    private final GlobalApplication globalApplication;
+    private GlobalApplication globalApplication = null;
     private List<ParseZNotifi> notificationArrayList;
     private Context context;
     private int cantNotiNoRead = 0;
@@ -33,7 +33,8 @@ public class NotifiAdapter extends BaseAdapter {
     public NotifiAdapter(Context context, List<ParseZNotifi> notifiList) {
         this.notificationArrayList = notifiList;
         this.context = context;
-        globalApplication = (GlobalApplication) context.getApplicationContext();
+        if (context != null)
+            globalApplication = (GlobalApplication) context.getApplicationContext();
     }
 
     @Override
