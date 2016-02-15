@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ecp.gsy.dcs.zirkapp.app">
+    package="com.ecp.gsy.dcs.zirkapp.app" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -25,13 +25,13 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".activities.ManagerWelcome"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -68,7 +68,7 @@
             android:name=".activities.MessagingActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize">
+            android:windowSoftInputMode="stateHidden|adjustResize" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
@@ -76,7 +76,7 @@
         <activity
             android:name=".activities.NewZimessActivity"
             android:label="@string/lblAddZmess"
-            android:windowSoftInputMode="stateVisible|adjustResize">
+            android:windowSoftInputMode="stateVisible|adjustResize" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
@@ -84,7 +84,7 @@
         <activity
             android:name=".activities.DetailZimessActivity"
             android:label="@string/lblDetailZimess"
-            android:windowSoftInputMode="stateHidden|adjustResize">
+            android:windowSoftInputMode="stateHidden|adjustResize" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
@@ -92,12 +92,13 @@
         <activity
             android:name=".activities.UserProfileActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
         </activity>
-        <!-- <activity
+        <!--
+         <activity
              android:name=".activities.EditProfileActivity"
              android:label="@string/app_name"
              android:screenOrientation="portrait"
@@ -111,10 +112,11 @@
 
                  <category android:name="android.intent.category.DEFAULT" />
              </intent-filter>
-         </activity>-->
+         </activity>
+        -->
         <activity
             android:name=".activities.MyZimessActivity"
-            android:label="@string/lblMyZimess">
+            android:label="@string/lblMyZimess" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
@@ -122,14 +124,14 @@
         <activity
             android:name=".activities.AboutActivity"
             android:label="@string/title_activity_about"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
         </activity>
         <activity
             android:name=".activities.CustomSettingsActivity"
-            android:label="@string/title_activity_settings">
+            android:label="@string/title_activity_settings" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
@@ -150,34 +152,34 @@
         <service android:name=".util.services.SinchService" />
 
         <!-- Receivers -->
-        <receiver android:name=".util.broadcast.LocationReceiver">
+        <receiver android:name=".util.broadcast.LocationReceiver" >
             <intent-filter>
                 <action android:name="broadcast.gps.location.change" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".util.broadcast.NetworkChangeReceiver">
+        <receiver android:name=".util.broadcast.NetworkChangeReceiver" >
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".util.broadcast.GpsChangeReceiver">
+        <receiver android:name=".util.broadcast.GpsChangeReceiver" >
             <intent-filter>
                 <action android:name="android.location.PROVIDERS_CHANGED" />
             </intent-filter>
         </receiver>
         <receiver
             android:name=".util.broadcast.CounterNotifiReceiver"
-            android:enabled="true">
+            android:enabled="true" >
             <intent-filter>
-                <action android:name="broadcast.notifi.counter"></action>
+                <action android:name="broadcast.notifi.counter" />
             </intent-filter>
         </receiver>
 
         <!-- PARSE -->
         <service android:name="com.parse.PushService" />
 
-        <receiver android:name="com.parse.ParseBroadcastReceiver">
+        <receiver android:name="com.parse.ParseBroadcastReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.USER_PRESENT" />
@@ -186,7 +188,7 @@
         </receiver>
         <receiver
             android:name="com.parse.GcmBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND">
+            android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
@@ -197,7 +199,7 @@
         <!-- android:name="com.parse.ParsePushBroadcastReceiver" -->
         <receiver
             android:name=".util.broadcast.ParsePushReceiver"
-            android:exported="false">
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />
                 <action android:name="com.parse.push.intent.DELETE" />
